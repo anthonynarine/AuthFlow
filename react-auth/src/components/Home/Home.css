@@ -1,0 +1,66 @@
+
+/* Home.css */
+
+/* Add this style to space out the header content */
+.cover-container {
+    display: flex;
+    flex-direction: column;
+    min-height: 100vh;
+  }
+  
+.header-container {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 0 21%; /* Adjust the padding as needed */
+  }
+  
+  .nav {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: center;
+  }
+  
+  /* Media query for smaller screens */
+  @media (max-width: 576px) {
+    .header-container {
+      flex-direction: column;
+      align-items: center;
+      padding: 0;
+    }
+    
+    .nav {
+      margin-top: 1rem; /* Add margin to separate navigation links */
+    }
+  }
+
+  .main-container {
+    flex-grow: 1; /* Expand to fill available space */
+    display: flex;
+    flex-direction: column;
+    /* justify-content: center;  */
+    align-items: center; /* Center content horizontally */
+    margin-top: 6rem; /* Default margin-top for large screens */
+  
+    /* Media query for medium screens */
+    @media (max-width: 992px) and (min-width: 576px) {
+      margin-top: 4rem; /* Adjusted margin-top for medium screens */
+    }
+  
+    /* Media query for small screens */
+    @media (max-width: 576px) {
+      margin-top: 2rem; /* Adjusted margin-top for small screens */
+    }
+  
+  }
+  
+  .footer-container {
+    margin-top: auto;
+    text-align: center;
+  }
+  
+
+.white-text {
+    color: white; /* Set the text color to white */
+  }
+  

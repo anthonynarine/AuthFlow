@@ -2,9 +2,8 @@
 import "../login/Login.css";
 import authAppImage from "../../assets/auth-app.jpg";
 import { useNavigate } from "react-router-dom";
-import { MdHome } from 'react-icons/md';
 import { RiArrowGoBackLine } from "react-icons/ri";
-import { useState } from "react";
+import { useState } from "react"
 
 export const RegisterPage = () => {
     const [formFields, setFormfields] = useState({

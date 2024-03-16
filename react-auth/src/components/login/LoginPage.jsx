@@ -1,5 +1,5 @@
 import "./Login.css";
-import authAppImage from "../../assets/auth-app.webp";
+import authAppImage from "../../assets/auth-app.jpg";
 import { useNavigate } from "react-router-dom";
 import { RiArrowGoBackLine } from "react-icons/ri";
 
@@ -21,7 +21,7 @@ export const LoginPage = () => {
                     <div className="logo-container">
                         <img src={authAppImage} alt="Auth App" className="login-logo"/>
                     </div>
-                    <h1 className="h3 mb-4 fw-normal">Please sign in</h1>
+                    <h1 className="h3 mb-4 fw-normal">Test Sign in</h1>
 
                     <div className="form-floating mb-3">
                         <input type="email" className="form-control" id="floatingInput" placeholder="name@example.com" />

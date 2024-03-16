@@ -40,11 +40,11 @@ function HomePage() {
       </header>
 
       {/* Main Content */}
-      <main className="px-3 main-container">
+      <main className="px-3 main-container centered-paragraph">
         <h1 className="white-text">API Overview</h1>
         <p className="lead white-text">
-          This 'Authentication' collection encompasses all endpoints related to managing
-          user authentication and account operations within our application. It covers
+          This application encompasses all endpoints related to managing
+          user authentication and account operations. It covers
           user registration, login processes, token refresh, user data access with a
           token, and account recovery options like password reset.
         </p>

@@ -12,7 +12,7 @@
   border-radius: 8px;
   box-shadow: 0 4px 6px rgba(0,0,0,0.1);
   background-color: #000C08; /* Retained your dark gray background color */
-  color: #fff; /* White text for general text inside the form */
+  color: #FFFFFF; /* White text for general text inside the form */
 }
 
 .logo-container {
@@ -53,7 +53,7 @@
 }
 
 .btn-signin {
-  background-color: #000C08; /* Dark background for button */
+  background-color: #325142; /* Dark background for button */
   color: #fff; /* White text for the button */
   padding: 10px 0;
   border: none;
@@ -62,7 +62,7 @@
 }
 
 .btn-signin:hover {
-  background-color: #325142; /* Color change on hover */
+  background-color: #30815e; /* Color change on hover */
 }
 
 .h3.mb-4.fw-normal {

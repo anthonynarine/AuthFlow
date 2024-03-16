@@ -12,7 +12,7 @@
     display: flex;
     justify-content: space-between;
     align-items: center;
-    padding: 0 21%; /* Adjust the padding as needed */
+    padding: 0 20%; /* Adjust the padding as needed */
   }
   
   .nav {
@@ -40,16 +40,19 @@
     flex-direction: column;
     /* justify-content: center;  */
     align-items: center; /* Center content horizontally */
-    margin-top: 6rem; /* Default margin-top for large screens */
+    max-width: 800px;
+    margin: 0 auto;
+    padding-top: 6rem;
+
     
     /* Media query for medium screens */
     @media (max-width: 992px) and (min-width: 576px) {
-      margin-top: 4rem; /* Adjusted margin-top for medium screens */
+      padding-top: 3.5rem;
     }
   
     /* Media query for small screens */
     @media (max-width: 576px) {
-      margin-top: 2rem; /* Adjusted margin-top for small screens */
+      padding-top: 2rem; /* Adjusted margin-top for small screens */
     }
   
   }
@@ -73,7 +76,7 @@
   
   .btn-custom-color:hover {
     background-color: #325142; /* Slightly darker green on hover for a visual effect */
-    border-color: #000C08;
+    border-color: #ffff;
     color: #fff;
   }
   

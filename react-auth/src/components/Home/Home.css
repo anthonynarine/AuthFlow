@@ -41,7 +41,7 @@
     /* justify-content: center;  */
     align-items: center; /* Center content horizontally */
     margin-top: 6rem; /* Default margin-top for large screens */
-  
+    
     /* Media query for medium screens */
     @media (max-width: 992px) and (min-width: 576px) {
       margin-top: 4rem; /* Adjusted margin-top for medium screens */
@@ -62,5 +62,18 @@
 
 .white-text {
     color: white; /* Set the text color to white */
+  }
+  
+
+  .btn-custom-color {
+    background-color: #325142; /* Dark green background */
+    border-color: #325142; /* Dark green border */
+    color: #ffffff; /* White text color for contrast */
+  }
+  
+  .btn-custom-color:hover {
+    background-color: #325142; /* Slightly darker green on hover for a visual effect */
+    border-color: #000C08;
+    color: #fff;
   }
   

@@ -1,0 +1,71 @@
+.login-container {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  padding-top: 7rem; /* Retained padding from the top */
+  width: 100vw;
+}
+
+.form-signin {
+  max-width: 330px;
+  padding: 1rem;
+  border-radius: 8px;
+  box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+  background-color: #000C08; /* Retained your dark gray background color */
+  color: #fff; /* White text for general text inside the form */
+}
+
+.logo-container {
+  text-align: center;
+  margin-bottom: 20px;
+}
+
+.login-logo {
+  max-width: 100px;
+  margin-bottom: 16px;
+}
+
+.form-signin .form-floating:focus-within {
+  z-index: 2;
+}
+
+.form-signin input[type="email"],
+.form-signin input[type="password"] {
+  margin-bottom: 15px;
+  border-radius: 5px;
+  border: 1px solid #FFFFFF;
+  background-color: #FFFFFF; /* Slightly lighter gray for input fields for contrast, as you requested */
+  color: #000; /* White text for input, as per your design */
+}
+
+/* Styling for the input fields when they are focused or have content */
+.form-signin input[type="email"]:focus,
+.form-signin input[type="password"]:focus,
+.form-signin input[type="email"]:not(:placeholder-shown),
+.form-signin input[type="password"]:not(:placeholder-shown) {
+  background-color: #FFFFFF; /* Background color changes to white */
+  color: #000; /* Text color changes for better visibility */
+}
+
+.form-signin label {
+  color: #000C08; /* White text for labels, adjusted for better visibility */
+  
+}
+
+.btn-signin {
+  background-color: #000C08; /* Dark background for button */
+  color: #fff; /* White text for the button */
+  padding: 10px 0;
+  border: none;
+  border-radius: 5px;
+  transition: background-color 0.3s;
+}
+
+.btn-signin:hover {
+  background-color: #325142; /* Color change on hover */
+}
+
+.h3.mb-4.fw-normal {
+  text-align: center;
+  font-size: 1.5rem; /* Typography improvements */
+}

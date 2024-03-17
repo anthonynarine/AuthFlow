@@ -1,19 +1,30 @@
 import React from "react";
 import "./Home.css";
 import { useNavigate } from "react-router-dom";
+import { useState, useEffect } from "react"
+import axios from "axios";
+
 
 function HomePage() {
+
+  const [message, setMessage] = useState("You are not logged")
+
   const navigate = useNavigate()
-  const handleRegister = () => {
-    navigate("/Register")
-  };
 
-  const handleLogin = () => {
-    navigate("/login")
-  };
-
-  const handleLogout = () => {
-  };
+  useEffect (() => {
+    const GetUser = async ()=> {
+      try {
+        const { data } = await axios.get("https://ant-django-auth-62cf01255868.herokuapp.com/api/user/")
+        console.log("User Data", data)
+        setMessage(`Hi ${data.first_name}`);
+        console.log(data.first_name)
+      } catch (error) {
+        console.error("Error fetching user data:", error)
+        setMessage("No user logged in")
+      }
+    };
+    GetUser()
+  },[]);
 
   return (
     <div className="cover-container d-flex w-100 h-100 p-3 mx-auto flex-column">
@@ -51,15 +62,18 @@ function HomePage() {
 
         {/* Buttons for API testing */}
         <div className="mt-4">
-        <button className="btn btn-custom-color me-2" onClick={handleRegister}>
+        <button className="btn btn-custom-color me-2" onClick={()=> navigate("/Register")}>
             Register
           </button>
-          <button className="btn btn-custom-color me-2" onClick={handleLogin}>
+          <button className="btn btn-custom-color me-2" onClick={()=> navigate("/Login")}>
             Login
           </button>
-          <button className="btn btn-custom-color me-2" onClick={handleLogout}>
+          <button className="btn btn-custom-color me-2" onClick={()=> navigate("/Logout")}>
             Logout
           </button>
+        </div>
+        <div className="message">
+          {message}
         </div>
       </main>
 

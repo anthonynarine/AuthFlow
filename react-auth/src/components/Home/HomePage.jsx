@@ -81,8 +81,8 @@ function HomePage() {
       <footer className="mt-auto text-white-50 footer-container">
         <p>
           <a
-            href="https://documenter.getpostman.com/view/23868442/2sA2xmUqQd"
-            className="text-white"
+            href="https://documenter.getpostman.com/view/23868442/2sA2xnyAdP"
+              className="text-white"
           >
             <i className="fas fa-book"></i> Postman Documentation
           </a>

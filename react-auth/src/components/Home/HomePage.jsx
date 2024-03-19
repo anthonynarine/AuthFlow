@@ -1,8 +1,9 @@
 import React from "react";
 import "./Home.css";
-import { useNavigate } from "react-router-dom";
+import { useNavigate, Link } from "react-router-dom";
 import { useState, useEffect } from "react"
 import axios from "axios";
+import { FaExternalLinkAlt } from 'react-icons/fa';
 
 
 function HomePage() {
@@ -14,13 +15,13 @@ function HomePage() {
   useEffect (() => {
     const GetUser = async ()=> {
       try {
-        const { data } = await axios.get("https://ant-django-auth-62cf01255868.herokuapp.com/api/user/")
+        const { data } = await axios.get("user/")
         console.log("User Data", data)
         setMessage(`Hi ${data.first_name}`);
         console.log(data.first_name)
       } catch (error) {
         console.error("Error fetching user data:", error)
-        setMessage("No user logged in")
+        setMessage("Start by Registering to test the app")
       }
     };
     GetUser()
@@ -52,7 +53,7 @@ function HomePage() {
 
       {/* Main Content */}
       <main className="px-3 main-container centered-paragraph">
-        <h1 className="white-text">API Overview</h1>
+        <h1 className="white-text">App Overview </h1>
         <p className="lead white-text">
           This application encompasses all endpoints related to managing
           user authentication and account operations. It covers
@@ -79,15 +80,12 @@ function HomePage() {
 
       {/* Footer */}
       <footer className="mt-auto text-white-50 footer-container">
-        <p>
-          <a
-            href="https://documenter.getpostman.com/view/23868442/2sA2xnyAdP"
-              className="text-white"
-          >
-            <i className="fas fa-book"></i> Postman Documentation
+        <h6>
+          <a href="https://documenter.getpostman.com/view/23868442/2sA2xnyAdP" className="api-link" target="_blank" rel="noopener noreferrer">
+            Api Documentation <FaExternalLinkAlt />
           </a>
-        </p>
-      </footer>
+        </h6>
+    </footer>
     </div>
   );
 }

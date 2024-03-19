@@ -60,6 +60,7 @@
   .footer-container {
     margin-top: auto;
     text-align: center;
+    margin-bottom: 40rem;
   }
   
 
@@ -75,12 +76,22 @@
   }
   
   .btn-custom-color:hover {
-    background-color: #325142; /* Slightly darker green on hover for a visual effect */
-    border-color: #ffff;
+    background-color: rgb(43, 84, 43); /* Slightly darker green on hover for a visual effect */
+    border-color: #908585;
     color: #fff;
   }
   
   .message {
     color: white;
     padding-top: 1rem;
+  }
+
+  .api-link {
+    /* text-decoration: none; */
+    color: rgb(138, 159, 138); /* or any color you prefer */
+  }
+  
+  .api-link:hover {
+    color: rgb(35, 116, 66) ; /* Change to the color you want on hover */
+    text-decoration: underline; /* Example effect: underline on hover */
   }

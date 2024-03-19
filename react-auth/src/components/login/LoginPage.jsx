@@ -1,10 +1,11 @@
 import "./Login.css";
 import authAppImage from "../../assets/auth-app.jpg";
 import { useNavigate } from "react-router-dom";
-import { RiArrowGoBackLine}  from "react-icons/ri";
-import { FiHome } from 'react-icons/fi';
-import axios from "axios";
+import { RiArrowGoBackLine } from "react-icons/ri";
+// import API from "../../interceptors/axios";
 import { useState, useEffect } from "react";
+import axios from "axios";
+// import API from "../../interceptors/axios";
 
 
 export const LoginPage = () => {
@@ -23,11 +24,14 @@ export const LoginPage = () => {
         event.preventDefault();
         try {
             // Attempt to register the user with the provided data THATS'S MY FIRST LIVE API !!!!!
-            const { data } = await axios.post("https://ant-django-auth-62cf01255868.herokuapp.com/api/login/", {
+            const { data } = await axios.post("login/", {
                 email,
                 password,
             }, { withCredentials: true }); // if added will allow http cookie to be stored.
 
+            // After login, set the Authorization header for subsequent requests
+            // Note: Since your API instance interceptor might already handle setting the token,
+            // you may not need to do this here unless you want to perform immediate actions with the token
             axios.defaults.headers.common["Authorization"] = `Bearer ${data.access_token}`;
             console.log(data)
             // On success, navigate home page

@@ -5,6 +5,7 @@ import { useNavigate } from "react-router-dom";
 import { RiArrowGoBackLine } from "react-icons/ri";
 import { useState, useEffect } from "react";
 import axios from "axios";
+// import API from "../../interceptors/axios";
 
 export const RegisterPage = () => {
     useEffect(() => {
@@ -36,7 +37,7 @@ export const RegisterPage = () => {
         event.preventDefault();
         try {
             // Attempt to register the user with the provided data THATS'S MY FIRST LIVE API !!!!!
-            await axios.post("http://ant-django-auth-62cf01255868.herokuapp.com/api/register/", {
+            await axios.post("http://localhost:8000/api/register/", {
                 first_name: formFields.firstName,
                 last_name: formFields.lastName,
                 email: formFields.email,

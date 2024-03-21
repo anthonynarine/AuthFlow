@@ -6,6 +6,8 @@ import { RiArrowGoBackLine } from "react-icons/ri";
 import { useState, useEffect } from "react";
 import axios from "axios";
 // import API from "../../interceptors/axios";
+import Cookies from "js-cookie";
+import APIinterceptor from "../../interceptors/axios";
 
 
 export const LoginPage = () => {
@@ -24,15 +26,12 @@ export const LoginPage = () => {
         event.preventDefault();
         try {
             // Attempt to register the user with the provided data THATS'S MY FIRST LIVE API !!!!!
-            const { data } = await axios.post("login/", {
+            const { data } = await APIinterceptor.post("/login/", {
                 email,
                 password,
             }, { withCredentials: true }); // if added will allow http cookie to be stored.
-
-            // After login, set the Authorization header for subsequent requests
-            // Note: Since your API instance interceptor might already handle setting the token,
-            // you may not need to do this here unless you want to perform immediate actions with the token
-            axios.defaults.headers.common["Authorization"] = `Bearer ${data.access_token}`;
+            // Store the access token in a cookie
+            Cookies.set("accessToken", data.access_token, { expires: 7})
             console.log(data)
             // On success, navigate home page
             navigate("/");

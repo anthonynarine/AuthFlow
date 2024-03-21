@@ -2,8 +2,8 @@ import React from "react";
 import "./Home.css";
 import { useNavigate, Link } from "react-router-dom";
 import { useState, useEffect } from "react"
-import axios from "axios";
 import { FaExternalLinkAlt } from 'react-icons/fa';
+import APIinterceptor from "../../interceptors/axios";
 
 
 function HomePage() {
@@ -15,7 +15,7 @@ function HomePage() {
   useEffect (() => {
     const GetUser = async ()=> {
       try {
-        const { data } = await axios.get("user/")
+        const { data } = await APIinterceptor.get("/user/")
         console.log("User Data", data)
         setMessage(`Hi ${data.first_name}`);
         console.log(data.first_name)

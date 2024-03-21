@@ -3,19 +3,28 @@ import "./Home.css";
 import { useNavigate, Link } from "react-router-dom";
 import { useState, useEffect } from "react"
 import { FaExternalLinkAlt } from 'react-icons/fa';
-import APIinterceptor from "../../interceptors/axios";
+import axiosAPIinterceptor from "../../interceptors/axios";
+import { useLogout } from "../hooks/useLogout";
+
 
 
 function HomePage() {
 
-  const [message, setMessage] = useState("You are not logged")
+  const [message, setMessage] = useState("You are not logged out")
 
-  const navigate = useNavigate()
+  // Callback to be called on successful logout
+  const onLogoutSuccess = () => {
+    setMessage("You are logged out")
+  };
+  
+  // Pass the callback to useLogout hook
+  const logout = useLogout(onLogoutSuccess);
+  const navigate = useNavigate();
 
   useEffect (() => {
     const GetUser = async ()=> {
       try {
-        const { data } = await APIinterceptor.get("/user/")
+        const { data } = await axiosAPIinterceptor.get("/user/")
         console.log("User Data", data)
         setMessage(`Hi ${data.first_name}`);
         console.log(data.first_name)
@@ -69,7 +78,7 @@ function HomePage() {
           <button className="btn btn-custom-color me-2" onClick={()=> navigate("/Login")}>
             Login
           </button>
-          <button className="btn btn-custom-color me-2" onClick={()=> navigate("/Logout")}>
+          <button className="btn btn-custom-color me-2" onClick={logout}>
             Logout
           </button>
         </div>

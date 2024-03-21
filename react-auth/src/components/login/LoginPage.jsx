@@ -7,7 +7,7 @@ import { useState, useEffect } from "react";
 import axios from "axios";
 // import API from "../../interceptors/axios";
 import Cookies from "js-cookie";
-import APIinterceptor from "../../interceptors/axios";
+import axiosAPIinterceptor from "../../interceptors/axios";
 
 
 export const LoginPage = () => {
@@ -26,7 +26,7 @@ export const LoginPage = () => {
         event.preventDefault();
         try {
             // Attempt to register the user with the provided data THATS'S MY FIRST LIVE API !!!!!
-            const { data } = await APIinterceptor.post("/login/", {
+            const { data } = await axiosAPIinterceptor.post("/login/", {
                 email,
                 password,
             }, { withCredentials: true }); // if added will allow http cookie to be stored.

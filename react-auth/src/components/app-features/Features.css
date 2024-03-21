@@ -1,0 +1,36 @@
+/* Features.css */
+.features-container {
+    color: #333; /* Dark gray for better readability */
+    background-color: #fff; /* White background for a clean look */
+    max-width: 800px; /* Restricts content width for better readability */
+    margin: 3rem auto; /* Centers the container with margin top and bottom */
+    padding: 2rem; /* Adds padding inside the container */
+    box-shadow: 0 0 10px rgba(0,0,0,0.1); /* Soft shadow for a subtle depth */
+    border-radius: 8px; /* Slightly rounded corners for a modern look */
+  }
+  
+  .features-container h1, .features-container h2 {
+    color: #000; /* A subtle blue for headings */
+    text-align: center;
+    margin-bottom: 1rem;
+  }
+  
+  .features-container p {
+    color: #666; /* Lighter text color for paragraphs */
+    text-align: justify; /* Justify align paragraph text for a classic look */
+    padding: 0 15%; /* Adjusted padding for narrower text lines */
+    margin-bottom: 1rem;
+  }
+  
+  .features-container section {
+    margin-bottom: 2rem; /* Increase spacing between sections for better visual separation */
+  }
+  
+  /* For small screens, reduce padding in paragraphs for better space utilization */
+  @media (max-width: 768px) {
+    .features-container p {
+      padding: 0 5%;
+    }
+  }
+  
+  

@@ -51,7 +51,7 @@ function HomePage() {
               Home
             </a>
             <a className="nav-link fw-bold py-1 px-3 white-text" href="#">
-              Features
+            <Link to="/features" className="nav-link fw-bold py-1 px-3 white-text">Features</Link> 
             </a>
             <a className="nav-link fw-bold py-1 px-3 white-text" href="#">
               Contact

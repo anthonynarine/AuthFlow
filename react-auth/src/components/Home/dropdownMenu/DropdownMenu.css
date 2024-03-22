@@ -1,19 +1,65 @@
-
-.dropdown .dropdown-toggle, .dropdown-item {
-    font-weight: bold; /* Match the font-weight of your navigation links */
-    color: white; /* Assuming your navigation links are white */
-    padding: 0.25rem 0.5rem; /* Adjust padding to match your navigation links */
-    text-align: center;
+.inherit-color-bold-text {
+    color: white;
+    font-weight: bold;
+    border: none;
+    background-color: transparent;
+    justify-content: center;
+    padding: 8px 12px; /* Adjust padding as needed to align */
+    line-height: 1; /* Adjust line height to better fit your design */
+    display: inline-flex; /* Use inline-flex to center text and icons inside the button */
+    align-items: center; /* Centers items vertically inside the button */
 }
 
+/* Styles for the dropdown container */
+.dropdown {
+    position: relative; /* Needed for absolute positioning of the dropdown menu */
+}
 
+/* Showing and hiding the dropdown menu */
 .dropdown-menu {
-    background-color: #fff; /* Background color to match your theme */
-    border: none; /* Remove default borders */
+    display: none; /* Hide by default */
+    position: absolute; /* Positioning the menu */
+    left: 50%;
+    transform: translateX(-50%);
+    z-index: 1; /* Ensure it's above other content */
+    width: 100%; /* Optional: Match the width to the dropdown button */
+    /* box-shadow: 0 8px 16px rgba(0,0,0,0.2); */
+    background-color: #FFFFFF; /* Light grey background */
 }
 
+.dropdown.show .dropdown-menu {
+    display: block; /* Show the menu when 'show' class is added */
+}
+
+.react-icon {
+    color: #61DAFB;
+    font-size: larger;
+}
+
+.django-icon {
+    color: #59ca28;
+    font-size: larger;
+}
+
+
+/* Styles for individual dropdown items */
+.dropdown-item {
+    color: rgb(0, 3, 6);
+    padding: 10px 35px;
+    text-decoration: none;
+    display: flex; /* Ensure links take up the full width of the menu */
+    text-align: center;
+    align-items: center;
+}
+
+.dropdown-item svg {
+    margin-right: 8px;
+    width: 24px;
+    height: auto;
+}
 
 .dropdown-item:hover {
-    background-color: #fff; /* Hover background color */
-    color: #fff; /* Hover text color */
+    background-color: inherit;
+    text-decoration: underline;
+    color:  rgb(50, 52, 54);
 }

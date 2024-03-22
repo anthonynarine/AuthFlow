@@ -1,0 +1,25 @@
+/* Footer.css */
+.link-container {
+    text-align: center; /* Centers inline or inline-block elements horizontally */
+    display: flex; /* Use flexbox for the container */
+    justify-content: center; /* Center flex items horizontally */
+    align-items: center; /* Align flex items vertically */
+  }
+  
+  .github-link, .linkedin-link, .api-link {
+    color: rgb(138, 159, 138);
+    display: inline-flex;
+    align-items: center;
+    margin: 0 10px;
+    text-decoration: none;
+  }
+  
+  .github-link {
+    margin-right: 15px;
+  }
+  
+  .github-link:hover, .linkedin-link:hover {
+    color: rgb(35, 116, 66); /* Change to the color you want on hover */
+    text-decoration: underline; /* Example effect: underline on hover */
+  }
+  

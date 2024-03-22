@@ -1,10 +1,25 @@
 import React from 'react';
-import './Features.css'; // Ensure this path is correct
+import './Features.css'; 
+import { useNavigate } from 'react-router-dom';
+import { RiArrowGoBackLine } from 'react-icons/ri';
 
 export const Features = () => {
+
+  let navigate = useNavigate();
+
+  function handleClick () {
+    navigate("/");
+  };
+
+
   return (
-    <div className="features-container">
-      <h1>Network Requests</h1>
+    <div className="features-container" style={{position: "relative"}}>
+        <button onClick={handleClick} style={{ position: 'absolute', top: 20, left: 0, margin: '20px', background: 'none', color: "#D3D3D3", border: 'none', cursor: 'pointer' }}
+              title="Go back to homepage">
+        <RiArrowGoBackLine size="1.5em" />
+      </button>
+      <h1>Technical Features </h1>
+      <h2>Network Requests</h2>
 
       <section>
         <p>Let's delve into the technicalities of how network requests are managed to ensure seamless communication with the server. The focus lies on security, efficiency, and handling network responses to provide a reliable experience.</p>
@@ -39,7 +54,7 @@ export const Features = () => {
       <section>
         <h2>Let's Learn Together</h2>
         <p>I hope this overview gave you some insight into the engineering behind this application. By transparently sharing how I handle network requests, my goal is to not only inform you but also inspire trust and confidence.</p>
-        <p>Thank you for taking the time to learn about the inner workings of this application. Security and user experience are my top priorities, I am committed to continuously improving both.</p>
+        <p>Thank you for taking the time to learn about the inner workings of this application. Security and user experience are my top priorities, I am committed to imporving continuously.</p>
       </section>
     </div>
   );

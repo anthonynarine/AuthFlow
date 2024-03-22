@@ -2,9 +2,10 @@ import React from "react";
 import "./Home.css";
 import { useNavigate, Link } from "react-router-dom";
 import { useState, useEffect } from "react"
-import { FaExternalLinkAlt } from 'react-icons/fa';
+// import { FaExternalLinkAlt } from 'react-icons/fa';
 import axiosAPIinterceptor from "../../interceptors/axios";
 import { useLogout } from "../hooks/useLogout";
+import { Footer } from "./Footer";
 
 
 
@@ -44,17 +45,17 @@ function HomePage() {
           <h3 className="mb-0 white-text">Authentication</h3>
           <nav className="nav nav-masthead justify-content-center">
             <a
-              className="nav-link fw-bold py-1 px-3 active white-text"
+              className="nav-link fw-bold py-1 px-1 active white-text"
               aria-current="page"
               href="#"
             >
-              Home
+             <Link to="/features" className="nav-link fw-bold py-1 px-3 white-text">Home</Link> 
             </a>
-            <a className="nav-link fw-bold py-1 px-3 white-text" href="#">
+            <a className="nav-link fw-bold py-1 px-1 white-text" href="#">
             <Link to="/features" className="nav-link fw-bold py-1 px-3 white-text">Features</Link> 
             </a>
-            <a className="nav-link fw-bold py-1 px-3 white-text" href="#">
-              Contact
+            <a className="nav-link fw-bold py-1 px-1 white-text" href="#">
+            <Link to="/features" className="nav-link fw-bold py-1 px-3 white-text">Contact</Link> 
             </a>
           </nav>
         </div>
@@ -88,13 +89,8 @@ function HomePage() {
       </main>
 
       {/* Footer */}
-      <footer className="mt-auto text-white-50 footer-container">
-        <h6>
-          <a href="https://documenter.getpostman.com/view/23868442/2sA2xnyAdP" className="api-link" target="_blank" rel="noopener noreferrer">
-            Api Documentation <FaExternalLinkAlt />
-          </a>
-        </h6>
-    </footer>
+      <Footer />
+
     </div>
   );
 }

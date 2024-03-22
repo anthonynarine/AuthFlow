@@ -12,7 +12,7 @@
     display: flex;
     justify-content: space-between;
     align-items: center;
-    padding: 0 20%; /* Adjust the padding as needed */
+    padding: 0 15%; /* Adjust the padding as needed */
   }
   
   .nav {
@@ -31,6 +31,7 @@
     
     .nav {
       margin-top: 1rem; /* Add margin to separate navigation links */
+      align-items: center;
     }
   }
 
@@ -59,8 +60,8 @@
   
   .footer-container {
     margin-top: auto;
-    text-align: center;
-    margin-bottom: 20rem;
+    text-align:center;
+    margin-bottom: 4rem;
   }
   
 
@@ -88,10 +89,11 @@
 
   .api-link {
     /* text-decoration: none; */
-    color: rgb(138, 159, 138); /* or any color you prefer */
+    color: rgb(138, 159, 138); 
+    text-decoration: none;
   }
   
   .api-link:hover {
     color: rgb(35, 116, 66) ; /* Change to the color you want on hover */
-    text-decoration: underline; /* Example effect: underline on hover */
+    text-decoration: underline; 
   }

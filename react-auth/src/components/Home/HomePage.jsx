@@ -54,7 +54,6 @@ function HomePage() {
         <div className="message">{message}</div>
       </main>
 
-      <Footer />
 
     </div>
   );

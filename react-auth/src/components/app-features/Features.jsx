@@ -16,7 +16,7 @@ export const Features = () => {
     <div className="features-container" style={{position: "relative"}}>
         <button onClick={handleClick} style={{ position: 'absolute', top: 20, left: 0, margin: '20px', background: 'none', color: "#D3D3D3", border: 'none', cursor: 'pointer' }}
               title="Go back to homepage">
-        <RiArrowGoBackLine size="1.5em" />
+        <RiArrowGoBackLine size="1.5em" style={{ color: "black"}} />
       </button>
       <h1>Technical Features </h1>
       <h2>Network Requests</h2>

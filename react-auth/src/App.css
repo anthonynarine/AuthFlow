@@ -4,6 +4,14 @@ body {
   background-color:#212529; /* Set the background color for all pages */
 }
 
+.app-container {
+  display: flex;
+  flex-direction: column;
+  min-height: 100vh;
+}
+
+
+
 .App {
   text-align: center;
 }
@@ -19,3 +27,8 @@ body {
   color: white;
 }
 
+.routes-content {
+  flex: 1;
+  overflow-y: auto; /* Allow scrolling within this container */
+  padding-bottom: 80px;
+}

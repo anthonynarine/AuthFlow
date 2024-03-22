@@ -4,17 +4,23 @@ import { RegisterPage } from "./components/register/RegisterPage";
 import { Features } from "./components/app-features/Features";
 import HomePage from "./components/home/HomePage";
 import "./App.css"
+import { Footer } from "./components/home/footer/Footer";
 
 
 function App() {
   return (
     <>
-      <Routes>
-        <Route path="/" element={<HomePage />} />
-        <Route path="/register" element={<RegisterPage />} />
-        <Route path="/login" element={<LoginPage />} />
-        <Route path="/features" element={<Features />} />
-      </Routes>
+    <div className="app-container">
+      <div className="routes-content" style={{ flex: 1, overflowY: 'auto' }}>
+        <Routes>
+          <Route path="/" element={<HomePage />} />
+          <Route path="/register" element={<RegisterPage />} />
+          <Route path="/login" element={<LoginPage />} />
+          <Route path="/features" element={<Features />} />
+        </Routes>
+      </div>
+      <Footer />
+    </div>
     </>
   );
 }

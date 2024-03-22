@@ -24,7 +24,7 @@
     z-index: 1; /* Ensure it's above other content */
     width: 100%; /* Optional: Match the width to the dropdown button */
     /* box-shadow: 0 8px 16px rgba(0,0,0,0.2); */
-    background-color: #FFFFFF; /* Light grey background */
+    background-color: #000; /* Light grey background */
 }
 
 .dropdown.show .dropdown-menu {
@@ -44,7 +44,7 @@
 
 /* Styles for individual dropdown items */
 .dropdown-item {
-    color: rgb(0, 3, 6);
+    color: rgb(255, 255, 255);
     padding: 10px 35px;
     text-decoration: none;
     display: flex; /* Ensure links take up the full width of the menu */
@@ -61,5 +61,5 @@
 .dropdown-item:hover {
     background-color: inherit;
     text-decoration: underline;
-    color:  rgb(50, 52, 54);
+    color:  rgb(255, 255, 255);
 }

@@ -1,27 +1,36 @@
 /* Footer.css */
+/* Footer.css */
+.footer-container {
+  position: fixed;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  width: 100%;
+  background-color: #212529; /* or any color that fits your design */
+  color: white;
+  text-align: center;
+  padding: 20px 0;
+  z-index: 100; /* Ensure it's above other content */
+}
+
+
 .link-container {
-    text-align: center; /* Centers inline or inline-block elements horizontally */
-    display: flex; /* Use flexbox for the container */
-    justify-content: center; /* Center flex items horizontally */
-    align-items: center; /* Align flex items vertically */
-    border-top: 1px solid #333;
-  }
-  
-  .github-link, .linkedin-link, .api-link {
-    color: rgb(138, 159, 138);
-    display: inline-flex;
-    align-items: center;
-    margin: 0 10px;
-    margin-top: 50px;
-    text-decoration: none;
-  }
-  
-  .github-link {
-    margin-right: 15px;
-  }
-  
-  .github-link:hover, .linkedin-link:hover {
-    color: rgb(35, 116, 66); /* Change to the color you want on hover */
-    text-decoration: underline; /* Example effect: underline on hover */
-  }
-  
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  border-top: 1px solid #333;
+  padding: 50px 0; /* Adds padding around the links for spacing from the border and content above */
+}
+
+.github-link, .linkedin-link, .api-link {
+  color: rgb(138, 159, 138);
+  display: inline-flex;
+  align-items: center;
+  margin: 0 10px; /* Uniform margin for all links */
+  text-decoration: none;
+}
+
+.github-link:hover, .linkedin-link:hover, .api-link:hover { /* Added .api-link:hover for consistency */
+  color: rgb(35, 116, 66); /* Hover color for all links */
+  text-decoration: underline;
+}

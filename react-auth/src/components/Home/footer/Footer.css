@@ -4,6 +4,7 @@
     display: flex; /* Use flexbox for the container */
     justify-content: center; /* Center flex items horizontally */
     align-items: center; /* Align flex items vertically */
+    border-top: 1px solid #333;
   }
   
   .github-link, .linkedin-link, .api-link {
@@ -11,6 +12,7 @@
     display: inline-flex;
     align-items: center;
     margin: 0 10px;
+    margin-top: 50px;
     text-decoration: none;
   }
   

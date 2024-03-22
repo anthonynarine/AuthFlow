@@ -1,94 +1,59 @@
-import React from "react";
+import React, { useState, useEffect, useCallback } from "react";
 import "./Home.css";
-import { useNavigate, Link } from "react-router-dom";
-import { useState, useEffect } from "react"
-// import { FaExternalLinkAlt } from 'react-icons/fa';
-import axiosAPIinterceptor from "../../interceptors/axios";
-import { useLogout } from "../hooks/useLogout";
-import { Footer } from "./Footer";
-
-
+import { Link } from "react-router-dom";
+import { useAuth } from "../hooks/useAuth";
+import { Footer } from "./footer/Footer";
+import { DropdownMenu } from "./dropdownMenu/DropdownMenu";
 
 function HomePage() {
+  const [isDropdownOpen, setIsDropdownOpen] = useState(false);
 
-  const [message, setMessage] = useState("You are not logged out")
-
-  // Callback to be called on successful logout
-  const onLogoutSuccess = () => {
-    setMessage("You are logged out")
+  const toggleDropdownMenu = () => {
+    console.log("drawer toggled")
+    setIsDropdownOpen(!isDropdownOpen);
   };
-  
-  // Pass the callback to useLogout hook
-  const logout = useLogout(onLogoutSuccess);
-  const navigate = useNavigate();
 
-  useEffect (() => {
-    const GetUser = async ()=> {
-      try {
-        const { data } = await axiosAPIinterceptor.get("/user/")
-        console.log("User Data", data)
-        setMessage(`Hi ${data.first_name}`);
-        console.log(data.first_name)
-      } catch (error) {
-        console.error("Error fetching user data:", error)
-        setMessage("Start by Registering to test the app")
-      }
-    };
-    GetUser()
-  },[]);
+
+  const { logout, getUser, message } = useAuth();
+
+  useEffect(() => {
+    getUser();
+  }, [getUser]); // Pass `getUser` if it's guaranteed to be stable or memoized
+
+  // useCallback for event handlers
+  const handleLogout = useCallback(() => {
+    logout();
+  }, [logout]);
 
   return (
     <div className="cover-container d-flex w-100 h-100 p-3 mx-auto flex-column">
-      {/* Header */}
       <header className="mb-auto">
         <div className="header-container">
           <h3 className="mb-0 white-text">Authentication</h3>
           <nav className="nav nav-masthead justify-content-center">
-            <a
-              className="nav-link fw-bold py-1 px-1 active white-text"
-              aria-current="page"
-              href="#"
-            >
-             <Link to="/features" className="nav-link fw-bold py-1 px-3 white-text">Home</Link> 
-            </a>
-            <a className="nav-link fw-bold py-1 px-1 white-text" href="#">
-            <Link to="/features" className="nav-link fw-bold py-1 px-3 white-text">Features</Link> 
-            </a>
-            <a className="nav-link fw-bold py-1 px-1 white-text" href="#">
-            <Link to="/features" className="nav-link fw-bold py-1 px-3 white-text">Contact</Link> 
-            </a>
+            <Link to="/features" className="nav-link fw-bold py-1 px-3 white-text">Home</Link>
+            <DropdownMenu isOpen={isDropdownOpen} toggleDropdownMenu={toggleDropdownMenu} />
+            <Link to="/contact" className="nav-link fw-bold py-1 px-3 white-text">Contact</Link>
           </nav>
         </div>
       </header>
 
-      {/* Main Content */}
       <main className="px-3 main-container centered-paragraph">
-        <h1 className="white-text">App Overview </h1>
+        <h1 className="white-text">App Overview</h1>
         <p className="lead white-text">
           This application encompasses all endpoints related to managing
           user authentication and account operations. It covers
           user registration, login processes, token refresh, user data access with a
           token, and account recovery options like password reset.
         </p>
-
-        {/* Buttons for API testing */}
         <div className="mt-4">
-        <button className="btn btn-custom-color me-2" onClick={()=> navigate("/Register")}>
-            Register
-          </button>
-          <button className="btn btn-custom-color me-2" onClick={()=> navigate("/Login")}>
-            Login
-          </button>
-          <button className="btn btn-custom-color me-2" onClick={logout}>
-            Logout
-          </button>
+          <Link to="/register" className="btn btn-custom-color me-2">Register</Link>
+          <Link to="/login" className="btn btn-custom-color me-2">Login</Link>
+          <button className="btn btn-custom-color me-2" onClick={handleLogout}>Logout</button>
         </div>
-        <div className="message">
-          {message}
-        </div>
+        <div className="message">{message}</div>
       </main>
 
-      {/* Footer */}
       <Footer />
 
     </div>

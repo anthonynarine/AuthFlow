@@ -1,0 +1,19 @@
+
+.dropdown .dropdown-toggle, .dropdown-item {
+    font-weight: bold; /* Match the font-weight of your navigation links */
+    color: white; /* Assuming your navigation links are white */
+    padding: 0.25rem 0.5rem; /* Adjust padding to match your navigation links */
+    text-align: center;
+}
+
+
+.dropdown-menu {
+    background-color: #fff; /* Background color to match your theme */
+    border: none; /* Remove default borders */
+}
+
+
+.dropdown-item:hover {
+    background-color: #fff; /* Hover background color */
+    color: #fff; /* Hover text color */
+}

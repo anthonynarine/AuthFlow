@@ -1,5 +1,5 @@
 import React from 'react';
-import { FaExternalLinkAlt, FaGithub, FaLinkedin } from 'react-icons/fa';
+import { FaExternalLinkAlt, FaGithub, FaLinkedin,  FaDatabase } from 'react-icons/fa';
 import './Footer.css'; 
 
 export const Footer = () => {
@@ -7,7 +7,7 @@ export const Footer = () => {
     <footer className="mt-auto text-white-50 footer-container">
       <div className="link-container"> {/* Add this div */}
         <a href="https://documenter.getpostman.com/view/23868442/2sA2xnyAdP" className="api-link" target="_blank" rel="noopener noreferrer">
-          Api Documentation <FaExternalLinkAlt />
+        <FaDatabase /> Api Documentation 
         </a>
         <a href="https://github.com/anthonynarine" target="_blank" rel="noopener noreferrer" className="github-link">
           <FaGithub /> GitHub

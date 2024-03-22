@@ -43,7 +43,12 @@
     align-items: center; /* Center content horizontally */
     max-width: 800px;
     margin: 0 auto;
+    margin-bottom: 20px;
     padding-top: 6rem;
+    
+    h1.white-text {
+      margin-bottom: 25px;
+    }
 
     
     /* Media query for medium screens */
@@ -84,7 +89,7 @@
   
   .message {
     color: white;
-    padding-top: 1rem;
+    padding-top: 2rem;
   }
 
   .api-link {

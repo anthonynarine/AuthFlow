@@ -3,8 +3,7 @@ import { Link } from 'react-router-dom';
 import "./DropdownMenu.css";
 import { FaReact } from 'react-icons/fa'; // For the React icon
 import { DiPython } from 'react-icons/di'; // Example using a Python icon for Django
-
-
+import { MdArrowDropDown, MdArrowDropUp } from "react-icons/md";
 export const DropdownMenu = ({ isOpen, toggleDropdownMenu }) => {
     return (
         <div className={`dropdown ${isOpen ? 'show' : ''}`}>
@@ -12,13 +11,13 @@ export const DropdownMenu = ({ isOpen, toggleDropdownMenu }) => {
                     type="button" 
                     onClick={toggleDropdownMenu} 
                     aria-expanded={isOpen ? 'true' : 'false'}>
-                Features
+                Features {isOpen ? <MdArrowDropUp/> : <MdArrowDropDown/>} 
             </button>
             <ul className={`dropdown-menu ${isOpen ? 'show' : ''}`}>
-                <li><Link className="dropdown-item" to="/Features">
+                <li><Link className="dropdown-item react-link" to="/Features">
                     <FaReact className='react-icon' /> React
                     </Link></li>
-                <li><Link className="dropdown-item" to="/another-action">
+                <li><Link className="dropdown-item django-link" to="/another-action">
                     <DiPython className='django-icon' /> Django
                     </Link></li>
             </ul>

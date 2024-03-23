@@ -1,24 +1,29 @@
+
+.features-container {
+  background-color: inherit;
+}
+
 .features-container h1 {
-  color: white; 
+  color: black; 
   text-align: center;
   margin-bottom: 50px;
   background-color: #61DAFB;
   display: block; /* Ensures the h1 element is treated as a block-level element */
   width: 100%; /* Ensures the underline spans the full width of the container */
-  border-bottom: 1px solid #333; /* Creates the underline with a solid line and sets its color */
+  border-bottom: 1x solid #333; /* Creates the underline with a solid line and sets its color */
   line-height: 1.2; /* Adjusts line height to control the spacing above and below the text */
   padding-bottom: 2rem; /* Adds some padding below the text for spacing between text and underline */
   padding-top: 2rem;
 }
   
-  .features-container h1, .features-container h2 {
-    color: black; /* A subtle blue for headings */
+  .features-container h2 {
+    color: White; /* A subtle blue for headings */
     text-align: center;
     margin-bottom: 1rem;
   }
   
   .features-container p {
-    color: #969191; /* Lighter text color for paragraphs */
+    color: #beb9b9; /* Lighter text color for paragraphs */
     text-align: justify; /* Justify align paragraph text for a classic look */
     padding: 0 15%; /* Adjusted padding for narrower text lines */
     margin-bottom: 1rem;

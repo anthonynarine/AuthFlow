@@ -10,6 +10,10 @@
     align-items: center; /* Centers items vertically inside the button */
 }
 
+.inherit-color-bold-text:hover {
+    color: rgb(35, 116, 66); /* Changes text color on hover */
+}
+
 /* Styles for the dropdown container */
 .dropdown {
     position: relative; /* Needed for absolute positioning of the dropdown menu */
@@ -24,7 +28,7 @@
     z-index: 1; /* Ensure it's above other content */
     width: 100%; /* Optional: Match the width to the dropdown button */
     /* box-shadow: 0 8px 16px rgba(0,0,0,0.2); */
-    background-color: #000; /* Light grey background */
+    background-color:#212529; /* Light grey background */
 }
 
 .dropdown.show .dropdown-menu {
@@ -36,9 +40,22 @@
     font-size: larger;
 }
 
+.react-link:hover {
+    background-color: inherit; /* Or any specific color you want */
+    text-decoration: underline;
+    color: #61DAFB; 
+}
+
 .django-icon {
     color: #59ca28;
     font-size: larger;
+}
+
+/* Specific hover styles for the Django link */
+.django-link:hover {
+    background-color: inherit; /* Or any specific color you want */
+    text-decoration: underline;
+    color: #59ca28; 
 }
 
 
@@ -56,10 +73,4 @@
     margin-right: 8px;
     width: 24px;
     height: auto;
-}
-
-.dropdown-item:hover {
-    background-color: inherit;
-    text-decoration: underline;
-    color:  rgb(255, 255, 255);
 }

@@ -21,6 +21,16 @@ export const useAuth = () => {
         }
     }, [navigate]);
 
+    const forgotPassword = useCallback(async(email) => {
+        try {
+            const { data } = await axiosAPIinterceptor.post("/forgot-password/,", {email}, {withCredentials: true})
+            setMessage(data?.message); 
+        } catch (error) {
+            console.error("Forgot Password error", error);
+            setMessage(error.response?.data?.error || "An unknow error occurred");
+        }
+    },[]);
+
     const getUser = useCallback(async()=> {
         try {
             const { data } = await axiosAPIinterceptor.get("/user/");
@@ -34,9 +44,6 @@ export const useAuth = () => {
         }
     },[]);
 
+    return { logout, getUser, user, message, forgotPassword }
 
-    return { logout, getUser, user, message}
-
-
-
-}
+};

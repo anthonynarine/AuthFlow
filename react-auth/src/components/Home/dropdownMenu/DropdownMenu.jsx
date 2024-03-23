@@ -14,7 +14,7 @@ export const DropdownMenu = ({ isOpen, toggleDropdownMenu }) => {
                 Features {isOpen ? <MdArrowDropUp/> : <MdArrowDropDown/>} 
             </button>
             <ul className={`dropdown-menu ${isOpen ? 'show' : ''}`}>
-                <li><Link className="dropdown-item react-link" to="/Features">
+                <li><Link className="dropdown-item react-link" to="/react-features">
                     <FaReact className='react-icon' /> React
                     </Link></li>
                 <li><Link className="dropdown-item django-link" to="/another-action">

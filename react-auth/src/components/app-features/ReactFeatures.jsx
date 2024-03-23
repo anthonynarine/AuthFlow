@@ -1,9 +1,9 @@
 import React from 'react';
-import './Features.css'; 
+import './ReactFeatures.css'; 
 import { useNavigate } from 'react-router-dom';
 import { RiArrowGoBackLine } from 'react-icons/ri';
 
-export const Features = () => {
+export const ReactFeatures = () => {
 
   let navigate = useNavigate();
 

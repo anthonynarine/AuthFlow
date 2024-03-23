@@ -83,14 +83,16 @@
   }
   
   .btn-custom-color:hover {
-    background-color: rgb(43, 84, 43); /* Slightly darker green on hover for a visual effect */
-    border-color: #908585;
-    color: #fff;
+    background-color: rgb(35, 116, 66); /* Slightly darker green on hover for a visual effect */
+    border-color: #61DAFB;
+    color: #61DAFB;
   }
   
   .message {
+    color: #b96d6d;
     color: white;
     padding-top: 2rem;
+    font-family:monospace;
   }
 
   .api-link {
@@ -103,3 +105,16 @@
     color: rgb(35, 116, 66) ; /* Change to the color you want on hover */
     text-decoration: underline; 
   }
+
+  @keyframes blink {
+    0% { opacity: 0; }
+    50% { opacity: 1; }
+    100% { opacity: 0; }
+  }
+  
+  .blinking-dot {
+    animation: blink 4s linear infinite;
+    margin-left: 5px; /* Adjust based on your preference */
+    /* color: rgb(35, 116, 66); */
+  }
+  

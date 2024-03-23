@@ -40,7 +40,7 @@ function HomePage() {
 
       <main className="px-3 main-container centered-paragraph">
         <h1 className="white-text">App Overview</h1>
-        <p className="lead white-text">
+        <p style={{ color:" #bcb3b3"}}>
           This application encompasses all endpoints related to managing
           user authentication and account operations. It covers
           user registration, login processes, token refresh, user data access with a
@@ -51,7 +51,12 @@ function HomePage() {
           <Link to="/login" className="btn btn-custom-color me-2">Login</Link>
           <button className="btn btn-custom-color me-2" onClick={handleLogout}>Logout</button>
         </div>
-        <div className="message">{message}</div>
+        <div className="message">
+          {message}
+          <span className="blinking-dot">.</span> 
+          <span className="blinking-dot">.</span>
+          <span className="blinking-dot">.</span> 
+        </div>
       </main>
 
 

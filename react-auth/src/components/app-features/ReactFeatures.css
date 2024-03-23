@@ -7,7 +7,9 @@
   color: black; 
   text-align: center;
   margin-bottom: 50px;
-  background-color: white;
+  background-color: rgb(161, 161, 161);
+  background-color: #61DAFB;
+
   display: block; /* Ensures the h1 element is treated as a block-level element */
   width: 100%; /* Ensures the underline spans the full width of the container */
   border-bottom: 1x solid #333; /* Creates the underline with a solid line and sets its color */

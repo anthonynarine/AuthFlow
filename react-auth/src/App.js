@@ -4,7 +4,7 @@ import { RegisterPage } from "./components/register/RegisterPage";
 import { Features } from "./components/app-features/Features";
 import HomePage from "./components/home/HomePage";
 import "./App.css"
-import { Footer } from "./components/home/footer/Footer";
+import { Footer } from "./components/footer/Footer";
 
 
 function App() {

@@ -19,7 +19,7 @@
   display: flex;
   justify-content: center;
   align-items: center;
-  border-top: 1.5px solid #333;
+  border-top: 1px solid #333;
   padding: 50px 0; /* Adds padding around the links for spacing from the border and content above */
 }
 

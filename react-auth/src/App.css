@@ -30,5 +30,5 @@ body {
 .routes-content {
   flex: 1;
   overflow-y: auto; /* Allow scrolling within this container */
-  padding-bottom: 80px;
+  padding-bottom: 70px;
 }

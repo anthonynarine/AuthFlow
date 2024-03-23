@@ -1,6 +1,6 @@
 import "./Login.css";
 import authAppImage from "../../assets/auth-app.jpg";
-import { useNavigate } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import { RiArrowGoBackLine } from "react-icons/ri";
 // import API from "../../interceptors/axios";
 import { useState, useEffect } from "react";
@@ -74,6 +74,9 @@ export const LoginPage = () => {
                     </div>
                     <button className="btn btn-signin w-100" type="submit">Login</button>
                 </form>
+                <div className="forgot-password-link">
+                    <Link style={{  color: "#30815e"}} to="forgot-password">Forgot password</Link>
+                </div>
             </main>
         </div>
     );

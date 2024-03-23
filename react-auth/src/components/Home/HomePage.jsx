@@ -2,7 +2,7 @@ import React, { useState, useEffect, useCallback } from "react";
 import "./Home.css";
 import { Link } from "react-router-dom";
 import { useAuth } from "../hooks/useAuth";
-import { Footer } from "./footer/Footer";
+import { Footer } from "../footer/Footer";
 import { DropdownMenu } from "./dropdownMenu/DropdownMenu";
 
 function HomePage() {

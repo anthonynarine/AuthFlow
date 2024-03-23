@@ -7,7 +7,7 @@
   color: black; 
   text-align: center;
   margin-bottom: 50px;
-  background-color: #61DAFB;
+  background-color: white;
   display: block; /* Ensures the h1 element is treated as a block-level element */
   width: 100%; /* Ensures the underline spans the full width of the container */
   border-bottom: 1x solid #333; /* Creates the underline with a solid line and sets its color */
@@ -17,20 +17,25 @@
 }
   
   .features-container h2 {
-    color: White; /* A subtle blue for headings */
+    color: White;
     text-align: center;
     margin-bottom: 1rem;
+    text-decoration: none;
   }
   
   .features-container p {
-    color: #beb9b9; /* Lighter text color for paragraphs */
-    text-align: justify; /* Justify align paragraph text for a classic look */
-    padding: 0 15%; /* Adjusted padding for narrower text lines */
+    color: #bcb3b3; 
+    text-align: justify; 
+    padding: 0 15%; 
     margin-bottom: 1rem;
+  }
+
+  .features-container a {
+    text-decoration: none;
   }
   
   .features-container section {
-    margin-bottom: 3rem; /* Increase spacing between sections for better visual separation */
+    margin-bottom: 3rem;
   
   }
   

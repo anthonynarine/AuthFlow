@@ -75,7 +75,7 @@ export const LoginPage = () => {
                     <button className="btn btn-signin w-100" type="submit">Login</button>
                 </form>
                 <div className="forgot-password-link">
-                    <Link style={{  color: "#30815e"}} to="forgot-password">Forgot password</Link>
+                    <Link style={{  color: "#30815e"}} to="/forgot-password/">Forgot password</Link>
                 </div>
             </main>
         </div>

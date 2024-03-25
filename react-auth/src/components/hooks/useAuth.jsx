@@ -6,7 +6,7 @@ import { useCallback, useState } from "react";
 export const useAuth = () => {
     const navigate = useNavigate();
     const [user, setUser] = useState(null);
-    const [message, setMessage] = useState("You are not logged out")
+    const [message, setMessage] = useState("")
 
     const logout = useCallback(async ()=> {
         try {
@@ -23,7 +23,7 @@ export const useAuth = () => {
 
     const forgotPassword = useCallback(async(email) => {
         try {
-            const { data } = await axiosAPIinterceptor.post("/forgot-password/,", {email}, {withCredentials: true})
+            const { data } = await axiosAPIinterceptor.post("/forgot-password/", {email}, {withCredentials: true})
             setMessage(data?.message); 
         } catch (error) {
             console.error("Forgot Password error", error);

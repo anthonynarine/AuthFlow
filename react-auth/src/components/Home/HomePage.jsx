@@ -33,7 +33,7 @@ function HomePage() {
           <nav className="nav nav-masthead justify-content-center">
             <Link to="/features" className="nav-link fw-bold py-1 px-3 white-text">Home</Link>
             <DropdownMenu isOpen={isDropdownOpen} toggleDropdownMenu={toggleDropdownMenu} />
-            <Link to="/contact" className="nav-link fw-bold py-1 px-3 white-text">Contact</Link>
+            <Link to="/send-email" className="nav-link fw-bold py-1 px-3 white-text">Contact</Link>
           </nav>
         </div>
       </header>
@@ -55,7 +55,6 @@ function HomePage() {
           {message}
           <span className="blinking-dot">.</span> 
           <span className="blinking-dot">.</span>
-          <span className="blinking-dot">.</span> 
         </div>
       </main>
 

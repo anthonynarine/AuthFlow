@@ -1,0 +1,102 @@
+/* SendEmail.css adjustments */
+
+.form {
+  max-width: 500px;
+  margin: 2rem auto;
+  margin-top: 2.5rem;
+  padding: 2rem;
+  background: white;
+  border-radius: 8px;
+  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+}
+
+.nav-button {
+  position: absolute;
+  top: 10px;
+  left:10px;
+  margin: 0;
+  background: none;
+  color: #D3D3D3;
+  border: none;
+  cursor: pointer;
+  z-index: 1000; /* Ensures the button is above other elements */
+}
+
+.nav-button:hover {
+  color: #A9A9A9; /* Slightly lighter color on hover for visual feedback */
+}
+
+/* Ensure the icon within the button inherits the color */
+.nav-button svg {
+  color: inherit; /* This ensures the icon color matches the button's color */
+}
+
+
+.form h6.from-h6 {
+  font-size: 1rem;
+  color: #30815e;
+  margin-bottom: 1rem;
+  text-align: center;
+  font-weight: normal;
+}
+
+.form-input,
+.form-textarea {
+  width: 100%;
+  padding: 10px;
+  margin-bottom: 1rem;
+  border: 2px solid #f2eeee;
+  border-radius: 4px;
+  box-sizing: border-box;
+  color: black;
+}
+
+.form-textarea {
+  height: 200px;
+  resize: vertical;
+  padding: 10px 18px;
+}
+
+.form-button[type="submit"] {
+  width: 100%;
+  background-color: #30815e;
+  color: white;
+  padding: 15px 20px;
+  border: none;
+  border-radius: 4px;
+  cursor: pointer;
+  font-size: 16px;
+}
+
+.form-button[type="submit"]:hover {
+  background-color: #14a365;
+}
+
+.email-invite {
+  background-color: #2c3e50; /* Dark background for contrast */
+  padding: 2rem; /* Adds some padding around the text */
+  border-radius: 8px; /* Softens the edges */
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1); /* Subtle shadow for depth */
+  max-width: 600px;
+  margin: 5rem auto; /* Center aligns the div and adds top & bottom margin */
+  margin-bottom: 0rem;
+}
+
+.email-invite p {
+  color: #ecf0f1; /* Lighter text color for contrast against the dark background */
+  font-size: 1rem; /* Adjust text size for readability */
+  line-height: 1.6; /* Improves the readability of the paragraph */
+  margin-bottom: 1rem; /* Gives space between the paragraph and anything below */
+}
+
+.email-invite a {
+  color: #18bc9c; /* Bright, inviting color for the link */
+  text-decoration: none; /* Removes underline to keep it sleek */
+  font-weight: bold; /* Makes the email address stand out */
+}
+
+.email-invite a:hover {
+  text-decoration: underline; /* Adds underline on hover for visual feedback */
+  color: #2ecc71; /* Slightly lighter shade on hover to indicate interactivity */
+}
+

@@ -24,6 +24,10 @@
     margin-bottom: 1rem;
     text-decoration: none;
   }
+
+  .features-container h2:hover {
+    color: #61DAFB; /* Color change on hover */
+  }
   
   .features-container p {
     color: #bcb3b3; 

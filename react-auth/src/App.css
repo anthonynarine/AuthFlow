@@ -10,25 +10,13 @@ body {
   min-height: 100vh;
 }
 
-
-
 .App {
   text-align: center;
 }
 
-.App-header {
-  background-color: #282c34;
-  min-height: 100vh;
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  justify-content: center;
-  font-size: calc(10px + 2vmin);
-  color: white;
-}
-
 .routes-content {
   flex: 1;
-  overflow-y: auto; /* Allow scrolling within this container */
-  padding-bottom: 70px;
+  overflow-y: auto; 
+  padding-bottom: 10px;
+  padding-top: 10px;
 }

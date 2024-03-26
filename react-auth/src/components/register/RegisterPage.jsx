@@ -1,17 +1,15 @@
-// Import statements
 import "../login/Login.css";
 import authAppImage from "../../assets/auth-app.jpg";
 import { useNavigate } from "react-router-dom";
 import { RiArrowGoBackLine } from "react-icons/ri";
 import { useState, useEffect } from "react";
 import axios from "axios";
-// import API from "../../interceptors/axios";
 
 export const RegisterPage = () => {
     useEffect(() => {
-        console.log("🚀 This was my first request to an api I built and deployed 🛠️");
+        console.log("🚀 This was my first request to an API I built and deployed 🛠️");
     }, []);
-    // State to hold form fields
+
     const [formFields, setFormFields] = useState({
         firstName: "",
         lastName: "",
@@ -20,10 +18,8 @@ export const RegisterPage = () => {
         confirmPassword: ""
     });
 
-    // Hook to navigate programmatically
     const navigate = useNavigate();
 
-    // Handler for form field changes
     const handleChange = (event) => {
         const { name, value } = event.target;
         setFormFields(prevState => ({
@@ -32,11 +28,9 @@ export const RegisterPage = () => {
         }));
     };
 
-    // Handler for form submission
     const handleSubmit = async (event) => {
         event.preventDefault();
         try {
-            // Attempt to register the user with the provided data THATS'S MY FIRST LIVE API !!!!!
             await axios.post("http://localhost:8000/api/register/", {
                 first_name: formFields.firstName,
                 last_name: formFields.lastName,
@@ -44,15 +38,12 @@ export const RegisterPage = () => {
                 password: formFields.password,
                 password_confirm: formFields.confirmPassword,
             });
-            // On success, navigate to the login page
             navigate("/login");
         } catch (error) {
-            // Log any error that occurs during the registration process
             console.error("Registration error:", error);
         }
     };
 
-    // Handler to navigate back to the homepage
     const navigateHome = () => {
         navigate("/");
     };
@@ -69,29 +60,26 @@ export const RegisterPage = () => {
                         <img src={authAppImage} alt="Auth App" className="login-logo" />
                     </div>
                     <h1 className="h3 mb-4 fw-normal">Test Registration</h1>
-                    {/* First Name Input */}
+                    {/* Corrected Labels and Inputs */}
                     <div className="form-floating mb-3">
-                        <input value={formFields.firstName} onChange={handleChange} type="text" className="form-control" id="floatingFirstName" placeholder="First Name" name="firstName" />
+                        <input type="text" value={formFields.firstName} onChange={handleChange} className="form-control" id="floatingFirstName" placeholder="First Name" name="firstName" />
                         <label htmlFor="floatingFirstName">First Name</label>
                     </div>
-                    {/* Last Name Input */}
                     <div className="form-floating mb-3">
-                        <input value={formFields.lastName} onChange={handleChange} type="text" className="form-control" id="floatingLastName" placeholder="Last Name" name="lastName" />
+                        <input type="text" value={formFields.lastName} onChange={handleChange} className="form-control" id="floatingLastName" placeholder="Last Name" name="lastName" />
                         <label htmlFor="floatingLastName">Last Name</label>
                     </div>
-                    {/* Email Input */}
+                    {/* Email Input Correction */}
                     <div className="form-floating mb-3">
-                        <input value={formFields.email} onChange={handleChange} type="email" className="form-control" id="floatingEmail" placeholder="name@example.com" name="email" />
-                        <label htmlFor="floatingEmail">Email address</label>
+                        <input type="email" value={formFields.email} onChange={handleChange} className="form-control" id="floatingEmail" placeholder="name@example.com" name="email" />
+                        <label htmlFor="floatingEmail">Email</label>
                     </div>
-                    {/* Password Input */}
                     <div className="form-floating mb-4">
-                        <input value={formFields.password} onChange={handleChange} type="password" className="form-control" id="floatingPassword" placeholder="Password" name="password" />
+                        <input type="password" value={formFields.password} onChange={handleChange} className="form-control" id="floatingPassword" placeholder="Password" name="password" />
                         <label htmlFor="floatingPassword">Password</label>
                     </div>
-                    {/* Confirm Password Input */}
                     <div className="form-floating mb-4">
-                        <input value={formFields.confirmPassword} onChange={handleChange} type="password" className="form-control" id="floatingConfirmPassword" placeholder="Confirm Password" name="confirmPassword" />
+                        <input type="password" value={formFields.confirmPassword} onChange={handleChange} className="form-control" id="floatingConfirmPassword" placeholder="Confirm Password" name="confirmPassword" />
                         <label htmlFor="floatingConfirmPassword">Confirm Password</label>
                     </div>
                     <button className="btn btn-signin w-100" type="submit">Register</button>

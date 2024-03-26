@@ -4,6 +4,9 @@ import { Link, useNavigate } from "react-router-dom";
 import { RiArrowGoBackLine } from "react-icons/ri";
 import { useState } from "react";
 import { useAuth } from "../hooks/useAuth";
+import { ToastContainer, toast } from 'react-toastify';
+import 'react-toastify/dist/ReactToastify.css';
+import "./ForgotPassword.css"
 
 
 export const ForgotPassword = () => {
@@ -14,7 +17,26 @@ export const ForgotPassword = () => {
 
     const handleSubmit = async (event) => {
         event.preventDefault();
-        await forgotPassword(email);
+        try {
+            await forgotPassword(email);
+            toast.success('Check your email for the password reset link.', {
+                position: "top-center",
+                autoClose: 5000,
+                hideProgressBar: false,
+                closeOnClick: true,
+                pauseOnHover: true,
+                draggable: true,
+            });
+        } catch (error) {
+            toast.error('Failed to send password reset email.', {
+                position: "top-center",
+                autoClose: 5000,
+                hideProgressBar: false,
+                closeOnClick: true,
+                pauseOnHover: true,
+                draggable: true,
+            });
+        }
     };
 
     const navigateHome = () => {
@@ -32,7 +54,10 @@ export const ForgotPassword = () => {
                     <div className="logo-container">
                         <img src={authAppImage} alt="Auth App" className="login-logo" />
                     </div>
-                    <h1 className="h3 mb-4 fw-normal">Reset Password</h1>
+                    <div className="password-reset-heading">
+                        <h1 className="h3 mb-4 fw-normal">Forgot Password?</h1>
+                        <p className="reset-instructions">Enter your email below to reset your password.</p>
+                    </div>
                     {/* Email Input */}
                     <div className="form-floating mb-3">
                         <input value={email} type="email" className="form-control" id="floatingEmail" placeholder="name@example.com" name="email"
@@ -42,7 +67,7 @@ export const ForgotPassword = () => {
                     </div>
                     <button className="btn btn-signin w-100" type="submit">Submit</button>
                 </form>
-                {message}
+                <ToastContainer />
             </main>
         </div>
     );

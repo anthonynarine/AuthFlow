@@ -2,6 +2,7 @@ import { useNavigate } from "react-router-dom";
 import Cookies from "js-cookie";
 import axiosAPIinterceptor from "../../interceptors/axios";
 import { useCallback, useState } from "react";
+import axios from "axios";
 
 export const useAuth = () => {
     const navigate = useNavigate();
@@ -13,7 +14,7 @@ export const useAuth = () => {
             await axiosAPIinterceptor.post("/logout/", {}, { withCredentials: true});
             Cookies.remove("accessToken");
             setUser(null)
-            setMessage("You are logged off")
+            setMessage("You are logged out")
             navigate("/")
         } catch (error) {
             console.error("Logout error", error);
@@ -31,6 +32,18 @@ export const useAuth = () => {
         }
     },[]);
 
+    const resetPassword = useCallback(async({ password, confirmPassword, uidb64, token }) =>{
+        try {
+            const { data } = await axios.post("http://localhost:8000/api/reset-password/",
+            { password, confirmPassword, uidb64, token }, { withCredentials: true });
+        setMessage(data?.message);
+        navigate("/login");  
+        } catch (error) {
+            console.error("Reset Password error", error);
+            setMessage(error.response?.data?.error || "An unknown error occurred");  
+        }
+    }, [navigate]);
+
     const getUser = useCallback(async()=> {
         try {
             const { data } = await axiosAPIinterceptor.get("/user/");
@@ -44,6 +57,13 @@ export const useAuth = () => {
         }
     },[]);
 
-    return { logout, getUser, user, message, forgotPassword }
+    return {
+        logout,
+        getUser,
+        user,
+        message,
+        forgotPassword,
+        resetPassword,
+    }
 
 };

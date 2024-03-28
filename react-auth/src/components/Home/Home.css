@@ -7,13 +7,14 @@
     flex-direction: column;
     min-height: 100vh;
     max-width: 80rem;
+    margin-bottom: 10rem;
   }
   
 .header-container {
     display: flex;
     justify-content: space-between;
     align-items: center;
-    padding: 0 15%; /* Adjust the padding as needed */
+    padding: 0 20%; 
   }
   
   .nav {
@@ -32,7 +33,6 @@
     
     .nav {
       margin-top: 1rem; /* Add margin to separate navigation links */
-      align-items: center;
     }
   }
 
@@ -44,12 +44,7 @@
     align-items: center; /* Center content horizontally */
     max-width: 800px;
     margin: 0 auto;
-    margin-bottom: 20px;
-    padding-top: 6rem;
-    
-    h1.white-text {
-      margin-bottom: 25px;
-    }
+    padding-top: 4rem;
 
     
     /* Media query for medium screens */
@@ -63,13 +58,31 @@
     }
   
   }
-/*   
+
+  .intro-container {
+    background-color: #2c3e50; 
+    color: white; 
+    padding: 1rem; 
+    border-radius: 8px; 
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1); 
+    max-width: 800px;
+    margin: 0rem auto; 
+    text-align: center;
+  }
+
+  .intro-container h4 {
+    color: #18bc9c; /* Sets the text color */
+  }
+  .intro-container p {
+    color: white; /* Sets the text color */
+  }
+  
   .footer-container {
     margin-top: auto;
-    text-align:center;
-    margin-bottom: 4rem;
+    text-align: center;
+    margin-bottom: 20rem;
   }
-   */
+  
 
 .white-text {
     color: white; /* Set the text color to white */
@@ -77,45 +90,28 @@
   
 
   .btn-custom-color {
-    background-color: #325142; /* Dark green background */
-    border-color: #325142; /* Dark green border */
+    background-color: #14a365; /* Dark green background */
+    border-color: #2ecc71;; /* Dark green border */
     color: #ffffff; /* White text color for contrast */
   }
   
   .btn-custom-color:hover {
-    background-color: rgb(35, 116, 66); /* Slightly darker green on hover for a visual effect */
-    border-color: #61DAFB;
-    color: #61DAFB;
+    background-color: #2ecc71;; /* Slightly darker green on hover for a visual effect */
+    border-color: #908585;
+    color: #fff;
   }
   
   .message {
-    color: #b96d6d;
     color: white;
-    padding-top: 2rem;
-    font-family:monospace;
-    
+    padding-top: 1rem;
   }
 
   .api-link {
     /* text-decoration: none; */
-    color: rgb(138, 159, 138); 
-    text-decoration: none;
+    color: rgb(138, 159, 138); /* or any color you prefer */
   }
   
   .api-link:hover {
     color: rgb(35, 116, 66) ; /* Change to the color you want on hover */
-    text-decoration: underline; 
+    text-decoration: underline; /* Example effect: underline on hover */
   }
-
-  @keyframes blink {
-    0% { opacity: 0; }
-    50% { opacity: 1; }
-    100% { opacity: 0; }
-  }
-  
-  .blinking-dot {
-    animation: blink 4s linear infinite;
-    margin-left: 5px; /* Adjust based on your preference */
-    /* color: rgb(35, 116, 66); */
-  }
-  

@@ -85,5 +85,8 @@
 }
 
 .forgot-password-link {
+  display: flex;
   justify-content: center;
+  align-items: center; 
+  margin-top: 15px;
 }

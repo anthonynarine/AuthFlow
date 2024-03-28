@@ -39,13 +39,12 @@ function HomePage() {
       </header>
 
       <main className="px-3 main-container centered-paragraph">
-        <h1 className="white-text">App Overview</h1>
-        <p style={{ color:" #bcb3b3"}}>
-          This application encompasses all endpoints related to managing
-          user authentication and account operations. It covers
-          user registration, login processes, token refresh, user data access with a
-          token, and account recovery options like password reset.
-        </p>
+        <div className="intro-container">
+          <h4 className="white-text">App Overview</h4>
+          <p className="intro-container">
+            This application is designed to provide a robust, secure, and user-friendly authentication system. Integrating backend technologies with a seamless frontend experience, it’s crafted for those who value both security and ease of use. This platform offers a comprehensive set of authentication features, including user registration, login processes, password reset capabilities, and optional two-factor authentication. Behind every feature lies a robust backend built with Django and DRF, adhering to RESTful standards and secured with PyJWT for token creation. On the frontend, Axios interceptors streamline the login process, managing authentication tokens efficiently to ensure a smooth user experience. This system is crafted for those looking to explore a full-stack project that prioritizes security without compromising on user experience. Whether you're safeguarding personal projects or seeking inspiration for reliable login systems, this platform showcase the powerful synergy between a Django backend and a React frontend.
+          </p>
+        </div>
         <div className="mt-4">
           <Link to="/register" className="btn btn-custom-color me-2">Register</Link>
           <Link to="/login" className="btn btn-custom-color me-2">Login</Link>

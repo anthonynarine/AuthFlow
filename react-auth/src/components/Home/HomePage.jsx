@@ -9,10 +9,9 @@ function HomePage() {
   const [isDropdownOpen, setIsDropdownOpen] = useState(false);
 
   const toggleDropdownMenu = () => {
-    console.log("drawer toggled")
+    console.log("drawer toggled");
     setIsDropdownOpen(!isDropdownOpen);
   };
-
 
   const { logout, getUser, message } = useAuth();
 
@@ -37,27 +36,24 @@ function HomePage() {
           </nav>
         </div>
       </header>
-
       <main className="px-3 main-container centered-paragraph">
-        <div className="intro-container">
-          <h4 className="white-text">App Overview</h4>
-          <p className="intro-container">
-            This application is designed to provide a robust, secure, and user-friendly authentication system. Integrating backend technologies with a seamless frontend experience, it’s crafted for those who value both security and ease of use. This platform offers a comprehensive set of authentication features, including user registration, login processes, password reset capabilities, and optional two-factor authentication. Behind every feature lies a robust backend built with Django and DRF, adhering to RESTful standards and secured with PyJWT for token creation. On the frontend, Axios interceptors streamline the login process, managing authentication tokens efficiently to ensure a smooth user experience. This system is crafted for those looking to explore a full-stack project that prioritizes security without compromising on user experience. Whether you're safeguarding personal projects or seeking inspiration for reliable login systems, this platform showcase the powerful synergy between a Django backend and a React frontend.
-          </p>
-        </div>
-        <div className="mt-4">
+        <div className="auth-section mt-4">
+          <h5 className="text-center mb-3 white-text">Explore the Authentication system</h5>
+          <div className="message">
+            {message}
+            {/* Optionally include blinking dots here if they serve a purpose */}
+          </div>
           <Link to="/register" className="btn btn-custom-color me-2">Register</Link>
           <Link to="/login" className="btn btn-custom-color me-2">Login</Link>
           <button className="btn btn-custom-color me-2" onClick={handleLogout}>Logout</button>
         </div>
-        <div className="message">
-          {message}
-          <span className="blinking-dot">.</span> 
-          <span className="blinking-dot">.</span>
+        <div className="intro-container">
+          <h4 className="white-text">App Overview</h4>
+          <p className="intro-container">
+            This application is designed to provide a robust, secure, and user-friendly authentication system. Integrating backend technologies with a seamless frontend experience, it’s crafted for those who value both security and ease of use. This platform offers a comprehensive set of authentication features, including user registration, login processes, password reset capabilities, and optional two-factor authentication. Behind every feature lies a robust backend built with Django and DRF, adhering to RESTful standards and secured with PyJWT for token creation. On the frontend, Axios interceptors streamline the login process, managing authentication tokens efficiently to ensure a smooth user experience. This system is crafted for those looking to explore a full-stack project that prioritizes security without compromising on user experience. Whether you're safeguarding personal projects or seeking inspiration for reliable login systems, this platform showcases the powerful synergy between a Django backend and a React frontend.
+          </p>
         </div>
       </main>
-
-
     </div>
   );
 }

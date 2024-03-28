@@ -1,117 +1,157 @@
 
-/* Home.css */
-
-/* Add this style to space out the header content */
 .cover-container {
-    display: flex;
-    flex-direction: column;
-    min-height: 100vh;
-    max-width: 80rem;
-    margin-bottom: 10rem;
-  }
-  
+  display: flex;
+  flex-direction: column;
+  min-height: 100vh;
+  max-width: 80rem;
+  margin-bottom: 10rem;
+}
+
 .header-container {
-    display: flex;
-    justify-content: space-between;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 0 20%; 
+}
+
+.nav {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+}
+
+/* Media query for smaller screens */
+@media (max-width: 576px) {
+  .header-container {
+    flex-direction: column;
     align-items: center;
-    padding: 0 20%; 
+    padding: 0;
   }
   
   .nav {
-    display: flex;
-    flex-wrap: wrap;
-    justify-content: center;
+    margin-top: 1rem; /* Add margin to separate navigation links */
   }
+}
+
+.main-container {
+  flex-grow: 1; /* Expand to fill available space */
+  display: flex;
+  flex-direction: column;
+  /* justify-content: center;  */
+  align-items: center; /* Center content horizontally */
+  max-width: 800px;
+  margin: 0 auto;
+  padding-top: 4rem;
+
   
-  /* Media query for smaller screens */
+  /* Media query for medium screens */
+  @media (max-width: 992px) and (min-width: 576px) {
+    padding-top: 3.5rem;
+  }
+
+  /* Media query for small screens */
   @media (max-width: 576px) {
-    .header-container {
-      flex-direction: column;
-      align-items: center;
-      padding: 0;
-    }
-    
-    .nav {
-      margin-top: 1rem; /* Add margin to separate navigation links */
-    }
+    padding-top: 2rem; /* Adjusted margin-top for small screens */
   }
 
-  .main-container {
-    flex-grow: 1; /* Expand to fill available space */
-    display: flex;
-    flex-direction: column;
-    /* justify-content: center;  */
-    align-items: center; /* Center content horizontally */
-    max-width: 800px;
-    margin: 0 auto;
-    padding-top: 4rem;
+}
 
-    
-    /* Media query for medium screens */
-    @media (max-width: 992px) and (min-width: 576px) {
-      padding-top: 3.5rem;
-    }
+.intro-container {
+  background-color: #2c3e50; 
+  color: white; 
+  padding: 1rem; 
+  border-radius: 8px; 
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1); 
+  max-width: 800px;
+  text-align: center;
+  margin-top: 4rem;
+}
+
+.intro-container h4 {
+  color: #18bc9c; 
+  margin-bottom: -4rem;
+}
+.intro-container p {
+  color: white; /* Sets the text color */
+}
+
+/* Style for the entire section */
+.auth-section {
+  margin-top: 2rem; 
+  color: #FFF; 
+  text-align: center;
+}
+
+/* Style for the header within the section */
+.auth-section h5 {
+  margin-bottom: 0rem;
+  font-weight: bold;
+  /* color: #18bc9c; */
+}
+
+/* Style for the message container */
+.auth-section .message {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  margin-bottom: .5rem; /* Space before the buttons */
+}
+
+/* Style for the blinking dots */
+.auth-section .blinking-dot {
+  animation: blink-animation 1.5s infinite;
+  margin-left: 5px;
+}
+
+/* Keyframes for blinking effect */
+@keyframes blink-animation {
+  50% {
+    opacity: 0;
+  }
+}
+
+/* Style for the buttons */
+.auth-section .btn {
+  margin-right: 0.5rem; /* Adjust space between buttons */
+}
+
+.auth-section .btn:last-child {
+  margin-right: 0; /* Removes margin from the last button */
+}
+
   
-    /* Media query for small screens */
-    @media (max-width: 576px) {
-      padding-top: 2rem; /* Adjusted margin-top for small screens */
-    }
-  
-  }
-
-  .intro-container {
-    background-color: #2c3e50; 
-    color: white; 
-    padding: 1rem; 
-    border-radius: 8px; 
-    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1); 
-    max-width: 800px;
-    margin: 0rem auto; 
-    text-align: center;
-  }
-
-  .intro-container h4 {
-    color: #18bc9c; /* Sets the text color */
-  }
-  .intro-container p {
-    color: white; /* Sets the text color */
-  }
-  
-  .footer-container {
-    margin-top: auto;
-    text-align: center;
-    margin-bottom: 20rem;
-  }
-  
-
 .white-text {
-    color: white; /* Set the text color to white */
-  }
-  
+  color: white; 
+}
 
-  .btn-custom-color {
-    background-color: #14a365; /* Dark green background */
-    border-color: #2ecc71;; /* Dark green border */
-    color: #ffffff; /* White text color for contrast */
-  }
-  
-  .btn-custom-color:hover {
-    background-color: #2ecc71;; /* Slightly darker green on hover for a visual effect */
-    border-color: #908585;
-    color: #fff;
-  }
-  
-  .message {
-    color: white;
-    padding-top: 1rem;
-  }
+.btn-custom-color {
+  background-color: #18bc9c;; 
+  border-color: #2ecc71;
+  color: #ffffff; 
+}
 
-  .api-link {
-    /* text-decoration: none; */
-    color: rgb(138, 159, 138); /* or any color you prefer */
-  }
+.btn-custom-color:hover {
+  background-color: #2ecc71;
+  border-color: #908585;
+  color: #fff;
+}
+
+.message {
+  color: white;
+  padding-bottom: 15px;
+}
+
+.footer-container {
+  margin-top: auto;
+  text-align: center;
+  margin-bottom: 20rem;
+}
   
-  .api-link:hover {
-    color: rgb(35, 116, 66) ; /* Change to the color you want on hover */
-    text-decoration: underline; /* Example effect: underline on hover */
-  }
+.api-link {
+  color: rgb(138, 159, 138); 
+}
+
+.api-link:hover {
+  color: rgb(35, 116, 66) ; 
+  text-decoration: underline; 
+}

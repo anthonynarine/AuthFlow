@@ -4,6 +4,11 @@ import { useNavigate } from "react-router-dom";
 import { RiArrowGoBackLine } from "react-icons/ri";
 import { useState, useEffect } from "react";
 import axios from "axios";
+import { RiUserAddLine } from 'react-icons/ri';
+import { GrUserAdd } from "react-icons/gr";
+import { CgUserAdd } from "react-icons/cg";
+import { FaPlusCircle } from "react-icons/fa";
+
 
 export const RegisterPage = () => {
     useEffect(() => {
@@ -50,16 +55,20 @@ export const RegisterPage = () => {
 
     return (
         <div className="login-container">
-            <button onClick={navigateHome} style={{ position: 'absolute', top: 0, left: 0, margin: '20px', background: 'none', color: "#D3D3D3", border: 'none', cursor: 'pointer' }}
+            <button onClick={navigateHome} style={{ position: 'absolute', top: 0, left: 0, margin: '20px', background: 'none', color: "#fff", border: 'none', cursor: 'pointer' }}
                     title="Go back to homepage">
                 <RiArrowGoBackLine size="1.5em" />
             </button>
             <main className="form-signin w-100 m-auto">
                 <form onSubmit={handleSubmit}>
                     <div className="logo-container">
-                        <img src={authAppImage} alt="Auth App" className="login-logo" />
+                        {/* <img src={authAppImage} alt="Auth App" className="login-logo" /> */}
+                        {/* <RiUserAddLine size={"1.5rem"} /> */}
+                        {/* <GrUserAdd size={"1.5rem"} /> */}
+                        <CgUserAdd size={"2.5rem"} />
+                        {/* <FaPlusCircle size={"3.0rem"} /> */}
                     </div>
-                    <h1 className="h3 mb-4 fw-normal">Test Registration</h1>
+                    <h1 className="h3 mb-4 fw-normal">Register</h1>
                     {/* Corrected Labels and Inputs */}
                     <div className="form-floating mb-3">
                         <input type="text" value={formFields.firstName} onChange={handleChange} className="form-control" id="floatingFirstName" placeholder="First Name" name="firstName" />
@@ -82,7 +91,7 @@ export const RegisterPage = () => {
                         <input type="password" value={formFields.confirmPassword} onChange={handleChange} className="form-control" id="floatingConfirmPassword" placeholder="Confirm Password" name="confirmPassword" />
                         <label htmlFor="floatingConfirmPassword">Confirm Password</label>
                     </div>
-                    <button className="btn btn-signin w-100" type="submit">Register</button>
+                    <button className="btn btn-signin w-100" type="submit">Submit</button>
                 </form>
             </main>
         </div>

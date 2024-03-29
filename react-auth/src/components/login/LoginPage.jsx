@@ -57,7 +57,7 @@ export const LoginPage = () => {
                     <div className="logo-container">
                         <img src={authAppImage} alt="Auth App" className="login-logo" />
                     </div>
-                    <h1 className="h3 mb-4 fw-normal">Test Login</h1>
+                    <h1 className="h3 mb-4 fw-normal">Login</h1>
                     {/* Email Input */}
                     <div className="form-floating mb-3">
                         <input value={email} type="email" className="form-control" id="floatingEmail" placeholder="name@example.com" name="email"
@@ -72,7 +72,7 @@ export const LoginPage = () => {
                         />
                         <label htmlFor="floatingPassword">Password</label>
                     </div>
-                    <button className="btn btn-signin w-100" type="submit">Login</button>
+                    <button className="btn btn-signin w-100" type="submit">Submit</button>
                 </form>
                 <div className="forgot-password-link">
                     <Link style={{  color: "#30815e"}} to="/forgot-password/">Forgot password</Link>

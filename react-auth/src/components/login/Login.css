@@ -17,9 +17,19 @@
   margin-top: 5rem;
   margin-bottom: 12rem; /* Ensure enough space above the footer */
   padding: 2rem;
-  background: #F1F8F8;
+  background: #1C2833;
   border-radius: 8px;
   box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+}
+
+.login-container svg {
+  transition: color 0.3s ease;
+  color:#828a87;
+}
+
+.logo-container:hover svg {
+  color: #14a365; /* Or any other color you want on hover */
+  /* background-color: #1C2833; */
 }
 
 .nav-button {
@@ -49,6 +59,7 @@
 .form-signin h5, 
 .form-signin h6 {
   text-align: center;
+  color:#BDC3C7;
 }
 
 

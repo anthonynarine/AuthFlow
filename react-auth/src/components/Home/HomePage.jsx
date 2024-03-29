@@ -4,6 +4,10 @@ import { Link } from "react-router-dom";
 import { useAuth } from "../hooks/useAuth";
 import { Footer } from "../footer/Footer";
 import { DropdownMenu } from "./dropdownMenu/DropdownMenu";
+import { FiKey } from 'react-icons/fi';
+import { FaReact } from 'react-icons/fa'; // For the React icon
+import { DiPython } from 'react-icons/di'; // Example using a Python icon for Django
+import { FiMail } from 'react-icons/fi';
 
 function HomePage() {
   const [isDropdownOpen, setIsDropdownOpen] = useState(false);
@@ -28,11 +32,12 @@ function HomePage() {
     <div className="cover-container d-flex w-100 h-100 p-3 mx-auto flex-column">
       <header className="mb-auto">
         <div className="header-container">
-          <h3 className="mb-0 white-text">Authentication</h3>
+          <h3 className="mb-0 white-text"><FiKey/>Gait</h3>
           <nav className="nav nav-masthead justify-content-center">
-            <Link to="/features" className="nav-link fw-bold py-1 px-3 white-text">Home</Link>
-            <DropdownMenu isOpen={isDropdownOpen} toggleDropdownMenu={toggleDropdownMenu} />
-            <Link to="/send-email" className="nav-link fw-bold py-1 px-3 white-text">Contact</Link>
+            <Link to="/react-features" className="icon react-icon"><FaReact size={24}/></Link>
+            <Link to="/react-features" className="icon django-icon"><DiPython size={30}/></Link>
+            <Link to="/send-email" className="icon contact-icon"><FiMail size={25}/></Link>
+            {/* <DropdownMenu isOpen={isDropdownOpen} toggleDropdownMenu={toggleDropdownMenu} /> */}
           </nav>
         </div>
       </header>

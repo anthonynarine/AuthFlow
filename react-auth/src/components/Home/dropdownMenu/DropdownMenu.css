@@ -1,5 +1,5 @@
 .inherit-color-bold-text {
-    color: white;
+    color: #7f8c8d;
     font-weight: bold;
     border: none;
     background-color: transparent;
@@ -11,7 +11,7 @@
 }
 
 .inherit-color-bold-text:hover {
-    color: #5ac52f; /* Changes text color on hover */
+    color: #0f766e; /* Changes text color on hover */
 }
 
 /* Styles for the dropdown container */
@@ -28,7 +28,7 @@
     z-index: 1; /* Ensure it's above other content */
     width: 100%; /* Optional: Match the width to the dropdown button */
     /* box-shadow: 0 8px 16px rgba(0,0,0,0.2); */
-    background-color:#212529; /* Light grey background */
+    background-color:#1C2833; /* Light grey background */
 }
 
 .dropdown.show .dropdown-menu {
@@ -71,6 +71,8 @@
 
 .dropdown-item svg {
     margin-right: 8px;
-    width: 24px;
+    width: 30px;
     height: auto;
 }
+
+

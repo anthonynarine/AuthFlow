@@ -101,3 +101,31 @@
   align-items: center; 
   margin-top: 15px;
 }
+
+/* Additional styles for checkbox and its label */
+.login-container .form-check {
+  margin-bottom: 1rem;
+}
+
+.login-container .form-check-input {
+  width: auto; /* Reset width for checkbox */
+  margin-top: 0.3rem;
+  margin-right: 0.5rem;
+  cursor: pointer; /* Indicates interactiveness */
+}
+
+.login-container .form-check-label {
+  cursor: pointer; /* Indicates interactiveness */
+  color: #BDC3C7; /* Matches form text color */
+}
+
+/* Styling for focus outline on checkbox to match the theme */
+.login-container .form-check-input:focus {
+  outline: 1px auto #14a365;
+}
+
+/* Hover effect for checkbox and label */
+.login-container .form-check-label:hover,
+.login-container .form-check-input:hover {
+  color: #14a365; /* Hover color */
+}

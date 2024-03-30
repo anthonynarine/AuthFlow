@@ -10,6 +10,8 @@ import { CgUserAdd } from "react-icons/cg";
 import { FaPlusCircle } from "react-icons/fa";
 
 
+ // #add  a bool input filed to enable 2fa aut upon registering
+
 export const RegisterPage = () => {
     useEffect(() => {
         console.log("🚀 This was my first request to an API I built and deployed 🛠️");
@@ -20,13 +22,15 @@ export const RegisterPage = () => {
         lastName: "",
         email: "",
         password: "",
-        confirmPassword: ""
+        confirmPassword: "",
+        enable2FA: false,
     });
 
     const navigate = useNavigate();
 
     const handleChange = (event) => {
-        const { name, value } = event.target;
+        const { name, type } = event.target;
+        const value = type === "checkbox" ? event.target.checked : event.target.value
         setFormFields(prevState => ({
             ...prevState,
             [name]: value
@@ -91,7 +95,11 @@ export const RegisterPage = () => {
                         <input type="password" value={formFields.confirmPassword} onChange={handleChange} className="form-control" id="floatingConfirmPassword" placeholder="Confirm Password" name="confirmPassword" />
                         <label htmlFor="floatingConfirmPassword">Confirm Password</label>
                     </div>
-                    <button className="btn btn-signin w-100" type="submit">Submit</button>
+                    <div className="form-check mb-4">
+                        <input type="checkbox" className="form-check-input" id="enable2FA" name="enable2FA" checked={formFields.enable2FA} onChange={handleChange} />
+                        <label className="form-check-label" htmlFor="enable2FA">Enable Two-Factor Authentication</label>
+                    </div>
+                    <button className="btn btn-signin w-100" type="submit">Submit</button>               
                 </form>
             </main>
         </div>

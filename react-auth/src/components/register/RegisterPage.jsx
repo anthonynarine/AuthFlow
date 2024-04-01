@@ -10,7 +10,6 @@ import { CgUserAdd } from "react-icons/cg";
 import { FaPlusCircle } from "react-icons/fa";
 
 
- // #add  a bool input filed to enable 2fa aut upon registering
 
 export const RegisterPage = () => {
     useEffect(() => {
@@ -23,7 +22,6 @@ export const RegisterPage = () => {
         email: "",
         password: "",
         confirmPassword: "",
-        enable2FA: false,
     });
 
     const navigate = useNavigate();
@@ -40,6 +38,7 @@ export const RegisterPage = () => {
     const handleSubmit = async (event) => {
         event.preventDefault();
         try {
+            console.log(formFields)
             await axios.post("http://localhost:8000/api/register/", {
                 first_name: formFields.firstName,
                 last_name: formFields.lastName,
@@ -95,10 +94,10 @@ export const RegisterPage = () => {
                         <input type="password" value={formFields.confirmPassword} onChange={handleChange} className="form-control" id="floatingConfirmPassword" placeholder="Confirm Password" name="confirmPassword" />
                         <label htmlFor="floatingConfirmPassword">Confirm Password</label>
                     </div>
-                    <div className="form-check mb-4">
+                    {/* <div className="form-check mb-4">
                         <input type="checkbox" className="form-check-input" id="enable2FA" name="enable2FA" checked={formFields.enable2FA} onChange={handleChange} />
                         <label className="form-check-label" htmlFor="enable2FA">Enable Two-Factor Authentication</label>
-                    </div>
+                    </div> */}
                     <button className="btn btn-signin w-100" type="submit">Submit</button>               
                 </form>
             </main>

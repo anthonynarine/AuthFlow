@@ -8,6 +8,49 @@ export const useAuth = () => {
     const navigate = useNavigate();
     const [user, setUser] = useState(null);
     const [message, setMessage] = useState("")
+    const [is2FARequired, setIs2FARequired] = useState(false);
+    const [emailFor2FA, setEmailFor2FA] = useState("");
+
+    const login = useCallback(async ({ email, password}) => {
+        try {
+            const { data } = await axiosAPIinterceptor.post("/login/", { email, password }, { withCredentials: true })
+            console.log("login data", data)
+            if (data?.["2fa_required"]) {
+                setIs2FARequired(true); // Set flag if 2FA is needed
+                setEmailFor2FA(email)
+            } else {
+                Cookies.set("accessToken", data.access_token, { expires: 7 });
+                navigate("/")
+            }
+        } catch (error) {
+            console.error("Login error:", error)
+            setMessage(error.response?.data?.error || "An error occured during login. ")
+            
+        }
+    }, [navigate])
+
+    const fetchQRCode = useCallback(async () => {
+        try {
+            const { data } = await axiosAPIinterceptor.get("/generate/qr/");
+           
+            
+        } catch (error) {
+            
+        }
+    })
+
+    const verify2FA = useCallback(async ({ otp }) => {
+        try {
+            const { data } = await axiosAPIinterceptor.post("/two-factor-login/", { email: emailFor2FA, otp }, { withCredentials: true});
+            Cookies.set("accessToken", data.access_token, { expires: 7});
+            setIs2FARequired(false) // Reset 2FA req
+            setEmailFor2FA("") // Clear stored email after verification
+            navigate("/");
+        } catch (error) {
+            console.error("2FA verification error:", error);
+            setMessage(error.response?.data?.error || "An error occurred during 2FA verification")
+        }
+    }, [navigate, emailFor2FA, setIs2FARequired]);
 
     const logout = useCallback(async ()=> {
         try {
@@ -69,6 +112,10 @@ export const useAuth = () => {
         message,
         forgotPassword,
         resetPassword,
-    }
+        login,
+        verify2FA, 
+        is2FARequired,
+        setIs2FARequired,
+    };
 
 };

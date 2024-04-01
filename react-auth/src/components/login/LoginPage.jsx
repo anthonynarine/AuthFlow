@@ -8,40 +8,32 @@ import axios from "axios";
 // import API from "../../interceptors/axios";
 import Cookies from "js-cookie";
 import axiosAPIinterceptor from "../../interceptors/axios";
+import { useAuth } from "../hooks/useAuth";
 
 
 export const LoginPage = () => {
     useEffect(() => {
         console.log("🚀 This was my second request to an api I built and deployed 🛠️");
     }, []);
-    // State to hold form fields
+
+    
     const [email , setEmail] = useState('')
     const [password , setPassword] = useState('')
+    const [otp, setOtp] = useState("");
 
-    // Hook to navigate programmatically
+    const { login, verify2FA, is2FARequired, setIs2FARequired } = useAuth();
     const navigate = useNavigate();
 
     // Handler for form submission
     const handleSubmit = async (event) => {
         event.preventDefault();
-        try {
-            // Attempt to register the user with the provided data THATS'S MY FIRST LIVE API !!!!!
-            const { data } = await axiosAPIinterceptor.post("/login/", {
-                email,
-                password,
-            }, { withCredentials: true }); // if added will allow http cookie to be stored.
-            // Store the access token in a cookie
-            Cookies.set("accessToken", data.access_token, { expires: 7})
-            console.log(data)
-            // On success, navigate home page
-            navigate("/");
-        } catch (error) {
-            // Log any error that occurs during the registration process
-            console.error("Registration error:", error);
-        }
+        if (!is2FARequired) {
+            login({ email, password })
+        } else {
+            verify2FA({ otp })
+        }  
     };
 
-    // Handler to navigate back to the homepage
     const navigateHome = () => {
         navigate("/");
     };
@@ -78,6 +70,21 @@ export const LoginPage = () => {
                     <Link style={{  color: "#30815e"}} to="/forgot-password/">Forgot password</Link>
                 </div>
             </main>
+            {is2FARequired && (
+                <div className="form-floating mb-4">
+                    <input
+                        value={otp}
+                        onChange={(e) => setOtp(e.target.value)}
+                        type="text"
+                        className="form-control"
+                        id="floatingOTP"
+                        placeholder="One-Time Password"
+                        name="otp"
+                    />
+                    <label htmlFor="floatingOTP">One-Time Password</label>
+            </div>
+            )}
+            
         </div>
     );
 };

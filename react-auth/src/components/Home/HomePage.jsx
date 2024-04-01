@@ -1,7 +1,7 @@
 import React, { useState, useEffect, useCallback } from "react";
 import "./Home.css";
 import { Link } from "react-router-dom";
-import { useAuth } from "../hooks/useAuth";
+import { useAuthServices } from "../../context/auth/AuthContext";
 import { Footer } from "../footer/Footer";
 import { DropdownMenu } from "./dropdownMenu/DropdownMenu";
 import { FiKey } from 'react-icons/fi';
@@ -10,14 +10,14 @@ import { DiPython } from 'react-icons/di'; // Example using a Python icon for Dj
 import { FiMail } from 'react-icons/fi';
 
 function HomePage() {
-  const [isDropdownOpen, setIsDropdownOpen] = useState(false);
+  // const [isDropdownOpen, setIsDropdownOpen] = useState(false);
 
-  const toggleDropdownMenu = () => {
-    console.log("drawer toggled");
-    setIsDropdownOpen(!isDropdownOpen);
-  };
+  // const toggleDropdownMenu = () => {
+  //   console.log("drawer toggled");
+  //   setIsDropdownOpen(!isDropdownOpen);
+  // };
 
-  const { logout, getUser, message } = useAuth();
+  const { logout, getUser, message } = useAuthServices();
 
   useEffect(() => {
     getUser();

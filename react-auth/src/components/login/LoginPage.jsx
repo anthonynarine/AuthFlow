@@ -8,7 +8,7 @@ import axios from "axios";
 // import API from "../../interceptors/axios";
 import Cookies from "js-cookie";
 import axiosAPIinterceptor from "../../interceptors/axios";
-import { useAuth } from "../hooks/useAuth";
+import { useAuthServices } from "../../context/auth/AuthContext";
 
 
 export const LoginPage = () => {
@@ -21,7 +21,7 @@ export const LoginPage = () => {
     const [password , setPassword] = useState('')
     const [otp, setOtp] = useState("");
 
-    const { login, verify2FA, is2FARequired, setIs2FARequired } = useAuth();
+    const { login, verify2FA, is2FARequired, setIs2FARequired } = useAuthServices();
     const navigate = useNavigate();
 
     // Handler for form submission

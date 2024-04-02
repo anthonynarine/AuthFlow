@@ -7,6 +7,7 @@ import axios from "axios";
 export const useAuth = () => {
     const navigate = useNavigate();
     const [user, setUser] = useState(null);
+    const [isLoggedIn, setIsLoggedIn] = useState(false);
     const [message, setMessage] = useState("")
     const [is2FARequired, setIs2FARequired] = useState(false);
     const [emailFor2FA, setEmailFor2FA] = useState("");
@@ -16,10 +17,13 @@ export const useAuth = () => {
             const { data } = await axiosAPIinterceptor.post("/login/", { email, password }, { withCredentials: true })
             console.log("login data", data)
             if (data?.["2fa_required"]) {
+                console.log("Does data have 2fa_required?", data?.["2fa_required"]);
                 setIs2FARequired(true); // Set flag if 2FA is needed
                 setEmailFor2FA(email)
             } else {
                 Cookies.set("accessToken", data.access_token, { expires: 7 });
+                console.log("Setting isLoggedIn to true");
+                setIsLoggedIn(true)
                 navigate("/")
             }
         } catch (error) {
@@ -43,8 +47,9 @@ export const useAuth = () => {
         try {
             const { data } = await axiosAPIinterceptor.post("/two-factor-login/", { email: emailFor2FA, otp }, { withCredentials: true});
             Cookies.set("accessToken", data.access_token, { expires: 7});
-            setIs2FARequired(false) // Reset 2FA req
+            setIs2FARequired(false); // Reset 2FA req
             setEmailFor2FA("") // Clear stored email after verification
+            setIsLoggedIn(true);
             navigate("/");
         } catch (error) {
             console.error("2FA verification error:", error);
@@ -56,9 +61,10 @@ export const useAuth = () => {
         try {
             await axiosAPIinterceptor.post("/logout/", {}, { withCredentials: true});
             Cookies.remove("accessToken");
-            setUser(null)
-            setMessage("You are logged out")
-            navigate("/")
+            setUser(null);
+            setMessage("You are logged out");
+            setIsLoggedIn(false);
+            navigate("/login")
         } catch (error) {
             console.error("Logout error", error);
             
@@ -116,6 +122,7 @@ export const useAuth = () => {
         verify2FA, 
         is2FARequired,
         setIs2FARequired,
+        isLoggedIn, 
     };
 
 };

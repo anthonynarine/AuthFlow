@@ -17,7 +17,8 @@ function HomePage() {
   //   setIsDropdownOpen(!isDropdownOpen);
   // };
 
-  const { logout, getUser, message } = useAuthServices();
+  const { logout, getUser, message, isLoggedIn } = useAuthServices();
+  console.log(isLoggedIn)
 
   useEffect(() => {
     getUser();
@@ -49,8 +50,10 @@ function HomePage() {
             {/* Optionally include blinking dots here if they serve a purpose */}
           </div>
           <Link to="/register" className="btn btn-custom-color me-2">Register</Link>
-          <Link to="/login" className="btn btn-custom-color me-2">Login</Link>
-          <button className="btn btn-custom-color me-2" onClick={handleLogout}>Logout</button>
+          {isLoggedIn ? 
+            <Link to="/login" className="btn btn-custom-color me-2">Login</Link> :
+            <button className="btn btn-custom-color me-2" onClick={handleLogout}>Logout</button> 
+             }
         </div>
         <div className="intro-container">
           <h4 className="white-text">App Overview</h4>

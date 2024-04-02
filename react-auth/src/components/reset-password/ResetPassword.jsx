@@ -3,7 +3,7 @@ import authAppImage from "../../assets/auth-app.jpg";
 import { useNavigate, useParams } from "react-router-dom";
 import { RiArrowGoBackLine } from "react-icons/ri";
 import { useState } from "react";
-import { useAuth } from "../hooks/useAuth";
+import { useAuthServices } from "../../context/auth/AuthContext";
 import { toast, ToastContainer } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
 
@@ -13,7 +13,7 @@ export const ResetPassword = () => {
     const [validationError, setValidationError] = useState("");
     const navigate = useNavigate();
     const { uidb64, token } = useParams();
-    const { resetPassword } = useAuth(); // Assume markAsSubmitted's logic is handled within resetPassword
+    const { resetPassword } = useAuthServices(); // Assume markAsSubmitted's logic is handled within resetPassword
 
     const handleSubmit = async (event) => {
         event.preventDefault();

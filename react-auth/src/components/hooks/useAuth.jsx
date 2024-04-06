@@ -9,6 +9,7 @@ export const useAuth = () => {
     const [user, setUser] = useState(null);
     const [isLoggedIn, setIsLoggedIn] = useState(false);
     const [message, setMessage] = useState("")
+    const [isLoading, setIsLoading] = useState(false)
     const [is2FARequired, setIs2FARequired] = useState(false);
     const [emailFor2FA, setEmailFor2FA] = useState("");
 
@@ -98,22 +99,27 @@ export const useAuth = () => {
         }
     }, [navigate]);
 
-    const getUser = useCallback(async()=> {
+    const validateSession = useCallback(async()=> {
         try {
-            const { data } = await axiosAPIinterceptor.get("/user/");
-            console.log("User Data", data)
-            setUser(data)
-            setMessage(`Hi ${data.first_name}`)
+            setIsLoading(true);
+            const { data } = await axiosAPIinterceptor.get("/validate-session/");
+                console.log("User Data", data)
+                setUser(data)
+                setIsLoggedIn(true)
+                setMessage(`Hi ${data.first_name}`)
         } catch (error) {
             console.error("Error fetching user data", error);
-            setUser(null)
-            setMessage("Login or Register to test this app");  
+            setUser(null);
+            setIsLoggedIn(false);
+            setIsLoading(false) ;
+            setMessage("Login or Register to test this app"); 
         }
     },[]);
 
     return {
         logout,
-        getUser,
+        validateSession,
+        fetchQRCode,
         user,
         message,
         forgotPassword,
@@ -123,6 +129,7 @@ export const useAuth = () => {
         is2FARequired,
         setIs2FARequired,
         isLoggedIn, 
+        isLoading,
     };
 
 };

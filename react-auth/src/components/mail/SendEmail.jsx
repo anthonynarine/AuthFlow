@@ -45,7 +45,7 @@ export const SendEmail = () => {
             </button>
             </div>
             <div className="email-invite">
-                <p>Feel free to test the email functionality by sending a test message using the form below. This is a great way to ensure that our communication lines are open and functioning correctly. Additionally, if you have any questions or need further information, please don't hesitate to reach out to me at <a href="mailto:anthonynarine@anjin.org">anthonynarine@anjin.org</a>.</p>    
+                <p>If you have any questions or need further information, please don't hesitate to reach out to me at <a href="mailto:anthonynarine@anjin.org">anthonynarine@anjin.org</a>.</p>    
             </div>
             <form onSubmit={sendEmail} className="form">
                 <h6 className="from-h6">New Message</h6>

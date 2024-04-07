@@ -14,6 +14,8 @@ export const useAuth = () => {
     const [emailFor2FA, setEmailFor2FA] = useState("");
 
     const login = useCallback(async ({ email, password}) => {
+        setIsLoading(true);
+        setMessage("");
         try {
             const { data } = await axiosAPIinterceptor.post("/login/", { email, password }, { withCredentials: true })
             console.log("login data", data)
@@ -31,6 +33,8 @@ export const useAuth = () => {
             console.error("Login error:", error)
             setMessage(error.response?.data?.error || "An error occured during login. ")
             
+        } finally {
+            setIsLoading(false);
         }
     }, [navigate])
 
@@ -59,16 +63,20 @@ export const useAuth = () => {
     }, [navigate, emailFor2FA, setIs2FARequired]);
 
     const logout = useCallback(async ()=> {
+        setIsLoading(true);
+        setMessage("");
         try {
             await axiosAPIinterceptor.post("/logout/", {}, { withCredentials: true});
             Cookies.remove("accessToken");
             setUser(null);
             setMessage("You are logged out");
-            setIsLoggedIn(false);
-            navigate("/login")
+            setIsLoggedIn(false)
         } catch (error) {
             console.error("Logout error", error);
             
+        } finally {
+            setIsLoading(false)
+            navigate("/")
         }
     }, [navigate]);
 
@@ -90,7 +98,8 @@ export const useAuth = () => {
                 uidb64,
                 token
             };
-            const { data } = await axios.post("http://localhost:8000/api/reset-password/", payload, { withCredentials: true });
+            //  #ADD UPDATE THIS URL TO USE DEV OR PROD URL SET IN INTERCEPTOR. 
+            const { data } = await axiosAPIinterceptor.post("http://localhost:8000/api/reset-password/", payload, { withCredentials: true });
             setMessage(data?.message);
             navigate("/login");  
         } catch (error) {
@@ -99,22 +108,59 @@ export const useAuth = () => {
         }
     }, [navigate]);
 
-    const validateSession = useCallback(async()=> {
+/**
+ * Validates the current user session by making an API call.
+ * This function checks if there is a valid user session. If the session is valid,
+ * it updates the user state and authentication status accordingly.
+ * In case of an error (e.g., session is not valid), it sets the user state to null,
+ * updates the authentication status to false, and sets an appropriate message.
+ * It uses the useCallback hook to avoid unnecessary re-creations of the function
+ * unless its dependencies change (in this case, there are no dependencies).
+ */
+const validateSession = useCallback(async() => {
+    try {
+        setIsLoading(true); // Start loading state
+        setMessage(""); // Clear any existing messages
+
+        // Attempt to get session validation data from the API
+        const { data } = await axiosAPIinterceptor.get("/validate-session/");
+        console.log("User Data", data); // Log user data for debugging
+
+        setUser(data); // Update user state with the received data
+        setIsLoggedIn(true); // Update authentication status to true
+        setMessage(`Hi ${data.first_name}`); // Personalized welcome message
+    } catch (error) {
+        console.error("Error fetching user data", error); // Log error for debugging
+        setUser(null); // Reset user state to indicate no user is logged in
+        setIsLoggedIn(false); // Update authentication status to false
+        setMessage("Login or Register to test this app"); // Set message prompting to login or register
+    } finally {
+        setIsLoading(false); // End loading state
+    }
+}, []); // Dependency array is empty, indicating this callback does not depend on any props or state
+
+
+    const toggle2fa = useCallback(async(is2FAEnabled) => {
+        setIsLoading(true);
+        setMessage("") //  Clear any previous messages
         try {
-            setIsLoading(true);
-            const { data } = await axiosAPIinterceptor.get("/validate-session/");
-                console.log("User Data", data)
-                setUser(data)
-                setIsLoggedIn(true)
-                setMessage(`Hi ${data.first_name}`)
+            // is2FAEnabled  is a bool indicating the desired 2fa state.
+            const { data } = await axiosAPIinterceptor.patch("/user/toggle-2fa/", {
+                is_2fa_enabled: is2FAEnabled
+            }, { withCredentials: true });
+
+            // Update  the local state with the new 2FA stats from the server
+            setUser(prevState => ({...prevState, is_2fa_enabled: data.is_2fa_enabled}));
+
+            // Inform the user that the 2FA has been successfully enabled or disabled.
+            setMessage(`2FA has been ${is2FAEnabled ? "enabled" : "disabled"}`)
         } catch (error) {
-            console.error("Error fetching user data", error);
-            setUser(null);
-            setIsLoggedIn(false);
-            setIsLoading(false) ;
-            setMessage("Login or Register to test this app"); 
-        }
-    },[]);
+            console.error("Error toggling 2FA:", error);
+            setMessage(error.response?.data?.error || "An error occurred while toggling 2FA. Please try again.")
+        } finally {
+            setIsLoading(false);
+        }    
+    }, [])
 
     return {
         logout,
@@ -129,6 +175,7 @@ export const useAuth = () => {
         is2FARequired,
         setIs2FARequired,
         isLoggedIn, 
+        toggle2fa,
         isLoading,
     };
 

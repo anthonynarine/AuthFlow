@@ -18,17 +18,24 @@ function HomePage() {
   //   setIsDropdownOpen(!isDropdownOpen);
   // };
 
-  const { logout, validateSession, user, message, isLoggedIn, } = useAuthServices();
-  console.log(isLoggedIn)
+  const { logout, validateSession, user, message, isLoggedIn, toggle2fa, } = useAuthServices();
+  console.log({isLoggedIn})
 
   useEffect(() => {
     validateSession();
   }, [validateSession]); // Pass `validateSession` if it's guaranteed to be stable or memoized
 
-  // useCallback for event handlers
   const handleLogout = useCallback(() => {
     logout();
   }, [logout]);
+
+  const handleToggle2FA = () => {
+    if (user) {
+      toggle2fa(!user.is_2fa_enabled);
+    } else {
+      console.log("User is not defined.", user)
+    }
+  };
 
 
 
@@ -54,17 +61,30 @@ function HomePage() {
           </div>
           <Link to="/register" className="btn btn-custom-color me-2">Register</Link>
           {isLoggedIn ? 
-            <Link to="/login" className="btn btn-custom-color me-2">Logout</Link> :
-            <button className="btn btn-custom-color me-2" onClick={handleLogout}>Login</button> 
+              <button className="btn btn-custom-color me-2" onClick={handleLogout}>Logout</button> :
+              <Link to="/login" className="btn btn-custom-color me-2">Login</Link>
           }
-          {user.is_2fa}
-          <button className="btn btn-custom-color me-2" onClick={handleLogout}>Enable 2FA</button> 
-   
+          {user && (
+          <button className="btn btn-custom-color me-2" onClick={handleToggle2FA}>
+            {user.is_2fa_enabled ? "Disable 2FA" : "Enable 2FA"}
+          </button> 
+          )}
         </div>
         <div className="intro-container">
           <h4 className="white-text">App Overview</h4>
           <p className="intro-container">
-            This application is designed to provide a robust, secure, and user-friendly authentication system. Integrating backend technologies with a seamless frontend experience, it’s crafted for both security and ease of use. This platform offers a comprehensive set of authentication features, including user registration, login processes, password reset capabilities, and optional two-factor authentication. Behind every feature lies a robust backend built with Django and DRF, adhering to RESTful standards and secured with PyJWT for token creation. On the frontend, Axios interceptors streamline the login process, managing authentication tokens efficiently to ensure a smooth user experience. This system is crafted for those looking to explore a full-stack project that prioritizes security without compromising on user experience. Whether you're safeguarding personal projects or seeking inspiration for reliable login systems, this platform showcases the powerful synergy between a Django backend with custom middleware and a React frontend.
+            This application is designed to provide a robust, secure, and user-friendly authentication
+            system. Integrating backend technologies with a seamless frontend experience, it’s crafted
+            for both security and ease of use. This platform offers a comprehensive set of
+            authentication features, including user registration, login processes, password
+            reset capabilities, and optional two-factor authentication. Behind every feature lies
+            a robust backend built with Django and DRF, adhering to RESTful standards and secured
+            with PyJWT for token creation. On the frontend, Axios interceptors streamline the login
+            process, managing authentication tokens efficiently to ensure a smooth user experience.
+            This system is crafted for those looking to explore a full-stack project that prioritizes
+            security without compromising on user experience. Whether you're safeguarding personal 
+            projects or seeking inspiration for reliable login systems, this platform showcases
+            the powerful synergy between a Django backend with custom middleware and a React frontend.
           </p>
         </div>
       </main>

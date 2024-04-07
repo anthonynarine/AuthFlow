@@ -1,6 +1,6 @@
 import React, { useState, useEffect, useCallback } from "react";
 import "./Home.css";
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import { useAuthServices } from "../../context/auth/AuthContext";
 import { Footer } from "../footer/Footer";
 import { DropdownMenu } from "./dropdownMenu/DropdownMenu";
@@ -9,6 +9,7 @@ import { FaReact } from 'react-icons/fa'; // For the React icon
 import { DiPython } from 'react-icons/di'; // Example using a Python icon for Django
 import { FiMail } from 'react-icons/fi';
 import { GiHouseKeys } from "react-icons/gi";
+
 
 function HomePage() {
   // const [isDropdownOpen, setIsDropdownOpen] = useState(false);
@@ -19,15 +20,16 @@ function HomePage() {
   // };
 
   const { logout, validateSession, user, message, isLoggedIn, toggle2fa, } = useAuthServices();
+  const navigate = useNavigate();
   console.log({isLoggedIn})
 
   useEffect(() => {
     validateSession();
   }, [validateSession]); // Pass `validateSession` if it's guaranteed to be stable or memoized
 
-  const handleLogout = useCallback(() => {
+  const handleLogout = () => {
     logout();
-  }, [logout]);
+  };
 
   const handleToggle2FA = () => {
     if (user) {

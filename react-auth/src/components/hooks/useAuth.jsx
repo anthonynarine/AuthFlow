@@ -68,6 +68,7 @@ export const useAuth = () => {
         try {
             await axiosAPIinterceptor.post("/logout/", {}, { withCredentials: true});
             Cookies.remove("accessToken");
+            Cookies.remove("csrftoken");
             setUser(null);
             setMessage("You are logged out");
             setIsLoggedIn(false)
@@ -76,7 +77,6 @@ export const useAuth = () => {
             
         } finally {
             setIsLoading(false)
-            navigate("/")
         }
     }, [navigate]);
 
@@ -140,27 +140,27 @@ const validateSession = useCallback(async() => {
 }, []); // Dependency array is empty, indicating this callback does not depend on any props or state
 
 
-    const toggle2fa = useCallback(async(is2FAEnabled) => {
-        setIsLoading(true);
-        setMessage("") //  Clear any previous messages
-        try {
-            // is2FAEnabled  is a bool indicating the desired 2fa state.
-            const { data } = await axiosAPIinterceptor.patch("/user/toggle-2fa/", {
-                is_2fa_enabled: is2FAEnabled
-            }, { withCredentials: true });
+const toggle2fa = useCallback(async(is2FAEnabled) => {
+    setIsLoading(true);
+    setMessage("") //  Clear any previous messages
+    try {
+        // is2FAEnabled  is a bool indicating the desired 2fa state.
+        const { data } = await axiosAPIinterceptor.patch("/user/toggle-2fa/", {
+            is_2fa_enabled: is2FAEnabled
+        }, { withCredentials: true });
 
-            // Update  the local state with the new 2FA stats from the server
-            setUser(prevState => ({...prevState, is_2fa_enabled: data.is_2fa_enabled}));
+        // Update  the local state with the new 2FA stats from the server
+        setUser(prevState => ({...prevState, is_2fa_enabled: data.is_2fa_enabled}));
 
-            // Inform the user that the 2FA has been successfully enabled or disabled.
-            setMessage(`2FA has been ${is2FAEnabled ? "enabled" : "disabled"}`)
-        } catch (error) {
-            console.error("Error toggling 2FA:", error);
-            setMessage(error.response?.data?.error || "An error occurred while toggling 2FA. Please try again.")
-        } finally {
-            setIsLoading(false);
-        }    
-    }, [])
+        // Inform the user that the 2FA has been successfully enabled or disabled.
+        setMessage(`2FA has been ${is2FAEnabled ? "enabled" : "disabled"}`)
+    } catch (error) {
+        console.error("Error toggling 2FA:", error);
+        setMessage(error.response?.data?.error || "An error occurred while toggling 2FA. Please try again.")
+    } finally {
+        setIsLoading(false);
+    }    
+}, [])
 
     return {
         logout,

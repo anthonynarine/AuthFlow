@@ -19,7 +19,14 @@ axiosAPIinterceptor.interceptors.request.use(config => {
     // If the access token exists, attach it to the request headers
     if (accessToken) {
         config.headers["Authorization"] = `Bearer ${accessToken}`;
-    }
+    };
+
+    // Retrieve CSRF token from the cookies and attatch it to the request headers.
+    const csrfToken = Cookies.get("csrftoken");
+    if (csrfToken) {
+        config.headers["X-CSRFToken"] = csrfToken;
+    };
+
     return config;
 }, error => {
     // Handle request error

@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useCallback } from "react";
+import React, { useState, useEffect, useRef } from "react";
 import "./Home.css";
 import { Link, useNavigate } from "react-router-dom";
 import { useAuthServices } from "../../context/auth/AuthContext";
@@ -9,6 +9,7 @@ import { FaReact } from 'react-icons/fa'; // For the React icon
 import { DiPython } from 'react-icons/di'; // Example using a Python icon for Django
 import { FiMail } from 'react-icons/fi';
 import { GiHouseKeys } from "react-icons/gi";
+
 
 
 function HomePage() {
@@ -31,11 +32,31 @@ function HomePage() {
     logout();
   };
 
-  const handleToggle2FA = () => {
-    if (user) {
-      toggle2fa(!user.is_2fa_enabled);
-    } else {
-      console.log("User is not defined.", user)
+  const handleToggle2FA = async () => {
+    if (!user) {
+      console.log("User is not defined")
+      return;
+    }
+
+    // Initially capture the current 2FA status before attempting to toggle
+    const current2FAStatus = useRef(user?.is_2fa_enabled);
+
+    try {
+      // Attempt to toggele 2FA by calling the "toggle2fa" function
+      // This will send the request to the server to update the user's 2FA status
+      await toggle2fa(!user.is_2fa_enabled);
+      // Check the new 2FA stats after the toggle operation
+      if (user.is_2fa_enabled !== current2FAStatus) {
+        // if the 2FA status has changed navigate accordingly
+        if (user.is_2fa_enabled) {
+          console.log("Navigating to /setup-2fa because 2FA was enabled");
+          navigate("/setup-2fa");
+        } else {
+          console.log("2FA has been disabled")
+        }
+      }
+    } catch (error) {
+      console.error("Error toggling 2FA", error)
     }
   };
 
@@ -85,7 +106,7 @@ function HomePage() {
             process, managing authentication tokens efficiently to ensure a smooth user experience.
             This system is crafted for those looking to explore a full-stack project that prioritizes
             security without compromising on user experience. Whether you're safeguarding personal 
-            projects or seeking inspiration for reliable login systems, this platform showcases
+            projects or in need of reliable login systems, this platform showcases
             the powerful synergy between a Django backend with custom middleware and a React frontend.
           </p>
         </div>

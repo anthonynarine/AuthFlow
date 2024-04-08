@@ -5,6 +5,7 @@ import { RegisterPage } from "./components/register/RegisterPage";
 import { ReactFeatures } from "./components/app-features/ReactFeatures";
 import { SendEmail } from "./components/mail/SendEmail";
 import { ResetPassword } from "./components/reset-password/ResetPassword";
+import { TwoFactorSetup } from "./components/two-factor/2fa-setup/TwoFactorSetup";
 import HomePage from "./components/home/HomePage";
 import "./App.css"
 import { Footer } from "./components/footer/Footer";
@@ -25,6 +26,7 @@ function App() {
             <Route path="/react-features" element={<ReactFeatures />} />
             <Route path="/send-email" element={<SendEmail />} />
             <Route path="/reset-password/:uidb64/:token" element={<ResetPassword />} />
+            <Route path="/setup-2fa" element={<TwoFactorSetup />} />
           </Routes>
         </AuthProvider>
       </div>

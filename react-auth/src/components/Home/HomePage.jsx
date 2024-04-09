@@ -32,35 +32,9 @@ function HomePage() {
     logout();
   };
 
-  const handleToggle2FA = async () => {
-    if (!user) {
-      console.log("User is not defined")
-      return;
-    }
-
-    // Initially capture the current 2FA status before attempting to toggle
-    const current2FAStatus = useRef(user?.is_2fa_enabled);
-
-    try {
-      // Attempt to toggele 2FA by calling the "toggle2fa" function
-      // This will send the request to the server to update the user's 2FA status
-      await toggle2fa(!user.is_2fa_enabled);
-      // Check the new 2FA stats after the toggle operation
-      if (user.is_2fa_enabled !== current2FAStatus) {
-        // if the 2FA status has changed navigate accordingly
-        if (user.is_2fa_enabled) {
-          console.log("Navigating to /setup-2fa because 2FA was enabled");
-          navigate("/setup-2fa");
-        } else {
-          console.log("2FA has been disabled")
-        }
-      }
-    } catch (error) {
-      console.error("Error toggling 2FA", error)
-    }
+  const handleToggle2FA = () => {
+    toggle2fa(!user.is_2fa_enabled);
   };
-
-
 
   return (
     <div className="cover-container d-flex w-100 h-100 p-3 mx-auto flex-column">

@@ -154,13 +154,17 @@ const toggle2fa = useCallback(async(is2FAEnabled) => {
 
         // Inform the user that the 2FA has been successfully enabled or disabled.
         setMessage(`2FA has been ${is2FAEnabled ? "enabled" : "disabled"}`)
+
+        if (data.is_2fa_enabled) {
+            navigate("/setup-2fa/");
+        }
     } catch (error) {
         console.error("Error toggling 2FA:", error);
         setMessage(error.response?.data?.error || "An error occurred while toggling 2FA. Please try again.")
     } finally {
         setIsLoading(false);
     }    
-}, [])
+}, [navigate])
 
     return {
         logout,

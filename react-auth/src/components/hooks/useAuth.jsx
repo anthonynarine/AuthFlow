@@ -12,6 +12,8 @@ export const useAuth = () => {
     const [isLoading, setIsLoading] = useState(false)
     const [is2FARequired, setIs2FARequired] = useState(false);
     const [emailFor2FA, setEmailFor2FA] = useState("");
+    const [qrCode, setQrCode] = useState("")
+
 
     const login = useCallback(async ({ email, password}) => {
         setIsLoading(true);
@@ -40,13 +42,13 @@ export const useAuth = () => {
 
     const fetchQRCode = useCallback(async () => {
         try {
-            const { data } = await axiosAPIinterceptor.get("/generate/qr/");
-           
-            
+            const { data } = await axiosAPIinterceptor.get("/generate-qr/", { responseType: "blob" });
+            const url = URL.createObjectURL(data);
+            setQrCode(url); 
         } catch (error) {
-            
+            console.error("Error fetching QR code:", error)
         }
-    })
+    }, []);
 
     const verify2FA = useCallback(async ({ otp }) => {
         try {
@@ -166,6 +168,8 @@ const toggle2fa = useCallback(async(is2FAEnabled) => {
     }    
 }, [navigate])
 
+
+
     return {
         logout,
         validateSession,
@@ -181,6 +185,8 @@ const toggle2fa = useCallback(async(is2FAEnabled) => {
         isLoggedIn, 
         toggle2fa,
         isLoading,
+        fetchQRCode, 
+        qrCode,
     };
 
 };

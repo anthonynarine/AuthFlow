@@ -2,12 +2,7 @@ import "./Login.css";
 import authAppImage from "../../assets/auth-app.jpg";
 import { Link, useNavigate } from "react-router-dom";
 import { RiArrowGoBackLine } from "react-icons/ri";
-// import API from "../../interceptors/axios";
 import { useState, useEffect } from "react";
-import axios from "axios";
-// import API from "../../interceptors/axios";
-import Cookies from "js-cookie";
-import axiosAPIinterceptor from "../../interceptors/axios";
 import { useAuthServices } from "../../context/auth/AuthContext";
 
 
@@ -20,6 +15,7 @@ export const LoginPage = () => {
     const [email , setEmail] = useState('')
     const [password , setPassword] = useState('')
     const [otp, setOtp] = useState("");
+    const [showOtpModal, setShowOtpModal] = useState(false);
 
     const { login, verify2FA, is2FARequired, setIs2FARequired } = useAuthServices();
     const navigate = useNavigate();
@@ -37,6 +33,24 @@ export const LoginPage = () => {
     const navigateHome = () => {
         navigate("/");
     };
+
+
+      // OTP Modal handlers //
+//   const handleConfirm = useCallback(() => {
+//     console.log("OTP Value:", otpValue);
+//     setIsModalOpen(false);
+//     setOtpValue(''); 
+// }, [otpValue]);
+
+//   const handleCancel = useCallback(() => {
+//     setIsModalOpen(false);
+//     setOtpValue("")
+
+//   }, [])
+
+//   const handleOtpChange = useCallback((event) => {
+//     setOtpValue(event.target.value);
+//   }, []);
 
     return (
         <div className="login-container">

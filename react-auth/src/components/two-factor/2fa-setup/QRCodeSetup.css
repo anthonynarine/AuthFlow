@@ -1,22 +1,79 @@
 .qr-container {
-    max-width: 350px;
+    max-width: 450px;
     margin: 20px auto;
     padding: 20px;
-    border: 1px solid #ddd;
+    margin-top: 4rem;
+    /* border: 1px solid #ccc; */
     border-radius: 8px;
     text-align: center;
-    background-color: #f9f9f9;
+    margin-bottom: 12rem; /* Ensure enough space above the footer */
+    display: flex;
+    flex-direction: column; /* Stack the containers vertically */
 }
 
-.qr-title {
-    margin-bottom: 20px;
-    color: #333;
+.setup-instructions {
+    background-color: #1C2833;
+    padding: 1rem;
+    border-radius: 8px;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+    margin-bottom: 1rem; 
+}
+
+.qr-image-container {
+    background-color: #fff;
+    border-radius: 8px;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+    padding: 1rem;
 }
 
 .qr-image {
     max-width: 100%;
     height: auto;
     border: 1px solid #ccc;
-    padding: 10px;
-    background-color: #fff;
+    border-radius: 8px;
+}
+
+.setup-instructions p {
+    color: #FFFFFF;
+    font-size: 1.1rem;
+    line-height: 1.6;
+    margin-bottom: 1rem;
+}
+
+.btn-next {
+    background-color: #30815e;;
+    color: #fff;
+    border: none;
+    padding: 10px 20px;
+    margin-top: 20px;
+    border-radius: 5px;
+    cursor: pointer;
+    transition: background-color 0.3s ease;
+}
+
+.btn-next:hover {
+    background-color: #14a365;;
+}
+
+.nav-button {
+    position: absolute;
+    top: 10px;
+    left:10px;
+    margin: 0;
+    margin-left: 15px;
+    margin-top: 10px;
+    background: none;
+    color: #D3D3D3;
+    border: none;
+    cursor: pointer;
+    z-index: 1000; /* Ensures the button is above other elements */
+}
+
+.nav-button:hover {
+    color: #A9A9A9; /* Slightly lighter color on hover for visual feedback */
+}
+
+  /* Ensure the icon within the button inherits the color */
+.nav-button svg {
+    color: inherit; /* This ensures the icon color matches the button's color */
 }

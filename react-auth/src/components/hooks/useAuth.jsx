@@ -5,7 +5,6 @@ import { useCallback, useState } from "react";
 import axios from "axios";
 
 export const useAuth = () => {
-    const navigate = useNavigate();
     const [user, setUser] = useState(null);
     const [isLoggedIn, setIsLoggedIn] = useState(false);
     const [message, setMessage] = useState("")
@@ -13,7 +12,8 @@ export const useAuth = () => {
     const [is2FARequired, setIs2FARequired] = useState(false);
     const [emailFor2FA, setEmailFor2FA] = useState("");
     const [qrCode, setQrCode] = useState("")
-
+    
+    const navigate = useNavigate();
 
     const login = useCallback(async ({ email, password}) => {
         setIsLoading(true);
@@ -22,12 +22,10 @@ export const useAuth = () => {
             const { data } = await axiosAPIinterceptor.post("/login/", { email, password }, { withCredentials: true })
             console.log("login data", data)
             if (data?.["2fa_required"]) {
-                console.log("Does data have 2fa_required?", data?.["2fa_required"]);
                 setIs2FARequired(true); // Set flag if 2FA is needed
-                setEmailFor2FA(email)
+                setEmailFor2FA(email) // set email to be used in TwoFactorLoginAPIView
             } else {
                 Cookies.set("accessToken", data.access_token, { expires: 7 });
-                console.log("Setting isLoggedIn to true");
                 setIsLoggedIn(true)
                 navigate("/")
             }
@@ -40,6 +38,27 @@ export const useAuth = () => {
         }
     }, [navigate])
 
+    const verify2FA = useCallback(async ({ otp }) => {
+        setIsLoading(true);
+        setMessage("");
+        try {
+            const { data } = await axiosAPIinterceptor.post("/verify-otp/", {  otp }, { withCredentials: true});
+            if (data.success) {
+                Cookies.set("accessToken", data.access_token, { expires: 7 });
+                setIsLoggedIn(true);
+                setMessage("2FA verification successful");
+                navigate("/")
+            } else {
+                setMessage(data.error || "Invalid OTP. Please try again");
+            }
+        } catch (error) {
+            console.error("2FA verification error:", error);
+            setMessage(error.response?.data?.error || "An error occurred during 2FA verification")
+        } finally {
+            setIsLoading(false);
+        }
+    }, [navigate]);
+
     const fetchQRCode = useCallback(async () => {
         try {
             const { data } = await axiosAPIinterceptor.get("/generate-qr/", { responseType: "blob" });
@@ -49,20 +68,6 @@ export const useAuth = () => {
             console.error("Error fetching QR code:", error)
         }
     }, []);
-
-    const verify2FA = useCallback(async ({ otp }) => {
-        try {
-            const { data } = await axiosAPIinterceptor.post("/two-factor-login/", { email: emailFor2FA, otp }, { withCredentials: true});
-            Cookies.set("accessToken", data.access_token, { expires: 7});
-            setIs2FARequired(false); // Reset 2FA req
-            setEmailFor2FA("") // Clear stored email after verification
-            setIsLoggedIn(true);
-            navigate("/");
-        } catch (error) {
-            console.error("2FA verification error:", error);
-            setMessage(error.response?.data?.error || "An error occurred during 2FA verification")
-        }
-    }, [navigate, emailFor2FA, setIs2FARequired]);
 
     const logout = useCallback(async ()=> {
         setIsLoading(true);
@@ -173,7 +178,6 @@ const toggle2fa = useCallback(async(is2FAEnabled) => {
     return {
         logout,
         validateSession,
-        fetchQRCode,
         user,
         message,
         forgotPassword,

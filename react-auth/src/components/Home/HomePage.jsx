@@ -1,8 +1,7 @@
-import React, { useState, useEffect, useRef } from "react";
+import React, { useEffect, useState } from "react";
 import "./Home.css";
 import { Link, useNavigate } from "react-router-dom";
 import { useAuthServices } from "../../context/auth/AuthContext";
-import { Footer } from "../footer/Footer";
 import { DropdownMenu } from "./dropdownMenu/DropdownMenu";
 import { FiKey } from 'react-icons/fi';
 import { FaReact } from 'react-icons/fa'; // For the React icon

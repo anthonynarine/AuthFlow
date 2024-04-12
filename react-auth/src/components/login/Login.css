@@ -129,3 +129,18 @@
 .login-container .form-check-input:hover {
   color: #14a365; /* Hover color */
 }
+
+.password-toggle-button {
+  cursor: pointer;
+  position: absolute;
+  right: 10px;
+  top: 50%; /* Center vertically relative to parent */
+  transform: translateY(-50%); /* Keep icon centered as it scales */
+  color: #666;
+  font-size: 24px; /* Base icon size, adjust as needed */
+  transition: transform 0.3s ease; /* Smooth transition for transform */
+}
+
+.password-toggle-button:hover {
+  transform: translateY(-50%) scale(1.2); /* Scale up on hover */
+}

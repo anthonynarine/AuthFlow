@@ -4,9 +4,11 @@ import { Link, useNavigate } from "react-router-dom";
 import { RiArrowGoBackLine } from "react-icons/ri";
 import { useState, useEffect } from "react";
 import { useAuthServices } from "../../context/auth/AuthContext";
+import { RiEyeLine, RiEyeOffLine } from "react-icons/ri";
 
 
 export const LoginPage = () => {
+
     useEffect(() => {
         console.log("🚀 This was my second request to an api I built and deployed 🛠️");
     }, []);
@@ -16,6 +18,7 @@ export const LoginPage = () => {
     const [password , setPassword] = useState('')
     const [otp, setOtp] = useState("");
     const [showOtpModal, setShowOtpModal] = useState(false);
+    const [passwordVisible, setPasswordVisible] = useState(false);
 
     const { login, verify2FA, is2FARequired, setIs2FARequired } = useAuthServices();
     const navigate = useNavigate();
@@ -34,23 +37,10 @@ export const LoginPage = () => {
         navigate("/");
     };
 
+    const togglePasswordVisibility = () => {
+        setPasswordVisible(!passwordVisible);
+    };
 
-      // OTP Modal handlers //
-//   const handleConfirm = useCallback(() => {
-//     console.log("OTP Value:", otpValue);
-//     setIsModalOpen(false);
-//     setOtpValue(''); 
-// }, [otpValue]);
-
-//   const handleCancel = useCallback(() => {
-//     setIsModalOpen(false);
-//     setOtpValue("")
-
-//   }, [])
-
-//   const handleOtpChange = useCallback((event) => {
-//     setOtpValue(event.target.value);
-//   }, []);
 
     return (
         <div className="login-container">
@@ -73,10 +63,19 @@ export const LoginPage = () => {
                     </div>
                     {/* Password Input */}
                     <div className="form-floating mb-4">
-                        <input value={password}  type="password" className="form-control" id="floatingPassword" placeholder="Password" name="password"
+                        <input value={password}  type={passwordVisible ? "text" : "password"} className="form-control" id="floatingPassword" placeholder="Password" name="password"
                             onChange={event=> setPassword(event.target.value)}
                         />
                         <label htmlFor="floatingPassword">Password</label>
+                        <button
+                            type="button"
+                            className="password-toggle-button"
+                            onClick={togglePasswordVisibility}
+                            style={{ border: 'none', background: 'transparent' }}
+                            aria-label={passwordVisible ? "Hide password" : "Show password"}  // Accessibility improvement
+                            >
+                            {passwordVisible ? <RiEyeOffLine /> : <RiEyeLine />}
+                        </button>
                     </div>
                     <button className="btn btn-signin w-100" type="submit">Submit</button>
                 </form>

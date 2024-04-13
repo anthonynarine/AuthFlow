@@ -5,8 +5,9 @@ import { useCallback, useState } from "react";
 import axios from "axios";
 
 export const useAuth = () => {
-    const [user, setUser] = useState(null);
     const [isLoggedIn, setIsLoggedIn] = useState(false);
+    const [error, setError] = useState("");
+    const [user, setUser] = useState(null);
     const [message, setMessage] = useState("")
     const [isLoading, setIsLoading] = useState(false)
     const [is2FARequired, setIs2FARequired] = useState(false);
@@ -17,7 +18,6 @@ export const useAuth = () => {
 
     const login = useCallback(async ({ email, password}) => {
         setIsLoading(true);
-        setMessage("");
         try {
             const { data } = await axiosAPIinterceptor.post("/login/", { email, password }, { withCredentials: true })
             console.log("login data", data)
@@ -30,8 +30,9 @@ export const useAuth = () => {
                 navigate("/")
             }
         } catch (error) {
+            setError(error.response?.data?.error || "An error occured during login. ")
             console.error("Login error:", error)
-            setMessage(error.response?.data?.error || "An error occured during login. ")
+            console.log(error.response || error);
             
         } finally {
             setIsLoading(false);
@@ -176,6 +177,7 @@ export const useAuth = () => {
 
     return {
         logout,
+        error,
         validateSession,
         user,
         message,

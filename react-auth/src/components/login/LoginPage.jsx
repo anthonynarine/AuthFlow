@@ -20,7 +20,7 @@ export const LoginPage = () => {
     const [showOtpModal, setShowOtpModal] = useState(false);
     const [passwordVisible, setPasswordVisible] = useState(false);
 
-    const { login, verify2FA, is2FARequired, setIs2FARequired } = useAuthServices();
+    const { login, verify2FA, is2FARequired, error, isLoading } = useAuthServices();
     const navigate = useNavigate();
 
     // Handler for form submission
@@ -54,6 +54,7 @@ export const LoginPage = () => {
                         <img src={authAppImage} alt="Auth App" className="login-logo" />
                     </div>
                     <h1 className="h3 mb-4 fw-normal">Login</h1>
+                    {error && <div className="alert alert-danger">{error}</div>}
                     {/* Email Input */}
                     <div className="form-floating mb-3">
                         <input value={email} type="email" className="form-control" id="floatingEmail" placeholder="name@example.com" name="email"

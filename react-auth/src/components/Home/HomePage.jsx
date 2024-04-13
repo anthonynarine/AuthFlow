@@ -7,8 +7,6 @@ import { FiKey } from 'react-icons/fi';
 import { FaReact } from 'react-icons/fa'; // For the React icon
 import { DiPython } from 'react-icons/di'; // Example using a Python icon for Django
 import { FiMail } from 'react-icons/fi';
-import { GiHouseKeys } from "react-icons/gi";
-
 
 
 function HomePage() {

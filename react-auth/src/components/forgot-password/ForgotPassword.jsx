@@ -1,6 +1,6 @@
 import "../login/Login.css";
 import authAppImage from "../../assets/auth-app.jpg";
-import { Link, useNavigate } from "react-router-dom";
+import { useNavigate } from "react-router-dom";
 import { RiArrowGoBackLine } from "react-icons/ri";
 import { useState } from "react";
 import { useAuth } from "../hooks/useAuth";
@@ -12,7 +12,7 @@ import "./ForgotPassword.css"
 export const ForgotPassword = () => {
 
     const [email , setEmail] = useState('')
-    const { forgotPassword, message } =useAuth()
+    const { forgotPassword } =useAuth()
     const navigate = useNavigate();
 
     const handleSubmit = async (event) => {

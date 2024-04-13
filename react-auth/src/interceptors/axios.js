@@ -6,14 +6,53 @@ const DEV_URL = "http://localhost:8000/api";
 const Production_URL = "https://ant-django-auth-62cf01255868.herokuapp.com/api";
 
 
-// Create an Axios instance with the determined base URL
-const axiosAPIinterceptor = axios.create({
+// Function to log request details
+const logRequest = (request) => {
+    console.log(`Request made to ${request.url} with method ${request.method}`);
+    return request;
+};
+
+// Function to log response details
+const logResponse = (response) => {
+    console.log(`Recieved response from ${response.config.url}`);
+    return response;
+};
+
+// Function to log errors
+const logError = (error) => {
+    console.error(`Error in request to ${error.config.url}: ${error.message}`);
+    return Promise.reject(error);
+}
+
+
+// Axios instance  for public (non-authenticated) request. 
+const publicAxios = axios.create({
+    baseURL: DEV_URL,
+    withCredentials: true 
+});
+
+// Interceptor to attatch CSRF token for public request
+publicAxios.interceptors.request.use(config => {
+    const csrfToken = Cookies.get("csrftoken");
+    if (csrfToken) {
+        config.headers["X-CSRFToken"] = csrfToken;
+    }
+
+    // Start timing the request
+    config.metadata = { startTime: new Date() };
+    return logRequest(config);
+
+}, logError);
+
+
+// Authenticated Axios instance
+const authAxios = axios.create({
     baseURL: DEV_URL,
     withCredentials: true, // This is necessary for the Axios to send cookies with the request, which is important for sessions and CSRF tokens.
 });
 
 // Request interceptor to attach the access token
-axiosAPIinterceptor.interceptors.request.use(config => {
+authAxios.interceptors.request.use(config => {
     // Retrieve the access token from cookies
     const accessToken = Cookies.get("accessToken");
     // If the access token exists, attach it to the request headers
@@ -34,7 +73,7 @@ axiosAPIinterceptor.interceptors.request.use(config => {
 });
 
 // Response interceptor to handle automatic token refresh
-axiosAPIinterceptor.interceptors.response.use((response) => {
+authAxios.interceptors.response.use((response) => {
     // Directly resolve success responses
     return response;
 }, async (error) => {
@@ -44,13 +83,13 @@ axiosAPIinterceptor.interceptors.response.use((response) => {
         originalRequest._retry = true; // Mark that we already tried refreshing the token
         try {
             // Attempt to refresh the token by hitting the refresh token endpoint
-            const response = await axiosAPIinterceptor.post("/token-refresh/", {}, { withCredentials: true });
+            const response = await authAxios.post("/token-refresh/", {}, { withCredentials: true });
             if (response.status === 200) {
                 // If the token refresh was successful, update the cookie with the new access token
                 const newAccessToken = response.data.access_token;
                 Cookies.set("accessToken", newAccessToken);
                 // Retry the original request with the new token
-                return axiosAPIinterceptor(originalRequest);
+                return authAxios(originalRequest);
             }
         } catch (refreshError) {
             // Handle the case where the token refresh fails
@@ -62,4 +101,4 @@ axiosAPIinterceptor.interceptors.response.use((response) => {
     return Promise.reject(error);
 });
 
-export default axiosAPIinterceptor;
+export {authAxios, publicAxios } 

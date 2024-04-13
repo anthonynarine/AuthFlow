@@ -1,8 +1,8 @@
 import { useNavigate } from "react-router-dom";
 import Cookies from "js-cookie";
-import axiosAPIinterceptor from "../../interceptors/axios";
+import { authAxios, publicAxios } from "../../interceptors/axios"
 import { useCallback, useState } from "react";
-import axios from "axios";
+
 
 export const useAuth = () => {
     const [isLoggedIn, setIsLoggedIn] = useState(false);
@@ -19,7 +19,7 @@ export const useAuth = () => {
     const login = useCallback(async ({ email, password}) => {
         setIsLoading(true);
         try {
-            const { data } = await axiosAPIinterceptor.post("/login/", { email, password }, { withCredentials: true })
+            const { data } = await publicAxios.post("/login/", { email, password }, { withCredentials: true })
             console.log("login data", data)
             if (data?.["2fa_required"]) {
                 setIs2FARequired(true); // Set flag if 2FA is needed
@@ -43,7 +43,7 @@ export const useAuth = () => {
         setIsLoading(true);
         setMessage("");
         try {
-            const { data } = await axiosAPIinterceptor.post("/verify-otp/", {  otp }, { withCredentials: true});
+            const { data } = await authAxios.post("/verify-otp/", {  otp }, { withCredentials: true});
             if (data.success) {
                 Cookies.set("accessToken", data.access_token, { expires: 7 });
                 setIsLoggedIn(true);
@@ -62,7 +62,7 @@ export const useAuth = () => {
 
     const fetchQRCode = useCallback(async () => {
         try {
-            const { data } = await axiosAPIinterceptor.get("/generate-qr/", { responseType: "blob" });
+            const { data } = await authAxios.get("/generate-qr/", { responseType: "blob" });
             const url = URL.createObjectURL(data);
             setQrCode(url); 
         } catch (error) {
@@ -74,7 +74,7 @@ export const useAuth = () => {
         setIsLoading(true);
         setMessage("");
         try {
-            await axiosAPIinterceptor.post("/logout/", {}, { withCredentials: true});
+            await authAxios.post("/logout/", {}, { withCredentials: true});
             Cookies.remove("accessToken");
             Cookies.remove("csrftoken");
             setUser(null);
@@ -90,7 +90,7 @@ export const useAuth = () => {
 
     const forgotPassword = useCallback(async(email) => {
         try {
-            const { data } = await axiosAPIinterceptor.post("/forgot-password/", {email}, {withCredentials: true})
+            const { data } = await publicAxios.post("/forgot-password/", {email}, {withCredentials: true})
             setMessage(data?.message); 
         } catch (error) {
             console.error("Forgot Password error", error);
@@ -107,7 +107,7 @@ export const useAuth = () => {
                 token
             };
             //  #ADD UPDATE THIS URL TO USE DEV OR PROD URL SET IN INTERCEPTOR. 
-            const { data } = await axiosAPIinterceptor.post("http://localhost:8000/api/reset-password/", payload, { withCredentials: true });
+            const { data } = await publicAxios.post("/reset-password/", payload, { withCredentials: true });
             setMessage(data?.message);
             navigate("/login");  
         } catch (error) {
@@ -131,7 +131,7 @@ export const useAuth = () => {
             setMessage(""); // Clear any existing messages
 
             // Attempt to get session validation data from the API
-            const { data } = await axiosAPIinterceptor.get("/validate-session/");
+            const { data } = await authAxios.get("/validate-session/");
             console.log("User Data", data); // Log user data for debugging
 
             setUser(data); // Update user state with the received data
@@ -152,7 +152,7 @@ export const useAuth = () => {
         setMessage("") //  Clear any previous messages
         try {
             // is2FAEnabled  is a bool indicating the desired 2fa state.
-            const { data } = await axiosAPIinterceptor.patch("/user/toggle-2fa/", {
+            const { data } = await authAxios.patch("/user/toggle-2fa/", {
                 is_2fa_enabled: is2FAEnabled
             }, { withCredentials: true });
 

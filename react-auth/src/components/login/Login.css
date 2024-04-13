@@ -7,14 +7,14 @@
 
 .login-logo {
   max-width: 110px;
-  margin-bottom: 16px;
+  margin-bottom: 0px;
 }
 
 /* login.css */
 .login-container {
   max-width: 500px;
   margin: 2rem auto;
-  margin-top: 5rem;
+  margin-top: 4rem;
   margin-bottom: 12rem; /* Ensure enough space above the footer */
   padding: 2rem;
   background: #1C2833;
@@ -62,6 +62,20 @@
   color:#BDC3C7;
 }
 
+.form-signin {
+  padding: 0; /* Remove padding inside the form container if unnecessary */
+}
+
+.form-signin > form {
+  margin: 0; /* Ensure there's no extra margin affecting inner elements */
+}
+
+.form-signin {
+  width: 100%; /* Ensures the form takes full width of its parent */
+  padding: 0; /* Adjust or remove padding as needed */
+}
+
+
 
 .login-container input,
 .login-container textarea { /* Adjust selector as needed */
@@ -82,17 +96,19 @@
 
 .btn-signin { /* Adjust selector if different */
   width: 100%;
+  min-height: 3.5rem;
   background-color: #30815e;
   color: white;
-  padding: 15px 20px;
+  /* padding: 15px 10px; */
+
   border: none;
   border-radius: 4px;
   cursor: pointer;
   font-size: 16px;
 }
-
 .btn-signin:hover {
-  background-color: #14a365;
+  background-color: #14a365; /* Lighter green on hover */
+  color: #fff;
 }
 
 .forgot-password-link {

@@ -77,7 +77,7 @@ export const LoginPage = () => {
                             {passwordVisible ? <RiEyeOffLine /> : <RiEyeLine />}
                         </button>
                     </div>
-                    <button className="btn btn-signin w-100" type="submit">Submit</button>
+                    <div><button className="btn btn-signin w-100" type="submit">Submit</button></div>
                 </form>
                 <div className="forgot-password-link">
                     <Link style={{  color: "#30815e"}} to="/forgot-password/">Forgot password</Link>

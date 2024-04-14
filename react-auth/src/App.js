@@ -10,6 +10,7 @@ import HomePage from "./components/home/HomePage";
 import "./App.css"
 import { Footer } from "./components/footer/Footer";
 import AuthProvider from "./context/auth/AuthContext";
+import BasicAuthProvider from "./context/auth/BasicAuthContext";
 
 
 function App() {
@@ -18,6 +19,7 @@ function App() {
     <div className="app-container">
       <div className="routes-content" style={{ flex: 1, overflowY: 'auto' }}>
         <AuthProvider>
+        <BasicAuthProvider>
           <Routes>
             <Route path="/" element={<HomePage />} />
             <Route path="/register" element={<RegisterPage />} />
@@ -28,6 +30,7 @@ function App() {
             <Route path="/reset-password/:uidb64/:token" element={<ResetPassword />} />
             <Route path="/setup-2fa" element={<QRCodeSetup />} />
           </Routes>
+        </BasicAuthProvider> 
         </AuthProvider>
       </div>
       <Footer />

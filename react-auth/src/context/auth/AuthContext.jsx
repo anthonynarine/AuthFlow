@@ -1,39 +1,39 @@
-import { createContext, useContext } from "react";
+import { createContext, useContext, useMemo } from "react";
 import { useAuth } from "../../components/hooks/useAuth";
+import { useBasicAuth } from "../../components/hooks/useBasicAuth";
+import { useTwoFactorAuth } from "../../components/hooks/useTwoFactorAuth";
+import { useUserSession } from "../../components/hooks/useUserSession";
 
-/**
- * Create a Context for the authentication services.
- * This Context will be used to provide and consume authentication state and functions throughout the application.
- */
-const AuthContext = createContext();
 
-/**
- * Custom hook to use the authentication services.
- * This hook simplifies accessing the auth-related state and functions.
- * 
- * @returns {Object} The authentication services context.
- * @throws {Error} If called outside of AuthProvider component tree.
- */
+// Create context for basic authentication
+const AuthContext = createContext(null);
+
+// Hook to easily access basicAuthServices within components
 export function useAuthServices() {
     const context = useContext(AuthContext);
 
-    if (!context) {
+    if (context === null) {
         throw new Error("useAuthServices must be used within an AuthProvider");
     }
     return context;
 }
 
-/**
- * Provider component for authentication services.
- * Wraps the application or part of it that requires authentication state and functions.
- * Utilizes the useAuth custom hook to manage auth state.
- * 
- * @param {Object} children - The child components or elements to be wrapped by the provider.
- */
+// Provider component for AuthServices
 export function AuthProvider({ children }) {
     console.log("AuthProvider rendered"); // Consider removing this for production
 
-    const authServices = useAuth();
+    const userAuth = useAuth();
+    const basicAuth = useBasicAuth();
+    const session = useUserSession();
+    const twoFactorAuth = useTwoFactorAuth();
+
+    // use useMemo to only recompute the authServices objects when one of the hooks changes
+    const authServices = useMemo(() => ({
+        ...userAuth,
+        basicAuth,
+        twoFactorAuth,
+        session,
+    }), [userAuth, basicAuth, twoFactorAuth, session]);
 
     return (
         <AuthContext.Provider value={authServices}>

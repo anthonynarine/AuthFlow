@@ -1,30 +1,30 @@
-import React, { createContext, useContext } from "react";
+// import React, { createContext, useContext } from "react";
 
-// Import the hook for the userSessionService
-import { useUserSession } from "../../components/hooks/useUserSession"
+// // Import the hook for the userSessionService
+// import { useUserSession } from "../../components/hooks/useUserSession"
 
-// Create context
-const UserSessionContext = createContext(undefined);
+// // Create context
+// const UserSessionContext = createContext(undefined);
 
-// Hook to easily access userSessionServices within components
-export function useUserSessionServices() {
-    const context = useContext(UserSessionContext);
+// // Hook to easily access userSessionServices within components
+// export function useUserSessionServices() {
+//     const context = useContext(UserSessionContext);
 
-    if (context === undefined) {
-        throw new Error("useUserSessionServices must be witin a UserSessionProvider");
-    }
-    return context;
-}
+//     if (context === undefined) {
+//         throw new Error("useUserSessionServices must be witin a UserSessionProvider");
+//     }
+//     return context;
+// }
 
-// Provider component for session
-export function UserSessionProvider({ children }) {
-    console.log("UserSessionProvider rendered") // Remove for production
+// // Provider component for session
+// export function UserSessionProvider({ children }) {
+//     console.log("UserSessionProvider rendered") // Remove for production
 
-    const useUserSessionServices = useUserSession();
+//     const useUserSessionServices = useUserSession();
 
-    return (
-        <UserSessionContext.Provider value={useUserSessionServices}>
-            {children}
-        </UserSessionContext.Provider>
-    );
-}
+//     return (
+//         <UserSessionContext.Provider value={useUserSessionServices}>
+//             {children}
+//         </UserSessionContext.Provider>
+//     );
+// }

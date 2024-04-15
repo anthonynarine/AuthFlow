@@ -1,13 +1,11 @@
 
 
 import { useCallback } from "react";
-import { useBasicAuthServices } from "../../context/auth/BasicAuthContext";
+import { useAuthServices } from "../../context/auth/AuthContext";
 import { authAxios } from "../../interceptors/axios";
 
-
-
 export const useUserSession = () => {
-    const { setUser, setIsLoggedIn, setError, setIsLoading, setMessage } = useBasicAuthServices();
+    const { setUser, setIsLoggedIn, setError, setIsLoading, setMessage } = useAuthServices();
 
     const validateSession = useCallback(async () => {
         setIsLoading(true);

@@ -2,14 +2,11 @@
 import { useCallback, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { authAxios, publicAxios } from "../../interceptors/axios";
-import { useBasicAuthServices } from "../../context/auth/BasicAuthContext";
+import { useAuthServices } from "../../context/auth/AuthContext";
 
 export const useTwoFactorAuth = () => {
 
-    const [isLoading, setIsLoading] = useState(false);
-    const [error, setError] = useState(null);
-    const [message, setMessage] = useState("")
-    const { setUser } = useBasicAuthServices();
+    const { setUser, setIsLoading, setMessage, setError } = useAuthServices();
     const navigate = useNavigate();
 
     const toggle2fa = useCallback(async(is2FAEnabled) => {

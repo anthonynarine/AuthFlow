@@ -3,9 +3,8 @@ import authAppImage from "../../assets/auth-app.jpg";
 import { Link, useNavigate } from "react-router-dom";
 import { RiArrowGoBackLine } from "react-icons/ri";
 import { useState, useEffect } from "react";
-import { useAuthServices } from "../../context/auth/AuthContext";
 import { RiEyeLine, RiEyeOffLine } from "react-icons/ri";
-import { useBasicAuthServices } from "../../context/auth/BasicAuthContext";
+import { useAuthServices } from "../../context/auth/AuthContext";
 
 
 export const LoginPage = () => {
@@ -21,8 +20,7 @@ export const LoginPage = () => {
     const [showOtpModal, setShowOtpModal] = useState(false);
     const [passwordVisible, setPasswordVisible] = useState(false);
 
-    const {  verify2FA } = useAuthServices();
-    const { login, is2FARequired, error, isLoading} = useBasicAuthServices();
+    const {  verify2FA,login, is2FARequired, error, isLoading } = useAuthServices();
     const navigate = useNavigate();
 
     // Handler for form submission

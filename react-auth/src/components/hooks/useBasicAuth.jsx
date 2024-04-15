@@ -19,7 +19,7 @@ export const useBasicAuth = () => {
         setIsLoading(true);
         setError(null)
         try {
-            const { data } = await publicAxios.post("/login/", { email, password }, { withCredentials: true })
+            const { data } = await publicAxios.post("/login/", { email, password });
             console.log("login data", data)
             if (data?.["2fa_required"]) {
                 setIs2FARequired(true); // Set flag if 2FA is needed
@@ -57,6 +57,44 @@ export const useBasicAuth = () => {
         }
     }, []);
 
+    const forgotPassword = useCallback(async(email) => {
+        setIsLoading(true);
+        setMessage("");
+        setError("");
+        try {
+            const { data } = await publicAxios.post("/forgot-password/", { email });
+            setMessage(data.message || "If your email is registered, you will receive a password reset link shortly. ") 
+        } catch (error) {
+            console.error("Forgot Password error", error);
+            setError("An error occurred while attempting to reset the password. Try again.")      
+        } finally {
+            setIsLoading(false);
+        }
+    }, [])
+
+    const resetPassword = useCallback(async({ password, confirmPassword, uidb64, token}) => {
+        setIsLoading(true);
+        setMessage('');
+        setError('');
+        try {
+            // Formulate the playload as per Dango View expectations
+            const payload = {
+                password,
+                password_confirm: confirmPassword,
+                uidb64,
+                token
+            };
+            const { data } = await publicAxios.post("/reset-password/", payload);
+            setMessage(data.message || "Your password has been successfully reset.");
+            navigate("/login/");
+        } catch (error) {
+            console.error("Reset Password error", error);
+            setError(error.response?.data?.error || "An error occurred while attempting to reset the password. Try again ") 
+        } finally {
+            setIsLoading(false);
+        }
+    }, [navigate]);
+
 
     return {
         login,
@@ -73,6 +111,8 @@ export const useBasicAuth = () => {
         isLoading,
         setIsLoading,
         message,
-        setMessage, 
+        setMessage,
+        forgotPassword,
+        resetPassword,
     };
 }

@@ -4,6 +4,7 @@ import { useNavigate, useParams } from "react-router-dom";
 import { RiArrowGoBackLine } from "react-icons/ri";
 import { useState } from "react";
 import { useAuthServices } from "../../context/auth/AuthContext";
+import { useBasicAuthServices } from "../../context/auth/BasicAuthContext"
 import { toast, ToastContainer } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
 
@@ -13,7 +14,7 @@ export const ResetPassword = () => {
     const [validationError, setValidationError] = useState("");
     const navigate = useNavigate();
     const { uidb64, token } = useParams();
-    const { resetPassword } = useAuthServices(); // Assume markAsSubmitted's logic is handled within resetPassword
+    const { resetPassword } = useBasicAuthServices(); // Assume markAsSubmitted's logic is handled within resetPassword
 
     const handleSubmit = async (event) => {
         event.preventDefault();

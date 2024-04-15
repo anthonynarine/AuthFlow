@@ -4,7 +4,7 @@ import React, { createContext, useContext } from "react";
 import { useTwoFactorAuth } from "../../components/hooks/useTwoFactorAuth";
 
 // Create context
-const TwoFactorAuthContext = createContext(undefined);
+const TwoFactorAuthContext = createContext(null);
 
 // Hook to easily acces twoFactorAuthServices within components
 export function useTwoFactorAuthServices() {
@@ -12,7 +12,7 @@ export function useTwoFactorAuthServices() {
     const context = useContext(TwoFactorAuthContext)
 
  // Check against `undefined` to ensure the context is not just 'null' or falsy.
-    if (context === undefined) { 
+    if (context === null) { 
         throw new Error("useTwoFactorAuthServices must be within a TwoFactorAuthProvider")
     }
     return context;

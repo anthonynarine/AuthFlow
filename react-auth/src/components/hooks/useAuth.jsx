@@ -70,23 +70,6 @@ export const useAuth = () => {
         }
     }, []);
 
-    // const logout = useCallback(async ()=> {
-    //     setIsLoading(true);
-    //     setMessage("");
-    //     try {
-    //         await authAxios.post("/logout/", {}, { withCredentials: true});
-    //         Cookies.remove("accessToken");
-    //         Cookies.remove("csrftoken");
-    //         setUser(null);
-    //         setMessage("You are logged out");
-    //         setIsLoggedIn(false)
-    //     } catch (error) {
-    //         console.error("Logout error", error);
-            
-    //     } finally {
-    //         setIsLoading(false)
-    //     }
-    // }, []);
 
     const forgotPassword = useCallback(async(email) => {
         try {
@@ -98,23 +81,23 @@ export const useAuth = () => {
         }
     }, []);
 
-    const resetPassword = useCallback(async({ password, confirmPassword, uidb64, token }) =>{
-        try {
-            const payload = {
-                password,
-                password_confirm: confirmPassword,
-                uidb64,
-                token
-            };
-            //  #ADD UPDATE THIS URL TO USE DEV OR PROD URL SET IN INTERCEPTOR. 
-            const { data } = await publicAxios.post("/reset-password/", payload, { withCredentials: true });
-            setMessage(data?.message);
-            navigate("/login");  
-        } catch (error) {
-            console.error("Reset Password error", error);
-            setMessage(error.response?.data?.error || "An unknown error occurred");  
-        }
-    }, [navigate]);
+    // const resetPassword = useCallback(async({ password, confirmPassword, uidb64, token }) =>{
+    //     try {
+    //         const payload = {
+    //             password,
+    //             password_confirm: confirmPassword,
+    //             uidb64,
+    //             token
+    //         };
+    //         //  #ADD UPDATE THIS URL TO USE DEV OR PROD URL SET IN INTERCEPTOR. 
+    //         const { data } = await publicAxios.post("/reset-password/", payload, { withCredentials: true });
+    //         setMessage(data?.message);
+    //         navigate("/login");  
+    //     } catch (error) {
+    //         console.error("Reset Password error", error);
+    //         setMessage(error.response?.data?.error || "An unknown error occurred");  
+    //     }
+    // }, [navigate]);
 
     /**
      * Validates the current user session by making an API call.
@@ -181,7 +164,6 @@ export const useAuth = () => {
         user,
         message,
         forgotPassword,
-        resetPassword,
         verify2FA, 
         is2FARequired,
         setIs2FARequired,

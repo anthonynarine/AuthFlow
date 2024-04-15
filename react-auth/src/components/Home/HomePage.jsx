@@ -3,6 +3,7 @@ import "./Home.css";
 import { Link, useNavigate } from "react-router-dom";
 import { useTwoFactorAuthServices } from "../../context/auth/TwoFactorAuthContext"
 import { useBasicAuthServices } from "../../context/auth/BasicAuthContext";
+import { useUserSessionServices } from "../../context/auth/UserSessionContext";
 import { DropdownMenu } from "./dropdownMenu/DropdownMenu";
 import { FiKey } from 'react-icons/fi';
 import { FaReact } from 'react-icons/fa'; // For the React icon
@@ -19,8 +20,8 @@ function HomePage() {
   // };
 
   const { toggle2fa,  } = useTwoFactorAuthServices();
-  const { logout, isLoggedIn, message, validateSession, user, setError } = useBasicAuthServices();
-
+  const { logout, isLoggedIn, message, user, setError } = useBasicAuthServices();
+  const { validateSession } = useUserSessionServices();
   const navigate = useNavigate();
   console.log({isLoggedIn})
 

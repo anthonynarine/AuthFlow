@@ -12,6 +12,7 @@ import { Footer } from "./components/footer/Footer";
 import AuthProvider from "./context/auth/AuthContext";
 import BasicAuthProvider from "./context/auth/BasicAuthContext";
 import TwoFactorAuthProvider from "./context/auth/TwoFactorAuthContext";
+import { UserSessionProvider } from "./context/auth/UserSessionContext";
 
 
 function App() {
@@ -22,16 +23,18 @@ function App() {
         <AuthProvider>
           <BasicAuthProvider>
             <TwoFactorAuthProvider>
-              <Routes>
-                <Route path="/" element={<HomePage />} />
-                <Route path="/register" element={<RegisterPage />} />
-                <Route path="/login" element={<LoginPage />} />
-                <Route path="/forgot-password" element={<ForgotPassword />} />
-                <Route path="/react-features" element={<ReactFeatures />} />
-                <Route path="/send-email" element={<SendEmail />} />
-                <Route path="/reset-password/:uidb64/:token" element={<ResetPassword />} />
-                <Route path="/setup-2fa" element={<QRCodeSetup />} />
-              </Routes>
+                <UserSessionProvider>
+                  <Routes>
+                    <Route path="/" element={<HomePage />} />
+                    <Route path="/register" element={<RegisterPage />} />
+                    <Route path="/login" element={<LoginPage />} />
+                    <Route path="/forgot-password" element={<ForgotPassword />} />
+                    <Route path="/react-features" element={<ReactFeatures />} />
+                    <Route path="/send-email" element={<SendEmail />} />
+                    <Route path="/reset-password/:uidb64/:token" element={<ResetPassword />} />
+                    <Route path="/setup-2fa" element={<QRCodeSetup />} />
+                  </Routes>
+                </UserSessionProvider>
             </TwoFactorAuthProvider>
           </BasicAuthProvider> 
         </AuthProvider>

@@ -2,6 +2,7 @@ import React, { useEffect, useState } from "react";
 import "./Home.css";
 import { Link, useNavigate } from "react-router-dom";
 import { useAuthServices } from "../../context/auth/AuthContext";
+import { useBasicAuthServices } from "../../context/auth/BasicAuthContext";
 import { DropdownMenu } from "./dropdownMenu/DropdownMenu";
 import { FiKey } from 'react-icons/fi';
 import { FaReact } from 'react-icons/fa'; // For the React icon
@@ -17,13 +18,22 @@ function HomePage() {
   //   setIsDropdownOpen(!isDropdownOpen);
   // };
 
-  const { logout, validateSession, user, message, isLoggedIn, toggle2fa, } = useAuthServices();
+  const { toggle2fa,  } = useAuthServices();
+  const { logout, isLoggedIn, message, validateSession, user, setError } = useBasicAuthServices();
+
   const navigate = useNavigate();
   console.log({isLoggedIn})
 
   useEffect(() => {
     validateSession();
   }, [validateSession]); // Pass `validateSession` if it's guaranteed to be stable or memoized
+
+  useEffect(() => {
+    // Clear error on unmount or before navigating away, which can be triggered from here
+    return () => {
+        setError(null);
+    };
+}, [setError]);
 
   const handleLogout = () => {
     logout();

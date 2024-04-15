@@ -1,18 +1,18 @@
 import React, { createContext, useContext } from "react";
 
-// Importing the custom hook for basic auth services
+// Importing the custom hook for basicAuthServices
 import { useBasicAuth } from "../../components/hooks/useBasicAuth";
 
 // Create context for basic authentication
-const BasicAuthContext = createContext();
+const BasicAuthContext = createContext(undefined);
 
-// Hook to easily access basic auth services within components
+// Hook to easily access basicAuthServices within components
 export function useBasicAuthServices() {
     // Access the context
     const context = useContext(BasicAuthContext);
 
-    // If the context is not found, throw an error
-    if (!context) {
+ // Check against `undefined` to ensure the context is not just 'null' or falsy.
+    if (context === undefined) { 
         throw new Error("useBasicAuthServices must be used within a BasicAuthProvider");
     }
     return context;
@@ -22,7 +22,7 @@ export function useBasicAuthServices() {
 export function BasicAuthProvider({ children }) {
     console.log("BasicAuthProvider rendered"); //  REMOVE FOR PRODUCTION
 
-    // Access the basic auth services using the custom hook
+    // Access the basicSAuthServices using the custom hook
     const basicAuthServices = useBasicAuth();
 
     return (

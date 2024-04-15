@@ -16,28 +16,28 @@ export const useAuth = () => {
     
     const navigate = useNavigate();
 
-    const login = useCallback(async ({ email, password}) => {
-        setIsLoading(true);
-        try {
-            const { data } = await publicAxios.post("/login/", { email, password }, { withCredentials: true })
-            console.log("login data", data)
-            if (data?.["2fa_required"]) {
-                setIs2FARequired(true); // Set flag if 2FA is needed
-                setEmailFor2FA(email) // set email to be used in TwoFactorLoginAPIView
-            } else {
-                Cookies.set("accessToken", data.access_token, { expires: 7 });
-                setIsLoggedIn(true)
-                navigate("/")
-            }
-        } catch (error) {
-            setError(error.response?.data?.error || "An error occured during login. ")
-            console.error("Login error:", error)
-            console.log(error.response || error);
+    // const login = useCallback(async ({ email, password}) => {
+    //     setIsLoading(true);
+    //     try {
+    //         const { data } = await publicAxios.post("/login/", { email, password }, { withCredentials: true })
+    //         console.log("login data", data)
+    //         if (data?.["2fa_required"]) {
+    //             setIs2FARequired(true); // Set flag if 2FA is needed
+    //             setEmailFor2FA(email) // set email to be used in TwoFactorLoginAPIView
+    //         } else {
+    //             Cookies.set("accessToken", data.access_token, { expires: 7 });
+    //             setIsLoggedIn(true)
+    //             navigate("/")
+    //         }
+    //     } catch (error) {
+    //         setError(error.response?.data?.error || "An error occured during login. ")
+    //         console.error("Login error:", error)
+    //         console.log(error.response || error);
             
-        } finally {
-            setIsLoading(false);
-        }
-    }, [navigate])
+    //     } finally {
+    //         setIsLoading(false);
+    //     }
+    // }, [navigate])
 
     const verify2FA = useCallback(async ({ otp }) => {
         setIsLoading(true);
@@ -70,23 +70,23 @@ export const useAuth = () => {
         }
     }, []);
 
-    const logout = useCallback(async ()=> {
-        setIsLoading(true);
-        setMessage("");
-        try {
-            await authAxios.post("/logout/", {}, { withCredentials: true});
-            Cookies.remove("accessToken");
-            Cookies.remove("csrftoken");
-            setUser(null);
-            setMessage("You are logged out");
-            setIsLoggedIn(false)
-        } catch (error) {
-            console.error("Logout error", error);
+    // const logout = useCallback(async ()=> {
+    //     setIsLoading(true);
+    //     setMessage("");
+    //     try {
+    //         await authAxios.post("/logout/", {}, { withCredentials: true});
+    //         Cookies.remove("accessToken");
+    //         Cookies.remove("csrftoken");
+    //         setUser(null);
+    //         setMessage("You are logged out");
+    //         setIsLoggedIn(false)
+    //     } catch (error) {
+    //         console.error("Logout error", error);
             
-        } finally {
-            setIsLoading(false)
-        }
-    }, []);
+    //     } finally {
+    //         setIsLoading(false)
+    //     }
+    // }, []);
 
     const forgotPassword = useCallback(async(email) => {
         try {
@@ -176,14 +176,12 @@ export const useAuth = () => {
 
 
     return {
-        logout,
         error,
         validateSession,
         user,
         message,
         forgotPassword,
         resetPassword,
-        login,
         verify2FA, 
         is2FARequired,
         setIs2FARequired,

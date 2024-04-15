@@ -11,6 +11,7 @@ import "./App.css"
 import { Footer } from "./components/footer/Footer";
 import AuthProvider from "./context/auth/AuthContext";
 import BasicAuthProvider from "./context/auth/BasicAuthContext";
+import TwoFactorAuthProvider from "./context/auth/TwoFactorAuthContext";
 
 
 function App() {
@@ -19,18 +20,20 @@ function App() {
     <div className="app-container">
       <div className="routes-content" style={{ flex: 1, overflowY: 'auto' }}>
         <AuthProvider>
-        <BasicAuthProvider>
-          <Routes>
-            <Route path="/" element={<HomePage />} />
-            <Route path="/register" element={<RegisterPage />} />
-            <Route path="/login" element={<LoginPage />} />
-            <Route path="/forgot-password" element={<ForgotPassword />} />
-            <Route path="/react-features" element={<ReactFeatures />} />
-            <Route path="/send-email" element={<SendEmail />} />
-            <Route path="/reset-password/:uidb64/:token" element={<ResetPassword />} />
-            <Route path="/setup-2fa" element={<QRCodeSetup />} />
-          </Routes>
-        </BasicAuthProvider> 
+          <BasicAuthProvider>
+            <TwoFactorAuthProvider>
+              <Routes>
+                <Route path="/" element={<HomePage />} />
+                <Route path="/register" element={<RegisterPage />} />
+                <Route path="/login" element={<LoginPage />} />
+                <Route path="/forgot-password" element={<ForgotPassword />} />
+                <Route path="/react-features" element={<ReactFeatures />} />
+                <Route path="/send-email" element={<SendEmail />} />
+                <Route path="/reset-password/:uidb64/:token" element={<ResetPassword />} />
+                <Route path="/setup-2fa" element={<QRCodeSetup />} />
+              </Routes>
+            </TwoFactorAuthProvider>
+          </BasicAuthProvider> 
         </AuthProvider>
       </div>
       <Footer />

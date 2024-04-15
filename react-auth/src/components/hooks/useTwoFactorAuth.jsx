@@ -31,4 +31,8 @@ export const useTwoFactorAuth = () => {
         }
     }, [navigate, setUser])
 
+    return {
+        toggle2fa,
+    };
+
 }

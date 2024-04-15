@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from "react";
 import "./Home.css";
 import { Link, useNavigate } from "react-router-dom";
-import { useAuthServices } from "../../context/auth/AuthContext";
+import { useTwoFactorAuthServices } from "../../context/auth/TwoFactorAuthContext"
 import { useBasicAuthServices } from "../../context/auth/BasicAuthContext";
 import { DropdownMenu } from "./dropdownMenu/DropdownMenu";
 import { FiKey } from 'react-icons/fi';
@@ -18,7 +18,7 @@ function HomePage() {
   //   setIsDropdownOpen(!isDropdownOpen);
   // };
 
-  const { toggle2fa,  } = useAuthServices();
+  const { toggle2fa,  } = useTwoFactorAuthServices();
   const { logout, isLoggedIn, message, validateSession, user, setError } = useBasicAuthServices();
 
   const navigate = useNavigate();

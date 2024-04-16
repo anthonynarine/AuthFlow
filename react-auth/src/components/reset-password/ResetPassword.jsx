@@ -3,7 +3,6 @@ import authAppImage from "../../assets/auth-app.jpg";
 import { useNavigate, useParams } from "react-router-dom";
 import { RiArrowGoBackLine } from "react-icons/ri";
 import { useState } from "react";
-import { useAuthServices } from "../../context/auth/AuthContext";
 import { useBasicAuthServices } from "../../context/auth/BasicAuthContext"
 import { toast, ToastContainer } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';

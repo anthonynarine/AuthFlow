@@ -1,13 +1,15 @@
 
 
-import { useCallback } from "react";
+import { useCallback, useState } from "react";
 import { useBasicAuthServices } from "../../context/auth/BasicAuthContext";
 import { authAxios } from "../../interceptors/axios";
 
 
 
 export const useUserSession = () => {
-    const { setUser, setIsLoggedIn, setError, setIsLoading, setMessage } = useBasicAuthServices();
+    const [error, setError] = useState(null)
+    const [isLoading, setIsLoading] = useState(false)
+    const { setUser, setIsLoggedIn, setMessage } = useBasicAuthServices();
 
     const validateSession = useCallback(async () => {
         setIsLoading(true);
@@ -45,5 +47,5 @@ export const useUserSession = () => {
         }
     }, [setUser, setIsLoggedIn, setError, setIsLoading, setMessage])
 
-    return { validateSession }
+    return { validateSession, error, isLoading  }
 }

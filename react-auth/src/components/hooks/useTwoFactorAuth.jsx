@@ -6,10 +6,7 @@ import { useBasicAuthServices } from "../../context/auth/BasicAuthContext";
 
 export const useTwoFactorAuth = () => {
 
-    const [isLoading, setIsLoading] = useState(false);
-    const [error, setError] = useState(null);
-    const [message, setMessage] = useState("")
-    const { setUser } = useBasicAuthServices();
+    const { setUser, setMessage, setError, setIsLoading } = useBasicAuthServices();
     const navigate = useNavigate();
 
     const toggle2fa = useCallback(async(is2FAEnabled) => {

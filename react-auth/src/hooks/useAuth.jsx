@@ -1,8 +1,8 @@
 import { useNavigate } from "react-router-dom";
 import Cookies from "js-cookie";
-import { authAxios, publicAxios } from "../../interceptors/axios"
+import { publicAxios, authAxios } from "../interceptors/axios";
 import { useCallback, useState } from "react";
-import { useBasicAuthServices } from "../../context/auth/BasicAuthContext";
+import { useBasicAuthServices } from "../context/auth/BasicAuthContext";
 
 
 export const useAuth = () => {

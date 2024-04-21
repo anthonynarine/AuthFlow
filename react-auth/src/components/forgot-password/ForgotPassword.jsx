@@ -3,7 +3,7 @@ import authAppImage from "../../assets/auth-app.jpg";
 import { useNavigate } from "react-router-dom";
 import { RiArrowGoBackLine } from "react-icons/ri";
 import { useState } from "react";
-import { useAuth } from "../hooks/useAuth";
+import { useBasicAuthServices } from "../../context/auth/BasicAuthContext";
 import { ToastContainer, toast } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
 import "./ForgotPassword.css"
@@ -12,7 +12,7 @@ import "./ForgotPassword.css"
 export const ForgotPassword = () => {
 
     const [email , setEmail] = useState('')
-    const { forgotPassword } =useAuth()
+    const { forgotPassword } =useBasicAuthServices()
     const navigate = useNavigate();
 
     const handleSubmit = async (event) => {

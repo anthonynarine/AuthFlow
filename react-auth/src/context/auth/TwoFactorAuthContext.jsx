@@ -1,7 +1,8 @@
 import React, { createContext, useContext } from "react";
 
 // Import the hook for twoFactorAuthServices
-import { useTwoFactorAuth } from "../../components/hooks/useTwoFactorAuth";
+import { useTwoFactorAuth } from "../../hooks/useTwoFactorAuth";
+
 
 // Create context
 const TwoFactorAuthContext = createContext(null);

@@ -1,10 +1,8 @@
 
 
 import { useCallback, useState } from "react";
-import { useBasicAuthServices } from "../../context/auth/BasicAuthContext";
-import { authAxios } from "../../interceptors/axios";
-
-
+import { useBasicAuthServices } from "../context/auth/BasicAuthContext";
+import { authAxios } from "../interceptors/axios";
 
 export const useUserSession = () => {
     const [error, setError] = useState(null)

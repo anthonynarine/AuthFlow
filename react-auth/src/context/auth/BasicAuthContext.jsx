@@ -1,7 +1,8 @@
 import React, { createContext, useContext } from "react";
 
 // Importing the custom hook for basicAuthServices
-import { useBasicAuth } from "../../components/hooks/useBasicAuth";
+import { useBasicAuth } from "../../hooks/useBasicAuth";
+
 
 // Create context for basic authentication
 const BasicAuthContext = createContext(undefined);

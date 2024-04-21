@@ -1,7 +1,7 @@
 import React, { createContext, useContext } from "react";
 
 // Import the hook for the userSessionService
-import { useUserSession } from "../../components/hooks/useUserSession"
+import { useUserSession } from "../../hooks/useUserSession";
 
 // Create context
 const UserSessionContext = createContext(undefined);

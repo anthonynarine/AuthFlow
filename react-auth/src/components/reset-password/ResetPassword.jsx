@@ -27,7 +27,7 @@ export const ResetPassword = () => {
             await resetPassword({ password, confirmPassword, uidb64, token });
             toast.success('Password reset successful!', {
                 position: "top-center",
-                autoClose: 5000,
+                autoClose: 3000,
                 hideProgressBar: false,
                 closeOnClick: true,
                 pauseOnHover: true,

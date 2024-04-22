@@ -10,6 +10,13 @@ import HomePage from "./components/home/HomePage";
 import "./App.css"
 import { Footer } from "./components/footer/Footer";
 import AuthProvider from "./context/auth/AuthContext";
+import BasicAuthProvider from "./context/auth/BasicAuthContext";
+import TwoFactorAuthProvider from "./context/auth/TwoFactorAuthContext";
+import { UserSessionProvider } from "./context/auth/UserSessionContext";
+import 'react-toastify/dist/ReactToastify.css';
+
+
+
 
 
 function App() {
@@ -18,16 +25,22 @@ function App() {
     <div className="app-container">
       <div className="routes-content" style={{ flex: 1, overflowY: 'auto' }}>
         <AuthProvider>
-          <Routes>
-            <Route path="/" element={<HomePage />} />
-            <Route path="/register" element={<RegisterPage />} />
-            <Route path="/login" element={<LoginPage />} />
-            <Route path="/forgot-password" element={<ForgotPassword />} />
-            <Route path="/react-features" element={<ReactFeatures />} />
-            <Route path="/send-email" element={<SendEmail />} />
-            <Route path="/reset-password/:uidb64/:token" element={<ResetPassword />} />
-            <Route path="/setup-2fa" element={<QRCodeSetup />} />
-          </Routes>
+          <BasicAuthProvider>
+            <TwoFactorAuthProvider>
+                <UserSessionProvider>
+                  <Routes>
+                    <Route path="/" element={<HomePage />} />
+                    <Route path="/register" element={<RegisterPage />} />
+                    <Route path="/login" element={<LoginPage />} />
+                    <Route path="/forgot-password" element={<ForgotPassword />} />
+                    <Route path="/react-features" element={<ReactFeatures />} />
+                    <Route path="/send-email" element={<SendEmail />} />
+                    <Route path="/reset-password/:uidb64/:token" element={<ResetPassword />} />
+                    <Route path="/setup-2fa" element={<QRCodeSetup />} />
+                  </Routes>
+                </UserSessionProvider>
+            </TwoFactorAuthProvider>
+          </BasicAuthProvider> 
         </AuthProvider>
       </div>
       <Footer />

@@ -5,6 +5,7 @@ import { RiArrowGoBackLine } from "react-icons/ri";
 import { useState, useEffect } from "react";
 import { useAuthServices } from "../../context/auth/AuthContext";
 import { RiEyeLine, RiEyeOffLine } from "react-icons/ri";
+import { useBasicAuthServices } from "../../context/auth/BasicAuthContext";
 
 
 export const LoginPage = () => {
@@ -20,7 +21,8 @@ export const LoginPage = () => {
     const [showOtpModal, setShowOtpModal] = useState(false);
     const [passwordVisible, setPasswordVisible] = useState(false);
 
-    const { login, verify2FA, is2FARequired, error, isLoading } = useAuthServices();
+    const {  verify2FA } = useAuthServices();
+    const { login, is2FARequired, error, isLoading} = useBasicAuthServices();
     const navigate = useNavigate();
 
     // Handler for form submission

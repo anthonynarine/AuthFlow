@@ -3,9 +3,10 @@ import authAppImage from "../../assets/auth-app.jpg";
 import { useNavigate, useParams } from "react-router-dom";
 import { RiArrowGoBackLine } from "react-icons/ri";
 import { useState } from "react";
-import { useAuthServices } from "../../context/auth/AuthContext";
-import { toast, ToastContainer } from 'react-toastify';
+import { useBasicAuthServices } from "../../context/auth/BasicAuthContext"
+import { ToastContainer } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
+import { showSuccessToast, showErrorToast } from "../../utils/toastUtils/ToastUtils";
 
 export const ResetPassword = () => {
     const [password, setPassword] = useState('');
@@ -13,7 +14,7 @@ export const ResetPassword = () => {
     const [validationError, setValidationError] = useState("");
     const navigate = useNavigate();
     const { uidb64, token } = useParams();
-    const { resetPassword } = useAuthServices(); // Assume markAsSubmitted's logic is handled within resetPassword
+    const { resetPassword } = useBasicAuthServices(); // Assume markAsSubmitted's logic is handled within resetPassword
 
     const handleSubmit = async (event) => {
         event.preventDefault();
@@ -22,21 +23,12 @@ export const ResetPassword = () => {
             setValidationError("Passwords don't match.");
             return;
         }
-
         try {
             await resetPassword({ password, confirmPassword, uidb64, token });
-            toast.success('Password reset successful!', {
-                position: "top-center",
-                autoClose: 5000,
-                hideProgressBar: false,
-                closeOnClick: true,
-                pauseOnHover: true,
-                draggable: true,
-                progress: undefined,
-            });
-            setTimeout(() => navigate("/login"), 3000); // Redirect after showing success message
+            showSuccessToast.success('Password reset successful!');
+            setTimeout(() => navigate("/login"), 2000); // Redirect after showing success message
         } catch (error) {
-            toast.error("Failed to reset password. Please try again.");
+            showErrorToast.error("Failed to reset password. Please try again.");
         }
     };
 

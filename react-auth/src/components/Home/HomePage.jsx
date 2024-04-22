@@ -1,13 +1,16 @@
-import React, { useEffect, useState } from "react";
+import React, { useEffect } from "react";
 import "./Home.css";
 import { Link, useNavigate } from "react-router-dom";
-import { useAuthServices } from "../../context/auth/AuthContext";
+import { useTwoFactorAuthServices } from "../../context/auth/TwoFactorAuthContext"
+import { useBasicAuthServices } from "../../context/auth/BasicAuthContext";
+import { useUserSessionServices } from "../../context/auth/UserSessionContext";
 import { DropdownMenu } from "./dropdownMenu/DropdownMenu";
 import { FiKey } from 'react-icons/fi';
 import { FaReact } from 'react-icons/fa'; // For the React icon
 import { DiPython } from 'react-icons/di'; // Example using a Python icon for Django
 import { FiMail } from 'react-icons/fi';
-
+import { showErrorToast, showSuccessToast } from "../../utils/toastUtils/ToastUtils";
+import { ToastContainer } from "react-toastify";
 
 function HomePage() {
   // const [isDropdownOpen, setIsDropdownOpen] = useState(false);
@@ -17,7 +20,9 @@ function HomePage() {
   //   setIsDropdownOpen(!isDropdownOpen);
   // };
 
-  const { logout, validateSession, user, message, isLoggedIn, toggle2fa, } = useAuthServices();
+  const { toggle2fa, twoFactorError } = useTwoFactorAuthServices();
+  const { logout, isLoggedIn, message, user, setError } = useBasicAuthServices();
+  const { validateSession } = useUserSessionServices();
   const navigate = useNavigate();
   console.log({isLoggedIn})
 
@@ -25,12 +30,29 @@ function HomePage() {
     validateSession();
   }, [validateSession]); // Pass `validateSession` if it's guaranteed to be stable or memoized
 
+  useEffect(() => {
+    // Clear error on unmount or before navigating away, which can be triggered from here
+    return () => {
+        setError(null);
+    };
+}, [setError]);
+
   const handleLogout = () => {
     logout();
   };
 
-  const handleToggle2FA = () => {
-    toggle2fa(!user.is_2fa_enabled);
+  const handleToggle2FA = async () => {
+    try {
+      const is2faEnabled = !user.is_2fa_enabled;  // toggle the 2fa status
+      await toggle2fa(!user.is_2fa_enabled);
+    // Check if 2FA was disabled successfully
+    if (!is2faEnabled) {
+      showSuccessToast(`Two-factor authentication disabled successfully.`);
+      }
+    } catch (error) {
+      const errorMessage = twoFactorError || "Failed to toggle two-factor. Please try again"
+      showErrorToast(errorMessage)
+    }
   };
 
   return (
@@ -42,8 +64,11 @@ function HomePage() {
             <Link to="/react-features" className="icon react-icon"><FaReact size={24}/></Link>
             <Link to="/react-features" className="icon django-icon"><DiPython size={30}/></Link>
             <Link to="/send-email" className="icon contact-icon"><FiMail size={25}/></Link>
-            {/* <DropdownMenu isOpen={isDropdownOpen} toggleDropdownMenu={toggleDropdownMenu} /> */}
           </nav>
+        </div>
+        {/* toast notifications */}
+        <div className="toast-container">
+          <ToastContainer />
         </div>
       </header>
       <main className="px-3 main-container centered-paragraph">
@@ -51,7 +76,6 @@ function HomePage() {
           <h5 className="text-center mb-3 white-text">Explore the Authentication system</h5>
           <div className="message">
             {message}
-            {/* Optionally include blinking dots here if they serve a purpose */}
           </div>
           <Link to="/register" className="btn btn-custom-color me-2">Register</Link>
           {isLoggedIn ? 
@@ -87,3 +111,4 @@ function HomePage() {
 }
 
 export default HomePage;
+

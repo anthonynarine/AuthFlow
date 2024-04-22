@@ -1,11 +1,11 @@
 import { createContext, useContext } from "react";
-import { useAuth } from "../../components/hooks/useAuth";
+import { useAuth } from "../../hooks/useAuth";
 
 /**
  * Create a Context for the authentication services.
  * This Context will be used to provide and consume authentication state and functions throughout the application.
  */
-const AuthContext = createContext();
+const AuthContext = createContext(null);
 
 /**
  * Custom hook to use the authentication services.
@@ -17,7 +17,7 @@ const AuthContext = createContext();
 export function useAuthServices() {
     const context = useContext(AuthContext);
 
-    if (!context) {
+    if (context === null) {
         throw new Error("useAuthServices must be used within an AuthProvider");
     }
     return context;

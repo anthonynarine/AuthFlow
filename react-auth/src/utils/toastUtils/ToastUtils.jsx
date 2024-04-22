@@ -1,4 +1,4 @@
-import { toast } from "react-toastify";
+import { Bounce, Flip, Slide, Zoom, toast } from "react-toastify";
 
 export const showSuccessToast = (message) => {
     toast.success(message, {
@@ -9,14 +9,15 @@ export const showSuccessToast = (message) => {
         pauseOnHover: true,
         draggable: true,
         progress: undefined,
-        toastStyle: {
-            background:"#1C2833",// Change background color
-            color: "#1ABC9C",         // Change text color
-        },
-        bodyClassName: "custom-toast-body", // Apply custom CSS class to toast body
+        theme: "colored",
+        transition: Zoom,
+        closeButton: false, 
+        style: {
+            background: "#1C2833", // Background color for the success toast
+            color: "#1ABC9C",      // Text color for the success toast
+        }
     });
 };
-
 
 export const showErrorToast = (errorMessage) => {
     toast.error(errorMessage, {
@@ -26,10 +27,12 @@ export const showErrorToast = (errorMessage) => {
         closeOnClick: true,
         pauseOnHover: true,
         progress: undefined,
-        toastStyle: {
-            background: "#dc3545", // Change background color
-            color: "#fff",        // Change text color
-        },
-        bodyClassName: "custom-toast-body", // Apply custom CSS class to toast body
+        theme: "dark",
+        transition: Bounce,
+        closeButton: false, 
+        style: {
+            background: "#1C2833", // Background color for the error toast
+            color: "#DC3545",      // Text color for the error toast
+        }
     });
 };

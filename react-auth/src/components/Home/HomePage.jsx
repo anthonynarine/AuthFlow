@@ -43,8 +43,12 @@ function HomePage() {
 
   const handleToggle2FA = async () => {
     try {
+      const is2faEnabled = !user.is_2fa_enabled;  // toggle the 2fa status
       await toggle2fa(!user.is_2fa_enabled);
-      showSuccessToast(`Two-factor authentication has been ${user.is_2fa_enabled ? 'disabled' : 'enabled'} successfully.`);
+    // Check if 2FA was disabled successfully
+    if (!is2faEnabled) {
+      showSuccessToast(`Two-factor authentication disabled successfully.`);
+      }
     } catch (error) {
       const errorMessage = twoFactorError || "Failed to toggle two-factor. Please try again"
       showErrorToast(errorMessage)

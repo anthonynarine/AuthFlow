@@ -6,12 +6,12 @@ import { useBasicAuthServices } from "../context/auth/BasicAuthContext";
 
 
 export const useAuth = () => {
-    const [isLoggedIn, setIsLoggedIn] = useState(false);
+
     const [error, setError] = useState("");
     const [user, setUser] = useState(null);
     const [message, setMessage] = useState("")
     const [isLoading, setIsLoading] = useState(false)
-    const [is2FARequired, setIs2FARequired] = useState(false);
+
     const [qrCode, setQrCode] = useState("")
     
     const navigate = useNavigate();
@@ -23,7 +23,7 @@ export const useAuth = () => {
             const { data } = await authAxios.post("/verify-otp/", {  otp }, { withCredentials: true});
             if (data.success) {
                 Cookies.set("accessToken", data.access_token, { expires: 7 });
-                setIsLoggedIn(true);
+                // setIsLoggedIn(true);
                 setMessage("2FA verification successful");
                 navigate("/")
             } else {
@@ -53,9 +53,6 @@ export const useAuth = () => {
         user,
         message,
         verify2FA, 
-        is2FARequired,
-        setIs2FARequired,
-        isLoggedIn, 
         isLoading,
         fetchQRCode, 
         qrCode,

@@ -1,5 +1,5 @@
 import { createContext, useContext } from "react";
-import { useAuth } from "../../hooks/useAuth";
+
 
 /**
  * Create a Context for the authentication services.
@@ -33,7 +33,7 @@ export function useAuthServices() {
 export function AuthProvider({ children }) {
     console.log("AuthProvider rendered"); // Consider removing this for production
 
-    const authServices = useAuth();
+    const authServices = null;
 
     return (
         <AuthContext.Provider value={authServices}>

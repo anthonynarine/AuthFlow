@@ -78,6 +78,7 @@ export const useTwoFactorAuth = () => {
         twoFactorError,
         qrCode,
         verify2FA,
+        fetchQRCode,
     };
 
 }

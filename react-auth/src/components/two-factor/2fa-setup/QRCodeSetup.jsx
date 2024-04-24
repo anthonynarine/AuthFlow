@@ -1,12 +1,13 @@
 import React, { useEffect, useState } from "react";
 import { useAuthServices } from "../../../context/auth/AuthContext";
+import { useTwoFactorAuth } from "../../../hooks/useTwoFactorAuth";
 import "./QRCodeSetup.css";
 import { RiArrowGoBackLine } from 'react-icons/ri';
 import { useNavigate } from "react-router-dom"
 import  OTPModal  from "../../login/OTPModal";
 
 export const QRCodeSetup = () => {
-    const { fetchQRCode, qrCode, verify2FA, } = useAuthServices();
+    const { fetchQRCode, qrCode, verify2FA, } = useTwoFactorAuth();
     const [otpModalOpen, setOtpModalOpen] = useState(false);
     const [otpValue, setOtpValue] = useState("");
 

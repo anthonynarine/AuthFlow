@@ -4,18 +4,20 @@ import { useNavigate } from "react-router-dom";
 import { publicAxios, authAxios } from "../interceptors/axios";
 import { useBasicAuthServices } from "../context/auth/BasicAuthContext";
 import { FaSadCry } from "react-icons/fa";
+import Cookies from "js-cookie";
 
 export const useTwoFactorAuth = () => {
 
-    const [isLoading, setIsloading] = useState(false);
+    const [isLoading, setIsLoading] = useState(false);
     const [twoFactorError, setTwoFactorError] = useState(null);
     const [qrCode, setQrCode] = useState("");
 
-    const { setUser, setUserIsLoggedIn, } = useBasicAuthServices(); // state managed in useBaiscAuth
+    const { setUser, setIsLoggedIn, } = useBasicAuthServices(); // state managed in useBaiscAuth
     const navigate = useNavigate();
 
+    // Function to toggle 2FA state
     const toggle2fa = useCallback(async(is2FAEnabled) => {
-        setIsloading(true);
+        setIsLoading(true);
         setTwoFactorError(null);
 
         try {
@@ -29,13 +31,13 @@ export const useTwoFactorAuth = () => {
             console.error("Error togglign 2FA", error)
             setTwoFactorError(error.response && error.response.data.error ?  error.response.data.error : "An error occurred while toggling 2FA. Please try again.")
         } finally {
-            setIsloading(false);
+            setIsLoading(false);
         }
     }, [navigate, setUser])
 
-
+    // Function to fetch QR code for two-factor authentication
     const fetchQRCode = useCallback(async () => {
-        setIsloading(true);
+        setIsLoading(true);
         setTwoFactorError(null);
         try {
             const { data } = await authAxios.get("/generate-qr/", { responseType: "blob" });
@@ -45,15 +47,37 @@ export const useTwoFactorAuth = () => {
             console.error("Error fetching QR code.", error);
             setTwoFactorError("Failed to fetch QR code. Please check your connection and try again.");  
         } finally {
-            setIsloading(false);
+            setIsLoading(false);
         }
-    }, [])
+    }, []);
+
+    // Function to verify two-factor authentication OTP.
+    const verify2FA = useCallback(async (otp) => {
+        setIsLoading(true);
+        setTwoFactorError(null);
+        try {
+            const { data, status } = await authAxios.post("/verify-otp", { otp});
+            if (status === 200) {
+                Cookies.set("accessToken", data.access_token, { expires: 7});
+                setIsLoggedIn(true);
+                navigate("/");
+            } else {
+                setTwoFactorError("Invalid OTP. Please try again.");
+            }      
+        } catch (error) {
+            console.error("2FA login error", error);
+            setTwoFactorError(error.response?.data?.error || "An error occurred during 2FA login"); 
+        } finally {
+            setIsLoading(false);
+        }
+    }, [navigate, setIsLoggedIn, setIsLoading, setTwoFactorError])
 
     return {
         toggle2fa,
         isLoading,
         twoFactorError,
         qrCode,
+        verify2FA,
     };
 
 }

@@ -9,14 +9,10 @@ import { QRCodeSetup } from "./components/two-factor/2fa-setup/QRCodeSetup";
 import HomePage from "./components/home/HomePage";
 import "./App.css"
 import { Footer } from "./components/footer/Footer";
-import AuthProvider from "./context/auth/AuthContext";
 import BasicAuthProvider from "./context/auth/BasicAuthContext";
 import TwoFactorAuthProvider from "./context/auth/TwoFactorAuthContext";
 import { UserSessionProvider } from "./context/auth/UserSessionContext";
 import 'react-toastify/dist/ReactToastify.css';
-
-
-
 
 
 function App() {
@@ -24,7 +20,6 @@ function App() {
     <>
     <div className="app-container">
       <div className="routes-content" style={{ flex: 1, overflowY: 'auto' }}>
-        <AuthProvider>
           <BasicAuthProvider>
             <TwoFactorAuthProvider>
                 <UserSessionProvider>
@@ -41,7 +36,6 @@ function App() {
                 </UserSessionProvider>
             </TwoFactorAuthProvider>
           </BasicAuthProvider> 
-        </AuthProvider>
       </div>
       <Footer />
     </div>

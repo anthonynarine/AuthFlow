@@ -1,5 +1,4 @@
 import React, { useEffect, useState } from "react";
-import { useAuthServices } from "../../../context/auth/AuthContext";
 import { useTwoFactorAuth } from "../../../hooks/useTwoFactorAuth";
 import "./QRCodeSetup.css";
 import { RiArrowGoBackLine } from 'react-icons/ri';

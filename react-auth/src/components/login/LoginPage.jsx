@@ -3,9 +3,9 @@ import authAppImage from "../../assets/auth-app.jpg";
 import { Link, useNavigate } from "react-router-dom";
 import { RiArrowGoBackLine } from "react-icons/ri";
 import { useState, useEffect } from "react";
-import { useAuthServices } from "../../context/auth/AuthContext";
 import { RiEyeLine, RiEyeOffLine } from "react-icons/ri";
 import { useBasicAuthServices } from "../../context/auth/BasicAuthContext";
+import { useTwoFactorAuth } from "../../hooks/useTwoFactorAuth";
 
 
 export const LoginPage = () => {
@@ -21,7 +21,7 @@ export const LoginPage = () => {
     const [showOtpModal, setShowOtpModal] = useState(false);
     const [passwordVisible, setPasswordVisible] = useState(false);
 
-    const {  verify2FA } = useAuthServices();
+    const {  verify2FA } = useTwoFactorAuth();
     const { login, is2FARequired, error, isLoading} = useBasicAuthServices();
     const navigate = useNavigate();
 

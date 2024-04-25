@@ -160,6 +160,14 @@
   color: #ede4e4; /* For text color */
 }
 
+/* Media query to adjust button spacing for screens 390px wide or smaller */
+@media (max-width: 390px) {
+  .auth-section .btn {
+    margin-top: 15px; /* Increase top margin to move buttons lower */
+  }
+}
+
+
 .auth-section .btn:last-child {
   margin-right: 0; /* Removes margin from the last button */
 }

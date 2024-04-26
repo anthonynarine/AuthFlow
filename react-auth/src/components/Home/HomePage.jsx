@@ -67,9 +67,9 @@ function HomePage() {
           </nav>
         </div>
         {/* toast notifications */}
-        <div className="toast-container">
+        {/* <div className="toast-container">
           <ToastContainer />
-        </div>
+        </div> */}
       </header>
       <main className="px-3 main-container centered-paragraph">
         <div className="auth-section mt-4">

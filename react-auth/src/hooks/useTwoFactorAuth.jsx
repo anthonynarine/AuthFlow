@@ -56,11 +56,11 @@ export const useTwoFactorAuth = () => {
         setIsLoading(true);
         setTwoFactorError(null);
         try {
-            const { data, status } = await authAxios.post("/verify-otp", { otp});
+            const { data, status } = await authAxios.post("/verify-otp/", { otp});
             if (status === 200) {
                 Cookies.set("accessToken", data.access_token, { expires: 7});
                 setIsLoggedIn(true);
-                navigate("/");
+                // navigate("/");
             } else {
                 setTwoFactorError("Invalid OTP. Please try again.");
             }      

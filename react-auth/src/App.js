@@ -12,6 +12,7 @@ import { Footer } from "./components/footer/Footer";
 import BasicAuthProvider from "./context/auth/BasicAuthContext";
 import TwoFactorAuthProvider from "./context/auth/TwoFactorAuthContext";
 import { UserSessionProvider } from "./context/auth/UserSessionContext";
+import { ToastContainer } from "react-toastify";
 import 'react-toastify/dist/ReactToastify.css';
 
 
@@ -20,6 +21,7 @@ function App() {
     <>
     <div className="app-container">
       <div className="routes-content" style={{ flex: 1, overflowY: 'auto' }}>
+      <ToastContainer />
           <BasicAuthProvider>
             <TwoFactorAuthProvider>
                 <UserSessionProvider>

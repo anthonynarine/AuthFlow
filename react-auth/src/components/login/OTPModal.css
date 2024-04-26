@@ -1,96 +1,130 @@
-/* OTPModal.css */
-
+/* Sets up the modal container with a fixed position covering the entire viewport,
+   centers content within it, and applies a dark background for the modal overlay */
 .modal-container {
     position: fixed;
-    top: 0;
+    top: 30%; /* Anchors the top of the modal at 30% of the viewport height */
     left: 0;
     width: 100%;
     height: 100%;
-    background-color: #121212; /* Updated background color */
+    background-color: #121212; /* Dark background for the overlay */
     display: flex;
     justify-content: center;
     align-items: center;
     z-index: 1000;
+    transform: translateY(-50%); /* Vertically centers the modal content */
 }
 
-
-
+/* Styles the modal content area with a specific background, border radius, and shadow for depth */
 .modal-content {
-    background-color: #1C2833;
-    border-radius: 8px;
-    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
-    max-width: 500px;
-    width: 100%;
-    padding: 2rem;
+    background-color: #1C2833; /* Dark blue background for the content */
+    border-radius: 8px; /* Rounded corners for the modal */
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1); /* Subtle shadow for 3D effect */
+    max-width: 500px; /* Limits the maximum width to ensure consistent design */
+    width: 100%; /* Responsive width */
+    padding: 2rem; /* Padding inside the modal content */
 }
 
+/* Styles the header of the modal, includes space management and alignment */
 .modal-header {
-    /* border-bottom: 1px solid #ccc; */
     display: flex;
-    justify-content: space-between;
-    align-items: center;
-    margin-bottom: 1rem;
-    color: #1abc9c;
+    justify-content: center; /* Aligns items on opposite ends */
+    align-items: center; /* Vertically centers items in the header */
+    margin-bottom: 1rem; /* Space below the header */
+    color: #1abc9c; /* Mint green color for header text */
 }
 
+/* Padding adjustment for the modal body to ensure content spacing */
 .modal-body {
-    padding-bottom: 1rem; /* Adjusted padding */
+    padding-bottom: 1rem;
 }
 
+/* Flexbox setup for the footer to center buttons and align them properly */
 .modal-footer {
-
     display: flex;
     justify-content: center;
     align-items: center;
-
-
+    gap: 20px; 
 }
 
+/* Styles for the close button, including appearance and hover effects */
 .close {
     background: none;
     border: none;
     cursor: pointer;
     font-size: 1.5rem;
-    color: #ccc; /* Updated color */
+    color: #ccc; /* Light grey color making it subtle */
 }
 
+/* Hover state for the close button to indicate interactivity */
 .close:hover {
-    color:  #D44638; /* Updated color on hover */
+    color: #D44638; /* Bright red color for visibility on hover */
 }
 
+/* Adjustments for OTP input squares */
+.otp-input-container {
+    display: flex;
+    justify-content: space-between; /* Distribute input squares evenly */
+}
+
+/* Styles for OTP input field, ensuring full-width, padding, and visual design */
 .otp-input {
-    width: 100%;
+    width: calc(16.666% - 10px); /* Adjust width for each square */
+    height: 50px; /* Set height for each square */
     padding: 0.5rem;
     margin-bottom: 1rem;
-    border: 1px solid #ccc;
-    border-radius: 4px;
+    border: 2px solid transparent; /* Transparent border initially */
+    border-radius: 4px; /* Rounded corners for the input field */
+    text-align: center; /* Center-align the text within each square */
+    font-size: 1.5rem; /* Adjust font size for better visibility */
+    transition: border-color 0.3s, background-color 0.3s; /* Smooth transition for border and background color changes */
+    background-color:lightslategray;
 }
 
+/* Use placeholder styling to make each digit box visually distinguishable */
+.otp-input::placeholder {
+    color: #ccc; /* Light grey color for placeholder text */
+}
+
+/* Animation effect for OTP input squares when focused */
+.otp-input:focus {
+    outline: none; /* Remove default focus outline */
+    border-color: #1abc9c; /* Mint green border color */
+}
+
+/* Hover effect for OTP input squares */
+.otp-input:hover {
+    background-color: #30815e; /* Light grey background color on hover */
+}
+
+
+/* Base button styling setting padding, no border, rounded corners, and cursor */
 .btn {
     padding: 0.5rem 1rem;
     border: none;
     border-radius: 4px;
-    min-width: 5rem;
+    min-width: 5rem; /* Ensures a minimum width for touch targets */
     cursor: pointer;
-    padding-left: 25px;
+    padding-left: 25px; /* Additional padding for aesthetic balance */
 }
 
+/* Primary button color styling and hover effects */
 .btn-primary {
-    background-color: #30815e;
-    color: #fff;
+    background-color: #30815e; /* Dark green background */
+    color: #fff; /* White text for contrast */
 }
 
 .btn-primary:hover {
-    background-color: #14a365;
-    color: #171D23;
+    background-color: #14a365; /* Slightly lighter green on hover */
+    color: #171D23; /* Very dark gray for text on hover */
 }
 
+/* Secondary button styling matches primary for consistency, but can be customized separately */
 .btn-secondary {
-    background-color:#30815e;
-    color: #fff;
+    background-color:#30815e; /* Matching dark green background */
+    color: #fff; /* Consistent white text for visibility */
 }
 
 .btn-secondary:hover {
-    background-color: #14a365;
-    color: #171D23;
+    background-color: #14a365; /* Matching hover state as primary for consistency */
+    color: #171D23; /* Consistent text color change on hover */
 }

@@ -6,7 +6,7 @@ import { useNavigate } from "react-router-dom"
 import  OTPModal  from "../../login/OTPModal";
 
 export const QRCodeSetup = () => {
-    const { fetchQRCode, qrCode, verify2FA, } = useTwoFactorAuth();
+    const { fetchQRCode, qrCode, verify2FA,} = useTwoFactorAuth();
     const [otpModalOpen, setOtpModalOpen] = useState(false);
     const [otpValue, setOtpValue] = useState("");
 
@@ -26,7 +26,7 @@ export const QRCodeSetup = () => {
 
     const confirmOtp = () => {
         verify2FA(otpValue)
-        navigate("/")
+        
     };
 
 

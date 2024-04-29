@@ -128,3 +128,14 @@
     background-color: #14a365; /* Matching hover state as primary for consistency */
     color: #171D23; /* Consistent text color change on hover */
 }
+
+.alert.alert-danger {
+    color: #721c24;
+    background-color: #f8d7da;
+    border-color: #f5c6cb;
+    padding: 10px;
+    margin-bottom: 20px; /* Space between the error message and OTP inputs */
+    border-radius: 4px; /* Soften the edges */
+    text-align: center; /* Center the text for better focus */
+    width: 100%; /* Full width for better visibility */
+}

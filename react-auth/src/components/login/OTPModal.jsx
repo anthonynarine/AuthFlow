@@ -3,16 +3,20 @@ import { showErrorToast } from "../../utils/toastUtils/ToastUtils";
 import { useTwoFactorAuth } from "../../hooks/useTwoFactorAuth";
 import "./OTPModal.css";
 
-const OTPModal = ({ isOpen, onConfirm, onCancel, onChange, otpValue }) => {
+const OTPModal = ({ isOpen, onConfirm, onCancel, onChange, otpValue, twoFactorError }) => {
     const inputRefs = useRef(Array.from({ length: 6 }, () => React.createRef()));
     const [focusedIndex, setFocusedIndex] = useState(null);
-    const { twoFactorError } = useTwoFactorAuth();
+    // const { twoFactorError, otpError } = useTwoFactorAuth();
 
     useEffect(() => {
-        if(twoFactorError) {
-            showErrorToast(twoFactorError);
+        console.log("Two-factor authentication error:",twoFactorError); // Check if twoFactorError is not null
+        if (twoFactorError) {
+            console.log("testing 2fa error from  OTPModal:", twoFactorError)
         }
-    }, [twoFactorError])
+    }, [twoFactorError]);
+
+    console.log("test", twoFactorError)
+    
 
     if (!isOpen) return null;
 
@@ -58,6 +62,11 @@ const OTPModal = ({ isOpen, onConfirm, onCancel, onChange, otpValue }) => {
                     <h6 className="modal-title">Enter the Password from your authenticator app</h6>
                 </div>
                 <div className="modal-body">
+                    {twoFactorError && (
+                            <div className="alert alert-danger">
+                                {twoFactorError}
+                            </div>
+                        )}
                     {/* Render six input fields as squares for each digit */}
                     <div className="otp-input-container">
                         {[...Array(6)].map((_, index) => (

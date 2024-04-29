@@ -1,0 +1,133 @@
+/* register.css - Updated Styles */
+.register-container {
+  max-width: 500px;
+  margin: 4rem auto; /* Align vertical margin */
+  margin-bottom: 12rem; /* Ensure enough space above the footer */
+  padding: 2rem; /* Same padding as login */
+  background: #1C2833; /* Background color from login.css */
+  border-radius: 8px; /* Radius from login.css */
+  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1); /* Shadow from login.css */
+}
+
+.register-container svg {
+  transition: color 0.3s ease;
+  color: #828a87; /* Color from login.css */
+}
+
+/* Styles for specific SVG container (if needed) */
+.logo-container {
+  text-align: center;
+  margin-bottom: 20px;
+}
+
+.register-logo {
+  max-width: 110px;
+  margin-bottom: 0px;
+}
+
+.nav-button {
+  position: absolute;
+  top: 10px;
+  left: 10px;
+  background: none;
+  color: #D3D3D3; /* From login.css */
+  border: none;
+  cursor: pointer;
+  z-index: 1000;
+}
+
+.nav-button:hover {
+  color: #A9A9A9; /* Hover color from login.css */
+}
+
+.form-register h1, 
+.form-register h2, 
+.form-register h3, 
+.form-register h4, 
+.form-register h5, 
+.form-register h6 {
+  text-align: center; /* Centering all headers */
+  color: #BDC3C7; /* Text color from login.css */
+}
+
+.form-register {
+  width: 100%; /* Full width for form */
+  padding: 0; /* No additional padding */
+}
+
+.register-container input,
+.register-container textarea {
+  width: 100%; /* Full width for inputs */
+  padding: 10px;
+  margin-bottom: 1rem;
+  border: 2px solid #f2eeee; /* Border color from login.css */
+  border-radius: 4px; /* Border radius from login.css */
+  color: black;
+}
+
+.btn-register {
+  width: 100%; /* Full width */
+  min-height: 3.5rem; /* Minimum height matching login */
+  background-color: #30815e; /* Background color from login.css */
+  color: white;
+  border: none;
+  border-radius: 4px;
+  cursor: pointer;
+  font-size: 16px;
+}
+
+.btn-register:hover {
+  background-color: #14a365; /* Hover color from login.css */
+}
+
+.password-toggle-button {
+  cursor: pointer;
+  position: absolute;
+  right: 10px;
+  top: 50%; /* Align vertically relative to parent */
+  transform: translateY(-50%);
+  background: transparent; /* No background color */
+  border: none;
+  color: #666; /* Default icon color */
+  font-size: 24px; /* Icon size */
+  transition: color 0.3s ease; /* Smooth transition for color change */
+  z-index: 10;
+}
+
+.password-toggle-button:hover {
+  color: #14a365; /* Color changes only when the icon itself is hovered */
+  transform: translateY(-50%) scale(1.2); /* Slight enlargement on hover */
+}
+
+.form-floating {
+  position: relative; /* Allows absolute positioning inside */
+  margin-bottom: 1rem; /* Space between form groups */
+}
+
+.form-control {
+  width: 100%; /* Full width within form group */
+  padding: 8px 12px; /* Comfortable padding inside input */
+  border: 1px solid #ccc; /* Subtle border */
+  border-radius: 4px; /* Rounded corners */
+  box-sizing: border-box; /* Border-box sizing to include padding in width */
+}
+
+.alert.alert-danger {
+  height: 3.6rem;
+  color: #721c24;  /* Dark red text color for errors */
+  background-color: #f8d7da;  /* Light red background */
+  border-color: #f5c6cb;  /* Light red border */
+  padding: 0.75rem 1.25rem;  /* Padding for the alert, ensures some space around the text */
+  padding-top: 1.25rem;
+  border-radius: 0.25rem;  /* Rounded corners for the alert */
+  margin-bottom: 1rem;  /* Space below the alert */
+  width: 100%;  /* Ensure it takes the full width of its container */
+  display: flex;  /* Enables the use of Flexbox, which is great for centering content */
+  justify-content: center;  /* Centers content horizontally in Flexbox */
+  align-items: center;  /* Centers content vertically in Flexbox */
+  flex-direction: column;  /* Aligns children (error messages) in a vertical column */
+  text-align: center;  /* Centers the text within each child if multiple lines */
+}
+
+
+

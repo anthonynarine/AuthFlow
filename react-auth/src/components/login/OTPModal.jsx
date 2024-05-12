@@ -1,6 +1,4 @@
 import React, { useEffect, useRef, useState } from "react";
-import { showErrorToast } from "../../utils/toastUtils/ToastUtils";
-import { useTwoFactorAuth } from "../../hooks/useTwoFactorAuth";
 import "./OTPModal.css";
 
 const OTPModal = ({ isOpen, onConfirm, onCancel, onChange, otpValue, twoFactorError }) => {

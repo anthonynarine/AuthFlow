@@ -6,6 +6,7 @@ import { useState, useEffect } from "react";
 import { RiEyeLine, RiEyeOffLine } from "react-icons/ri";
 import { useBasicAuthServices } from "../../context/auth/BasicAuthContext";
 import { useTwoFactorAuth } from "../../hooks/useTwoFactorAuth";
+import OTPModal from "./OTPModal";
 
 
 export const LoginPage = () => {
@@ -17,23 +18,33 @@ export const LoginPage = () => {
     
     const [email , setEmail] = useState('')
     const [password , setPassword] = useState('')
-    const [otp, setOtp] = useState("");
-    const [showOtpModal, setShowOtpModal] = useState(false);
+    const [otpValue, setOtpValue] = useState("");
+    const [otpModalOpen, setOtpModalOpen] = useState(false);
     const [passwordVisible, setPasswordVisible] = useState(false);
 
-    const {  verify2FA } = useTwoFactorAuth();
+    const {  verify2FA, twoFactorError } = useTwoFactorAuth();
     const { login, is2FARequired, error, isLoading} = useBasicAuthServices();
     const navigate = useNavigate();
+
+    // Effect to check if 2FA is required and show OTP modal
+    useEffect(() => {
+        if(is2FARequired) {
+            setOtpModalOpen(is2FARequired);
+        }
+    }, [is2FARequired])
 
     // Handler for form submission
     const handleSubmit = async (event) => {
         event.preventDefault();
         if (!is2FARequired) {
             login({ email, password })
-        } else {
-            verify2FA({ otp })
         }  
     };
+
+    const handleOtpSubmit = async () => {
+        verify2FA(otpValue);
+        setOtpModalOpen(false);
+    }
 
     const navigateHome = () => {
         navigate("/");
@@ -88,9 +99,12 @@ export const LoginPage = () => {
             </main>
             {is2FARequired && (
                 <div className="form-floating mb-4">
-                    <input
-                        value={otp}
-                        onChange={(e) => setOtp(e.target.value)}
+                    <OTPModal
+                        isOpen={otpModalOpen}
+                        onConfirm={handleOtpSubmit}
+                        otpValue={otpValue}
+                        onChange={(e) => setOtpValue(e.target.value)}
+                        twoFactorError={twoFactorError}
                         type="text"
                         className="form-control"
                         id="floatingOTP"

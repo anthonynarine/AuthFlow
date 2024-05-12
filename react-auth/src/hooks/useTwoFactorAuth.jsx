@@ -8,6 +8,7 @@ export const useTwoFactorAuth = () => {
     const [isLoading, setIsLoading] = useState(false);
     const [twoFactorError, setTwoFactorError] = useState(null);
     const [qrCode, setQrCode] = useState("");
+    const [isInitialSetup, setIsInitialSetup] = useState(false); 
 
 
     const { setUser, setIsLoggedIn } = useBasicAuthServices();
@@ -18,7 +19,8 @@ export const useTwoFactorAuth = () => {
         console.log("isLoading updated to:", isLoading);
         console.log("twoFactorError updated to:", twoFactorError);
         console.log("qrCode updated to:", qrCode);
-    }, [isLoading, twoFactorError, qrCode,]);
+        console.log("initisl setup:", isInitialSetup);
+    }, [isLoading, twoFactorError, qrCode, isInitialSetup]);
 
     // Function to toggle 2FA state
     const toggle2fa = useCallback(async (is2FAEnabled) => {
@@ -30,7 +32,10 @@ export const useTwoFactorAuth = () => {
             setUser(prevState => ({ ...prevState, is_2fa_enabled: data.is_2fa_enabled }));
 
             if (data.is_2fa_enabled) {
-                navigate("/setup-2fa/");
+                setIsInitialSetup(true) // Enabling 2FA, start initial setup
+                navigate("/setup-2fa/"); // Direct user to to setup page
+            } else {
+                setIsInitialSetup(false) // Disabling 2FS, clear setup flag
             }
         } catch (error) {
             console.error("Error toggling 2FA", error);
@@ -48,6 +53,7 @@ export const useTwoFactorAuth = () => {
             const { data } = await authAxios.get("/generate-qr/", { responseType: "blob" });
             const url = URL.createObjectURL(data);
             setQrCode(url);
+            setIsInitialSetup(true);
         } catch (error) {
             console.error("Error fetching QR code.", error);
             setTwoFactorError("Failed to fetch QR code. Please check your connection and try again.");
@@ -60,12 +66,20 @@ export const useTwoFactorAuth = () => {
     const verify2FA = useCallback(async (otp) => {
         setIsLoading(true);
         setTwoFactorError(null);
+
+        // Choose the endpoint based on wheatehr it's an initial setup of regular login.
+        const endpoint = isInitialSetup ? "/verify-otp/" : "/two-factor-login/";
         try {
-            const { data, status } = await authAxios.post("/verify-otp/", { otp });
+            const { data, status } = await authAxios.post(endpoint, { otp });
             if (status === 200) {
-                Cookies.set("accessToken", data.access_token, { expires: 7 });
+                Cookies.set("accessToken", data.access_token, { expires: 7, secure: true, httpOnly: true, sameSite: 'Strict'  });
                 setIsLoggedIn(true);
                 navigate("/");
+
+                // Reset the initial state if it was part of the initial setup
+                if (isInitialSetup) {
+                    setIsInitialSetup(false);
+                }
             }
         } catch (error) {
             const errorMsg = error.response?.data?.error;
@@ -75,7 +89,7 @@ export const useTwoFactorAuth = () => {
         } finally {
             setIsLoading(false);
         }
-    }, [navigate, setIsLoggedIn]);
+    }, [navigate, setIsLoggedIn, isInitialSetup]);
 
     return {
         toggle2fa,
@@ -84,5 +98,6 @@ export const useTwoFactorAuth = () => {
         qrCode,
         verify2FA,
         fetchQRCode,
+        isInitialSetup,
     };
 }

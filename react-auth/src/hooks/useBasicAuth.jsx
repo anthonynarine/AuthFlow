@@ -25,7 +25,7 @@ export const useBasicAuth = () => {
                 setIs2FARequired(true); // Set flag if 2FA is needed
                 setEmailFor2FA(email) // set email to be used in TwoFactorLoginAPIView
             } else {
-                Cookies.set("accessToken", data.access_token, { expires: 7 });
+                Cookies.set("accessToken", data.access_token, { expires: 7, secure: true, sameSite: 'Strict' });
                 setIsLoggedIn(true)
                 navigate("/")
             }

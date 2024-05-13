@@ -72,7 +72,9 @@ export const useTwoFactorAuth = () => {
         try {
             const { data, status } = await authAxios.post(endpoint, { otp });
             if (status === 200) {
+                console.log("Old token:", Cookies.get("accessToken")); // Log old token
                 Cookies.set("accessToken", data.access_token, { expires: 7, secure: true, sameSite: 'Strict'});
+                console.log("New token:", data.access_token); // Log new token
                 setIsLoggedIn(true);
                 navigate("/");
 

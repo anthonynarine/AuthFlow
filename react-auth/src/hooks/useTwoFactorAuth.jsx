@@ -72,7 +72,7 @@ export const useTwoFactorAuth = () => {
         try {
             const { data, status } = await authAxios.post(endpoint, { otp });
             if (status === 200) {
-                Cookies.set("accessToken", data.access_token, { expires: 7, secure: true, httpOnly: true, sameSite: 'Strict'  });
+                Cookies.set("accessToken", data.access_token, { expires: 7, secure: true, sameSite: 'Strict'});
                 setIsLoggedIn(true);
                 navigate("/");
 

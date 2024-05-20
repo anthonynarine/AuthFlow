@@ -28,7 +28,7 @@ export const LoginPage = () => {
 
     // Effect to check if 2FA is required and show OTP modal
     useEffect(() => {
-        if(is2FARequired) {
+        if(is2FARequired) { 
             setOtpModalOpen(is2FARequired);
         }
     }, [is2FARequired])
@@ -37,12 +37,12 @@ export const LoginPage = () => {
     const handleSubmit = async (event) => {
         event.preventDefault();
         if (!is2FARequired) {
-            login({ email, password })
+            await login({ email, password })
         }  
     };
 
     const handleOtpSubmit = async () => {
-        verify2FA(otpValue);
+        await verify2FA(otpValue);
         setOtpModalOpen(false);
     }
 

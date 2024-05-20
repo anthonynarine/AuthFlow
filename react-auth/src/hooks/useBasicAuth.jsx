@@ -21,18 +21,22 @@ export const useBasicAuth = () => {
         try {
             const { data } = await publicAxios.post("/login/", { email, password });
             console.log("login data", data)
-            if (data?.["2fa_required"]) {
-                setIs2FARequired(true); // Set flag if 2FA is needed
-                setEmailFor2FA(email) // set email to be used in TwoFactorLoginAPIView
-            } else {
-                Cookies.set("accessToken", data.access_token, { expires: 7, secure: true, sameSite: 'Strict' });
-                setIsLoggedIn(true)
-                navigate("/")
-            }
+
+            // This block will not be reached if 2FA is required since th 401 error will be thrown 
+            Cookies.set("accessToken", data.access_token, { expires: 7, secure: true, sameSite: 'Strict' });
+            setIsLoggedIn(true)
+            setIs2FARequired(false)
+            navigate("/")
+            
         } catch (error) {
-            setError(error.response.data.error ||  "An error occured during login. ")
-            console.error("Login error:", error)
-            console.log(error.response || error);
+            if (error.response?.status === 401 && error.response.data?.["2fa_required"]) {
+                setIs2FARequired(true);
+                console.log("2FA required, setting state to true in catch block");
+            } else {
+                setError(error.response?.data?.error ||  "An error occured during login. ")
+                console.error("Login error:", error)
+                console.log(error.response || error);
+            }
             
         } finally {
             setIsLoading(false);

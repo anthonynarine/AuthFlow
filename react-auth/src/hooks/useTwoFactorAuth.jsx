@@ -85,7 +85,7 @@ export const useTwoFactorAuth = () => {
             }
         } catch (error) {
             const errorMsg = error.response?.data?.error;
-            const parsedError = errorMsg ? Object.values(errorMsg).join(", ") : "An error occurred during 2FA login";
+            const parsedError = errorMsg ? Object.values(errorMsg).join("") : "An error occurred during 2FA login";
             setTwoFactorError(parsedError)
             console.log("testing Parsed 2faError:", parsedError);
         } finally {

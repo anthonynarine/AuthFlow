@@ -4,6 +4,9 @@ import "./SendEmail.css"; // Make sure this path is correct
 import { useNavigate } from "react-router-dom";
 import { RiArrowGoBackLine } from 'react-icons/ri';
 
+// Development and production base URLs
+const DEV_URL = "http://localhost:8000/mail/send-email/";
+const PRODUCTION_URL = "https://ant-django-auth-62cf01255868.herokuapp.com/mail/send-email/";
 
 export const SendEmail = () => {
     const [emailDetails, setEmailDetails] = useState({
@@ -24,7 +27,7 @@ export const SendEmail = () => {
     const sendEmail = async (event) => {
         event.preventDefault();
         try {
-            const response = await axios.post('http://localhost:8000/mail/send-email/', emailDetails);
+            const response = await axios.post(PRODUCTION_URL, emailDetails);
             alert("Email sent successfully");
         } catch (error) {
             console.error("Failed to send email:", error.response);

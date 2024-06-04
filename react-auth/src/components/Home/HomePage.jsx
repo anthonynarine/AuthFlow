@@ -91,18 +91,18 @@ function HomePage() {
         <div className="intro-container">
           <h4 className="white-text">App Overview</h4>
           <p className="intro-container">
-            This application is designed to provide a robust, secure, and user-friendly authentication
-            system. Integrating backend technologies with a seamless frontend experience, it’s crafted
-            for both security and ease of use. This platform offers a comprehensive set of
-            authentication features, including user registration, login processes, password
-            reset capabilities, and optional two-factor authentication. Behind every feature lies
-            a robust backend built with Django and DRF, adhering to RESTful standards and secured
-            with PyJWT for token creation. On the frontend, Axios interceptors streamline the login
-            process, managing authentication tokens efficiently to ensure a smooth user experience.
-            This system is crafted for those looking to explore a full-stack project that prioritizes
-            security without compromising on user experience. Whether you're safeguarding personal 
-            projects or in need of reliable login systems, this platform showcases
-            the powerful synergy between a Django backend with custom middleware and a React frontend.
+            This application is designed to provide a robust, secure, and user-friendly authentication 
+            system. Integrating backend technologies with a seamless frontend experience,
+            it’s crafted for both security and ease of use. This platform offers a comprehensive set 
+            of authentication features, including user registration, login processes, password reset 
+            capabilities, and optional two-factor authentication. Behind every feature lies a robust
+            backend built with Django and DRF, adhering to RESTful standards and secured with PyJWT for
+            token creation. On the frontend, Axios interceptors streamline the login process,
+            managing authentication tokens efficiently to ensure a smooth user experience. 
+            This microservice is designed to prioritize security without compromising on user
+            experience. Whether you're safeguarding personal projects or in need of <acronym title=""></acronym> reliable login
+            systems, this platform showcases the powerful synergy between a Python-Django API with custom 
+            middleware and a Javascript frontend.
           </p>
         </div>
       </main>

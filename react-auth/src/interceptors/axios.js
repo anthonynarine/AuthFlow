@@ -5,7 +5,7 @@ import Cookies from "js-cookie";
 
 // Development and production base URLs
 const DEV_URL = "http://localhost:8000/api";
-const Production_URL = "https://ant-django-auth-62cf01255868.herokuapp.com/api";
+const PRODUCTION_URL = "https://ant-django-auth-62cf01255868.herokuapp.com/api";
 
 // Function to log request details, useful for debugging and monitoring.
 const logRequest = (request) => {
@@ -27,7 +27,7 @@ const logError = (error) => {
 
 // Axios instance for public (non-authenticated) requests. Configured with base URL and CSRF token handling.
 const publicAxios = axios.create({
-    baseURL: DEV_URL,
+    baseURL: DEV_URL ,
     withCredentials: true // Necessary for cookies, especially if CSRF protection is enabled server-side.
 });
 
@@ -54,7 +54,9 @@ publicAxios.interceptors.response.use(response => {
     return logResponse(response);
 }, logError);
 
-// Authenticated Axios instance for private (authenticated) requests with token and CSRF handling.
+
+
+// AUTHENTICATED AXIOS INSTANCE for private (authenticated) requests with token and CSRF handling.
 const authAxios = axios.create({
     baseURL: DEV_URL,
     withCredentials: true,
@@ -62,9 +64,12 @@ const authAxios = axios.create({
 
 // Interceptor to attach the access token to each request
 authAxios.interceptors.request.use(config => {
-    const accessToken = Cookies.get("accessToken");
+    const accessToken = Cookies.get("access_token");
     if (accessToken) {
         config.headers["Authorization"] = `Bearer ${accessToken}`;
+        console.log(`Access Token Attached: ${accessToken}`);
+    } else {
+        console.log("No Access Token found")
     }
     const csrfToken = Cookies.get("csrftoken");
     if (csrfToken) {
@@ -93,7 +98,11 @@ authAxios.interceptors.response.use((response) => {
             const response = await authAxios.post("/token-refresh/", {}, { withCredentials: true });
             if (response.status === 200) {
                 const newAccessToken = response.data.access_token;
-                Cookies.set("accessToken", newAccessToken);
+                Cookies.set("access_token", newAccessToken);
+                originalRequest.headers["Authorization"] = `Bearer ${newAccessToken}`;
+                
+                // Update Axios default headers for subsequent requests
+                authAxios.defaults.headers.common["Authorization"] = `Bearer ${newAccessToken}`;
                 return authAxios(originalRequest);
             }
         } catch (refreshError) {

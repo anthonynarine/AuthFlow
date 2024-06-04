@@ -23,7 +23,6 @@ export const useBasicAuth = () => {
             console.log("login data", data)
 
             // This block will not be reached if 2FA is required since th 401 error will be thrown 
-            Cookies.set("accessToken", data.access_token, { expires: 7, secure: true, sameSite: 'Strict' });
             setIsLoggedIn(true)
             setIs2FARequired(false)
             navigate("/")

@@ -65,6 +65,7 @@ const authAxios = axios.create({
 // Interceptor to attach the access token to each request
 authAxios.interceptors.request.use(config => {
     const accessToken = Cookies.get("access_token");
+
     if (accessToken) {
         config.headers["Authorization"] = `Bearer ${accessToken}`;
         console.log(`Access Token Attached: ${accessToken}`);
@@ -78,6 +79,7 @@ authAxios.interceptors.request.use(config => {
     config.metadata = { startTime: new Date() };
     return logRequest(config);
 }, logError);
+
 
 // Response interceptor for handling automatic token refresh on authentication failures
 authAxios.interceptors.response.use((response) => {

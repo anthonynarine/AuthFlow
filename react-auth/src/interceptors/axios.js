@@ -27,7 +27,7 @@ const logError = (error) => {
 
 // Axios instance for public (non-authenticated) requests. Configured with base URL and CSRF token handling.
 const publicAxios = axios.create({
-    baseURL: DEV_URL ,
+    baseURL: PRODUCTION_URL ,
     withCredentials: true // Necessary for cookies, especially if CSRF protection is enabled server-side.
 });
 
@@ -55,60 +55,53 @@ publicAxios.interceptors.response.use(response => {
 }, logError);
 
 
-
 // AUTHENTICATED AXIOS INSTANCE for private (authenticated) requests with token and CSRF handling.
 const authAxios = axios.create({
-    baseURL: DEV_URL,
+    baseURL: PRODUCTION_URL,
     withCredentials: true,
 });
 
 // Interceptor to attach the access token to each request
 authAxios.interceptors.request.use(config => {
-    const accessToken = Cookies.get("access_token");
-
-    if (accessToken) {
-        config.headers["Authorization"] = `Bearer ${accessToken}`;
-        console.log(`Access Token Attached: ${accessToken}`);
-    } else {
-        console.log("No Access Token found")
-    }
+    // const accessToken = Cookies.get("access_token");
+    // if (accessToken) {
+    //     config.headers["Authorization"] = `Bearer ${accessToken}`;
+    // };
     const csrfToken = Cookies.get("csrftoken");
     if (csrfToken) {
         config.headers["X-CSRFToken"] = csrfToken;
     }
-    config.metadata = { startTime: new Date() };
+    config.metadata = { startTime: new Date() }; 
     return logRequest(config);
 }, logError);
 
 
 // Response interceptor for handling automatic token refresh on authentication failures
-authAxios.interceptors.response.use((response) => {
+authAxios.interceptors.response.use(response => {
     // Check for and update the CSRF token as needed
-    const newCsrfToken = response.headers["x-csrftoken"];
+    const newCsrfToken = response.headers['x-csrftoken'];
     if (newCsrfToken) {
-        Cookies.set("csrftoken", newCsrfToken);
+        Cookies.set('csrftoken', newCsrfToken);
     }
     const duration = new Date() - response.config.metadata.startTime;
     console.log(`Response from ${response.config.url} took ${duration} ms`);
     return logResponse(response);
-}, async (error) => {
+}, async error => {
     const originalRequest = error.config;
     // Handle expired access tokens and attempt to refresh them once
     if (error.response.status === 401 && !originalRequest._retry) {
         originalRequest._retry = true;
         try {
-            const response = await authAxios.post("/token-refresh/", {}, { withCredentials: true });
+            const response = await authAxios.post('/token-refresh/', {}, { withCredentials: true });
             if (response.status === 200) {
                 const newAccessToken = response.data.access_token;
-                Cookies.set("access_token", newAccessToken);
-                originalRequest.headers["Authorization"] = `Bearer ${newAccessToken}`;
-                
+                originalRequest.headers['Authorization'] = `Bearer ${newAccessToken}`;
                 // Update Axios default headers for subsequent requests
-                authAxios.defaults.headers.common["Authorization"] = `Bearer ${newAccessToken}`;
+                authAxios.defaults.headers.common['Authorization'] = `Bearer ${newAccessToken}`;
                 return authAxios(originalRequest);
             }
         } catch (refreshError) {
-            console.error("Failed to refresh token", refreshError);
+            console.error('Failed to refresh token', refreshError);
             return Promise.reject(refreshError);
         }
     }

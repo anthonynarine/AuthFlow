@@ -37,7 +37,7 @@ export const RegisterPage = () => {
         setErrors("");
         setIsLoading(true);
         try {
-            await axios.post(DEV_URL, {
+            await axios.post(PRODUCTION_URL, {
                 first_name: formFields.firstName,
                 last_name: formFields.lastName,
                 email: formFields.email,

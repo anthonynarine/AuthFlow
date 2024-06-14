@@ -4,8 +4,14 @@ import Cookies from "js-cookie";
 // TODO: add access and refresh token logic to response interceptors. 
 
 // Development and production base URLs
-const DEV_URL = "http://localhost:8000/api";
-const PRODUCTION_URL = "https://ant-django-auth-62cf01255868.herokuapp.com/api";
+const baseURL = process.env.REACT_APP_USE_PRODUCTION_API === 'true'
+    ? process.env.REACT_APP_PRODUCTION_URL
+    : process.env.NODE_ENV === 'development'
+        ? process.env.REACT_APP_DEV_URL
+        : process.env.REACT_APP_PRODUCTION_URL;
+
+console.log("Base URL:", baseURL); // Debugging line to check if the baseURL is correctly set
+
 
 // Function to log request details, useful for debugging and monitoring.
 const logRequest = (request) => {
@@ -27,7 +33,7 @@ const logError = (error) => {
 
 // Axios instance for public (non-authenticated) requests. Configured with base URL and CSRF token handling.
 const publicAxios = axios.create({
-    baseURL: PRODUCTION_URL ,
+    baseURL: baseURL ,
     withCredentials: true // Necessary for cookies, especially if CSRF protection is enabled server-side.
 });
 
@@ -57,16 +63,16 @@ publicAxios.interceptors.response.use(response => {
 
 // AUTHENTICATED AXIOS INSTANCE for private (authenticated) requests with token and CSRF handling.
 const authAxios = axios.create({
-    baseURL: PRODUCTION_URL,
+    baseURL: baseURL,
     withCredentials: true,
 });
 
 // Interceptor to attach the access token to each request
 authAxios.interceptors.request.use(config => {
-    // const accessToken = Cookies.get("access_token");
-    // if (accessToken) {
-    //     config.headers["Authorization"] = `Bearer ${accessToken}`;
-    // };
+    const accessToken = Cookies.get("access_token");
+    if (accessToken) {
+        config.headers["Authorization"] = `Bearer ${accessToken}`;
+    };
     const csrfToken = Cookies.get("csrftoken");
     if (csrfToken) {
         config.headers["X-CSRFToken"] = csrfToken;
@@ -78,6 +84,7 @@ authAxios.interceptors.request.use(config => {
 
 // Response interceptor for handling automatic token refresh on authentication failures
 authAxios.interceptors.response.use(response => {
+    
     // Check for and update the CSRF token as needed
     const newCsrfToken = response.headers['x-csrftoken'];
     if (newCsrfToken) {
@@ -92,9 +99,13 @@ authAxios.interceptors.response.use(response => {
     if (error.response.status === 401 && !originalRequest._retry) {
         originalRequest._retry = true;
         try {
-            const response = await authAxios.post('/token-refresh/', {}, { withCredentials: true });
+            const refreshToken = Cookies.get("refresh_token");
+            const response = await authAxios.post('/token-refresh/', {refresh_token: refreshToken}, { withCredentials: true });
             if (response.status === 200) {
                 const newAccessToken = response.data.access_token;
+                const newRefreshToken = response.data.refresh_token;
+                Cookies.set("access_token", newAccessToken);
+                Cookies.set("refresh_token", newRefreshToken)
                 originalRequest.headers['Authorization'] = `Bearer ${newAccessToken}`;
                 // Update Axios default headers for subsequent requests
                 authAxios.defaults.headers.common['Authorization'] = `Bearer ${newAccessToken}`;

@@ -21,7 +21,8 @@ export const useBasicAuth = () => {
         try {
             const { data } = await publicAxios.post("/login/", { email, password });
             console.log("login data", data)
-
+            Cookies.set("access_token", data.access_token, {expires: 1/96 } ) // 15 minutes expiry (1/96 of a day)
+            Cookies.set("refresh_token", data.refresh_token, {expires: 7}); // 7 day expirty
             // This block will not be reached if 2FA is required since th 401 error will be thrown 
             setIsLoggedIn(true)
             setIs2FARequired(false)

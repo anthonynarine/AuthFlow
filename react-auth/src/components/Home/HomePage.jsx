@@ -28,6 +28,7 @@ function HomePage() {
 
   useEffect(() => {
     validateSession();
+    console.log("Base URL:", process.env.REACT_APP_PRODUCTION_URL);
   }, [validateSession]); // Pass `validateSession` if it's guaranteed to be stable or memoized
 
   useEffect(() => {

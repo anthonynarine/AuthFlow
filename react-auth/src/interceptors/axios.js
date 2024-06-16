@@ -84,6 +84,14 @@ publicAxios.interceptors.response.use((response) => {
         });
     }
 
+    // Handle logout response and remove tokens
+    if (response.config.url.includes("/logout/")) {
+      Cookies.remove("access_token", { path: '/' });
+      Cookies.remove("refresh_token", { path: '/' });
+      Cookies.remove("csrftoken", { path: '/' });
+      Cookies.remove("sessionid", { path: '/', domain: 'ant-django-auth-62cf01255868.herokuapp.com' });
+    }
+
     // Calculate and log the duration of the request
     const duration = new Date() - response.config.metadata.startTime;
     console.log(`Response from ${response.config.url} took ${duration} ms`);

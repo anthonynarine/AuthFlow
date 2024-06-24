@@ -6,7 +6,7 @@ export const Footer = () => {
   return (
     <footer className="mt-auto text-white-50 footer-container">
       <div className="link-container"> {/* Add this div */}
-        <a href="https://documenter.getpostman.com/view/23868442/2sA2xnyAdP" className="api-link" target="_blank" rel="noopener noreferrer">
+        <a href="https://documenter.getpostman.com/view/23868442/2sA3XY6xgj" className="api-link" target="_blank" rel="noopener noreferrer">
         <FaDatabase /> Api Documentation 
         </a>
         <a href="https://github.com/anthonynarine" target="_blank" rel="noopener noreferrer" className="github-link">

@@ -86,10 +86,10 @@ publicAxios.interceptors.response.use((response) => {
 
     // Handle logout response and remove tokens
     if (response.config.url.includes("/logout/")) {
-      Cookies.remove("access_token", { path: '/' });
-      Cookies.remove("refresh_token", { path: '/' });
-      Cookies.remove("csrftoken", { path: '/' });
-      Cookies.remove("sessionid", { path: '/', domain: 'ant-django-auth-62cf01255868.herokuapp.com' });
+      Cookies.remove("access_token");
+      Cookies.remove("refresh_token");
+      Cookies.remove("csrftoken");
+      Cookies.remove("sessionid");
     }
 
     // Calculate and log the duration of the request
@@ -174,5 +174,40 @@ authAxios.interceptors.response.use(
         return logError(error);
     }
 );
+
+// Response interceptor for handling automatic token refresh on authentication failures
+authAxios.interceptors.response.use((response) => {
+    // Check for and update the CSRF token as needed
+    const newCsrfToken = response.headers["x-csrftoken"];
+    if (newCsrfToken) {
+        Cookies.set("csrftoken", newCsrfToken);
+    }
+    const duration = new Date() - response.config.metadata.startTime;
+    console.log(`Response from ${response.config.url} took ${duration} ms`);
+    return logResponse(response);
+}, async (error) => {
+    const originalRequest = error.config;
+    // Handle expired access tokens and attempt to refresh them once
+    if (error.response.status === 401 && !originalRequest._retry) {
+        originalRequest._retry = true;
+        try {
+            const response = await authAxios.post("/token-refresh/", {}, { withCredentials: true });
+            if (response.status === 200) {
+                const newAccessToken = response.data.access_token;
+                Cookies.set("access_token", newAccessToken);
+                originalRequest.headers["Authorization"] = `Bearer ${newAccessToken}`;
+                
+                // Update Axios default headers for subsequent requests
+                authAxios.defaults.headers.common["Authorization"] = `Bearer ${newAccessToken}`;
+                return authAxios(originalRequest);
+            }
+        } catch (refreshError) {
+            console.error("Failed to refresh token", refreshError);
+            return Promise.reject(refreshError);
+        }
+    }
+    return logError(error);
+});
+
 
 export { authAxios, publicAxios };

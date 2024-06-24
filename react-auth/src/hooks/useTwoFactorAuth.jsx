@@ -29,9 +29,14 @@ export const useTwoFactorAuth = () => {
 
         try {
             const { data } = await authAxios.patch("/user/toggle-2fa/", { is_2fa_enabled: is2FAEnabled });
-            setUser(prevState => ({ ...prevState, is_2fa_enabled: data.is_2fa_enabled }));
+            setUser(prevState => ({
+                ...prevState,
+                is_2fa_enabled: data.is_2fa_enabled,
+                is_2fa_setup_in_progress: data.is_2fa_setup_in_progress
+            }));
 
-            if (data.is_2fa_enabled) {
+
+            if (data.is_2fa_setup_in_progress) {
                 setIsInitialSetup(true) // Enabling 2FA, start initial setup
                 navigate("/setup-2fa/"); // Direct user to to setup page
             } else {
@@ -73,7 +78,7 @@ export const useTwoFactorAuth = () => {
             const { data, status } = await authAxios.post(endpoint, { otp });
             if (status === 200) {
                 console.log("Old token:", Cookies.get("accessToken")); // Log old token
-                Cookies.set("accessToken", data.access_token, { expires: 7, secure: true, sameSite: 'Strict'});
+                Cookies.set("access_token", data.access_token, { expires: 7, secure: true, sameSite: 'Strict'});
                 console.log("New token:", data.access_token); // Log new token
                 setIsLoggedIn(true);
                 navigate("/");

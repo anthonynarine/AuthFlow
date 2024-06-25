@@ -7,6 +7,7 @@ import { RiEyeLine, RiEyeOffLine } from "react-icons/ri";
 import { useBasicAuthServices } from "../../context/auth/BasicAuthContext";
 import { useTwoFactorAuth } from "../../hooks/useTwoFactorAuth";
 import OTPModal from "./OTPModal";
+import "./OTPModal.css"
 
 
 export const LoginPage = () => {
@@ -97,12 +98,12 @@ export const LoginPage = () => {
                     <Link style={{  color: "#30815e"}} to="/forgot-password/">Forgot password</Link>
                 </div>
             </main>
-            {is2FARequired && (
-                <div className="form-floating mb-4">
+            {is2FARequired && (           
                     <OTPModal
                         isOpen={otpModalOpen}
                         onConfirm={handleOtpSubmit}
                         otpValue={otpValue}
+                        onCancel={()=> setOtpModalOpen(false)}
                         onChange={(e) => setOtpValue(e.target.value)}
                         twoFactorError={twoFactorError}
                         type="text"
@@ -110,9 +111,7 @@ export const LoginPage = () => {
                         id="floatingOTP"
                         placeholder="One-Time Password"
                         name="otp"
-                    />
-                    <label htmlFor="floatingOTP">One-Time Password</label>
-            </div>
+                    />               
             )}
             
         </div>

@@ -1,12 +1,11 @@
-/* Sets up the modal container with a fixed position covering the entire viewport,
-   centers content within it, and applies a dark background for the modal overlay */
-.modal-container {
+/* Modal Container: Centers content with a dark overlay */
+.otp-modal .modal-container {
     position: fixed;
     top: 30%; /* Anchors the top of the modal at 30% of the viewport height */
     left: 0;
     width: 100%;
     height: 100%;
-    background-color: #121212; /* Dark background for the overlay */
+    background-color:#121212; /* Dark background with slight transparency for overlay */
     display: flex;
     justify-content: center;
     align-items: center;
@@ -14,128 +13,125 @@
     transform: translateY(-50%); /* Vertically centers the modal content */
 }
 
-/* Styles the modal content area with a specific background, border radius, and shadow for depth */
-.modal-content {
-    background-color: #1C2833; /* Dark blue background for the content */
-    border-radius: 8px; /* Rounded corners for the modal */
-    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1); /* Subtle shadow for 3D effect */
-    max-width: 500px; /* Limits the maximum width to ensure consistent design */
+/* Modal Content: Dark background, rounded corners, and shadow */
+.otp-modal .modal-content {
+    background-color: #1C2833; /* Dark blue background */
+    border-radius: 8px; /* Rounded corners */
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1); /* Subtle shadow for depth */
+    max-width: 500px; /* Limits the maximum width */
     width: 100%; /* Responsive width */
     padding: 2rem; /* Padding inside the modal content */
 }
 
-/* Styles the header of the modal, includes space management and alignment */
-.modal-header {
+/* Modal Header: Centered with a specific color */
+.otp-modal .modal-header {
     display: flex;
-    justify-content: center; /* Aligns items on opposite ends */
-    align-items: center; /* Vertically centers items in the header */
+    justify-content: center; /* Centered header content */
+    align-items: center; /* Vertically centered */
     margin-bottom: 1rem; /* Space below the header */
-    color: #1abc9c; /* Mint green color for header text */
+    color: #1abc9c; /* Mint green color */
 }
 
-/* Padding adjustment for the modal body to ensure content spacing */
-.modal-body {
+/* Modal Body: Padding adjustment */
+.otp-modal .modal-body {
     padding-bottom: 1rem;
 }
 
-/* Flexbox setup for the footer to center buttons and align them properly */
-.modal-footer {
+/* Modal Footer: Centered buttons with gap */
+.otp-modal .modal-footer {
     display: flex;
     justify-content: center;
     align-items: center;
-    gap: 20px; 
+    gap: 20px; /* Space between buttons */
 }
 
-/* Styles for the close button, including appearance and hover effects */
-.close {
+/* Close Button: Subtle styling with hover effect */
+.otp-modal .close {
     background: none;
     border: none;
     cursor: pointer;
     font-size: 1.5rem;
-    color: #ccc; /* Light grey color making it subtle */
+    color: #ccc; /* Light grey color */
 }
 
-/* Hover state for the close button to indicate interactivity */
-.close:hover {
-    color: #D44638; /* Bright red color for visibility on hover */
+.otp-modal .close:hover {
+    color: #D44638; /* Bright red on hover */
 }
 
-/* Adjustments for OTP input squares */
-.otp-input-container {
+/* OTP Input Container: Space between input squares */
+.otp-modal .otp-input-container {
     display: flex;
-    justify-content: space-between; /* Distribute input squares evenly */
+    justify-content: space-between; /* Even distribution of input squares */
 }
 
-/* Styles for OTP input field, ensuring full-width, padding, and visual design */
-.otp-input {
+/* OTP Input: Full-width, padding, and visual design */
+.otp-modal .otp-input {
     width: calc(16.666% - 10px); /* Adjust width for each square */
-    height: 50px; /* Set height for each square */
+    height: 50px; /* Set height */
     padding: 0.5rem;
     margin-bottom: 1rem;
     border: 2px solid transparent; /* Transparent border initially */
-    border-radius: 4px; /* Rounded corners for the input field */
-    text-align: center; /* Center-align the text within each square */
-    font-size: 1.5rem; /* Adjust font size for better visibility */
-    transition: border-color 0.3s, background-color 0.3s; /* Smooth transition for border and background color changes */
-    background-color:lightslategray;
+    border-radius: 4px; /* Rounded corners */
+    text-align: center; /* Center-aligned text */
+    font-size: 1.5rem; /* Font size */
+    transition: border-color 0.3s, background-color 0.3s; /* Smooth transition */
+    background-color: #2c3e50; /* Dark background color for input */
+    color: #fff; /* White text color */
 }
 
-/* Use placeholder styling to make each digit box visually distinguishable */
-.otp-input::placeholder {
-    color: #ccc; /* Light grey color for placeholder text */
+.otp-modal .otp-input::placeholder {
+    color: #ccc; /* Light grey placeholder text */
 }
 
-/* Animation effect for OTP input squares when focused */
-.otp-input:focus {
+.otp-modal .otp-input:focus {
     outline: none; /* Remove default focus outline */
-    border-color: #1abc9c; /* Mint green border color */
+    border-color: #1abc9c; /* Mint green border on focus */
 }
 
-/* Hover effect for OTP input squares */
-.otp-input:hover {
-    background-color: #30815e; /* Light grey background color on hover */
+.otp-modal .otp-input:hover {
+    background-color: #34495e; /* Slightly lighter background on hover */
 }
 
-
-/* Base button styling setting padding, no border, rounded corners, and cursor */
-.btn {
+/* Button Styles: Base styling */
+.otp-modal .btn {
     padding: 0.5rem 1rem;
     border: none;
     border-radius: 4px;
-    min-width: 5rem; /* Ensures a minimum width for touch targets */
+    min-width: 5rem; /* Minimum width */
     cursor: pointer;
-    padding-left: 25px; /* Additional padding for aesthetic balance */
+    padding-left: 25px; /* Additional padding */
 }
 
-/* Primary button color styling and hover effects */
-.btn-primary {
+/* Primary Button: Colors and hover effect */
+.otp-modal .btn-primary {
     background-color: #30815e; /* Dark green background */
-    color: #fff; /* White text for contrast */
+    color: #fff; /* White text */
 }
 
-.btn-primary:hover {
-    background-color: #14a365; /* Slightly lighter green on hover */
-    color: #171D23; /* Very dark gray for text on hover */
+.otp-modal .btn-primary:hover {
+    background-color: #14a365; /* Lighter green on hover */
+    color: #171D23; /* Very dark gray text on hover */
 }
 
-/* Secondary button styling matches primary for consistency, but can be customized separately */
-.btn-secondary {
-    background-color:#30815e; /* Matching dark green background */
-    color: #fff; /* Consistent white text for visibility */
+/* Secondary Button: Colors and hover effect */
+.otp-modal .btn-secondary {
+    background-color: #30815e; /* Dark green background */
+    color: #fff; /* White text */
 }
 
-.btn-secondary:hover {
-    background-color: #14a365; /* Matching hover state as primary for consistency */
-    color: #171D23; /* Consistent text color change on hover */
+.otp-modal .btn-secondary:hover {
+    background-color: #14a365; /* Lighter green on hover */
+    color: #171D23; /* Very dark gray text on hover */
 }
 
-.alert.alert-danger {
+/* Alert: Styling for error messages */
+.otp-modal .alert.alert-danger {
     color: #721c24;
     background-color: #f8d7da;
     border-color: #f5c6cb;
     padding: 10px;
-    margin-bottom: 20px; /* Space between the error message and OTP inputs */
-    border-radius: 4px; /* Soften the edges */
-    text-align: center; /* Center the text for better focus */
-    width: 100%; /* Full width for better visibility */
+    margin-bottom: 20px; /* Space below the alert */
+    border-radius: 4px; /* Rounded corners */
+    text-align: center; /* Centered text */
+    width: 100%; /* Full width */
 }

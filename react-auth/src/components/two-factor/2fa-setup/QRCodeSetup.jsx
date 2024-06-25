@@ -4,6 +4,8 @@ import "./QRCodeSetup.css";
 import { RiArrowGoBackLine } from 'react-icons/ri';
 import { useNavigate } from "react-router-dom"
 import  OTPModal  from "../../login/OTPModal";
+import "../../login/OTPModal.css"
+
 
 export const QRCodeSetup = () => {
     const { fetchQRCode, qrCode, verify2FA, twoFactorError} = useTwoFactorAuth();

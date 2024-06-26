@@ -6,7 +6,7 @@ import authAppImage from "../../assets/auth-app.jpg";
 import { RiArrowGoBackLine, RiEyeLine, RiEyeOffLine } from "react-icons/ri";
 
 // Development and production base URLs
-const DEV_URL = "http://localhost:8000/api/register/";
+// const DEV_URL = "http://localhost:8000/api/register/";
 const PRODUCTION_URL = "https://ant-django-auth-62cf01255868.herokuapp.com/api/register/";
 
 export const RegisterPage = () => {

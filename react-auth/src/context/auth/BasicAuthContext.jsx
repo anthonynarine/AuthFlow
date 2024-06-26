@@ -1,5 +1,5 @@
 import React, { createContext, useContext } from "react";
-import { FaNotEqual } from "react-icons/fa";
+
 
 // Importing the custom hook for basicAuthServices
 import { useBasicAuth } from "../../hooks/useBasicAuth";

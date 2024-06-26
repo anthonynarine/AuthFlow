@@ -24,7 +24,7 @@ export const LoginPage = () => {
     const [passwordVisible, setPasswordVisible] = useState(false);
 
     const {  verify2FA, twoFactorError } = useTwoFactorAuth();
-    const { login, is2FARequired, error, isLoading} = useBasicAuthServices();
+    const { login, is2FARequired, error,} = useBasicAuthServices();
     const navigate = useNavigate();
 
     // Effect to check if 2FA is required and show OTP modal

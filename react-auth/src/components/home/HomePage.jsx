@@ -4,13 +4,12 @@ import { Link, useNavigate } from "react-router-dom";
 import { useTwoFactorAuthServices } from "../../context/auth/TwoFactorAuthContext"
 import { useBasicAuthServices } from "../../context/auth/BasicAuthContext";
 import { useUserSessionServices } from "../../context/auth/UserSessionContext";
-import { DropdownMenu } from "./dropdownMenu/DropdownMenu";
 import { FiKey } from 'react-icons/fi';
 import { FaReact } from 'react-icons/fa'; // For the React icon
 import { DiPython } from 'react-icons/di'; // Example using a Python icon for Django
 import { FiMail } from 'react-icons/fi';
 import { showErrorToast, showSuccessToast } from "../../utils/toastUtils/ToastUtils";
-import { ToastContainer } from "react-toastify";
+
 
 function HomePage() {
   // const [isDropdownOpen, setIsDropdownOpen] = useState(false);
@@ -23,7 +22,6 @@ function HomePage() {
   const { toggle2fa, twoFactorError } = useTwoFactorAuthServices();
   const { logout, isLoggedIn, message, user, setError } = useBasicAuthServices();
   const { validateSession } = useUserSessionServices();
-  const navigate = useNavigate();
   console.log({isLoggedIn})
 
   useEffect(() => {

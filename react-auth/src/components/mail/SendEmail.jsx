@@ -5,7 +5,7 @@ import { useNavigate } from "react-router-dom";
 import { RiArrowGoBackLine } from 'react-icons/ri';
 
 // Development and production base URLs
-const DEV_URL = "http://localhost:8000/mail/send-email/";
+// const DEV_URL = "http://localhost:8000/mail/send-email/";
 const PRODUCTION_URL = "https://ant-django-auth-62cf01255868.herokuapp.com/mail/send-email/";
 
 export const SendEmail = () => {

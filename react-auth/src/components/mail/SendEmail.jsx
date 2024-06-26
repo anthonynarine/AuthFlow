@@ -28,6 +28,7 @@ export const SendEmail = () => {
         event.preventDefault();
         try {
             const response = await axios.post(PRODUCTION_URL, emailDetails);
+            console.log(response)
             alert("Email sent successfully");
         } catch (error) {
             console.error("Failed to send email:", error.response);

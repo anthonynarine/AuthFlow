@@ -2,7 +2,7 @@ import React, { useState } from "react";
 import axios from "axios";
 import "./SendEmail.css"; // Make sure this path is correct
 import { useNavigate } from "react-router-dom";
-import { RiArrowGoBackLine, RiHomeLine } from 'react-icons/ri';
+import { RiArrowGoBackLine } from 'react-icons/ri';
 
 // Development and production base URLs
 // const DEV_URL = "http://localhost:8000/mail/send-email/";
@@ -37,10 +37,6 @@ export const SendEmail = () => {
 
     let navigate = useNavigate();
 
-    function handleBackClick() {
-        navigate(-1); // Go back to the previous page
-    }
-
     function handleHomeClick() {
         navigate("/");
     }
@@ -49,11 +45,11 @@ export const SendEmail = () => {
         <>
             <div className="nav-buttons">
                 <button onClick={handleHomeClick} className="nav-button" title="Go to homepage">
-                    <RiHomeLine size="1.5em" />
+                    <RiArrowGoBackLine size="1.5em" />
                 </button>
             </div>
             <div className="email-invite">
-                <p>Have questions or need more information? Feel free to reach out anytime at <a href="mailto:anthonynarine@anjin.org">anthonynarine@anjin.org</a>.</p>
+                <p>Have questions or need more information? Feel free to reach out anytime at <a href="mailto:anthonynarine@anjin.org">anthonynarine@anjin.org</a></p>
             </div>
             <form onSubmit={sendEmail} className="form">
                 <h6 className="from-h6">New Message</h6>

@@ -6,9 +6,10 @@ import { useBasicAuthServices } from "../../context/auth/BasicAuthContext";
 import { useUserSessionServices } from "../../context/auth/UserSessionContext";
 import { FiKey } from 'react-icons/fi';
 import { FaReact } from 'react-icons/fa'; // For the React icon
-import { DiPython } from 'react-icons/di'; // Example using a Python icon for Django
+import { FaPython } from "react-icons/fa";
 import { FiMail } from 'react-icons/fi';
 import { showErrorToast, showSuccessToast } from "../../utils/toastUtils/ToastUtils";
+
 
 
 function HomePage() {
@@ -60,15 +61,11 @@ function HomePage() {
         <div className="header-container">
           <h3 className="mb-0 white-text"><FiKey/>Gait</h3>
           <nav className="nav nav-masthead justify-content-center">
+            <Link to="/react-features" className="icon django-icon"><FaPython size={24}/></Link>
             <Link to="/react-features" className="icon react-icon"><FaReact size={24}/></Link>
-            <Link to="/react-features" className="icon django-icon"><DiPython size={30}/></Link>
-            <Link to="/send-email" className="icon contact-icon"><FiMail size={25}/></Link>
+            <Link to="/send-email" className="icon contact-icon"><FiMail size={21}/></Link>
           </nav>
         </div>
-        {/* toast notifications */}
-        {/* <div className="toast-container">
-          <ToastContainer />
-        </div> */}
       </header>
       <main className="px-3 main-container centered-paragraph">
         <div className="auth-section mt-4">

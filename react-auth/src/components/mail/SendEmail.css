@@ -1,30 +1,40 @@
-/* SendEmail.css adjustments */
-
+/* Overall form container */
 .form {
   max-width: 500px;
   margin: 2rem auto;
   margin-top: 25px;
   margin-bottom: 10rem;
   padding: 2rem;
-  background: white;
+  background: #1e1e1e; /* Dark background to match the theme */
   border-radius: 8px;
-  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.3);
+  color: #e0e0e0; /* Light text color */
+  font-family: 'Arial', sans-serif; /* Modern, clean font */
+  position: relative; /* Ensure the nav buttons are relative to the form */
+}
+
+/* Navigation button styles */
+.nav-buttons {
+  display: flex;
+  justify-content: space-between;
+  position: absolute;
+  width: 100%;
+  top: 10px; /* Positioned above the form, adjusted lower */
+  left: 0;
+  padding: 0 50px;
 }
 
 .nav-button {
-  position: absolute;
-  top: 10px;
-  left:10px;
-  margin: 0;
   background: none;
-  color: #D3D3D3;
+  color: #d3d3d3;
   border: none;
   cursor: pointer;
-  z-index: 1000; /* Ensures the button is above other elements */
+  transition: transform 0.3s ease, color 0.3s ease;
 }
 
 .nav-button:hover {
-  color: #A9A9A9; /* Slightly lighter color on hover for visual feedback */
+  color: #1abc9c; /* Color change on hover */
+  transform: scale(1.2); /* Slightly enlarge on hover */
 }
 
 /* Ensure the icon within the button inherits the color */
@@ -32,7 +42,7 @@
   color: inherit; /* This ensures the icon color matches the button's color */
 }
 
-
+/* Form headings */
 .form h6.from-h6 {
   font-size: 1rem;
   color: #30815e;
@@ -41,15 +51,23 @@
   font-weight: normal;
 }
 
+/* Input fields and textarea */
 .form-input,
 .form-textarea {
   width: 100%;
   padding: 10px;
   margin-bottom: 1rem;
-  border: 2px solid #f2eeee;
+  border: 2px solid #333; /* Dark border */
   border-radius: 4px;
   box-sizing: border-box;
-  color: black;
+  color: #e0e0e0; /* Light text color */
+  background-color: #121212; /* Dark background */
+}
+
+.form-input:focus,
+.form-textarea:focus {
+  border-color: #1abc9c; /* Teal border on focus */
+  outline: none; /* Remove default outline */
 }
 
 .form-textarea {
@@ -58,6 +76,7 @@
   padding: 10px 18px;
 }
 
+/* Submit button */
 .form-button[type="submit"] {
   width: 100%;
   background-color: #30815e;
@@ -67,37 +86,68 @@
   border-radius: 4px;
   cursor: pointer;
   font-size: 16px;
+  transition: background-color 0.3s ease; /* Smooth transition */
 }
 
 .form-button[type="submit"]:hover {
-  background-color: #14a365;
+  background-color: #14a365; /* Darker teal on hover */
 }
 
+/* Email invite section */
 .email-invite {
-  background-color: #2c3e50; /* Dark background for contrast */
-  padding: 2rem; /* Adds some padding around the text */
-  border-radius: 8px; /* Softens the edges */
-  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1); /* Subtle shadow for depth */
-  max-width: 500px;
-  margin: 5rem auto; /* Center aligns the div and adds top & bottom margin */
-  margin-bottom: 0rem;
-}
-
-.email-invite p {
-  color: #ecf0f1; /* Lighter text color for contrast against the dark background */
+  padding: 1.5rem; /* Compact padding */
+  max-width: 400px; /* Smaller max-width */
+  margin: 2rem auto; /* Center aligns the div with top & bottom margin */
+  text-align: center; /* Center-align the text */
+  color: #ecf0f1; /* Lighter text color for contrast */
   font-size: 1rem; /* Adjust text size for readability */
-  line-height: 1.6; /* Improves the readability of the paragraph */
-  margin-bottom: 1rem; /* Gives space between the paragraph and anything below */
+  line-height: 1.5; /* Improves readability */
 }
 
+/* Links in email invite */
 .email-invite a {
-  color: #18bc9c; /* Bright, inviting color for the link */
+  color: #1abc9c; /* Bright, inviting color for the link */
   text-decoration: none; /* Removes underline to keep it sleek */
   font-weight: bold; /* Makes the email address stand out */
+  transition: color 0.3s ease, border-bottom 0.3s ease; /* Smooth transition for color and underline */
+  position: relative; /* For the custom underline */
+}
+
+.email-invite a::after {
+  content: '';
+  position: absolute;
+  left: 0;
+  bottom: -2px;
+  width: 100%;
+  height: 2px;
+  background: #1abc9c; /* Match the link color */
+  transform: scaleX(0); /* Initially hidden */
+  transform-origin: bottom right;
+  transition: transform 0.3s ease;
+}
+
+.email-invite a:hover::after {
+  transform: scaleX(1); /* Reveal on hover */
+  transform-origin: bottom left;
 }
 
 .email-invite a:hover {
-  text-decoration: underline; /* Adds underline on hover for visual feedback */
-  color: #2ecc71; /* Slightly lighter shade on hover to indicate interactivity */
+  color: #2ecc71; /* Slightly lighter shade on hover */
 }
 
+/* Media query for smaller screens */
+@media (max-width: 768px) {
+  .email-invite {
+    padding: 1rem; /* Reduce padding for smaller screens */
+    margin: 1.5rem auto; /* Adjust margins for better fit */
+  }
+
+  .email-invite p {
+    font-size: 0.9rem; /* Adjust font size for smaller screens */
+  }
+
+  .nav-buttons {
+    top: -10px; /* Adjust position for smaller screens */
+    padding: 0 10px;
+  }
+}

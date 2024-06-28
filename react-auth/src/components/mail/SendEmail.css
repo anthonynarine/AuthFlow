@@ -2,7 +2,7 @@
 .form {
   max-width: 500px;
   margin: 2rem auto;
-  margin-top: 25px;
+  margin-top: 0; /* Removed top margin */
   margin-bottom: 10rem;
   padding: 2rem;
   background: #1e1e1e; /* Dark background */
@@ -16,12 +16,13 @@
 /* Navigation button styles */
 .nav-buttons {
   display: flex;
-  justify-content: space-between;
+  justify-content: center;
   position: absolute;
   width: 100%;
   top: -5px; /* Positioned above the form */
   left: 0;
-  padding: 0 20px;
+  padding: 0 15px;
+  margin-bottom: 2rem; /* Add space below the navigation buttons */
 }
 
 .nav-button {
@@ -95,9 +96,9 @@
 
 /* Email invite section */
 .email-invite {
-  padding: 1.5rem; /* Compact padding */
+  padding: .75rem; /* Compact padding */
   max-width: 400px; /* Smaller max-width */
-  margin: 2rem auto; /* Center aligns the div with top & bottom margin */
+  margin: 5rem auto 1rem auto; /* Center aligns the div with top & bottom margin */
   text-align: center; /* Center-align the text */
   color: #ecf0f1; /* Lighter text color for contrast */
   font-size: 1rem; /* Adjust text size for readability */
@@ -120,7 +121,7 @@
 @media (max-width: 768px) {
   .email-invite {
     padding: 1rem; /* Reduce padding for smaller screens */
-    margin: 1.5rem auto; /* Adjust margins for better fit */
+    margin: 1.5rem auto 0.5rem auto; /* Adjust margins for better fit */
   }
 
   .email-invite p {
@@ -130,5 +131,6 @@
   .nav-buttons {
     top: -10px; /* Adjust position for smaller screens */
     padding: 0 10px;
+    margin-bottom: 2rem; /* Adjust margin for smaller screens */
   }
 }

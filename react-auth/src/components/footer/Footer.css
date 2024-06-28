@@ -31,7 +31,7 @@
   flex-grow: 1; /* Allow links to grow and shrink */
   justify-content: center; /* Center content within each link */
   transition: color 0.3s; /* Smooth transition for color */
-  font-size: 1.2rem; /* Increase font size for larger text and icons */
+  font-size: 1.1rem; /* Increase font size for larger text and icons */
 }
 
 .github-link:hover, .linkedin-link:hover, .api-link:hover {
@@ -43,7 +43,7 @@
 .linkedin-link svg,
 .api-link svg {
   margin-right: 8px; /* Adjust the value to increase/decrease space */
-  font-size: 1.5rem; /* Increase icon size */
+  font-size: 1.3rem; /* Increase icon size */
   transition: color 0.3s; /* Smooth transition for icon color */
 }
 

@@ -12,7 +12,7 @@
   justify-content: space-between;
   align-items: flex-end;
   padding: 0 20%; 
-  color:  #7f8c8d;
+  color:  #1abc9c;
   height: 100%;
 }
 
@@ -40,7 +40,7 @@
 /* Common base styles for all icons */
 .nav .icon {
   margin-right: 20px; /* Right margin for spacing */
-  color: #abc; /* Unified color for all icons */
+  color: #1abc9c; /* Unified color for all icons */
   transition: transform 0.5s ease, color 0.5s ease; /* Smooth transitions for color and scaling */
   align-items: flex-end;
   display: flex;
@@ -57,21 +57,9 @@
   color: #61DAFB; /* React's brand color on hover */
   transform: scale(1.2); /* Slight enlargement on hover */
 }
-
-/* .django-icon {
-  display: flex;
-  align-items: flex-end;
-} */
-
 /* Hover and transformation styles for Django icon */
 .django-icon:hover {
   color: #4B8B3B; /* Python/Django green on hover */
-  transform: scale(1.2); /* Slightly larger enlargement on hover for distinction */
-}
-
-/* Adjustment and hover styles for Contact (Mail) icon */
-.contact-icon {
-
   transform: scale(1.2); /* Slightly larger enlargement on hover for distinction */
 }
 
@@ -138,7 +126,7 @@
 
 .auth-section {
   margin-top: 2rem; 
-  color: #bdc3c7; /* Adjusted to a lighter gray for better visibility */
+  color: #1abc9c; /* Adjusted to a lighter gray for better visibility */
   text-align: center;
 }
 
@@ -192,7 +180,7 @@
 .btn-custom-color:hover {
   background-color: #2c3e50;
   border-color: #566573;
-  color: #fff;
+  color: #1abc9c;
 }
 
 .message {

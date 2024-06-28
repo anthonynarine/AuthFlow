@@ -6,7 +6,7 @@
   bottom: 0;
   width: 100%;
   height: 10rem;
-  background-color: #212529; /* or any color that fits your design */
+  background-color: #1c2833; /* or any color that fits your design */
   color: white;
   display: flex;
   justify-content: center; /* Center horizontally */
@@ -35,7 +35,7 @@
 }
 
 .github-link:hover, .linkedin-link:hover, .api-link:hover {
-  color: rgb(35, 116, 66); /* Hover color for all links */
+  color: #1abc9c; /* Hover color for all links */
   text-decoration: none;
 }
 
@@ -50,7 +50,7 @@
 .github-link:hover svg,
 .linkedin-link:hover svg,
 .api-link:hover svg {
-  color: rgb(35, 116, 66); /* Python/Django green on hover */
+  color: #1abc9c; /* Python/Django green on hover */
 }
 
 /* Media query for mobile devices */

@@ -1,5 +1,4 @@
 /* Footer.css */
-/* Footer.css */
 .footer-container {
   position: fixed;
   left: 0;
@@ -9,30 +8,62 @@
   height: 10rem;
   background-color: #212529; /* or any color that fits your design */
   color: white;
-  text-align: center;
-  padding: 0px 0;
+  display: flex;
+  justify-content: center; /* Center horizontally */
+  align-items: center; /* Center vertically */
   z-index: 100; /* Ensure it's above other content */
   margin-bottom: 0;
 }
 
-
 .link-container {
   display: flex;
-  justify-content: center;
-  align-items: center;
-  border-top: 1px solid #333;
-  padding: 50px 0; /* Adds padding around the links for spacing from the border and content above */
+  justify-content: space-around; /* Distribute space evenly */
+  align-items: center; /* Center links vertically */
+  width: 100%;
+  max-width: 1200px;
 }
 
 .github-link, .linkedin-link, .api-link {
   color: rgb(138, 159, 138);
-  display: inline-flex;
+  display: flex; /* Ensures icons and text are aligned */
   align-items: center;
-  margin: 0 10px; /* Uniform margin for all links */
+  text-decoration: none;
+  flex-grow: 1; /* Allow links to grow and shrink */
+  justify-content: center; /* Center content within each link */
+  transition: color 0.3s; /* Smooth transition for color */
+  font-size: 1.2rem; /* Increase font size for larger text and icons */
+}
+
+.github-link:hover, .linkedin-link:hover, .api-link:hover {
+  color: rgb(35, 116, 66); /* Hover color for all links */
   text-decoration: none;
 }
 
-.github-link:hover, .linkedin-link:hover, .api-link:hover { /* Added .api-link:hover for consistency */
-  color: rgb(35, 116, 66); /* Hover color for all links */
-  text-decoration: underline;
+.github-link svg,
+.linkedin-link svg,
+.api-link svg {
+  margin-right: 8px; /* Adjust the value to increase/decrease space */
+  font-size: 1.5rem; /* Increase icon size */
+  transition: color 0.3s; /* Smooth transition for icon color */
+}
+
+.github-link:hover svg,
+.linkedin-link:hover svg,
+.api-link:hover svg {
+  color: rgb(35, 116, 66); /* Python/Django green on hover */
+}
+
+/* Media query for mobile devices */
+@media (max-width: 767px) {
+  .footer-container {
+    height: 5rem; /* Set height to 5rem for mobile devices */
+  }
+  .github-link, .linkedin-link, .api-link {
+    font-size: 1rem; /* Adjust font size for mobile devices */
+  }
+  .github-link svg,
+  .linkedin-link svg,
+  .api-link svg {
+    font-size: 1.2rem; /* Adjust icon size for mobile devices */
+  }
 }

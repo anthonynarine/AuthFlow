@@ -5,7 +5,7 @@
   right: 0;
   bottom: 0;
   width: 100%;
-  height: 10rem;
+  height: 6rem;
   background-color: #1c2833; /* or any color that fits your design */
   color: white;
   display: flex;
@@ -56,7 +56,7 @@
 /* Media query for mobile devices */
 @media (max-width: 767px) {
   .footer-container {
-    height: 5rem; /* Set height to 5rem for mobile devices */
+    height: 4rem; /* Set height to 5rem for mobile devices */
   }
   .github-link, .linkedin-link, .api-link {
     font-size: 1rem; /* Adjust font size for mobile devices */

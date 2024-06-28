@@ -40,7 +40,7 @@
 /* Common base styles for all icons */
 .nav .icon {
   margin-right: 20px; /* Right margin for spacing */
-  color: #1abc9c; /* Unified color for all icons */
+  color: white; /* Unified color for all icons */
   transition: transform 0.5s ease, color 0.5s ease; /* Smooth transitions for color and scaling */
   align-items: flex-end;
   display: flex;
@@ -126,7 +126,7 @@
 
 .auth-section {
   margin-top: 2rem; 
-  color: #1abc9c; /* Adjusted to a lighter gray for better visibility */
+  color: white; /* Adjusted to a lighter gray for better visibility */
   text-align: center;
 }
 

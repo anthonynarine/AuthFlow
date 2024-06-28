@@ -5,11 +5,11 @@
 }
 
 .features-container h1 {
-  color: black; 
+  color: #1abc9c; 
   text-align: center;
   margin-bottom: 50px;
   background-color: rgb(161, 161, 161);
-  background-color: #61DAFB;
+  background-color: #1C2833;
 
   display: block; /* Ensures the h1 element is treated as a block-level element */
   width: 100%; /* Ensures the underline spans the full width of the container */

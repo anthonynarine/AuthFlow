@@ -18,7 +18,7 @@ export const ReactFeatures = () => {
               title="Go back to homepage">
         <RiArrowGoBackLine size="1.5em" style={{ color: "black"}} />
       </button>
-      <h1>React Technical Features </h1>
+      <h1>React Features </h1>
       <h2>Network Requests</h2>
 
       <section>

@@ -11,14 +11,12 @@ export const ReactFeatures = () => {
     navigate("/");
   };
 
-
   return (
     <div className="features-container" style={{position: "relative"}}>
-        <button onClick={handleClick} style={{ position: 'absolute', top: 20, left: 0, margin: '20px', background: 'none', color: "#D3D3D3", border: 'none', cursor: 'pointer' }}
-              title="Go back to homepage">
-        <RiArrowGoBackLine size="1.5em" style={{ color: "black"}} />
+        <button onClick={handleClick} className="back-button" title="Go back to homepage">
+        <RiArrowGoBackLine size="1.5em" className="back-icon" />
       </button>
-      <h1>React Features </h1>
+      <h1>React Features</h1>
       <h2>Network Requests</h2>
 
       <section>
@@ -36,7 +34,7 @@ export const ReactFeatures = () => {
         <a href="https://axios-http.com/docs/req_config" target="_blank" rel="noopener noreferrer">
             <h2>Request Interceptor</h2>
         </a>
-        <p> Request interceptors: securely attach access tokens. Every time the application sends a request to the server, it passes through a <em>request interceptor</em>. This interceptor's job is simple: it checks if you have an access token (a digital key that proves your identity and permissions) stored in your browser's cookies. If you do, the interceptor attaches this token to your request's headers, ensuring that the server recognizes and trusts your request.</p>
+        <p>Request interceptors securely attach access tokens. Every time the application sends a request to the server, it passes through a <em>request interceptor</em>. This interceptor's job is simple: it checks if you have an access token (a digital key that proves your identity and permissions) stored in your browser's cookies. If you do, the interceptor attaches this token to your request's headers, ensuring that the server recognizes and trusts your request.</p>
       </section>
 
       <section>
@@ -50,7 +48,6 @@ export const ReactFeatures = () => {
         <a href="https://axios-http.com/docs/res_schema#response-interceptor" target="_blank" rel="noopener noreferrer">
           <h2>Response Interceptor</h2>
         </a>
-
         <p>Handling token expiry gracefully with a response interceptor. Not all responses are about success; some indicate that your access token has expired. When this happens, the <em>response interceptor</em> comes into play. Instead of letting the request fail, the interceptor attempts to refresh your token automatically by contacting our server's token-refresh endpoint.</p>
         <p>If the refresh is successful, it updates your cookie with the new access token and retries the original request without you ever noticing a hiccup. This seamless process ensures that you're not abruptly logged out or forced to manually refresh the page.</p>
       </section>
@@ -63,7 +60,7 @@ export const ReactFeatures = () => {
       <section>
         <h2>Let's Learn Together</h2>
         <p>I hope this overview gave you some insight into the engineering behind this application. By transparently sharing how I handle network requests, my goal is to not only inform you but also inspire trust and confidence.</p>
-        <p>Thank you for taking the time to learn about the inner workings of this application. Security and user experience are my top priorities, I am committed to imporving continuously.</p>
+        <p>Thank you for taking the time to learn about the inner workings of this application. Security and user experience are my top priorities, and I am committed to improving continuously.</p>
       </section>
     </div>
   );

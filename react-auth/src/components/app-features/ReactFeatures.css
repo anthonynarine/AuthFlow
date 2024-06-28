@@ -1,57 +1,87 @@
-
 .features-container {
-  background-color: inherit;
+  background-color: #121212; /* Dark background */
   margin-bottom: 10rem;
+  padding: 2rem; /* Added padding for better spacing */
+  color: #bcb3b3; /* Light gray text color */
+  font-family: 'Arial', sans-serif; /* Modern, clean font */
 }
 
 .features-container h1 {
-  color: #1abc9c; 
+  color: #1abc9c; /* Teal color */
   text-align: center;
   margin-bottom: 50px;
-  background-color: rgb(161, 161, 161);
-  background-color: #1C2833;
-
-  display: block; /* Ensures the h1 element is treated as a block-level element */
-  width: 100%; /* Ensures the underline spans the full width of the container */
-  border-bottom: 1x solid #333; /* Creates the underline with a solid line and sets its color */
-  line-height: 1.2; /* Adjusts line height to control the spacing above and below the text */
-  padding-bottom: 2rem; /* Adds some padding below the text for spacing between text and underline */
+  display: block;
+  width: 100%;
+  border-bottom: 2px solid #333; /* Underline */
+  line-height: 1.2;
+  padding-bottom: 2rem;
   padding-top: 2rem;
+  font-size: 2.5rem; /* Larger font size */
+  text-transform: uppercase; /* Uppercase text */
 }
-  
-  .features-container h2 {
-    color: White;
-    text-align: center;
-    margin-bottom: 1rem;
-    text-decoration: none;
-  }
 
-  .features-container h2:hover {
-    color: #61DAFB; /* Color change on hover */
-  }
-  
+.features-container h2 {
+  color: #61DAFB; /* Light blue color */
+  text-align: center;
+  margin-bottom: 1rem;
+  text-decoration: none;
+  font-size: 1.8rem; /* Larger font size */
+  transition: color 0.3s ease; /* Smooth color transition */
+}
+
+.features-container h2:hover {
+  color: #1abc9c; /* Color change on hover */
+}
+
+.features-container p {
+  text-align: center;
+  padding: 0 15%;
+  margin-bottom: 1.5rem;
+  line-height: 1.6; /* Improved readability */
+  font-size: 1rem; /* Consistent font size */
+}
+
+.features-container a {
+  text-decoration: none;
+  color: inherit; /* Inherit color */
+}
+
+.features-container section {
+  margin-bottom: 3rem;
+  padding: 1rem 2rem; /* Added padding for better spacing */
+  border-radius: 10px; /* Rounded corners */
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2); /* Subtle shadow */
+  transition: transform 0.3s ease; /* Smooth transform transition */
+}
+
+.features-container section:hover {
+  transform: scale(1.02); /* Slightly enlarge on hover */
+}
+
+/* Button Styles */
+.back-button {
+  position: absolute;
+  top: 20px;
+  left: 20px;
+  background: none;
+  border: none;
+  cursor: pointer;
+  transition: transform 0.3s ease, color 0.3s ease; /* Smooth transitions */
+}
+
+.back-button:hover {
+  color: #1abc9c; /* Color change on hover */
+  transform: scale(1.2); /* Slightly enlarge on hover */
+}
+
+.back-icon {
+  color: #bcb3b3; /* Light gray color */
+}
+
+/* For small screens, reduce padding in paragraphs for better space utilization */
+@media (max-width: 768px) {
   .features-container p {
-    color: #bcb3b3; 
-    text-align: center; 
-    padding: 0 15%; 
-    margin-bottom: 1rem;
+    padding: 0 5%;
+    padding-bottom: 70px;
   }
-
-  .features-container a {
-    text-decoration: none;
-  }
-  
-  .features-container section {
-    margin-bottom: 3rem;
-  
-  }
-  
-  /* For small screens, reduce padding in paragraphs for better space utilization */
-  @media (max-width: 768px) {
-    .features-container p {
-      padding: 0 5%;
-      padding-bottom: 70px;
-    }
-  }
-  
-  
+}

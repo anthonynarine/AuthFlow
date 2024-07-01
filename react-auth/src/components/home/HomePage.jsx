@@ -61,7 +61,7 @@ function HomePage() {
         <div className="header-container">
           <h3 className="mb-0 white-text"><FiKey/>Gait</h3>
           <nav className="nav nav-masthead justify-content-center">
-            <Link to="/react-features" className="icon django-icon"><FaPython size={24}/></Link>
+            <Link to="/chat-completion" className="icon django-icon"><FaPython size={24}/></Link>
             <Link to="/react-features" className="icon react-icon"><FaReact size={24}/></Link>
             <Link to="/send-email" className="icon contact-icon"><FiMail size={21}/></Link>
           </nav>

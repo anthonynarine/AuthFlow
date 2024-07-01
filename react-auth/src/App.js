@@ -3,6 +3,7 @@ import { LoginPage } from "./components/login/LoginPage";
 import { ForgotPassword } from "./components/forgot-password/ForgotPassword";
 import { RegisterPage } from "./components/register/RegisterPage";
 import { ReactFeatures } from "./components/app-features/ReactFeatures";
+import ChatComponent from "./components/app-features/ChatComponent";
 import { SendEmail } from "./components/mail/SendEmail";
 import { ResetPassword } from "./components/reset-password/ResetPassword";
 import { QRCodeSetup } from "./components/two-factor/2fa-setup/QRCodeSetup";
@@ -31,6 +32,7 @@ function App() {
                     <Route path="/login" element={<LoginPage />} />
                     <Route path="/forgot-password" element={<ForgotPassword />} />
                     <Route path="/react-features" element={<ReactFeatures />} />
+                    <Route path="/chat-completion" element={<ChatComponent />} />
                     <Route path="/send-email" element={<SendEmail />} />
                     <Route path="/reset-password/:uidb64/:token" element={<ResetPassword />} />
                     <Route path="/setup-2fa" element={<QRCodeSetup />} />

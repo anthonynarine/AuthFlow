@@ -32,7 +32,7 @@ const useGptRequest = () => {
                 }
             });
             // Create an entry for the AI's response
-            const aiEntry = { sender: "ai", message: data };
+            const aiEntry = { sender: "", message: data };
             // Update the chat history with the AI's response
             setChatHistory(prevHistory => [...prevHistory, aiEntry]);
             // Set the GPT response

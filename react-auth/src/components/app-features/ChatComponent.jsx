@@ -17,7 +17,7 @@ const ChatComponent = () => {
             <div className="chat-history">
                 {chatHistory.map((entry, index) => (
                     <div key={index} className={`chat-entry ${entry.sender}`}>
-                        <strong>{entry.sender}:</strong> {entry.message}
+                    {entry.message}
                     </div>
                 ))}
             </div>

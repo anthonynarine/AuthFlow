@@ -1,95 +1,106 @@
 .chat-container {
-    background-color: #121212; /* Dark background */
-    padding: 2rem;
-    color: #bcb3b3; /* Light gray text color */
-    font-family: 'Arial', sans-serif; /* Modern, clean font */
-    border-radius: 10px; /* Rounded corners */
-    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2); /* Subtle shadow */
-    max-width: 600px;
-    margin: 2rem auto; /* Center the chat container */
+  background-color: #121212; /* Dark background */
+  padding: 2rem;
+  color: #f1ecec; /* Light gray text color */
+  font-family: 'Arial', sans-serif; /* Modern, clean font */
+  border-radius: 10px; /* Rounded corners */
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2); /* Subtle shadow */
+  max-width: 600px;
+  margin: 2rem auto; /* Center the chat container */
+  display: flex;
+  flex-direction: column;
+  height: 85vh; /* Adjust based on your preference */
+}
+
+.chat-history {
+  flex: 1;
+  max-height: calc(100% - 4rem); /* Adjust based on input height */
+  overflow-y: auto;
+  margin-bottom: 1.5rem;
+}
+
+.chat-entry {
+  padding: 1rem;
+  margin: 0.5rem 0;
+  border-radius: 25px;
+  line-height: 1.7 ;
+}
+
+.chat-entry.user {
+  background-color: #333333; /* Teal background for user messages */
+  color: #f1ecec; /* Dark text color for contrast */
+  text-align: right;
+}
+
+.chat-entry.ai {
+  background-color: #61DAFB; /* Light blue background for AI messages */
+  color: #121212; /* Dark text color for contrast */
+  text-align: left;
+}
+
+.chat-input-wrapper {
+  display: flex;
+  align-items: center;
+  margin-top: auto; /* Push input to the bottom */
+}
+
+.chat-input {
+  display: flex;
+  align-items: center;
+  width: 100%;
+}
+
+.chat-input input {
+  flex: 1;
+  padding: 1rem;
+  font-size: 1rem;
+  border: none;
+  border-radius: 25px;
+  margin-right: 1rem;
+  background-color: #333; /* Darker background for input */
+  color: #bcb3b3; /* Light gray text color */
+}
+
+.chat-input button {
+  padding: 1rem 2rem;
+  font-size: 1rem;
+  border: none;
+  border-radius: 25px;
+  background-color: #1abc9c; /* Teal button background */
+  color: #121212; /* Dark text color */
+  cursor: pointer;
+  transition: transform 0.3s ease, background-color 0.3s ease;
+}
+
+.chat-input button:hover {
+  background-color: #16a085; /* Darker teal on hover */
+  transform: scale(1.05);
+}
+
+.loading-icon {
+  display: block;
+  margin: 1rem auto;
+  font-size: 2rem;
+  color: #61DAFB; /* Light blue color */
+  animation: spin 1s linear infinite;
+}
+
+@keyframes spin {
+  0% { transform: rotate(0deg); }
+  100% { transform: rotate(360deg); }
+}
+
+@media (max-width: 768px) {
+  .chat-container {
+    padding: 1rem;
   }
-  
-  .chat-history {
-    max-height: 400px;
-    overflow-y: auto;
-    margin-bottom: 1.5rem;
+
+  .chat-input input, .chat-input button {
+    padding: 0.75rem;
+    font-size: 0.9rem;
   }
-  
+
   .chat-entry {
-    padding: 1rem;
-    margin: 0.5rem 0;
-    border-radius: 5px;
+    padding: 0.75rem;
   }
-  
-  .chat-entry.user {
-    background-color: #1abc9c; /* Teal background for user messages */
-    color: #121212; /* Dark text color for contrast */
-    text-align: right;
-  }
-  
-  .chat-entry.ai {
-    background-color: #61DAFB; /* Light blue background for AI messages */
-    color: #121212; /* Dark text color for contrast */
-    text-align: left;
-  }
-  
-  .chat-input {
-    display: flex;
-    align-items: center;
-  }
-  
-  .chat-input input {
-    flex: 1;
-    padding: 1rem;
-    font-size: 1rem;
-    border: none;
-    border-radius: 5px;
-    margin-right: 1rem;
-    background-color: #333; /* Darker background for input */
-    color: #bcb3b3; /* Light gray text color */
-  }
-  
-  .chat-input button {
-    padding: 1rem 2rem;
-    font-size: 1rem;
-    border: none;
-    border-radius: 5px;
-    background-color: #1abc9c; /* Teal button background */
-    color: #121212; /* Dark text color */
-    cursor: pointer;
-    transition: transform 0.3s ease, background-color 0.3s ease;
-  }
-  
-  .chat-input button:hover {
-    background-color: #16a085; /* Darker teal on hover */
-    transform: scale(1.05);
-  }
-  
-  .loading-icon {
-    display: block;
-    margin: 1rem auto;
-    font-size: 2rem;
-    color: #61DAFB; /* Light blue color */
-    animation: spin 1s linear infinite;
-  }
-  
-  @keyframes spin {
-    0% { transform: rotate(0deg); }
-    100% { transform: rotate(360deg); }
-  }
-  
-  @media (max-width: 768px) {
-    .chat-container {
-      padding: 1rem;
-    }
-  
-    .chat-input input, .chat-input button {
-      padding: 0.75rem;
-      font-size: 0.9rem;
-    }
-  
-    .chat-entry {
-      padding: 0.75rem;
-    }
-  }
-  
+}

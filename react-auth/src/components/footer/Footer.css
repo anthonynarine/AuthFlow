@@ -66,4 +66,9 @@
   .api-link svg {
     font-size: 1.2rem; /* Adjust icon size for mobile devices */
   }
+  .github-link span,
+  .linkedin-link span,
+  .api-link span {
+    display: none; /* Hide the text for mobile devices */
+  }
 }

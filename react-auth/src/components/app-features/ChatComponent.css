@@ -17,7 +17,24 @@
   max-height: calc(100% - 4rem); /* Adjust based on input height */
   overflow-y: auto;
   margin-bottom: 1.5rem;
+  padding-right: 0.50rem;
 }
+
+/* ScrollBar styles */
+.chat-history::-webkit-scrollbar {
+  width: 12px;
+}
+
+.chat-history::-webkit-scrollbar-track {
+  background-color: #2f2f2f;
+}
+
+.chat-history::-webkit-scrollbar-thumb {
+  background-color: #7B7B7B; /* Color of the scrollbar thumb */
+  border-radius: 6px; /* Roundness of the scrollbar thumb */
+  border: 3px solid #7B7B7B; /* Padding around the scrollbar thumb */
+}
+
 
 .chat-entry {
   padding: 1rem;

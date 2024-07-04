@@ -25,7 +25,7 @@ const useGptRequest = () => {
 
         try {
             // Make a POST request to the GPT API
-            const { data } = await axios.post('https://gait-gpt.herokuapp.com/api/gpt/', { prompt }, {
+            const { data } = await axios.post('https://gait-ai-b0b55b4bd581.herokuapp.com/api/gpt/', { prompt }, {
                 withCredentials: true,
                 headders: {
                     "Content-Type": "application/json",

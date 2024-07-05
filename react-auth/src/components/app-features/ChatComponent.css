@@ -2,10 +2,12 @@ html, body {
   height: 100%;
   margin: 0;
   padding: 0;
-  overflow: hidden; /* Prevent scrolling */
 }
 
 .chat-container {
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between; /* Ensures title and input field remain in view */
   position: relative; /* To position elements relative to this container */
   background-color: #121212; /* Dark background */
   padding: 2rem;
@@ -15,10 +17,7 @@ html, body {
   box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2); /* Subtle shadow */
   max-width: 600px;
   margin: 2rem auto; /* Center the chat container horizontally */
-  display: flex;
-  flex-direction: column; /* Arrange children in a column */
   height: calc(100vh - 12rem); /* Adjust height to account for footer */
-  overflow: hidden; /* Prevent the content from spilling out */
 }
 
 .back-button-container {
@@ -56,9 +55,8 @@ html, body {
 .chat-history {
   flex: 1; /* Take up remaining space */
   overflow-y: auto; /* Enable vertical scrolling */
-  margin-bottom: 1.5rem; /* Space below the chat history */
+  margin-bottom: 1rem; /* Space below the chat history */
   padding-right: 0.50rem; /* Space between scrollbar and chat entries */
-  max-height: calc(100vh - 17rem); /* Ensure it doesn't overflow */
 }
 
 /* Scrollbar styles */
@@ -105,7 +103,7 @@ html, body {
   align-items: center; /* Center items vertically */
   padding: 1rem; /* Padding around the input wrapper */
   background-color: #121212; /* Match background color */
-  position: relative;
+  position: sticky;
   bottom: 0; /* Stick to the bottom of the container */
   z-index: 10; /* Ensure it is above other content */
 }
@@ -167,11 +165,11 @@ html, body {
 @media (max-width: 767px) {
   .chat-container {
     padding: 1rem; /* Reduced padding for smaller screens */
-    height: calc(100vh - 8rem); /* Adjust height for mobile to account for footer */
+    height: calc(100vh - 7rem); /* Adjust height for mobile to account for footer */
   }
 
   .chat-history {
-    max-height: calc(100vh - 12rem); /* Ensure it doesn't overflow */
+    max-height: calc(100vh - 8rem); /* Ensure it doesn't overflow */
   }
 
   .chat-input-wrapper {

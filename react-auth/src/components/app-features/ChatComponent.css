@@ -16,7 +16,7 @@ html, body {
   margin: 2rem auto; /* Center the chat container horizontally */
   display: flex;
   flex-direction: column; /* Arrange children in a column */
-  height: calc(100vh - 8rem); /* Adjust height to account for footer */
+  height: calc(100vh - 12rem); /* Adjust height to account for footer */
   overflow: hidden; /* Prevent the content from spilling out */
 }
 
@@ -57,7 +57,7 @@ html, body {
   overflow-y: auto; /* Enable vertical scrolling */
   margin-bottom: 1.5rem; /* Space below the chat history */
   padding-right: 0.50rem; /* Space between scrollbar and chat entries */
-  max-height: calc(100vh - 14rem); /* Ensure it doesn't overflow */
+  max-height: calc(100vh - 17rem); /* Ensure it doesn't overflow */
 }
 
 /* Scrollbar styles */
@@ -166,11 +166,11 @@ html, body {
 @media (max-width: 767px) {
   .chat-container {
     padding: 1rem; /* Reduced padding for smaller screens */
-    height: calc(100vh - 4rem); /* Adjust height for mobile to account for footer */
+    height: calc(100vh - 7rem); /* Adjust height for mobile to account for footer */
   }
 
   .chat-history {
-    max-height: calc(100vh - 10rem); /* Ensure it doesn't overflow */
+    max-height: calc(100vh - 12rem); /* Ensure it doesn't overflow */
   }
 
   .chat-input-wrapper {

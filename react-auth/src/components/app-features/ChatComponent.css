@@ -2,6 +2,7 @@ html, body {
   height: 100%;
   margin: 0;
   padding: 0;
+  overflow: hidden; /* Prevent scrolling */
 }
 
 .chat-container {
@@ -166,7 +167,7 @@ html, body {
 @media (max-width: 767px) {
   .chat-container {
     padding: 1rem; /* Reduced padding for smaller screens */
-    height: calc(100vh - 7rem); /* Adjust height for mobile to account for footer */
+    height: calc(100vh - 8rem); /* Adjust height for mobile to account for footer */
   }
 
   .chat-history {

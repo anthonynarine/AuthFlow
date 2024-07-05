@@ -3,7 +3,6 @@
   flex-direction: column;
   min-height: 100vh;
   max-width: 80rem;
-  margin-bottom: 10rem;
   background-color: #121212; /* Dark background for the entire cover container */
 }
 
@@ -69,8 +68,6 @@
 }
 
 
-
-
 /* Media query for smaller screens */
 @media (max-width: 576px) {
   .header-container {
@@ -91,7 +88,7 @@
   align-items: center; /* Center content horizontally */
   max-width: 800px;
   margin: 0 auto;
-  padding-top: 4rem;
+  padding-top: 2rem;
   
   /* Media query for medium screens */
   @media (max-width: 992px) and (min-width: 576px) {
@@ -100,7 +97,7 @@
 
   /* Media query for small screens */
   @media (max-width: 576px) {
-    padding-top: 2rem; /* Adjusted padding-top for small screens */
+    padding-top: 0.75rem; /* Adjusted padding-top for small screens */
   }
 }
 
@@ -131,7 +128,6 @@
 }
 
 .auth-section h5 {
-  margin-bottom: 0rem;
   font-weight: bold;
 }
 
@@ -139,7 +135,6 @@
   display: flex;
   justify-content: center;
   align-items: center;
-  margin-bottom: .5rem; /* Space before the buttons */
 }
 
 .auth-section .blinking-dot {
@@ -165,7 +160,6 @@
     margin-top: 15px; /* Increase top margin to move buttons lower */
   }
 }
-
 
 .auth-section .btn:last-child {
   margin-right: 0; /* Removes margin from the last button */
@@ -201,4 +195,30 @@
 .api-link:hover {
   color: #27ae60; /* Dark green for hover, providing a subtle accent */
   text-decoration: underline; 
+}
+
+.read-more {
+  background: none;
+  border: none;
+  color: white;
+  cursor: pointer;
+  padding: 0;
+  margin: 0;
+}
+
+.read-more:hover {
+  color: #1abc9c;
+}
+
+/* Styles for the Chevron Icons */
+.read-more .fa-chevron-down, 
+.read-more .fa-chevron-up {
+  margin-left: 5px; /* Adding margin to the left of the chevron icons */
+  transition: transform 0.2s ease, color 0.5s ease; /* Smooth transition for hover effect */
+}
+
+.read-more:hover .fa-chevron-down, 
+.read-more:hover .fa-chevron-up {
+  color: #1abc9c; /* Change color on hover */
+  transform: scale(1.1); /* Slight enlargement on hover */
 }

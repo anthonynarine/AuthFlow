@@ -97,11 +97,18 @@ function HomePage() {
         <div className={`intro-container ${isExpanded ? "expanded" : ""}`}>
           <h4 className="white-text">App Overview</h4>
           <p className="intro-text">
-            This application offers a comprehensive set of authentication features, including user registration, login processes, password reset capabilities, and optional two-factor authentication.
+            This application offers a comprehensive set of authentication features, including user registration,
+            login processes, password reset capabilities, and optional two-factor authentication.
             {isMobile && !isExpanded && <>...</>}
             {(!isMobile || isExpanded) && (
               <>
-                Behind every feature lies a robust backend built with Django and DRF, adhering to RESTful standards and secured with PyJWT for token creation. On the frontend, Axios interceptors streamline the login process, managing authentication tokens efficiently to ensure a smooth user experience. This microservice is designed to prioritize security without compromising on user experience. Whether you're safeguarding personal projects or in need of reliable login systems, this platform showcases the powerful synergy between a Python-Django API with custom middleware and a Javascript frontend.
+                {" "}Behind every feature lies a robust backend built with Django and DRF, adhering to RESTful
+                standards and secured with PyJWT for token creation. On the frontend, Axios interceptors
+                streamline the login process, managing authentication tokens efficiently to ensure a smooth
+                user experience. This microservice is designed to prioritize security without compromising on
+                user experience. Whether you're safeguarding personal projects or in need of reliable login systems,
+                this platform showcases the powerful synergy between a Python-Django API with custom middleware
+                and a Javascript frontend.
               </>
             )}
           </p>

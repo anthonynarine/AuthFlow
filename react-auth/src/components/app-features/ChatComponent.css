@@ -1,3 +1,8 @@
+html, body {
+  height: 100%;
+  margin: 0;
+  padding: 0;
+}
 
 .chat-container {
   position: relative; /* To position elements relative to this container */
@@ -11,9 +16,8 @@
   margin: 2rem auto; /* Center the chat container horizontally */
   display: flex;
   flex-direction: column; /* Arrange children in a column */
-  height: calc(100vh - 12rem); /* Adjust height to account for footer */
-  margin-bottom: 6rem; /* Ensure space for the footer */
-  overflow: hidden; /* Hide overflow to prevent scroll issues */
+  height: calc(100vh - 8rem); /* Adjust height to account for footer */
+  overflow: hidden; /* Prevent the content from spilling out */
 }
 
 .back-button-container {
@@ -50,10 +54,10 @@
 
 .chat-history {
   flex: 1; /* Take up remaining space */
-  max-height: calc(100vh - 18rem); /* Adjust to stop at the top of the footer */
   overflow-y: auto; /* Enable vertical scrolling */
   margin-bottom: 1.5rem; /* Space below the chat history */
   padding-right: 0.50rem; /* Space between scrollbar and chat entries */
+  max-height: calc(100vh - 14rem); /* Ensure it doesn't overflow */
 }
 
 /* Scrollbar styles */
@@ -100,8 +104,9 @@
   align-items: center; /* Center items vertically */
   padding: 1rem; /* Padding around the input wrapper */
   background-color: #121212; /* Match background color */
-  position: sticky;
+  position: relative;
   bottom: 0; /* Stick to the bottom of the container */
+  z-index: 10; /* Ensure it is above other content */
 }
 
 /* Container for the input box and send button */
@@ -158,10 +163,14 @@
 }
 
 /* Media query for mobile devices */
-@media (max-width: 768px) {
+@media (max-width: 767px) {
   .chat-container {
     padding: 1rem; /* Reduced padding for smaller screens */
-    height: calc(100vh - 10rem); /* Adjust height for mobile to account for footer */
+    height: calc(100vh - 4rem); /* Adjust height for mobile to account for footer */
+  }
+
+  .chat-history {
+    max-height: calc(100vh - 10rem); /* Ensure it doesn't overflow */
   }
 
   .chat-input-wrapper {

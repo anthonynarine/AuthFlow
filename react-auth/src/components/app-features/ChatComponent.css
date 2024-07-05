@@ -1,3 +1,10 @@
+html, body {
+  height: 100%;
+  margin: 0;
+  padding: 0;
+  overflow: hidden; /* Prevent scrolling */
+}
+
 .chat-container {
   position: relative; /* To position elements relative to this container */
   background-color: #121212; /* Dark background */
@@ -12,6 +19,7 @@
   flex-direction: column; /* Arrange children in a column */
   height: calc(100vh - 12rem); /* Adjust height to account for footer */
   margin-bottom: 6rem; /* Ensure space for the footer */
+  overflow: hidden; /* Hide overflow to prevent scroll issues */
 }
 
 .back-button-container {
@@ -48,7 +56,7 @@
 
 .chat-history {
   flex: 1; /* Take up remaining space */
-  max-height: calc(100% - 4rem); /* Maximum height considering input box height */
+  max-height: calc(100vh - 18rem); /* Adjust to stop at the top of the footer */
   overflow-y: auto; /* Enable vertical scrolling */
   margin-bottom: 1.5rem; /* Space below the chat history */
   padding-right: 0.50rem; /* Space between scrollbar and chat entries */
@@ -96,7 +104,10 @@
 .chat-input-wrapper {
   display: flex; /* Use flexbox for alignment */
   align-items: center; /* Center items vertically */
-  margin-top: auto; /* Push input box to the bottom */
+  padding: 1rem; /* Padding around the input wrapper */
+  background-color: #121212; /* Match background color */
+  position: sticky;
+  bottom: 0; /* Stick to the bottom of the container */
 }
 
 /* Container for the input box and send button */
@@ -157,6 +168,10 @@
   .chat-container {
     padding: 1rem; /* Reduced padding for smaller screens */
     height: calc(100vh - 7rem); /* Adjust height for mobile to account for footer */
+  }
+
+  .chat-input-wrapper {
+    padding: 0.5rem; /* Adjust padding for smaller screens */
   }
 
   .chat-input input {

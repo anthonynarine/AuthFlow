@@ -10,7 +10,7 @@
   margin: 2rem auto; /* Center the chat container horizontally */
   display: flex;
   flex-direction: column; /* Arrange children in a column */
-  height: calc(100vh - 10rem); /* Adjust height to account for footer */
+  height: calc(100vh - 12rem); /* Adjust height to account for footer */
   margin-bottom: 6rem; /* Ensure space for the footer */
 }
 

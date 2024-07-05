@@ -26,6 +26,7 @@
 }
 
 .nav-button {
+  top: 15px;
   background: none;
   color: #d3d3d3;
   border: none;

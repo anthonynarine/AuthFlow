@@ -13,7 +13,7 @@ export const ReactFeatures = () => {
 
   return (
     <div className="features-container" style={{position: "relative"}}>
-        <button onClick={handleClick} className="back-button" title="Go back to homepage">
+        <button onClick={handleClick} className="back-button-r" title="Go back to homepage">
         <RiArrowGoBackLine size="1.5em" className="back-icon" />
       </button>
       <h1>React Features</h1>

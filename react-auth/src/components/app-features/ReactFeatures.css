@@ -1,6 +1,6 @@
 .features-container {
   background-color: #121212; /* Dark background */
-  margin-bottom: 10rem;
+  margin-bottom: 5rem;
   padding: 2rem; /* Added padding for better spacing */
   color: #bcb3b3; /* Light gray text color */
   font-family: 'Arial', sans-serif; /* Modern, clean font */
@@ -15,7 +15,7 @@
   border-bottom: 2px solid #333; /* Underline */
   line-height: 1.2;
   padding-bottom: 2rem;
-  padding-top: 2rem;
+  padding-top: 1rem;
   font-size: 2.5rem; /* Larger font size */
   text-transform: uppercase; /* Uppercase text */
 }
@@ -35,9 +35,9 @@
 
 .features-container p {
   text-align: center;
-  padding: 0 15%;
-  margin-bottom: 1.5rem;
-  line-height: 1.6; /* Improved readability */
+  padding: 0 5%;
+  margin-bottom: 1rem;
+  line-height: 1.5; /* Improved readability */
   font-size: 1rem; /* Consistent font size */
 }
 
@@ -47,7 +47,7 @@
 }
 
 .features-container section {
-  margin-bottom: 3rem;
+  margin-bottom: 1rem;
   padding: 1rem 2rem; /* Added padding for better spacing */
   border-radius: 10px; /* Rounded corners */
   box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2); /* Subtle shadow */
@@ -59,10 +59,10 @@
 }
 
 /* Button Styles */
-.back-button {
+.back-button-r {
   position: absolute;
-  top: 20px;
-  left: 20px;
+  top: 15px;
+  left: 25px;
   background: none;
   border: none;
   cursor: pointer;

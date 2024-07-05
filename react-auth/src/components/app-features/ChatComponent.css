@@ -12,6 +12,7 @@
   flex-direction: column; /* Arrange children in a column */
   height: calc(100vh - 12rem); /* Adjust height to account for footer */
   margin-bottom: 6rem; /* Ensure space for the footer */
+  overflow: hidden; /* Hide overflow to prevent scroll issues */
 }
 
 .back-button-container {
@@ -96,7 +97,10 @@
 .chat-input-wrapper {
   display: flex; /* Use flexbox for alignment */
   align-items: center; /* Center items vertically */
-  margin-top: auto; /* Push input box to the bottom */
+  padding: 1rem; /* Padding around the input wrapper */
+  background-color: #121212; /* Match background color */
+  position: sticky;
+  bottom: 0; /* Stick to the bottom of the container */
 }
 
 /* Container for the input box and send button */
@@ -157,6 +161,10 @@
   .chat-container {
     padding: 1rem; /* Reduced padding for smaller screens */
     height: calc(100vh - 7rem); /* Adjust height for mobile to account for footer */
+  }
+
+  .chat-input-wrapper {
+    padding: 0.5rem; /* Adjust padding for smaller screens */
   }
 
   .chat-input input {

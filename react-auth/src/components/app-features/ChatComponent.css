@@ -1,3 +1,10 @@
+html, body {
+  height: 100%;
+  margin: 0;
+  padding: 0;
+  overflow: hidden; /* Prevent scrolling */
+}
+
 .chat-container {
   position: relative; /* To position elements relative to this container */
   background-color: #121212; /* Dark background */
@@ -10,7 +17,7 @@
   margin: 2rem auto; /* Center the chat container horizontally */
   display: flex;
   flex-direction: column; /* Arrange children in a column */
-  height: calc(100vh - 12rem); /* Adjust height to account for footer */
+  height: calc(100vh - 10rem); /* Adjust height to account for footer */
   margin-bottom: 6rem; /* Ensure space for the footer */
   overflow: hidden; /* Hide overflow to prevent scroll issues */
 }
@@ -160,7 +167,7 @@
 @media (max-width: 768px) {
   .chat-container {
     padding: 1rem; /* Reduced padding for smaller screens */
-    height: calc(100vh - 10rem); /* Adjust height for mobile to account for footer */
+    height: calc(100vh - 7rem); /* Adjust height for mobile to account for footer */
   }
 
   .chat-input-wrapper {

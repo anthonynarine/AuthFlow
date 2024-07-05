@@ -1,5 +1,5 @@
 .chat-container {
-  position: relative; /* To position the back button relative to this container */
+  position: relative; /* To position elements relative to this container */
   background-color: #121212; /* Dark background */
   padding: 2rem;
   color: #f1ecec; /* Light gray text color */
@@ -15,12 +15,10 @@
 }
 
 .back-button-container {
-  position: relative;
   display: flex;
-  justify-content: center; /* Center the title */
-  align-items: center; /* Center items vertically */
-  width: 100%;
-  margin-bottom: 1rem;
+  align-items: center; /* Align items horizontally and center vertically */
+  position: relative;
+  margin-bottom: 1.7rem;
 }
 
 .back-button {
@@ -45,6 +43,7 @@
 .chat-title {
   font-size: 1.5em;
   color: #1abc9c;
+  margin: 0 auto; /* Center the title */
 }
 
 .chat-history {
@@ -61,13 +60,13 @@
 }
 
 .chat-history::-webkit-scrollbar-track {
-  background-color: #121212; /* Background color of the scrollbar track */
+  background-color: #2f2f2f; /* Background color of the scrollbar track */
 }
 
 .chat-history::-webkit-scrollbar-thumb {
-  background-color: #464444; /* Color of the scrollbar thumb */
+  background-color: #7B7B7B; /* Color of the scrollbar thumb */
   border-radius: 6px; /* Roundness of the scrollbar thumb */
-  border: 4px solid #2f2f2f; /* Padding around the scrollbar thumb */
+  border: 3px solid #7B7B7B; /* Padding around the scrollbar thumb */
 }
 
 /* Styles for each chat entry */
@@ -102,6 +101,7 @@
 
 /* Container for the input box and send button */
 .chat-input {
+  position: relative; /* To position the arrow icon inside the input box */
   display: flex; /* Use flexbox for alignment */
   align-items: center; /* Center items vertically */
   width: 100%; /* Full width */
@@ -114,33 +114,33 @@
   font-size: 1rem; /* Font size */
   border: none; /* No border */
   border-radius: 25px; /* Rounded corners */
-  margin-right: 1rem; /* Space to the right of the input box */
   background-color: #333; /* Darker background for input */
   color: #bcb3b3; /* Light gray text color */
+  padding-right: 3rem; /* Make space for the arrow icon */
 }
 
-/* Styles for the send button */
-.chat-input button {
-  padding: 1rem 2rem; /* Padding inside the button */
-  font-size: 1rem; /* Font size */
+/* Styles for the send arrow icon */
+.send-arrow {
+  position: absolute;
+  right: 10px; /* Position inside the input box */
+  background: none; /* No background */
   border: none; /* No border */
-  border-radius: 25px; /* Rounded corners */
-  background-color: #1abc9c; /* Teal button background */
-  color: #121212; /* Dark text color */
   cursor: pointer; /* Pointer cursor on hover */
-  transition: transform 0.3s ease, background-color 0.3s ease; /* Smooth transition */
+  color: #bcb3b3; /* Light gray color */
+  transition: transform 0.3s ease, color 0.3s ease; /* Smooth transitions */
 }
 
-/* Hover effect for the send button */
-.chat-input button:hover {
-  background-color: #16a085; /* Darker teal on hover */
-  transform: scale(1.05); /* Slightly increase size on hover */
+.send-arrow:hover {
+  color: #1abc9c; /* Color change on hover */
+  transform: scale(1.2); /* Slightly enlarge on hover */
 }
 
 /* Styles for the loading icon */
 .loading-icon {
-  display: block; /* Block display */
-  margin: 1rem auto; /* Center the loading icon */
+  position: absolute; /* Position the loading icon absolutely */
+  top: 50%; /* Center vertically */
+  left: 50%; /* Center horizontally */
+  transform: translate(-50%, -50%); /* Adjust position to be exactly in the center */
   font-size: 2rem; /* Font size */
   color: #61DAFB; /* Light blue color */
   animation: spin 1s linear infinite; /* Spinning animation */
@@ -159,7 +159,7 @@
     height: calc(100vh - 7rem); /* Adjust height for mobile to account for footer */
   }
 
-  .chat-input input, .chat-input button {
+  .chat-input input {
     padding: 0.75rem; /* Reduced padding for smaller screens */
     font-size: 0.9rem; /* Smaller font size */
   }

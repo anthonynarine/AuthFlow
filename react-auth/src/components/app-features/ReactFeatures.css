@@ -4,6 +4,9 @@
   padding: 2rem; /* Added padding for better spacing */
   color: #bcb3b3; /* Light gray text color */
   font-family: 'Arial', sans-serif; /* Modern, clean font */
+  max-width: 990px; /* Set max width */
+  margin-left: auto; /* Center container horizontally */
+  margin-right: auto; /* Center container horizontally */
 }
 
 .features-container h1 {

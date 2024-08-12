@@ -51,6 +51,7 @@ export const ForgotPassword = () => {
             <main className="form-signin w-100 m-auto">
                 <form onSubmit={handleSubmit}>
                     <div className="logo-container">
+                            {/* moved image to public folder so it does not need to be imported */}
                         <img src="/auth-app.jpg" alt="Auth App" className="login-logo" />
                     </div>
                     <div className="password-reset-heading">

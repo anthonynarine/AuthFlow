@@ -2,7 +2,7 @@ import "../login/Login.css";
 import authAppImage from "../../assets/auth-app.jpg";
 import { useNavigate, useParams } from "react-router-dom";
 import { RiArrowGoBackLine } from "react-icons/ri";
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { useBasicAuthServices } from "../../context/auth/BasicAuthContext"
 import { ToastContainer } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
@@ -16,6 +16,7 @@ export const ResetPassword = () => {
     const { uidb64, token } = useParams();
     const { resetPassword } = useBasicAuthServices(); // Assume markAsSubmitted's logic is handled within resetPassword
 
+    
     const handleSubmit = async (event) => {
         event.preventDefault();
 
@@ -25,12 +26,16 @@ export const ResetPassword = () => {
         }
         try {
             await resetPassword({ password, confirmPassword, uidb64, token });
-            showSuccessToast.success('Password reset successful!');
+            showSuccessToast('Password reset successful!');
             setTimeout(() => navigate("/login"), 2000); // Redirect after showing success message
         } catch (error) {
-            showErrorToast.error("Failed to reset password. Please try again.");
+            showErrorToast("Failed to reset password. Please try again.");
         }
     };
+
+    useEffect(() => {
+        console.log("UID:", uidb64, "Token:", token);
+    }, [uidb64, token]);
 
     return (
         <div className="login-container">

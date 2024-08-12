@@ -97,9 +97,9 @@
 
 /* Email invite section */
 .email-invite {
-  padding: .75rem; /* Compact padding */
+  padding: .5rem; /* Compact padding */
   max-width: 400px; /* Smaller max-width */
-  margin: 5rem auto 1rem auto; /* Center aligns the div with top & bottom margin */
+  margin: 3rem auto 1rem auto; /* Center aligns the div with top & bottom margin */
   text-align: center; /* Center-align the text */
   color: #ecf0f1; /* Lighter text color for contrast */
   font-size: 1rem; /* Adjust text size for readability */

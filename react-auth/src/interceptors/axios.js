@@ -2,7 +2,7 @@ import axios from "axios";
 import Cookies from "js-cookie";
 
 // Define a variable 'baseURL' that will store the base URL for API requests.
-const baseURL = process.env.REACT_APP_USE_PRODUCTION_API === 'true'
+const baseURL = (process.env.REACT_APP_USE_PRODUCTION_API === 'true'
     // First, check if the REACT_APP_USE_PRODUCTION_API environment variable is explicitly set to 'true'.
     ? process.env.REACT_APP_PRODUCTION_URL
     // If it is true, set 'baseURL' to the value of the REACT_APP_PRODUCTION_URL environment variable.
@@ -10,7 +10,8 @@ const baseURL = process.env.REACT_APP_USE_PRODUCTION_API === 'true'
         // If REACT_APP_USE_PRODUCTION_API is not 'true', check if the application is running in development mode.
         ? process.env.REACT_APP_DEV_URL
         // If the NODE_ENV is 'development', set 'baseURL' to the value of the REACT_APP_DEV_URL environment variable.
-        : process.env.REACT_APP_PRODUCTION_URL;
+        : process.env.REACT_APP_PRODUCTION_URL
+).replace(/\/+$/, ''); // Remove any trailing slashes from the base URL       
         // If none of the above conditions are met, default to using the production URL.
         // This covers scenarios where NODE_ENV might be set to 'test' or 'production', or any other non-development environment.
   

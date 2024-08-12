@@ -1,5 +1,4 @@
 import "../login/Login.css";
-import authAppImage from "../../assets/auth-app.jpg";
 import { useNavigate } from "react-router-dom";
 import { RiArrowGoBackLine } from "react-icons/ri";
 import { useState } from "react";
@@ -52,7 +51,7 @@ export const ForgotPassword = () => {
             <main className="form-signin w-100 m-auto">
                 <form onSubmit={handleSubmit}>
                     <div className="logo-container">
-                        <img src={authAppImage} alt="Auth App" className="login-logo" />
+                        <img src="/auth-app.jpg" alt="Auth App" className="login-logo" />
                     </div>
                     <div className="password-reset-heading">
                         <h1 className="h3 mb-4 fw-normal">Forgot Password?</h1>

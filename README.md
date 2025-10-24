@@ -1,7 +1,7 @@
 # 🔐 React Auth Client — Frontend for Django Authentication API
 
 ### 🌐 Live Demo  
-**[onevone.net](https://onevone.net)**  
+**[onevone.net](https://gait.netlify.app/)**  
 
 Modern React frontend for the **Django Auth API**, providing secure JWT-based authentication, two-factor (2FA) setup, password management, and session validation with an elegant, modular design.
 
@@ -16,7 +16,7 @@ Modern React frontend for the **Django Auth API**, providing secure JWT-based au
 | Styling | **Vanilla CSS** |
 | Authentication | **JWT (Simple JWT)** + **Two-Factor Authentication (2FA)** |
 | Session Management | **Cookies (js-cookie)** |
-| Backend | [**Django REST Framework Auth API**](https://github.com/anthonynarine/auth_api) |
+| Backend | [**Django REST Framework Auth API**](https://github.com/anthonynarine/django_auth) |
 | Deployment | Works seamlessly with production or dev URLs via `.env` configuration |
 
 ---

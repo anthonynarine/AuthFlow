@@ -11,15 +11,13 @@ export function useUserSessionServices() {
     const context = useContext(UserSessionContext);
 
     if (context === undefined) {
-        throw new Error("useUserSessionServices must be witin a UserSessionProvider");
+        throw new Error("useUserSessionServices must be within a UserSessionProvider");
     }
     return context;
 }
 
 // Provider component for session
 export function UserSessionProvider({ children }) {
-    console.log("UserSessionProvider rendered") // Remove for production
-
     const useUserSessionServices = useUserSession();
 
     return (

@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import axios from 'axios';
 import "./RegisterPage.css"
@@ -22,10 +22,6 @@ export const RegisterPage = () => {
     const [passwordVisible, setPasswordVisible] = useState(false);
     const [confirmPasswordVisible, setConfirmPasswordVisible] = useState(false);
     const navigate = useNavigate();
-
-    useEffect(() => {
-        console.log("🚀 First request to an API I built and deployed 🛠️");
-    }, []);
 
     const handleChange = (event) => {
         const { name, value } = event.target;
@@ -52,7 +48,7 @@ export const RegisterPage = () => {
             } else {
                 setErrors({general: "Registration failed. Please try again later"});
             }
-            console.log(error);
+            console.error("Registration error:", error);
         } finally {
             setIsLoading(false);
         }

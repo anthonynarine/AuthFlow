@@ -13,23 +13,8 @@ const baseURL = process.env.REACT_APP_USE_PRODUCTION_API === 'true'
         : process.env.REACT_APP_PRODUCTION_URL;
         // If none of the above conditions are met, default to using the production URL.
         // This covers scenarios where NODE_ENV might be set to 'test' or 'production', or any other non-development environment.
-  
-// Debugging
-console.log("Base URL:", baseURL); // Debugging line to check if the baseURL is correctly set
 
 const isProduction = baseURL.includes("ant-django-auth-62cf01255868.herokuapp.com");
-
-// Function to log request details, useful for debugging and monitoring.
-const logRequest = (request) => {
-    console.log(`Request made to ${request.url} with method ${request.method}`);
-    return request;
-};
-
-// Function to log response details, helps in understanding response times and sources.
-const logResponse = (response) => {
-    console.log(`Received response from ${response.config.url}`);
-    return response;
-};
 
 // Function to log and handle errors in Axios requests or responses.
 const logError = (error) => {
@@ -50,10 +35,8 @@ publicAxios.interceptors.request.use((config) => {
     if (csrfToken) {
         config.headers["X-CSRFToken"] = csrfToken;
     }
-    // Start timing the request for performance monitoring
-    config.metadata = { startTime: new Date() };
 
-    return logRequest(config);
+    return config;
 }, logError);
 
 publicAxios.interceptors.response.use((response) => {
@@ -93,10 +76,7 @@ publicAxios.interceptors.response.use((response) => {
       Cookies.remove("sessionid");
     }
 
-    // Calculate and log the duration of the request
-    const duration = new Date() - response.config.metadata.startTime;
-    console.log(`Response from ${response.config.url} took ${duration} ms`);
-    return logResponse(response);
+    return response;
 }, logError);
 
 // AUTHENTICATED AXIOS INSTANCE for private (authenticated) requests with token and CSRF handling.
@@ -108,16 +88,18 @@ const authAxios = axios.create({
 // Interceptor to attach the access token to each request
 authAxios.interceptors.request.use((config) => {
     const accessToken = Cookies.get("access_token");
-    if (accessToken) {
+    // Don't override an Authorization header a caller already set explicitly
+    // (e.g. the /token-refresh/ call below, which must send the refresh token,
+    // not the expired access token).
+    if (accessToken && !config.headers["Authorization"]) {
         config.headers["Authorization"] = `Bearer ${accessToken}`;
     }
     const csrfToken = Cookies.get("csrftoken");
     if (csrfToken) {
         config.headers["X-CSRFToken"] = csrfToken;
     }
-    config.metadata = { startTime: new Date() };
 
-    return logRequest(config);
+    return config;
 }, logError);
 
 // Response interceptor for handling automatic token refresh on authentication failures
@@ -131,9 +113,7 @@ authAxios.interceptors.response.use(
                 sameSite: isProduction ? "None" : "Lax"
             });
         }
-        const duration = new Date() - response.config.metadata.startTime;
-        console.log(`Response from ${response.config.url} took ${duration} ms`);
-        return logResponse(response);
+        return response;
     },
     async (error) => {
         const originalRequest = error.config;
@@ -142,24 +122,35 @@ authAxios.interceptors.response.use(
             originalRequest._retry = true;
             try {
                 const refreshToken = Cookies.get("refresh_token");
+                // The backend's RefreshAPIView reads the refresh token from the
+                // Authorization header only (it never reads the request body), so
+                // it must be sent explicitly here rather than in the JSON body.
                 const response = await authAxios.post(
                     "/token-refresh/",
-                    { refresh_token: refreshToken },
-                    { withCredentials: true }
+                    {},
+                    {
+                        headers: { Authorization: `Bearer ${refreshToken}` },
+                        withCredentials: true
+                    }
                 );
                 if (response.status === 200) {
                     const newAccessToken = response.data.access_token;
+                    // RefreshAPIView only returns a new access_token today (refresh
+                    // tokens aren't rotated), so only overwrite the refresh_token
+                    // cookie if the backend actually sends one back.
                     const newRefreshToken = response.data.refresh_token;
                     Cookies.set("access_token", newAccessToken, {
                         expires: 1 / 96,
                         secure: isProduction,
                         sameSite: isProduction ? "None" : "Lax"
                     });
-                    Cookies.set("refresh_token", newRefreshToken, {
-                        expires: 7,
-                        secure: isProduction,
-                        sameSite: isProduction ? "None" : "Lax"
-                    });
+                    if (newRefreshToken) {
+                        Cookies.set("refresh_token", newRefreshToken, {
+                            expires: 7,
+                            secure: isProduction,
+                            sameSite: isProduction ? "None" : "Lax"
+                        });
+                    }
                     originalRequest.headers["Authorization"] = `Bearer ${newAccessToken}`;
                     // Update Axios default headers for subsequent requests
                     authAxios.defaults.headers.common[
@@ -175,40 +166,6 @@ authAxios.interceptors.response.use(
         return logError(error);
     }
 );
-
-// Response interceptor for handling automatic token refresh on authentication failures
-authAxios.interceptors.response.use((response) => {
-    // Check for and update the CSRF token as needed
-    const newCsrfToken = response.headers["x-csrftoken"];
-    if (newCsrfToken) {
-        Cookies.set("csrftoken", newCsrfToken);
-    }
-    const duration = new Date() - response.config.metadata.startTime;
-    console.log(`Response from ${response.config.url} took ${duration} ms`);
-    return logResponse(response);
-}, async (error) => {
-    const originalRequest = error.config;
-    // Handle expired access tokens and attempt to refresh them once
-    if (error.response.status === 401 && !originalRequest._retry) {
-        originalRequest._retry = true;
-        try {
-            const response = await authAxios.post("/token-refresh/", {}, { withCredentials: true });
-            if (response.status === 200) {
-                const newAccessToken = response.data.access_token;
-                Cookies.set("access_token", newAccessToken);
-                originalRequest.headers["Authorization"] = `Bearer ${newAccessToken}`;
-                
-                // Update Axios default headers for subsequent requests
-                authAxios.defaults.headers.common["Authorization"] = `Bearer ${newAccessToken}`;
-                return authAxios(originalRequest);
-            }
-        } catch (refreshError) {
-            console.error("Failed to refresh token", refreshError);
-            return Promise.reject(refreshError);
-        }
-    }
-    return logError(error);
-});
 
 
 export { authAxios, publicAxios };

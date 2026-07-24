@@ -1,4 +1,4 @@
-import { useCallback, useEffect, useState } from "react";
+import { useCallback, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { authAxios } from "../interceptors/axios";
 import { useBasicAuthServices } from "../context/auth/BasicAuthContext";
@@ -8,19 +8,10 @@ export const useTwoFactorAuth = () => {
     const [isLoading, setIsLoading] = useState(false);
     const [twoFactorError, setTwoFactorError] = useState(null);
     const [qrCode, setQrCode] = useState("");
-    const [isInitialSetup, setIsInitialSetup] = useState(false); 
-
+    const [isInitialSetup, setIsInitialSetup] = useState(false);
 
     const { setUser, setIsLoggedIn } = useBasicAuthServices();
     const navigate = useNavigate();
-
-    // Log state changes
-    useEffect(() => {
-        console.log("isLoading updated to:", isLoading);
-        console.log("twoFactorError updated to:", twoFactorError);
-        console.log("qrCode updated to:", qrCode);
-        console.log("initisl setup:", isInitialSetup);
-    }, [isLoading, twoFactorError, qrCode, isInitialSetup]);
 
     // Function to toggle 2FA state
     const toggle2fa = useCallback(async (is2FAEnabled) => {
@@ -72,14 +63,12 @@ export const useTwoFactorAuth = () => {
         setIsLoading(true);
         setTwoFactorError(null);
 
-        // Choose the endpoint based on wheatehr it's an initial setup of regular login.
+        // Choose the endpoint based on whether it's an initial setup or a regular login.
         const endpoint = isInitialSetup ? "/verify-otp/" : "/two-factor-login/";
         try {
             const { data, status } = await authAxios.post(endpoint, { otp });
             if (status === 200) {
-                console.log("Old token:", Cookies.get("accessToken")); // Log old token
                 Cookies.set("access_token", data.access_token, { expires: 7, secure: true, sameSite: 'Strict'});
-                console.log("New token:", data.access_token); // Log new token
                 setIsLoggedIn(true);
                 navigate("/");
 
@@ -92,7 +81,6 @@ export const useTwoFactorAuth = () => {
             const errorMsg = error.response?.data?.error;
             const parsedError = errorMsg ? Object.values(errorMsg).join("") : "An error occurred during 2FA login";
             setTwoFactorError(parsedError)
-            console.log("testing Parsed 2faError:", parsedError);
         } finally {
             setIsLoading(false);
         }

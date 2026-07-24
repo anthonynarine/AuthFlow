@@ -1,4 +1,3 @@
-// import Cookies from 'js-cookie';
 import { useCallback, useState } from "react";
 import { useBasicAuthServices } from "../context/auth/BasicAuthContext";
 import { authAxios } from "../interceptors/axios";
@@ -13,7 +12,6 @@ export const useUserSession = () => {
         setError(null);
         setMessage("");
         try {
-            // const accssToken = Cookies.get("access_token")
             const { data } = await authAxios.get("/validate-session/");
             if (data) {  // Check if data is not null or undefined
                 setUser(data); // Data here is the user object
@@ -35,10 +33,10 @@ export const useUserSession = () => {
                 if (status === 401) {
                     setError("Session expired. Please log in again.")
                 } else {
-                    setError(data.detail || "An unexpected error occuredd. Please try again")
+                    setError(data.detail || "An unexpected error occurred. Please try again")
                 }
             } else {
-                setError("Netword error. Please check your connection and try again.");    
+                setError("Network error. Please check your connection and try again.");
             }
         } finally {
             setIsLoading(false);

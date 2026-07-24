@@ -7,6 +7,7 @@ import ChatComponent from "./components/app-features/ChatComponent";
 import { SendEmail } from "./components/mail/SendEmail";
 import { ResetPassword } from "./components/reset-password/ResetPassword";
 import { QRCodeSetup } from "./components/two-factor/2fa-setup/QRCodeSetup";
+import { NotFound } from "./components/not-found/NotFound";
 import HomePage from "./components/home/HomePage";
 import "./App.css"
 import { Footer } from "./components/footer/Footer";
@@ -36,6 +37,7 @@ function App() {
                     <Route path="/send-email" element={<SendEmail />} />
                     <Route path="/reset-password/:uidb64/:token" element={<ResetPassword />} />
                     <Route path="/setup-2fa" element={<QRCodeSetup />} />
+                    <Route path="*" element={<NotFound />} />
                   </Routes>
                 </UserSessionProvider>
             </TwoFactorAuthProvider>

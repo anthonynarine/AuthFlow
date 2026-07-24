@@ -2,7 +2,7 @@ import { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import useGptRequest from "../../hooks/useGptRequest";
 import { AiOutlineLoading3Quarters } from "react-icons/ai";
-import { RiArrowGoBackLine, RiSendPlane2Fill } from "react-icons/ri"; // Import the arrow icon
+import { RiArrowGoBackLine, RiSendPlane2Fill } from "react-icons/ri";
 import "./ChatComponent.css";
 
 const ChatComponent = () => {
@@ -27,36 +27,38 @@ const ChatComponent = () => {
     };
 
     return (
-        <div className="chat-container">
-            <div className="back-button-container">
-                <button className="back-button" onClick={handleBack}>
-                    <RiArrowGoBackLine size="1.5em" className="back-icon" />
-                </button>
-                <h1 className="chat-title">Gait's Assistant</h1>
-            </div>
-            <div className="chat-history">
-                {chatHistory.map((entry, index) => (
-                    <div key={index} className={`chat-entry ${entry.sender}`}>
-                        {entry.message}
-                    </div>
-                ))}
-            </div>
-            <div className="chat-input-wrapper">
-                <div className="chat-input">
-                    <input
-                        type="text"
-                        value={prompt}
-                        onChange={(e) => setPrompt(e.target.value)}
-                        onKeyDown={handleKeyDown} // Add the keypress event handler
-                        placeholder="Ask about the API..."
-                    />
-                    <button className="send-arrow" onClick={handleSend}>
-                        <RiSendPlane2Fill size="1.5em" />
+        <div className="chat-page">
+            <div className="chat-container">
+                <div className="back-button-container">
+                    <button className="back-button" onClick={handleBack} title="Go back to homepage">
+                        <RiArrowGoBackLine size="1.25em" />
                     </button>
+                    <h1 className="chat-title">Gait's Assistant</h1>
                 </div>
+                <div className="chat-history">
+                    {chatHistory.map((entry, index) => (
+                        <div key={index} className={`chat-entry ${entry.sender}`}>
+                            {entry.message}
+                        </div>
+                    ))}
+                </div>
+                <div className="chat-input-wrapper">
+                    <div className="chat-input">
+                        <input
+                            type="text"
+                            value={prompt}
+                            onChange={(e) => setPrompt(e.target.value)}
+                            onKeyDown={handleKeyDown} // Add the keypress event handler
+                            placeholder="Ask about the API..."
+                        />
+                        <button className="send-arrow" onClick={handleSend} aria-label="Send message">
+                            <RiSendPlane2Fill size="1.1em" />
+                        </button>
+                    </div>
+                </div>
+                {loading && <AiOutlineLoading3Quarters className="loading-icon" />}
+                {error && <p className="chat-error">Error: {error}</p>}
             </div>
-            {loading && <AiOutlineLoading3Quarters className="loading-icon" />}
-            {error && <p>Error: {error}</p>}
         </div>
     );
 };

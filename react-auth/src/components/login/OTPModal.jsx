@@ -1,16 +1,9 @@
-import React, { useEffect, useRef, useState } from "react";
+import React, { useRef, useState } from "react";
 import "./OTPModal.css";
 
 const OTPModal = ({ isOpen, onConfirm, onCancel, onChange, otpValue, twoFactorError }) => {
     const inputRefs = useRef(Array.from({ length: 6 }, () => React.createRef()));
     const [focusedIndex, setFocusedIndex] = useState(null);
-
-    useEffect(() => {
-        console.log("Two-factor authentication error:", twoFactorError);
-        if (twoFactorError) {
-            console.log("Testing 2FA error from OTPModal:", twoFactorError);
-        }
-    }, [twoFactorError]);
 
     if (!isOpen) return null;
 

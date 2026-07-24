@@ -1,162 +1,201 @@
+/* Login.css */
 
+.login-page {
+  flex: 1;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 3rem 1.5rem 8rem;
+}
+
+.login-container {
+  position: relative;
+  width: 100%;
+  max-width: 420px;
+  padding: 2.75rem 2.25rem 2.25rem;
+  background: var(--color-surface);
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-lg);
+  box-shadow: var(--shadow-md);
+}
+
+.back-button {
+  position: absolute;
+  top: 1.25rem;
+  left: 1.25rem;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 2.25rem;
+  height: 2.25rem;
+  margin: 0;
+  padding: 0;
+  background: transparent;
+  color: var(--color-text-muted);
+  border: none;
+  border-radius: var(--radius-sm);
+  cursor: pointer;
+  transition: color var(--transition-fast), background-color var(--transition-fast);
+}
+
+.back-button:hover {
+  color: var(--color-text);
+  background: var(--color-surface-alt);
+}
 
 .logo-container {
   text-align: center;
-  margin-bottom: 20px;
+  margin-bottom: 0.75rem;
 }
 
 .login-logo {
-  max-width: 110px;
-  margin-bottom: 0px;
+  max-width: 96px;
+  border-radius: var(--radius-md);
 }
 
-/* login.css */
-.login-container {
-  max-width: 500px;
-  margin: 2rem auto;
-  margin-top: 4rem;
-  margin-bottom: 12rem; /* Ensure enough space above the footer */
-  padding: 2rem;
-  background: #1C2833;
-  border-radius: 8px;
-  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
-}
-
-.login-container svg {
-  transition: color 0.3s ease;
-  color:#828a87;
-}
-
-.logo-container:hover svg {
-  color: #14a365; /* Or any other color you want on hover */
-  /* background-color: #1C2833; */
-}
-
-.nav-button {
-  position: absolute;
-  top: 10px;
-  left: 10px;
-  margin: 0;
-  background: none;
-  color: #D3D3D3;
-  border: none;
-  cursor: pointer;
-  z-index: 1000; /* Ensures the button is above other elements */
-}
-
-.nav-button:hover {
-  color: #A9A9A9; /* Slightly lighter color on hover for visual feedback */
-}
-
-.nav-button svg {
-  color: inherit; /* This ensures the icon color matches the button's color */
-}
-
-.form-signin h1, 
-.form-signin h2, 
-.form-signin h3, 
-.form-signin h4, 
-.form-signin h5, 
-.form-signin h6 {
+.login-title {
+  margin: 0.5rem 0 0.25rem;
+  font-size: 1.5rem;
+  font-weight: 600;
   text-align: center;
-  color:#BDC3C7;
+  color: var(--color-text);
 }
 
-.form-signin {
-  padding: 0; /* Remove padding inside the form container if unnecessary */
+.login-subtitle {
+  margin: 0 0 1.75rem;
+  text-align: center;
+  font-size: 0.9rem;
+  color: var(--color-text-muted);
 }
 
-.form-signin > form {
-  margin: 0; /* Ensure there's no extra margin affecting inner elements */
+.field {
+  margin-bottom: 1.25rem;
 }
 
-.form-signin {
-  width: 100%; /* Ensures the form takes full width of its parent */
-  padding: 0; /* Adjust or remove padding as needed */
+.field label {
+  display: block;
+  margin-bottom: 0.4rem;
+  font-size: 0.85rem;
+  font-weight: 500;
+  color: var(--color-text-muted);
 }
 
+.input-wrap {
+  position: relative;
+  display: flex;
+  align-items: center;
+}
 
+.field-icon {
+  position: absolute;
+  left: 0.85rem;
+  color: var(--color-text-muted);
+  font-size: 1.1rem;
+  pointer-events: none;
+  transition: color var(--transition-fast);
+}
 
-.login-container input,
-.login-container textarea { /* Adjust selector as needed */
+.text-input {
   width: 100%;
-  padding: 10px;
-  margin-bottom: 1rem;
-  border: 2px solid #f2eeee;
-  border-radius: 4px;
-  box-sizing: border-box;
-  color: black;
+  padding: 0.75rem 1rem 0.75rem 2.6rem;
+  background: var(--color-surface-alt);
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-sm);
+  color: var(--color-text);
+  font-size: 0.95rem;
+  transition: border-color var(--transition-fast), box-shadow var(--transition-fast);
 }
 
-.login-container textarea {
-  height: 200px;
-  resize: vertical;
-  padding: 10px 18px;
+.text-input::placeholder {
+  color: #6b7280;
 }
 
-.btn-signin { /* Adjust selector if different */
+.text-input:focus {
+  outline: none;
+  border-color: var(--color-accent);
+  box-shadow: 0 0 0 3px var(--color-accent-soft);
+}
+
+.input-wrap:focus-within .field-icon {
+  color: var(--color-accent);
+}
+
+#floatingPassword {
+  padding-right: 2.75rem;
+}
+
+.btn-signin {
   width: 100%;
-  min-height: 3.5rem;
-  background-color: #30815e;
-  color: white;
-  /* padding: 15px 10px; */
-
+  min-height: 3rem;
+  margin-top: 0.5rem;
+  background-color: var(--color-accent);
+  color: #0d1117;
+  font-weight: 600;
   border: none;
-  border-radius: 4px;
+  border-radius: var(--radius-sm);
   cursor: pointer;
-  font-size: 16px;
+  font-size: 1rem;
+  transition: background-color var(--transition-fast), transform var(--transition-fast), box-shadow var(--transition-fast);
 }
-.btn-signin:hover {
-  background-color: #14a365; /* Lighter green on hover */
-  color: #fff;
+
+.btn-signin:hover:not(:disabled) {
+  background-color: var(--color-accent-hover);
+  box-shadow: 0 6px 20px rgba(26, 188, 156, 0.25);
+}
+
+.btn-signin:active:not(:disabled) {
+  transform: translateY(1px);
+}
+
+.btn-signin:disabled {
+  opacity: 0.65;
+  cursor: not-allowed;
 }
 
 .forgot-password-link {
   display: flex;
   justify-content: center;
-  align-items: center; 
-  margin-top: 15px;
+  margin-top: 1.25rem;
 }
 
-/* Additional styles for checkbox and its label */
-.login-container .form-check {
-  margin-bottom: 1rem;
+.forgot-password-link a {
+  color: var(--color-text-muted);
+  font-size: 0.875rem;
+  text-decoration: none;
+  transition: color var(--transition-fast);
 }
 
-.login-container .form-check-input {
-  width: auto; /* Reset width for checkbox */
-  margin-top: 0.3rem;
-  margin-right: 0.5rem;
-  cursor: pointer; /* Indicates interactiveness */
-}
-
-.login-container .form-check-label {
-  cursor: pointer; /* Indicates interactiveness */
-  color: #BDC3C7; /* Matches form text color */
-}
-
-/* Styling for focus outline on checkbox to match the theme */
-.login-container .form-check-input:focus {
-  outline: 1px auto #14a365;
-}
-
-/* Hover effect for checkbox and label */
-.login-container .form-check-label:hover,
-.login-container .form-check-input:hover {
-  color: #14a365; /* Hover color */
+.forgot-password-link a:hover {
+  color: var(--color-accent);
+  text-decoration: underline;
 }
 
 .password-toggle-button {
-  cursor: pointer;
   position: absolute;
-  right: 10px;
-  top: 50%; /* Center vertically relative to parent */
-  transform: translateY(-50%); /* Keep icon centered as it scales */
-  color: #666;
-  font-size: 24px; /* Base icon size, adjust as needed */
-  transition: transform 0.3s ease; /* Smooth transition for transform */
+  right: 0.75rem;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: transparent;
+  border: none;
+  padding: 0.25rem;
+  color: var(--color-text-muted);
+  font-size: 1.15rem;
+  cursor: pointer;
+  transition: color var(--transition-fast);
 }
 
 .password-toggle-button:hover {
-  transform: translateY(-50%) scale(1.2); /* Scale up on hover */
+  color: var(--color-accent);
+}
+
+.alert.alert-danger {
+  margin-bottom: 1.25rem;
+  padding: 0.7rem 1rem;
+  background: var(--color-danger-bg);
+  border: 1px solid var(--color-danger-border);
+  border-radius: var(--radius-sm);
+  color: var(--color-danger);
+  font-size: 0.875rem;
+  text-align: center;
 }

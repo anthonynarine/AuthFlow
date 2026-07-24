@@ -1,67 +1,72 @@
 import React from 'react';
-import './ReactFeatures.css'; 
+import './ReactFeatures.css';
 import { useNavigate } from 'react-router-dom';
 import { RiArrowGoBackLine } from 'react-icons/ri';
 
+const sections = [
+  {
+    heading: "The core: Axios interceptors",
+    href: "https://axios-http.com/docs/interceptors",
+    body: "Requests don't hit Axios directly — they pass through interceptors first. These are functions Axios runs automatically on every request or response, which is where custom logic like attaching access tokens or catching expired ones actually lives.",
+  },
+  {
+    heading: "Request interceptor",
+    href: "https://axios-http.com/docs/req_config",
+    body: "Every outgoing request passes through a request interceptor. It checks your browser's cookies for an access token, and if one exists, attaches it to the request's headers so the server recognizes and trusts the request.",
+  },
+  {
+    heading: "Why cookies?",
+    href: "https://www.npmjs.com/package/js-cookie",
+    body: "Access tokens are stored in cookies rather than local storage, because local storage is readable by any script on the page — an easy target for XSS. Cookies with the right flags are a safer place to keep something this sensitive.",
+  },
+  {
+    heading: "Response interceptor",
+    href: "https://axios-http.com/docs/res_schema#response-interceptor",
+    body: "Not every response is a success — some mean the access token has expired. When that happens, the response interceptor steps in, calls the token-refresh endpoint, updates the cookie with a new token, and retries the original request automatically. No dropped session, no manual refresh.",
+  },
+];
+
 export const ReactFeatures = () => {
+  const navigate = useNavigate();
 
-  let navigate = useNavigate();
-
-  function handleClick () {
+  const handleClick = () => {
     navigate("/");
   };
 
   return (
-    <div className="features-container" style={{position: "relative"}}>
-        <button onClick={handleClick} className="back-button-r" title="Go back to homepage">
-        <RiArrowGoBackLine size="1.5em" className="back-icon" />
-      </button>
-      <h1>React Features</h1>
-      <h2>Network Requests</h2>
+    <div className="features-page">
+      <div className="features-container">
+        <button onClick={handleClick} className="back-button" title="Go back to homepage">
+          <RiArrowGoBackLine size="1.25em" />
+        </button>
 
-      <section>
-        <p>Let's delve into the technicalities of how network requests are managed to ensure seamless communication with the server. The focus lies on security, efficiency, and handling network responses to provide a reliable experience.</p>
-      </section>
+        <p className="features-eyebrow">React features</p>
+        <h1>How network requests actually work here</h1>
+        <p className="features-intro">
+          A closer look at how this app keeps requests authenticated and sessions alive,
+          without getting in your way.
+        </p>
 
-      <section>
-        <a href="https://axios-http.com/docs/interceptors" target="_blank" rel="noopener noreferrer">
-            <h2>The Core: Axios Interceptors</h2>
-        </a>
-        <p>The application utilizes Axios, an HTTP client, to manage network requests. It doesn't use Axios directly; instead, it utilizes <em>interceptors</em>. Interceptors are functions that Axios calls automatically on every request or response, allowing us to inject custom logic, such as attaching access tokens or handling expired tokens.</p>
-      </section>
+        {sections.map(({ heading, href, body }) => (
+          <section className="glass-card feature-card" key={heading}>
+            <a href={href} target="_blank" rel="noopener noreferrer">
+              <h2>{heading}</h2>
+            </a>
+            <p>{body}</p>
+          </section>
+        ))}
 
-      <section>
-        <a href="https://axios-http.com/docs/req_config" target="_blank" rel="noopener noreferrer">
-            <h2>Request Interceptor</h2>
-        </a>
-        <p>Request interceptors securely attach access tokens. Every time the application sends a request to the server, it passes through a <em>request interceptor</em>. This interceptor's job is simple: it checks if you have an access token (a digital key that proves your identity and permissions) stored in your browser's cookies. If you do, the interceptor attaches this token to your request's headers, ensuring that the server recognizes and trusts your request.</p>
-      </section>
-
-      <section>
-        <a href="https://www.npmjs.com/package/js-cookie" target="_blank" rel="noopener noreferrer">
-            <h2>Why Cookies?</h2>
-        </a>
-        <p>We store access tokens in cookies because they're secure and automatically sent with each request to the domain. This makes managing your session safe and easy, as opposed to storing tokens in local storage, which is vulnerable to attacks like XSS (Cross-Site Scripting).</p>
-      </section>
-
-      <section>
-        <a href="https://axios-http.com/docs/res_schema#response-interceptor" target="_blank" rel="noopener noreferrer">
-          <h2>Response Interceptor</h2>
-        </a>
-        <p>Handling token expiry gracefully with a response interceptor. Not all responses are about success; some indicate that your access token has expired. When this happens, the <em>response interceptor</em> comes into play. Instead of letting the request fail, the interceptor attempts to refresh your token automatically by contacting our server's token-refresh endpoint.</p>
-        <p>If the refresh is successful, it updates your cookie with the new access token and retries the original request without you ever noticing a hiccup. This seamless process ensures that you're not abruptly logged out or forced to manually refresh the page.</p>
-      </section>
-
-      <section>
-        <h2>Security and User Experience</h2>
-        <p>Through the use of Axios interceptors, the application secures your data and access, and also aims to enhance your experience by handling expired tokens and network errors smoothly. This mechanism is crucial for maintaining a secure, responsive, and user-friendly platform.</p>
-      </section>
-
-      <section>
-        <h2>Let's Learn Together</h2>
-        <p>I hope this overview gave you some insight into the engineering behind this application. By transparently sharing how I handle network requests, my goal is to not only inform you but also inspire trust and confidence.</p>
-        <p>Thank you for taking the time to learn about the inner workings of this application. Security and user experience are my top priorities, and I am committed to improving continuously.</p>
-      </section>
+        <section className="feature-closing">
+          <h2>Why it's built this way</h2>
+          <p>
+            Axios interceptors keep token handling out of every individual component —
+            security and a smooth experience come from one shared layer instead of being
+            re-implemented per request. That's the same principle behind the rest of this
+            project: understand the mechanism well enough to build it deliberately, not just
+            wire up a library and hope.
+          </p>
+        </section>
+      </div>
     </div>
   );
 };

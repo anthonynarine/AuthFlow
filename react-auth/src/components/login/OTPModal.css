@@ -1,40 +1,57 @@
-/* Modal Container: Centers content with a dark overlay */
+/* Modal Container: Centers content with a dark, blurred overlay */
 .otp-modal .modal-container {
     position: fixed;
-    top: 30%; /* Anchors the top of the modal at 30% of the viewport height */
-    left: 0;
-    width: 100%;
-    height: 100%;
-    background-color:#121212; /* Dark background with slight transparency for overlay */
+    inset: 0;
+    background-color: rgba(8, 10, 12, 0.65);
+    backdrop-filter: blur(4px);
     display: flex;
     justify-content: center;
     align-items: center;
     z-index: 1000;
-    transform: translateY(-50%); /* Vertically centers the modal content */
+    animation: otp-fade-in var(--transition-base, 0.25s) ease;
 }
 
-/* Modal Content: Dark background, rounded corners, and shadow */
+/* Modal Content: Surface card matching the login card */
 .otp-modal .modal-content {
-    background-color: #1C2833; /* Dark blue background */
-    border-radius: 8px; /* Rounded corners */
-    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1); /* Subtle shadow for depth */
-    max-width: 500px; /* Limits the maximum width */
-    width: 100%; /* Responsive width */
-    padding: 2rem; /* Padding inside the modal content */
+    background: var(--color-surface, #1b2129);
+    border: 1px solid var(--color-border, rgba(255, 255, 255, 0.08));
+    border-radius: var(--radius-lg, 20px);
+    box-shadow: var(--shadow-lg, 0 24px 64px rgba(0, 0, 0, 0.5));
+    max-width: 440px;
+    width: calc(100% - 2.5rem);
+    padding: 2rem;
+    animation: otp-scale-in var(--transition-base, 0.25s) ease;
 }
 
-/* Modal Header: Centered with a specific color */
+@keyframes otp-fade-in {
+    from { opacity: 0; }
+    to { opacity: 1; }
+}
+
+@keyframes otp-scale-in {
+    from { opacity: 0; transform: scale(0.96); }
+    to { opacity: 1; transform: scale(1); }
+}
+
+/* Modal Header */
 .otp-modal .modal-header {
     display: flex;
-    justify-content: center; /* Centered header content */
-    align-items: center; /* Vertically centered */
-    margin-bottom: 1rem; /* Space below the header */
-    color: #1abc9c; /* Mint green color */
+    justify-content: center;
+    align-items: center;
+    margin-bottom: 1.5rem;
 }
 
-/* Modal Body: Padding adjustment */
+.otp-modal .modal-title {
+    color: var(--color-text, #e8eaed);
+    font-size: 1rem;
+    font-weight: 600;
+    text-align: center;
+    margin: 0;
+}
+
+/* Modal Body */
 .otp-modal .modal-body {
-    padding-bottom: 1rem;
+    padding-bottom: 0.5rem;
 }
 
 /* Modal Footer: Centered buttons with gap */
@@ -42,96 +59,94 @@
     display: flex;
     justify-content: center;
     align-items: center;
-    gap: 20px; /* Space between buttons */
+    gap: 0.75rem;
+    margin-top: 0.5rem;
 }
 
-/* Close Button: Subtle styling with hover effect */
-.otp-modal .close {
-    background: none;
-    border: none;
-    cursor: pointer;
-    font-size: 1.5rem;
-    color: #ccc; /* Light grey color */
-}
-
-.otp-modal .close:hover {
-    color: #D44638; /* Bright red on hover */
-}
-
-/* OTP Input Container: Space between input squares */
+/* OTP Input Container: Even spacing between input squares */
 .otp-modal .otp-input-container {
     display: flex;
-    justify-content: space-between; /* Even distribution of input squares */
+    justify-content: space-between;
+    gap: 0.5rem;
 }
 
-/* OTP Input: Full-width, padding, and visual design */
+/* OTP Input: individual digit box */
 .otp-modal .otp-input {
-    width: calc(16.666% - 10px); /* Adjust width for each square */
-    height: 50px; /* Set height */
-    padding: 0.5rem;
+    width: 100%;
+    aspect-ratio: 1 / 1;
+    padding: 0;
     margin-bottom: 1rem;
-    border: 2px solid transparent; /* Transparent border initially */
-    border-radius: 4px; /* Rounded corners */
-    text-align: center; /* Center-aligned text */
-    font-size: 1.5rem; /* Font size */
-    transition: border-color 0.3s, background-color 0.3s; /* Smooth transition */
-    background-color: #2c3e50; /* Dark background color for input */
-    color: #fff; /* White text color */
+    border: 1px solid var(--color-border, rgba(255, 255, 255, 0.08));
+    border-radius: var(--radius-sm, 8px);
+    text-align: center;
+    font-size: 1.4rem;
+    font-weight: 600;
+    transition: border-color 0.2s ease, box-shadow 0.2s ease, background-color 0.2s ease;
+    background-color: var(--color-surface-alt, #232a34);
+    color: #fff;
 }
 
 .otp-modal .otp-input::placeholder {
-    color: #ccc; /* Light grey placeholder text */
+    color: #6b7280;
 }
 
 .otp-modal .otp-input:focus {
-    outline: none; /* Remove default focus outline */
-    border-color: #1abc9c; /* Mint green border on focus */
+    outline: none;
+    border-color: var(--color-accent, #1abc9c);
+    box-shadow: 0 0 0 3px var(--color-accent-soft, rgba(26, 188, 156, 0.14));
 }
 
 .otp-modal .otp-input:hover {
-    background-color: #34495e; /* Slightly lighter background on hover */
+    border-color: var(--color-border-strong, rgba(255, 255, 255, 0.16));
 }
 
 /* Button Styles: Base styling */
 .otp-modal .btn {
-    padding: 0.5rem 1rem;
+    padding: 0.65rem 1.5rem;
     border: none;
-    border-radius: 4px;
-    min-width: 5rem; /* Minimum width */
+    border-radius: var(--radius-sm, 8px);
+    min-width: 6.5rem;
     cursor: pointer;
-    padding-left: 25px; /* Additional padding */
+    font-size: 0.9rem;
+    font-weight: 600;
+    transition: background-color 0.2s ease, color 0.2s ease, transform 0.15s ease;
 }
 
-/* Primary Button: Colors and hover effect */
+.otp-modal .btn:active {
+    transform: translateY(1px);
+}
+
+/* Primary Button: filled accent */
 .otp-modal .btn-primary {
-    background-color: #30815e; /* Dark green background */
-    color: #fff; /* White text */
+    background-color: var(--color-accent, #1abc9c);
+    color: #0d1117;
 }
 
 .otp-modal .btn-primary:hover {
-    background-color: #14a365; /* Lighter green on hover */
-    color: #171D23; /* Very dark gray text on hover */
+    background-color: var(--color-accent-hover, #22d6b3);
 }
 
-/* Secondary Button: Colors and hover effect */
+/* Secondary Button: subtle outline, visually distinct from primary */
 .otp-modal .btn-secondary {
-    background-color: #30815e; /* Dark green background */
-    color: #fff; /* White text */
+    background-color: transparent;
+    border: 1px solid var(--color-border-strong, rgba(255, 255, 255, 0.16));
+    color: var(--color-text-muted, #9aa4af);
 }
 
 .otp-modal .btn-secondary:hover {
-    background-color: #14a365; /* Lighter green on hover */
-    color: #171D23; /* Very dark gray text on hover */
+    border-color: var(--color-text-muted, #9aa4af);
+    color: var(--color-text, #e8eaed);
 }
 
-/* Alert: Styling for error messages */
+/* Alert: Styling for error messages, matching the login form's alert */
 .otp-modal .alert.alert-danger {
-    color: #721c24;
-    background-color: #f8d7da;
-    border-color: #f5c6cb;
-    padding: 10px;
-    margin-bottom: 20px; /* Space below the alert */
-    border-radius: 4px; /* Rounded corners */
-    text-align: center; /* Centered text */
-    width: 100%; /* Full width */
+    color: var(--color-danger, #ff6b6b);
+    background-color: var(--color-danger-bg, rgba(255, 107, 107, 0.12));
+    border: 1px solid var(--color-danger-border, rgba(255, 107, 107, 0.35));
+    padding: 0.7rem 1rem;
+    margin-bottom: 1.25rem;
+    border-radius: var(--radius-sm, 8px);
+    text-align: center;
+    font-size: 0.875rem;
+    width: 100%;
 }

@@ -21,8 +21,6 @@ export function useTwoFactorAuthServices() {
 
 // Provider component for two-factor authentiation
 export function TwoFactorAuthProvider({ children }) {
-    console.log("TwoFactorAuthProvider rendered") // REMOVE FOR PRODUCTION
-
     // Access the twoFactorAuthServices using the custom hook
     const twoFactorAuthServices = useTwoFactorAuth();
 

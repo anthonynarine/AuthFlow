@@ -16,19 +16,16 @@ export const useBasicAuth = () => {
         setIsLoading(true);
         setError(null);
         try {
-            const { data } = await publicAxios.post("/login/", { email, password });
-            console.log("login data", data);
+            await publicAxios.post("/login/", { email, password });
             setIsLoggedIn(true);
             setIs2FARequired(false);
             navigate("/");
         } catch (error) {
             if (error.response?.status === 401 && error.response.data?.["2fa_required"]) {
                 setIs2FARequired(true);
-                console.log("2FA required, setting state to true in catch block");
             } else {
                 setError(error.response?.data?.error || "An error occurred during login.");
                 console.error("Login error:", error);
-                console.log(error.response || error);
             }
         } finally {
             setIsLoading(false);

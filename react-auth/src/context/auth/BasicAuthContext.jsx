@@ -22,9 +22,7 @@ export function useBasicAuthServices() {
 
 // Provider component for basic authentication
 export function BasicAuthProvider({ children }) {
-    console.log("BasicAuthProvider rendered"); //  REMOVE FOR PRODUCTION
-
-    // Access the basicSAuthServices using the custom hook
+    // Access the basicAuthServices using the custom hook
     const basicAuthServices = useBasicAuth();
 
     return (

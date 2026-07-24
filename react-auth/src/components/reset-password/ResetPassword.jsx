@@ -1,8 +1,8 @@
 import "../login/Login.css";
 import authAppImage from "../../assets/auth-app.jpg";
 import { useNavigate, useParams } from "react-router-dom";
-import { RiArrowGoBackLine } from "react-icons/ri";
-import { useState, useEffect } from "react";
+import { RiArrowGoBackLine, RiLockPasswordLine } from "react-icons/ri";
+import { useState } from "react";
 import { useBasicAuthServices } from "../../context/auth/BasicAuthContext"
 import { ToastContainer } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
@@ -16,7 +16,7 @@ export const ResetPassword = () => {
     const { uidb64, token } = useParams();
     const { resetPassword } = useBasicAuthServices(); // Assume markAsSubmitted's logic is handled within resetPassword
 
-    
+
     const handleSubmit = async (event) => {
         event.preventDefault();
 
@@ -33,36 +33,54 @@ export const ResetPassword = () => {
         }
     };
 
-    useEffect(() => {
-        console.log("UID:", uidb64, "Token:", token);
-    }, [uidb64, token]);
-
     return (
-        <div className="login-container">
-        <button onClick={()=> navigate("/")} style={{ position: 'absolute', top: 20, left: 0, margin: '20px', background: 'none', color: "white", border: 'none', cursor: 'pointer' }}
-              title="Go back to homepage">
-        <RiArrowGoBackLine size="1.5em" style={{ color: "white"}} />
-      </button>
-            <main className="form-signin w-100 m-auto">
-                <form onSubmit={handleSubmit}>
+        <div className="login-page">
+            <div className="login-container">
+                <button onClick={() => navigate("/")} className="back-button" title="Go back to homepage">
+                    <RiArrowGoBackLine size="1.25em" />
+                </button>
+                <main className="form-signin">
                     <div className="logo-container">
                         <img src={authAppImage} alt="Auth App" className="login-logo" />
                     </div>
-                    <h1 className="h3 mb-4 fw-normal">Reset Password</h1>
-                    <div className="form-floating mb-3">
-                        <input type="password" value={password} className="form-control" id="newPassword" 
-                            onChange={e => setPassword(e.target.value)} required />
-                        <label htmlFor="newPassword">New Password</label>
-                    </div>
-                    <div className="form-floating mb-3">
-                        <input type="password" value={confirmPassword} className="form-control" id="confirmPassword" 
-                            onChange={e => setConfirmPassword(e.target.value)} required />
-                        <label htmlFor="confirmPassword">Confirm Password</label>
-                    </div>
-                    {validationError && <div className="alert alert-danger" role="alert">{validationError}</div>}
-                    <button className="btn btn-signin w-100" type="submit">Submit</button>
-                </form>
-            </main>
+                    <h1 className="login-title">Reset Password</h1>
+                    <p className="login-subtitle">Choose a new password for your account</p>
+                    {validationError && <div className="alert alert-danger">{validationError}</div>}
+                    <form onSubmit={handleSubmit}>
+                        <div className="field">
+                            <label htmlFor="newPassword">New Password</label>
+                            <div className="input-wrap">
+                                <RiLockPasswordLine className="field-icon" aria-hidden="true" />
+                                <input
+                                    type="password"
+                                    value={password}
+                                    className="text-input"
+                                    id="newPassword"
+                                    autoComplete="new-password"
+                                    onChange={e => setPassword(e.target.value)}
+                                    required
+                                />
+                            </div>
+                        </div>
+                        <div className="field">
+                            <label htmlFor="confirmPassword">Confirm Password</label>
+                            <div className="input-wrap">
+                                <RiLockPasswordLine className="field-icon" aria-hidden="true" />
+                                <input
+                                    type="password"
+                                    value={confirmPassword}
+                                    className="text-input"
+                                    id="confirmPassword"
+                                    autoComplete="new-password"
+                                    onChange={e => setConfirmPassword(e.target.value)}
+                                    required
+                                />
+                            </div>
+                        </div>
+                        <button className="btn-signin" type="submit">Submit</button>
+                    </form>
+                </main>
+            </div>
             <ToastContainer />
         </div>
     );

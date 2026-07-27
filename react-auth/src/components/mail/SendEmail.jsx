@@ -10,8 +10,7 @@ const PRODUCTION_URL = "https://ant-django-auth-62cf01255868.herokuapp.com/mail/
 
 export const SendEmail = () => {
     const [emailDetails, setEmailDetails] = useState({
-        from_email: 'anthonynarine@anjin.org', // Verified Sender Email
-        to_email: '',
+        reply_to: '',
         subject: "",
         content: "",
     });
@@ -55,9 +54,9 @@ export const SendEmail = () => {
                 <input
                     className="form-input"
                     type="email"
-                    name="to_email"
-                    value={emailDetails.to_email}
-                    placeholder="To"
+                    name="reply_to"
+                    value={emailDetails.reply_to}
+                    placeholder="Your email"
                     onChange={handleChange}
                     required
                 />

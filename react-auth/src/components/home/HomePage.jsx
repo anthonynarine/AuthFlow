@@ -55,9 +55,28 @@ const engineeringNotes = [
   "Two-factor uses an authenticator app instead of SMS, since text messages can be intercepted through SIM swapping.",
 ];
 
+const roadmapItems = [
+  {
+    title: "Refresh token rotation",
+    body: "Right now only the access token gets renewed on refresh — the same refresh token is reused for its full 7-day life. Rotating it on every use would shrink the window a stolen one is actually good for.",
+  },
+  {
+    title: "Session & device management",
+    body: "Every refresh token issued is already tracked in the database. The next step is surfacing that as a page where you can see your active sessions and revoke one remotely.",
+  },
+  {
+    title: "Audit log of auth events",
+    body: "Logins, 2FA changes, and password resets all happen, but there's no durable trail of them yet — worth adding so you can see what happened on your account and when.",
+  },
+  {
+    title: "WebAuthn / passkeys",
+    body: "Password + TOTP is already a real improvement over password-only, but passkeys remove the password from the equation entirely. A natural next experiment.",
+  },
+];
+
 function HomePage() {
   const { toggle2fa, twoFactorError } = useTwoFactorAuthServices();
-  const { logout, isLoggedIn, message, user, setError } = useBasicAuthServices();
+  const { logout, guestLogin, isLoggedIn, isLoading, message, user, setError } = useBasicAuthServices();
   const { validateSession } = useUserSessionServices();
 
   useEffect(() => {
@@ -123,12 +142,17 @@ function HomePage() {
             {message && <p className="session-message">{message}</p>}
             <div className="hero-actions">
               {!isLoggedIn && (
-                <Link to="/register" className="btn-pill btn-pill-primary">Register</Link>
+                <button className="btn-pill btn-pill-primary" onClick={guestLogin} disabled={isLoading}>
+                  {isLoading ? "Signing in…" : "Continue as guest"}
+                </button>
+              )}
+              {!isLoggedIn && (
+                <Link to="/register" className="btn-pill btn-pill-secondary">Register</Link>
               )}
               {isLoggedIn ? (
                 <button className="btn-pill btn-pill-secondary" onClick={handleLogout}>Logout</button>
               ) : (
-                <Link to="/login" className="btn-pill btn-pill-secondary">Login</Link>
+                <Link to="/login" className="btn-pill btn-pill-outline">Login</Link>
               )}
               {user && (
                 <button className="btn-pill btn-pill-outline" onClick={handleToggle2FA}>
@@ -186,6 +210,50 @@ function HomePage() {
               </li>
             ))}
           </ul>
+        </section>
+
+        <section className="section">
+          <p className="eyebrow">What's next</p>
+          <h2>This is still a work in progress.</h2>
+          <div className="steps-grid">
+            {roadmapItems.map(({ title, body }) => (
+              <div className="glass-card step-card" key={title}>
+                <h3>{title}</h3>
+                <p>{body}</p>
+              </div>
+            ))}
+          </div>
+        </section>
+
+        <section className="section">
+          <p className="eyebrow">About</p>
+          <div className="glass-card about-card">
+            <h2>Who built this</h2>
+            <p>
+              I'm Anthony Narine, a full-stack developer in Brooklyn who likes building
+              systems all the way from the database schema up to the UI — React and
+              Next.js on the front, Django and FastAPI on the back. This auth system isn't
+              a one-off either: it's paired with{" "}
+              <a href="https://github.com/anthonynarine/auth_integration" target="_blank" rel="noopener noreferrer">
+                a reusable Django package
+              </a>{" "}
+              other services validate its tokens with, and a structured logging library
+              built alongside it. When I'm not writing code, I'm watching football,
+              playing League of Legends, or being a dad.
+            </p>
+            <p className="about-cta">
+              If you're looking for someone to help secure your app or system, I've locked
+              down{" "}
+              <a href="https://github.com/anthonynarine/tic_tac_toe" target="_blank" rel="noopener noreferrer">
+                JWT auth for a real-time multiplayer game and chat system
+              </a>
+              , and for a private AI-native app called{" "}
+              <a href="https://github.com/anthonynarine/EstateIQ-Web" target="_blank" rel="noopener noreferrer">
+                EstateIQ
+              </a>
+              .
+            </p>
+          </div>
         </section>
       </main>
     </div>

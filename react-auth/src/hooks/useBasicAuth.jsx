@@ -32,6 +32,22 @@ export const useBasicAuth = () => {
         }
     }, [navigate]);
 
+    const guestLogin = useCallback(async () => {
+        setIsLoading(true);
+        setError(null);
+        try {
+            await publicAxios.post("/guest-login/");
+            setIsLoggedIn(true);
+            setIs2FARequired(false);
+            navigate("/");
+        } catch (error) {
+            setError("Guest login is unavailable right now. Please try again shortly.");
+            console.error("Guest login error:", error);
+        } finally {
+            setIsLoading(false);
+        }
+    }, [navigate]);
+
     const logout = useCallback(async () => {
         setIsLoading(true);
         setMessage("");
@@ -88,6 +104,7 @@ export const useBasicAuth = () => {
 
     return {
         login,
+        guestLogin,
         logout,
         user,
         setUser,

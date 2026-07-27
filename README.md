@@ -1,143 +1,169 @@
-# 🔐 React Auth Client — Frontend for Django Authentication API
+# Gait — A Custom-Built Web Auth Service
 
-### 🌐 Live Demo  
-**[onevone.net](https://gait.netlify.app/)**  
+![React](https://img.shields.io/badge/React-18-61DAFB?logo=react&logoColor=white&labelColor=20232a)
+![Django REST Framework](https://img.shields.io/badge/Django%20REST%20Framework-DRF-092E20?logo=django&logoColor=white)
+![JWT](https://img.shields.io/badge/Auth-JWT%20%2B%202FA-1abc9c)
+![License](https://img.shields.io/badge/license-All%20rights%20reserved-lightgrey)
 
-Modern React frontend for the **Django Auth API**, providing secure JWT-based authentication, two-factor (2FA) setup, password management, and session validation with an elegant, modular design.
+**[Live demo → gait.netlify.app](https://gait.netlify.app/)**
 
----
+A working authentication system — not a mockup. Registration, login, TOTP-based two-factor auth, automatic token refresh, and a password-reset flow, all wired to a real Django REST API. Built to understand web security from the inside out: where auth actually breaks, and how modern systems close those gaps.
 
-## 🧱 Tech Stack
-
-| Category | Technology |
-|-----------|-------------|
-| Frontend Framework | **React (Hooks + Context API)** |
-| API Integration | **Axios** with interceptors for JWT & CSRF handling |
-| Styling | **Vanilla CSS** |
-| Authentication | **JWT (Simple JWT)** + **Two-Factor Authentication (2FA)** |
-| Session Management | **Cookies (js-cookie)** |
-| Backend | [**Django REST Framework Auth API**](https://github.com/anthonynarine/django_auth) |
-| Deployment | Works seamlessly with production or dev URLs via `.env` configuration |
+**Try it without registering:** the live demo has a "Continue as guest" button that logs you in instantly against a seeded demo account, so you can explore the whole flow with zero setup.
 
 ---
 
-## ✨ Key Features
+## What this is
 
-✅ **User Registration & Login** — Secure login and registration via Django Auth API.  
-✅ **JWT Authentication** — Access/Refresh token flow with auto-refresh interceptors.  
-✅ **Two-Factor Authentication (2FA)** — QR code setup and OTP verification.  
-✅ **Forgot & Reset Password** — Email-based password recovery flow.  
-✅ **Session Validation** — Automatically checks and maintains session state.  
-✅ **Context-Driven Architecture** — Modular logic separation (BasicAuth, TwoFactorAuth, UserSession).  
-✅ **Production-Safe** — Handles CSRF, token expiry, and environment-based URLs.
+This repo is the **React frontend**. It talks to a separate Django REST Framework API — [`django_auth`](https://github.com/anthonynarine/django_auth) — which issues and validates the JWTs, handles two-factor secrets, and sends transactional email via Zoho SMTP.
+
+| | |
+|---|---|
+| **Frontend** | React 18, React Router, Axios, this repo |
+| **Backend** | Django REST Framework, PyJWT, `pyotp` — [`django_auth`](https://github.com/anthonynarine/django_auth) |
+| **Auth** | JWT access + refresh tokens, TOTP 2FA, CSRF-protected cookies |
+| **Email** | Zoho SMTP (registration receipts, password reset links) |
+| **Hosting** | Netlify (frontend) + Heroku (API) |
 
 ---
 
-## ⚙️ Environment Variables
+## Features
 
-Create a `.env` file in your project root:
+- **Registration & login** — email/password, passwords hashed server-side, never touched as plain text
+- **Two-factor authentication** — QR-code TOTP setup via `pyotp`, verified with an authenticator app
+- **JWT session handling** — short-lived (15 min) access tokens, longer-lived refresh tokens, both issued by the API
+- **Automatic token refresh** — an Axios response interceptor catches an expired token, refreshes it, and retries the original request with no visible interruption
+- **Password reset** — email-based, single-use, time-limited reset links
+- **Guest login** — a one-click demo account for portfolio visitors, no registration required
+- **CSRF + cookie security** — CSRF tokens synced from every API response; `Secure`/`SameSite` cookie flags switch automatically between local development and production
 
-```bash
-REACT_APP_USE_PRODUCTION_API=true
-REACT_APP_PRODUCTION_URL=https://ant-django-auth-62cf01255868.herokuapp.com/api
-REACT_APP_DEV_URL=http://127.0.0.1:8000/api
+---
+
+## Architecture
+
+```mermaid
+flowchart LR
+    Client["React Client"] -->|"attaches JWT + CSRF headers"| Interceptor["Axios Interceptors"]
+    Interceptor <--> API["Django REST API"]
+    API --> Tokens["JWT access + refresh"]
+    API --> TwoFA["2FA (pyotp / TOTP)"]
+    API --> DB[("PostgreSQL")]
+    API --> Mail["Zoho SMTP"]
+```
+
+`src/interceptors/axios.js` is the center of gravity on the frontend: every request passes through it to attach the current access token and CSRF header, and every response passes back through it to catch an expired token before it ever reaches a component.
+
+### Login, step by step (2FA optional)
+
+```mermaid
+sequenceDiagram
+    participant U as Browser (React)
+    participant I as Axios Interceptor
+    participant D as Django REST API
+
+    U->>I: POST /login/ (email, password)
+    I->>D: forward request + CSRF header
+    alt 2FA enabled
+        D-->>I: 401 { 2fa_required: true } + temp_token cookie
+        I-->>U: show OTP modal
+        U->>I: POST /two-factor-login/ (otp)
+        I->>D: forward request
+    end
+    D-->>I: 200 { access_token, refresh_token }
+    I-->>U: store tokens, redirect home
+```
+
+### Staying signed in
+
+```mermaid
+sequenceDiagram
+    participant U as Browser (React)
+    participant I as Axios Interceptor
+    participant D as Django REST API
+
+    U->>I: request with an expired access token
+    I->>D: forward request
+    D-->>I: 401 Unauthorized
+    I->>D: POST /token-refresh/ (refresh token in Authorization header)
+    D-->>I: 200 { access_token }
+    I->>D: retry the original request
+    D-->>I: 200 OK
+    I-->>U: response, no visible interruption
 ```
 
 ---
 
-## 📂 Folder Structure
+## Project structure
 
 ```
 src/
-│
 ├── components/
-│   ├── LoginPage.jsx
-│   ├── RegisterPage.jsx
-│   ├── ForgotPassword.jsx
-│   ├── ResetPassword.jsx
-│   ├── SendEmail.jsx
-│   ├── QRCodeSetup.jsx
-│   ├── DropdownMenu.jsx
-│   └── ReactFeatures.jsx
+│   ├── home/            # Landing page: hero, flow diagrams, about
+│   ├── login/            # Login form + OTP modal
+│   ├── register/         # Registration form
+│   ├── forgot-password/  # Request a reset link
+│   ├── reset-password/   # Set a new password from the emailed link
+│   ├── two-factor/       # QR-code 2FA setup
+│   ├── mail/             # Contact form
+│   ├── app-features/     # Demo pages (chat completion, request/response walkthrough)
+│   ├── footer/
+│   └── not-found/
 │
-├── context/auth/
-│   ├── BasicAuthContext.jsx
-│   ├── TwoFactorAuthContext.jsx
-│   └── UserSessionContext.jsx
-│
-├── hooks/
-│   ├── useBasicAuth.jsx
-│   ├── useTwoFactorAuth.jsx
-│   ├── useUserSession.jsx
-│   └── useGptRequest.jsx
-│
+├── context/auth/         # BasicAuthContext, TwoFactorAuthContext, UserSessionContext
+├── hooks/                # useBasicAuth, useTwoFactorAuth, useUserSession, useGptRequest
 ├── interceptors/
-│   └── axios.js
-│
-└── styles/
-    └── ChatComponent.css
+│   └── axios.js           # Request/response interceptors — the auth nerve center
+└── utils/toastUtils/
 ```
 
----
-
-## 🔄 Authentication Flow
-
-1. **Login** → `useBasicAuth` sends credentials → JWT issued.  
-2. **2FA Check** → If required, user redirected to `QRCodeSetup` or `OTP` verification.  
-3. **Token Management** → Axios interceptors store tokens in cookies and refresh automatically.  
-4. **Session Validation** → `useUserSession` confirms active session with backend.  
-5. **Logout** → Clears cookies and resets context state.
+Each context is a thin wrapper around a same-named hook: the hook owns all state and API calls, the context just exposes it to the component tree.
 
 ---
 
-## 🧩 Context Architecture
-
-| Context | Purpose |
-|----------|----------|
-| **BasicAuthContext** | Handles registration, login, logout, password reset |
-| **TwoFactorAuthContext** | Manages QR code setup and OTP verification |
-| **UserSessionContext** | Maintains authenticated session state and validation |
-
----
-
-## 🚀 Getting Started
+## Getting started
 
 ```bash
-# 1️⃣ Install dependencies
+cd react-auth
 npm install
 
-# 2️⃣ Create .env file
-touch .env
-
-# 3️⃣ Start development server
+# create react-auth/.env — see Environment Variables below
 npm start
 ```
 
-Visit:  
-👉 `http://localhost:3000`
+Visit `http://localhost:3000`.
+
+```bash
+npm run build   # production build, output to react-auth/build/
+```
+
+### Environment variables
+
+Create `react-auth/.env`:
+
+```bash
+REACT_APP_USE_PRODUCTION_API=false
+REACT_APP_DEV_URL=http://127.0.0.1:8000/api
+REACT_APP_PRODUCTION_URL=https://ant-django-auth-62cf01255868.herokuapp.com/api
+```
+
+`REACT_APP_USE_PRODUCTION_API=true` forces the frontend to talk to the deployed Heroku API even during local development — useful for testing against real data, but worth knowing it means `npm start` won't hit your local Django server.
 
 ---
 
-## 🧠 Developer Notes
-
-- All API URLs are centralized in `/interceptors/axios.js`.
-- CSRF tokens and JWTs are auto-handled through cookies.
-- The system gracefully handles refresh tokens and session expiry.
-- Ideal for integration with multiple Django backends or microservices.
-
----
-
-## 🛡️ License
-
-© 2025 Anthony Narine. All rights reserved.  
-This project is part of the **Lumen ecosystem** of authentication and reporting tools.
-
----
-
-## 🧾 Related Repositories
+## Related repositories
 
 | Project | Description |
-|----------|-------------|
-| [auth_integration](https://github.com/anthonynarine/auth_integration) | Django package for verifying external JWTs |
-| [django_auth](https://github.com/anthonynarine/django_auth) | Central authentication API used by this frontend |
-| [Lumen](https://github.com/anthonynarine/Lumen) | Full vascular reporting platform (production suite) |
+|---|---|
+| [django_auth](https://github.com/anthonynarine/django_auth) | The Django REST Framework API this frontend talks to — JWT issuance, 2FA, password reset |
+| [auth_integration](https://github.com/anthonynarine/auth_integration) | Reusable Django package other services use to validate `django_auth`'s tokens |
+| [tic_tac_toe](https://github.com/anthonynarine/tic_tac_toe) | Real-time multiplayer game + chat, JWT-secured over WebSockets |
+| [Lumen_Logger](https://github.com/anthonynarine/Lumen_Logger) | Structured logging library built alongside this ecosystem |
+
+---
+
+## Author
+
+**Anthony Narine** — full-stack developer in Brooklyn.
+[GitHub](https://github.com/anthonynarine) · [LinkedIn](https://www.linkedin.com/in/anthony-narine-9ab567245/)
+
+© 2026 Anthony Narine. All rights reserved.

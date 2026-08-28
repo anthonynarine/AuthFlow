@@ -1,13 +1,9 @@
 import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
-import axios from 'axios';
 import "./RegisterPage.css"
 import authAppImage from "../../assets/auth-app.jpg";
 import { RiArrowGoBackLine, RiEyeLine, RiEyeOffLine } from "react-icons/ri";
-
-// Development and production base URLs
-// const DEV_URL = "http://localhost:8000/api/register/";
-const PRODUCTION_URL = "https://ant-django-auth-62cf01255868.herokuapp.com/api/register/";
+import { publicAxios } from "../../interceptors/axios";
 
 export const RegisterPage = () => {
     const [formFields, setFormFields] = useState({
@@ -33,7 +29,7 @@ export const RegisterPage = () => {
         setErrors("");
         setIsLoading(true);
         try {
-            await axios.post(PRODUCTION_URL, {
+            await publicAxios.post("/register/", {
                 first_name: formFields.firstName,
                 last_name: formFields.lastName,
                 email: formFields.email,

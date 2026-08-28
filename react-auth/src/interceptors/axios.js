@@ -1,5 +1,12 @@
 import axios from "axios";
 import Cookies from "js-cookie";
+import {
+    clearAuthTokens,
+    getAccessToken,
+    getRefreshToken,
+    isProduction,
+    persistAuthTokens,
+} from "./tokenStorage";
 
 // Define a variable 'baseURL' that will store the base URL for API requests.
 const baseURL = process.env.REACT_APP_USE_PRODUCTION_API === 'true'
@@ -14,7 +21,7 @@ const baseURL = process.env.REACT_APP_USE_PRODUCTION_API === 'true'
         // If none of the above conditions are met, default to using the production URL.
         // This covers scenarios where NODE_ENV might be set to 'test' or 'production', or any other non-development environment.
 
-const isProduction = baseURL.includes("ant-django-auth-62cf01255868.herokuapp.com");
+let refreshPromise = null;
 
 // Function to log and handle errors in Axios requests or responses.
 const logError = (error) => {
@@ -48,32 +55,14 @@ publicAxios.interceptors.response.use((response) => {
             sameSite: isProduction ? "None" : "Lax"
         });
     }
-    // Set access and refresh tokens if present in the response
-    const accessToken = response.data.access_token;
-    const refreshToken = response.data.refresh_token;
-
-    if (accessToken) {
-        Cookies.set("access_token", accessToken, {
-            expires: 1 / 96, // 15 minutes expiry
-            secure: isProduction,
-            sameSite: isProduction ? "None" : "Lax"
-        });
-    }
-
-    if (refreshToken) {
-        Cookies.set("refresh_token", refreshToken, {
-            expires: 7, // 7 days expiry
-            secure: isProduction,
-            sameSite: isProduction ? "None" : "Lax"
-        });
-    }
+    persistAuthTokens({
+        accessToken: response.data.access_token,
+        refreshToken: response.data.refresh_token,
+    });
 
     // Handle logout response and remove tokens
     if (response.config.url.includes("/logout/")) {
-      Cookies.remove("access_token");
-      Cookies.remove("refresh_token");
-      Cookies.remove("csrftoken");
-      Cookies.remove("sessionid");
+      clearAuthTokens();
     }
 
     return response;
@@ -87,7 +76,7 @@ const authAxios = axios.create({
 
 // Interceptor to attach the access token to each request
 authAxios.interceptors.request.use((config) => {
-    const accessToken = Cookies.get("access_token");
+    const accessToken = getAccessToken();
     // Don't override an Authorization header a caller already set explicitly
     // (e.g. the /token-refresh/ call below, which must send the refresh token,
     // not the expired access token).
@@ -101,6 +90,44 @@ authAxios.interceptors.request.use((config) => {
 
     return config;
 }, logError);
+
+function isRefreshRequest(config) {
+    return config?.url?.includes("/token-refresh/");
+}
+
+async function refreshAuthentication() {
+    if (!refreshPromise) {
+        refreshPromise = (async () => {
+            const refreshToken = getRefreshToken();
+            if (!refreshToken) {
+                throw new Error("Refresh token is missing");
+            }
+
+            const response = await authAxios.post(
+                "/token-refresh/",
+                {},
+                {
+                    headers: { Authorization: `Bearer ${refreshToken}` },
+                    withCredentials: true,
+                    skipAuthRefresh: true,
+                }
+            );
+
+            const newAccessToken = response.data.access_token;
+            const newRefreshToken = response.data.refresh_token;
+            persistAuthTokens({
+                accessToken: newAccessToken,
+                refreshToken: newRefreshToken,
+            });
+
+            return newAccessToken;
+        })().finally(() => {
+            refreshPromise = null;
+        });
+    }
+
+    return refreshPromise;
+}
 
 // Response interceptor for handling automatic token refresh on authentication failures
 authAxios.interceptors.response.use(
@@ -118,48 +145,21 @@ authAxios.interceptors.response.use(
     async (error) => {
         const originalRequest = error.config;
         // Handle expired access tokens and attempt to refresh them once
-        if (error.response.status === 401 && !originalRequest._retry) {
+        if (
+            error.response?.status === 401 &&
+            !originalRequest._retry &&
+            !originalRequest.skipAuthRefresh &&
+            !isRefreshRequest(originalRequest)
+        ) {
             originalRequest._retry = true;
             try {
-                const refreshToken = Cookies.get("refresh_token");
-                // The backend's RefreshAPIView reads the refresh token from the
-                // Authorization header only (it never reads the request body), so
-                // it must be sent explicitly here rather than in the JSON body.
-                const response = await authAxios.post(
-                    "/token-refresh/",
-                    {},
-                    {
-                        headers: { Authorization: `Bearer ${refreshToken}` },
-                        withCredentials: true
-                    }
-                );
-                if (response.status === 200) {
-                    const newAccessToken = response.data.access_token;
-                    // RefreshAPIView only returns a new access_token today (refresh
-                    // tokens aren't rotated), so only overwrite the refresh_token
-                    // cookie if the backend actually sends one back.
-                    const newRefreshToken = response.data.refresh_token;
-                    Cookies.set("access_token", newAccessToken, {
-                        expires: 1 / 96,
-                        secure: isProduction,
-                        sameSite: isProduction ? "None" : "Lax"
-                    });
-                    if (newRefreshToken) {
-                        Cookies.set("refresh_token", newRefreshToken, {
-                            expires: 7,
-                            secure: isProduction,
-                            sameSite: isProduction ? "None" : "Lax"
-                        });
-                    }
-                    originalRequest.headers["Authorization"] = `Bearer ${newAccessToken}`;
-                    // Update Axios default headers for subsequent requests
-                    authAxios.defaults.headers.common[
-                        "Authorization"
-                    ] = `Bearer ${newAccessToken}`;
-                    return authAxios(originalRequest);
-                }
+                const newAccessToken = await refreshAuthentication();
+                originalRequest.headers["Authorization"] = `Bearer ${newAccessToken}`;
+                authAxios.defaults.headers.common["Authorization"] = `Bearer ${newAccessToken}`;
+                return authAxios(originalRequest);
             } catch (refreshError) {
                 console.error("Failed to refresh token", refreshError);
+                clearAuthTokens();
                 return Promise.reject(refreshError);
             }
         }

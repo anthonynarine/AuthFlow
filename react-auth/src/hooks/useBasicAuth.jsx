@@ -1,6 +1,7 @@
 import { useState, useCallback } from "react";
 import { useNavigate } from "react-router-dom";
 import { publicAxios } from "../interceptors/axios";
+import { getRefreshToken } from "../interceptors/tokenStorage";
 
 export const useBasicAuth = () => {
     const [isLoading, setIsLoading] = useState(false);
@@ -52,7 +53,14 @@ export const useBasicAuth = () => {
         setIsLoading(true);
         setMessage("");
         try {
-            await publicAxios.post("/logout/");
+            const refreshToken = getRefreshToken();
+            await publicAxios.post(
+                "/logout/",
+                {},
+                refreshToken
+                    ? { headers: { Authorization: `Bearer ${refreshToken}` } }
+                    : undefined
+            );
             // Cookies are removed in Axios instance
             setUser(null);
             setMessage("You are logged out");

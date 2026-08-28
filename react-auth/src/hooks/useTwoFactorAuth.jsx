@@ -1,8 +1,8 @@
 import { useCallback, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { authAxios } from "../interceptors/axios";
+import { persistAuthTokens } from "../interceptors/tokenStorage";
 import { useBasicAuthServices } from "../context/auth/BasicAuthContext";
-import Cookies from "js-cookie";
 
 export const useTwoFactorAuth = () => {
     const [isLoading, setIsLoading] = useState(false);
@@ -68,7 +68,10 @@ export const useTwoFactorAuth = () => {
         try {
             const { data, status } = await authAxios.post(endpoint, { otp });
             if (status === 200) {
-                Cookies.set("access_token", data.access_token, { expires: 7, secure: true, sameSite: 'Strict'});
+                persistAuthTokens({
+                    accessToken: data.access_token,
+                    refreshToken: data.refresh_token,
+                });
                 setIsLoggedIn(true);
                 navigate("/");
 

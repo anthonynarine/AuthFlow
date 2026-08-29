@@ -43,6 +43,24 @@ function loadAxiosModule() {
         }),
     }));
 
+    let lockQueue = Promise.resolve();
+    const locks = {
+        request: jest.fn((name, options, callback) => {
+            const run = lockQueue.then(() => callback());
+            lockQueue = run.then(
+                () => undefined,
+                () => undefined
+            );
+            return run;
+        }),
+    };
+
+    Object.defineProperty(global, "navigator", {
+        value: { locks },
+        configurable: true,
+        writable: true,
+    });
+
     const module = require("./axios");
     const Cookies = require("js-cookie");
 

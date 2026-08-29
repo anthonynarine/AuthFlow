@@ -1,9 +1,9 @@
 import axios from "axios";
 import Cookies from "js-cookie";
+import { refreshWithBrowserCoordination } from "./refreshCoordinator";
 import {
     clearAuthTokens,
     getAccessToken,
-    getRefreshToken,
     isProduction,
     persistAuthTokens,
 } from "./tokenStorage";
@@ -20,8 +20,6 @@ const baseURL = process.env.REACT_APP_USE_PRODUCTION_API === 'true'
         : process.env.REACT_APP_PRODUCTION_URL;
         // If none of the above conditions are met, default to using the production URL.
         // This covers scenarios where NODE_ENV might be set to 'test' or 'production', or any other non-development environment.
-
-let refreshPromise = null;
 
 // Function to log and handle errors in Axios requests or responses.
 const logError = (error) => {
@@ -77,12 +75,32 @@ const authAxios = axios.create({
 // Interceptor to attach the access token to each request
 authAxios.interceptors.request.use((config) => {
     const accessToken = getAccessToken();
+    const explicitAuthorization = config.headers["Authorization"];
+
+    function extractBearerToken(headerValue) {
+        if (!headerValue || typeof headerValue !== "string") {
+            return null;
+        }
+
+        const [scheme, token] = headerValue.split(" ");
+        return scheme === "Bearer" && token ? token : null;
+    }
+
     // Don't override an Authorization header a caller already set explicitly
     // (e.g. the /token-refresh/ call below, which must send the refresh token,
     // not the expired access token).
-    if (accessToken && !config.headers["Authorization"]) {
+    if (accessToken && !explicitAuthorization) {
         config.headers["Authorization"] = `Bearer ${accessToken}`;
     }
+
+    const requestAccessToken = extractBearerToken(
+        config.headers["Authorization"] || explicitAuthorization
+    );
+
+    if (requestAccessToken && !config.skipAuthRefresh && !isRefreshRequest(config)) {
+        config._authAccessToken = requestAccessToken;
+    }
+
     const csrfToken = Cookies.get("csrftoken");
     if (csrfToken) {
         config.headers["X-CSRFToken"] = csrfToken;
@@ -95,38 +113,28 @@ function isRefreshRequest(config) {
     return config?.url?.includes("/token-refresh/");
 }
 
-async function refreshAuthentication() {
-    if (!refreshPromise) {
-        refreshPromise = (async () => {
-            const refreshToken = getRefreshToken();
-            if (!refreshToken) {
-                throw new Error("Refresh token is missing");
-            }
-
+async function refreshAuthentication(failedAccessToken) {
+    const result = await refreshWithBrowserCoordination({
+        failedAccessToken,
+        refreshAction: async ({ currentRefreshToken }) => {
             const response = await authAxios.post(
                 "/token-refresh/",
                 {},
                 {
-                    headers: { Authorization: `Bearer ${refreshToken}` },
+                    headers: { Authorization: `Bearer ${currentRefreshToken}` },
                     withCredentials: true,
                     skipAuthRefresh: true,
                 }
             );
 
-            const newAccessToken = response.data.access_token;
-            const newRefreshToken = response.data.refresh_token;
-            persistAuthTokens({
-                accessToken: newAccessToken,
-                refreshToken: newRefreshToken,
-            });
+            return {
+                accessToken: response.data.access_token,
+                refreshToken: response.data.refresh_token,
+            };
+        },
+    });
 
-            return newAccessToken;
-        })().finally(() => {
-            refreshPromise = null;
-        });
-    }
-
-    return refreshPromise;
+    return result.accessToken;
 }
 
 // Response interceptor for handling automatic token refresh on authentication failures
@@ -153,7 +161,9 @@ authAxios.interceptors.response.use(
         ) {
             originalRequest._retry = true;
             try {
-                const newAccessToken = await refreshAuthentication();
+                const failedAccessToken = originalRequest._authAccessToken
+                    || getAccessToken();
+                const newAccessToken = await refreshAuthentication(failedAccessToken);
                 originalRequest.headers["Authorization"] = `Bearer ${newAccessToken}`;
                 authAxios.defaults.headers.common["Authorization"] = `Bearer ${newAccessToken}`;
                 return authAxios(originalRequest);

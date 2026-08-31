@@ -9,6 +9,7 @@ import { ResetPassword } from "./components/reset-password/ResetPassword";
 import { QRCodeSetup } from "./components/two-factor/2fa-setup/QRCodeSetup";
 import { NotFound } from "./components/not-found/NotFound";
 import HomePage from "./components/home/HomePage";
+import { SecurityObservatoryPage } from "./components/security/SecurityObservatoryPage";
 import "./App.css"
 import { Footer } from "./components/footer/Footer";
 import BasicAuthProvider from "./context/auth/BasicAuthContext";
@@ -35,6 +36,7 @@ function App() {
                     <Route path="/react-features" element={<ReactFeatures />} />
                     <Route path="/chat-completion" element={<ChatComponent />} />
                     <Route path="/send-email" element={<SendEmail />} />
+                    <Route path="/security" element={<SecurityObservatoryPage />} />
                     <Route path="/reset-password/:uidb64/:token" element={<ResetPassword />} />
                     <Route path="/setup-2fa" element={<QRCodeSetup />} />
                     <Route path="*" element={<NotFound />} />

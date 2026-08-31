@@ -106,6 +106,8 @@ function HomePage() {
     }
   };
 
+  const canViewSecurity = Boolean(user?.is_staff || user?.can_view_security_dashboard);
+
   return (
     <div className="home-page">
       <header className="site-header">
@@ -123,6 +125,12 @@ function HomePage() {
           <Link to="/send-email" className="nav-icon" title="Send email demo">
             <FiMail size={18} />
           </Link>
+          {canViewSecurity && (
+            <Link to="/security" className="nav-icon security-nav-link" title="Security Observatory">
+              <RiShieldKeyholeLine size={20} />
+              <span>Security</span>
+            </Link>
+          )}
         </nav>
       </header>
 

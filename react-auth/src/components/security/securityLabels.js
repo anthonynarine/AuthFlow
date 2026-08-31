@@ -23,6 +23,26 @@ export function getEventLabel(eventType) {
   return EVENT_TYPE_LABELS[eventType] || eventType || "Unknown event";
 }
 
+export function getShortEventLabel(eventType) {
+  if (eventType === "REFRESH_REPLAY_DETECTED") {
+    return "Replay detected";
+  }
+
+  return getEventLabel(eventType);
+}
+
+export function humanizeEnum(value) {
+  if (!value) {
+    return "—";
+  }
+
+  return String(value)
+    .toLowerCase()
+    .split("_")
+    .map((part) => part.charAt(0).toUpperCase() + part.slice(1))
+    .join(" ");
+}
+
 export function formatDateTime(value) {
   if (!value) {
     return "—";
@@ -66,6 +86,44 @@ export function formatUser(user) {
 
   const name = [user.first_name, user.last_name].filter(Boolean).join(" ");
   return name || user.email || user.username || user.id || "—";
+}
+
+export function formatUserEmail(user) {
+  if (!user) {
+    return "—";
+  }
+
+  if (typeof user !== "object") {
+    return String(user);
+  }
+
+  return user.email
+    || user.full_name
+    || user.name
+    || user.user_email
+    || user.username
+    || user.id
+    || "—";
+}
+
+export function getRecordUserEmail(record) {
+  if (!record) {
+    return "—";
+  }
+
+  const directValue = record.user_email
+    || record.email
+    || record.username
+    || record.actor_email
+    || record.actor_username
+    || record.subject_email
+    || record.subject_username;
+
+  if (directValue) {
+    return String(directValue);
+  }
+
+  return formatUserEmail(record.user || record.actor || record.subject || record.user_id);
 }
 
 export function formatSessionId(value) {

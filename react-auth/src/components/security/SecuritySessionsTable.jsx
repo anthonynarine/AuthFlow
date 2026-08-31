@@ -3,7 +3,7 @@ import { StatusBadge } from "./StatusBadge";
 import { SecurityEmptyState } from "./SecurityEmptyState";
 import { SecurityErrorState } from "./SecurityErrorState";
 import { SecurityLoadingState } from "./SecurityLoadingState";
-import { formatDateTime, formatSessionId, formatUser, getSessionStatus } from "./securityLabels";
+import { formatDateTime, formatSessionId, getRecordUserEmail, getSessionStatus } from "./securityLabels";
 
 function getSessionId(session) {
   return session?.uuid || session?.id || session?.session_id;
@@ -67,7 +67,7 @@ export function SecuritySessionsTable({
                     }
                   }}
                 >
-                  <td>{formatUser(session.user)}</td>
+                  <td>{getRecordUserEmail(session)}</td>
                   <td><StatusBadge status={status} type="session" /></td>
                   <td>{session.authentication_method || session.auth_method || "—"}</td>
                   <td>{formatDateTime(session.created_at)}</td>

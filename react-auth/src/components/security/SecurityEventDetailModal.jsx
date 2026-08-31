@@ -3,7 +3,13 @@ import { SeverityBadge } from "./SeverityBadge";
 import { StatusBadge } from "./StatusBadge";
 import { SecurityErrorState } from "./SecurityErrorState";
 import { SecurityLoadingState } from "./SecurityLoadingState";
-import { formatDateTime, formatSessionId, formatUser, getEventLabel } from "./securityLabels";
+import {
+  formatDateTime,
+  formatSessionId,
+  getEventLabel,
+  getRecordUserEmail,
+  getShortEventLabel,
+} from "./securityLabels";
 
 function DetailRow({ label, value, children }) {
   const content = children || value || "—";
@@ -46,7 +52,7 @@ export function SecurityEventDetailModal({ eventId, event, isLoading, error, onL
         <div className="security-modal-header">
           <div>
             <p className="security-eyebrow">Event Detail</p>
-            <h2 id="event-detail-heading">{event ? getEventLabel(event.event_type) : "Security event"}</h2>
+            <h2 id="event-detail-heading">{event ? getShortEventLabel(event.event_type) : "Security event"}</h2>
           </div>
           <button type="button" className="icon-button" onClick={onClose} aria-label="Close event detail">
             ×
@@ -61,7 +67,7 @@ export function SecurityEventDetailModal({ eventId, event, isLoading, error, onL
             <DetailRow label="Timestamp" value={formatDateTime(event.timestamp || event.created_at)} />
             <DetailRow label="Severity"><SeverityBadge severity={event.severity} /></DetailRow>
             <DetailRow label="Outcome"><StatusBadge status={event.outcome} /></DetailRow>
-            <DetailRow label="User" value={formatUser(event.user)} />
+            <DetailRow label="User" value={getRecordUserEmail(event)} />
             <DetailRow label="Session ID" value={formatSessionId(event.session || event.session_id)} />
             <DetailRow label="IP address" value={event.ip_address || event.ip} />
             <DetailRow label="User agent" value={event.user_agent} />

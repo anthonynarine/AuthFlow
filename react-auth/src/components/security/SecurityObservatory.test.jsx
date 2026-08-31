@@ -8,6 +8,115 @@ import { SecurityEventDetailModal } from "./SecurityEventDetailModal";
 import { SecuritySessionsTable } from "./SecuritySessionsTable";
 import { SecuritySessionDetailModal } from "./SecuritySessionDetailModal";
 import { SecurityErrorState } from "./SecurityErrorState";
+import { SecurityObservatoryPage } from "./SecurityObservatoryPage";
+import { CurrentSessionSummary } from "./CurrentSessionSummary";
+
+const mockValidateSession = jest.fn();
+
+jest.mock("../../context/auth/BasicAuthContext", () => ({
+  useBasicAuthServices: () => ({
+    user: {
+      first_name: "Anthony",
+      last_name: "Narine",
+      email: "security@gaitobservatory.com",
+    },
+  }),
+}));
+
+jest.mock("../../context/auth/UserSessionContext", () => ({
+  useUserSessionServices: () => ({
+    validateSession: mockValidateSession,
+  }),
+}));
+
+jest.mock("../../hooks/useSecuritySummary", () => ({
+  useSecuritySummary: () => ({
+    summary: {
+      window_hours: 24,
+      current_session: {
+        uuid: "session-current",
+        user: { email: "security@gaitobservatory.com" },
+        authentication_method: "password_mfa",
+        created_at: "2026-08-30T10:00:00Z",
+        last_seen_at: "2026-08-30T10:30:00Z",
+        expires_at: "2026-09-06T10:00:00Z",
+      },
+      active_sessions: 1,
+      successful_logins: 2,
+      failed_logins: 0,
+      replay_events: 0,
+      sessions_revoked: 0,
+    },
+    isLoading: false,
+    error: null,
+    lastUpdated: new Date("2026-08-31T00:00:00Z"),
+    refetch: jest.fn(),
+  }),
+}));
+
+jest.mock("../../hooks/useSecurityEvents", () => ({
+  useSecurityEvents: () => ({
+    events: [],
+    count: 0,
+    next: null,
+    previous: null,
+    page: 1,
+    pageSize: 25,
+    filters: {
+      event_type: "",
+      severity: "",
+      outcome: "",
+      user: "",
+      start: "",
+      end: "",
+      session: "",
+    },
+    isLoading: false,
+    error: null,
+    lastUpdated: new Date("2026-08-31T00:00:00Z"),
+    setPage: jest.fn(),
+    updateFilter: jest.fn(),
+    resetFilters: jest.fn(),
+    refetch: jest.fn(),
+  }),
+}));
+
+jest.mock("../../hooks/useSecurityEventDetail", () => ({
+  useSecurityEventDetail: () => ({
+    event: null,
+    isLoading: false,
+    error: null,
+    fetchEvent: jest.fn(),
+    clearEvent: jest.fn(),
+  }),
+}));
+
+jest.mock("../../hooks/useSecuritySessions", () => ({
+  useSecuritySessions: () => ({
+    sessions: [],
+    count: 0,
+    next: null,
+    previous: null,
+    page: 1,
+    pageSize: 25,
+    isLoading: false,
+    error: null,
+    lastUpdated: new Date("2026-08-31T00:00:00Z"),
+    setPage: jest.fn(),
+    refetch: jest.fn(),
+  }),
+}));
+
+jest.mock("../../hooks/useSecuritySessionDetail", () => ({
+  useSecuritySessionDetail: () => ({
+    session: null,
+    timelineEvents: [],
+    isLoading: false,
+    error: null,
+    fetchSession: jest.fn(),
+    clearSession: jest.fn(),
+  }),
+}));
 
 const baseEvent = {
   id: "event-1",
@@ -23,6 +132,47 @@ const baseEvent = {
 };
 
 describe("Security Observatory components", () => {
+  beforeEach(() => {
+    mockValidateSession.mockResolvedValue({});
+  });
+
+  test("page header renders the signed-in operator", () => {
+    render(
+      <MemoryRouter>
+        <SecurityObservatoryPage />
+      </MemoryRouter>
+    );
+
+    expect(screen.getByText("Signed in as")).toBeInTheDocument();
+    expect(screen.getByText("Anthony Narine")).toBeInTheDocument();
+    expect(mockValidateSession).toHaveBeenCalled();
+  });
+
+  test("current session summary renders email, status, auth method, and timing", () => {
+    render(
+      <CurrentSessionSummary
+        user={{ email: "security@gaitobservatory.com" }}
+        sessions={[]}
+        summary={{
+          current_session: {
+            user: { email: "security@gaitobservatory.com" },
+            authentication_method: "password_mfa",
+            created_at: "2026-08-30T10:00:00Z",
+            last_seen_at: "2026-08-30T10:30:00Z",
+            expires_at: "2999-09-06T10:00:00Z",
+          },
+        }}
+      />
+    );
+
+    expect(screen.getByText("security@gaitobservatory.com")).toBeInTheDocument();
+    expect(screen.getByText("Active")).toBeInTheDocument();
+    expect(screen.getByText("password_mfa")).toBeInTheDocument();
+    expect(screen.getByText("Created")).toBeInTheDocument();
+    expect(screen.getByText("Last seen")).toBeInTheDocument();
+    expect(screen.getByText("Expires")).toBeInTheDocument();
+  });
+
   test("summary renders values and server window", () => {
     render(
       <SecurityOverview
@@ -47,7 +197,7 @@ describe("Security Observatory components", () => {
   test("events table renders labels, severity badge, and outcome badge", () => {
     render(
       <SecurityEventsTable
-        events={[baseEvent]}
+        events={[{ ...baseEvent, user: 7, user_email: "staff@example.com" }]}
         count={1}
         page={1}
         pageSize={25}
@@ -60,10 +210,11 @@ describe("Security Observatory components", () => {
       />
     );
 
-    expect(screen.getByText("Refresh token replay detected")).toBeInTheDocument();
-    expect(screen.getByText("HIGH")).toBeInTheDocument();
-    expect(screen.getByText("DENIED")).toBeInTheDocument();
     expect(screen.getByText("Replay detected")).toBeInTheDocument();
+    expect(screen.getByText("REFRESH_REPLAY_DETECTED")).toBeInTheDocument();
+    expect(screen.getByText("HIGH")).toBeInTheDocument();
+    expect(screen.getByText("Denied")).toBeInTheDocument();
+    expect(screen.getByText("staff@example.com")).toBeInTheDocument();
   });
 
   test("event detail renders safe details and metadata", async () => {
@@ -90,7 +241,7 @@ describe("Security Observatory components", () => {
     render(
       <SecuritySessionsTable
         sessions={[
-          { uuid: "active-1", user: "a@example.com", expires_at: "2999-01-01T00:00:00Z" },
+          { uuid: "active-1", user: 1, user_email: "a@example.com", expires_at: "2999-01-01T00:00:00Z" },
           { uuid: "revoked-1", user: "b@example.com", revoked_at: "2026-08-30T11:00:00Z" },
           { uuid: "expired-1", user: "c@example.com", expires_at: "2000-01-01T00:00:00Z" },
         ]}
@@ -106,9 +257,10 @@ describe("Security Observatory components", () => {
       />
     );
 
-    expect(screen.getByText("ACTIVE")).toBeInTheDocument();
-    expect(screen.getByText("REVOKED")).toBeInTheDocument();
-    expect(screen.getByText("EXPIRED")).toBeInTheDocument();
+    expect(screen.getByText("Active")).toBeInTheDocument();
+    expect(screen.getByText("Revoked")).toBeInTheDocument();
+    expect(screen.getByText("Expired")).toBeInTheDocument();
+    expect(screen.getByText("a@example.com")).toBeInTheDocument();
   });
 
   test("session detail renders safe fields and replay timeline", async () => {
@@ -138,8 +290,8 @@ describe("Security Observatory components", () => {
 
     await waitFor(() => expect(onLoad).toHaveBeenCalledWith("session-1"));
     expect(screen.getByText("Session UUID")).toBeInTheDocument();
-    expect(screen.getByText("TOKEN_REFRESHED")).toBeInTheDocument();
-    expect(screen.getByText("SESSION_REVOKED")).toBeInTheDocument();
+    expect(screen.getByText("Credentials refreshed")).toBeInTheDocument();
+    expect(screen.getAllByText("SESSION_REVOKED")[0]).toBeInTheDocument();
     expect(screen.queryByText(/token hash/i)).not.toBeInTheDocument();
     expect(screen.queryByText(/^jti$/i)).not.toBeInTheDocument();
     expect(screen.queryByText(/^secret$/i)).not.toBeInTheDocument();
@@ -172,7 +324,7 @@ describe("Security Observatory components", () => {
       </MemoryRouter>
     );
 
-    fireEvent.click(screen.getByRole("row", { name: /Refresh token replay detected/i }));
+    fireEvent.click(screen.getByRole("row", { name: /Replay detected/i }));
     expect(onSelectEvent).toHaveBeenCalledWith(baseEvent);
   });
 });

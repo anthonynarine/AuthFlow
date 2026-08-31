@@ -49,7 +49,7 @@ const flows = {
       { icon: RiSendPlaneLine, title: "Expired request", body: "A request goes out carrying an access token that's already expired." },
       { icon: RiExchangeLine, title: "401 caught", body: "The response interceptor catches the 401 before it ever reaches your code." },
       { icon: RiRefreshLine, title: "Refresh call", body: "It calls POST /token-refresh/ with the refresh token in the Authorization header." },
-      { icon: RiKeyLine, title: "New token issued", body: "Django issues a fresh access token — refresh tokens aren't rotated today." },
+      { icon: RiKeyLine, title: "New tokens issued", body: "Django issues a fresh access token and rotates the refresh token as a single-use credential." },
       { icon: RiCheckboxCircleLine, title: "Retry", body: "The original request is retried automatically. You never see the interruption." },
     ],
   },

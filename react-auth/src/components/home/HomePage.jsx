@@ -43,36 +43,60 @@ const techStack = [
   "React 18 + Hooks/Context",
   "Axios request/response interceptors",
   "Django REST Framework",
-  "JWT — access + refresh tokens",
+  "JWT — short-lived access + rotating refresh tokens",
   "TOTP two-factor authentication",
+  "Durable security audit events",
+  "Staff-only Security Observatory",
   "CSRF + cookie security",
 ];
 
 const engineeringNotes = [
-  "Access tokens only last 15 minutes. If one ever got out, it wouldn't be useful for long, and it refreshes itself quietly in the background so you'd never notice.",
+  "Access tokens are short-lived, limiting how useful a leaked access token can be.",
+  "Refresh tokens rotate on each use and are treated as single-use credentials, so replay attempts can be detected and token families can be revoked.",
+  "Durable security events record login activity, MFA outcomes, password resets, denied sessions, token refreshes, replay attempts, and revocations.",
+  "The staff-only Security Observatory turns those backend events into an operational view without making audit data public.",
   "The CSRF token refreshes with every response instead of being set once and forgotten, so it can't quietly go stale.",
-  "Cookie settings like Secure and SameSite switch automatically between development and production, so a weaker local config can never slip through to production.",
   "Two-factor uses an authenticator app instead of SMS, since text messages can be intercepted through SIM swapping.",
 ];
 
-const roadmapItems = [
+const platformSections = [
   {
-    title: "Refresh token rotation",
-    body: "Right now only the access token gets renewed on refresh — the same refresh token is reused for its full 7-day life. Rotating it on every use would shrink the window a stolen one is actually good for.",
+    heading: "Already shipped",
+    items: [
+      "Short-lived access tokens",
+      "Rotating, single-use refresh tokens",
+      "Replay detection and token-family revocation",
+      "Server-side sessions with logout and logout-all",
+      "Password reset and inactive-user session revocation",
+      "2FA",
+      "Staff-only Security Observatory with durable audit events",
+    ],
   },
   {
-    title: "Session & device management",
-    body: "Every refresh token issued is already tracked in the database. The next step is surfacing that as a page where you can see your active sessions and revoke one remotely.",
+    heading: "In progress",
+    items: [
+      "Session and device management UI",
+      "Stronger account oversight and review tools",
+      "Broader observability polish",
+    ],
   },
   {
-    title: "Audit log of auth events",
-    body: "Logins, 2FA changes, and password resets all happen, but there's no durable trail of them yet — worth adding so you can see what happened on your account and when.",
-  },
-  {
-    title: "WebAuthn / passkeys",
-    body: "Password + TOTP is already a real improvement over password-only, but passkeys remove the password from the equation entirely. A natural next experiment.",
+    heading: "Next experiments",
+    items: [
+      "WebAuthn / passkeys",
+      "Additional hardening and account security workflows",
+    ],
   },
 ];
+
+function formatCurrentUser(user) {
+  if (!user) {
+    return "";
+  }
+
+  const name = [user.first_name, user.last_name].filter(Boolean).join(" ");
+  return name || user.email || user.username || "Signed-in user";
+}
 
 function HomePage() {
   const { toggle2fa, twoFactorError } = useTwoFactorAuthServices();
@@ -106,7 +130,12 @@ function HomePage() {
     }
   };
 
-  const canViewSecurity = Boolean(user?.is_staff || user?.can_view_security_dashboard);
+  const hasSecurityCapability = user
+    ? Object.prototype.hasOwnProperty.call(user, "can_view_security_dashboard")
+    : false;
+  const canViewSecurity = hasSecurityCapability
+    ? Boolean(user.can_view_security_dashboard)
+    : Boolean(user?.is_staff);
 
   return (
     <div className="home-page">
@@ -116,6 +145,11 @@ function HomePage() {
           <span>Gait</span>
         </div>
         <nav className="site-nav">
+          {isLoggedIn && user && (
+            <span className="signed-in-chip" title={`Signed in as ${formatCurrentUser(user)}`}>
+              {formatCurrentUser(user)}
+            </span>
+          )}
           <Link to="/chat-completion" className="nav-icon" title="Chat completion demo">
             <FaPython size={20} />
           </Link>
@@ -125,11 +159,24 @@ function HomePage() {
           <Link to="/send-email" className="nav-icon" title="Send email demo">
             <FiMail size={18} />
           </Link>
-          {canViewSecurity && (
+          {isLoggedIn && canViewSecurity && (
             <Link to="/security" className="nav-icon security-nav-link" title="Security Observatory">
               <RiShieldKeyholeLine size={20} />
-              <span>Security</span>
+              <span>Security Observatory</span>
             </Link>
+          )}
+          {isLoggedIn && !canViewSecurity && (
+            <button
+              type="button"
+              className="nav-icon security-nav-link security-nav-disabled"
+              title="Staff only"
+              aria-label="Security Observatory, staff only"
+              disabled
+            >
+              <RiShieldKeyholeLine size={20} />
+              <span>Security Observatory</span>
+              <small>Staff only</small>
+            </button>
           )}
         </nav>
       </header>
@@ -221,13 +268,22 @@ function HomePage() {
         </section>
 
         <section className="section">
-          <p className="eyebrow">What's next</p>
-          <h2>This is still a work in progress.</h2>
-          <div className="steps-grid">
-            {roadmapItems.map(({ title, body }) => (
-              <div className="glass-card step-card" key={title}>
-                <h3>{title}</h3>
-                <p>{body}</p>
+          <p className="eyebrow">Operational visibility</p>
+          <h2>This is an active security platform, with the core authentication stack already live.</h2>
+          <div className="platform-grid">
+            {platformSections.map(({ heading, items }) => (
+              <div className="glass-card platform-card" key={heading}>
+                <div className="card-title-row">
+                  <h3>{heading}</h3>
+                  <span className={`status-pill ${heading === "Already shipped" ? "status-live" : ""}`}>
+                    {heading === "Already shipped" ? "Live" : "Next"}
+                  </span>
+                </div>
+                <ul className="platform-list">
+                  {items.map((item) => (
+                    <li key={item}>{item}</li>
+                  ))}
+                </ul>
               </div>
             ))}
           </div>

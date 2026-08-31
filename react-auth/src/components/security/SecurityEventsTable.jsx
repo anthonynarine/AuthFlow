@@ -4,7 +4,12 @@ import { StatusBadge } from "./StatusBadge";
 import { SecurityEmptyState } from "./SecurityEmptyState";
 import { SecurityErrorState } from "./SecurityErrorState";
 import { SecurityLoadingState } from "./SecurityLoadingState";
-import { formatDateTime, formatSessionId, formatUser, getEventLabel } from "./securityLabels";
+import {
+  formatDateTime,
+  formatSessionId,
+  getRecordUserEmail,
+  getShortEventLabel,
+} from "./securityLabels";
 
 function getEventId(event) {
   return event?.id || event?.uuid || event?.event_id;
@@ -73,11 +78,11 @@ export function SecurityEventsTable({
                   <td>{formatDateTime(event.timestamp || event.created_at)}</td>
                   <td>
                     <button type="button" className="table-link">
-                      {getEventLabel(event.event_type)}
+                      {getShortEventLabel(event.event_type)}
                     </button>
-                    {isReplay && <span className="row-note">Replay detected</span>}
+                    <span className="row-note">{event.event_type}</span>
                   </td>
-                  <td>{formatUser(event.user)}</td>
+                  <td>{getRecordUserEmail(event)}</td>
                   <td><SeverityBadge severity={event.severity} /></td>
                   <td><StatusBadge status={event.outcome} /></td>
                   <td>{event.reason_code || event.reason || "—"}</td>

@@ -1,6 +1,8 @@
 import React, { useCallback, useEffect, useState } from "react";
 import { Link } from "react-router-dom";
 import { RiArrowGoBackLine, RiRefreshLine, RiShieldKeyholeLine } from "react-icons/ri";
+import { useBasicAuthServices } from "../../context/auth/BasicAuthContext";
+import { useUserSessionServices } from "../../context/auth/UserSessionContext";
 import { useSecuritySummary } from "../../hooks/useSecuritySummary";
 import { useSecurityEvents } from "../../hooks/useSecurityEvents";
 import { useSecurityEventDetail } from "../../hooks/useSecurityEventDetail";
@@ -13,7 +15,8 @@ import { SecurityEventDetailModal } from "./SecurityEventDetailModal";
 import { SecuritySessionsTable } from "./SecuritySessionsTable";
 import { SecuritySessionDetailModal } from "./SecuritySessionDetailModal";
 import { SecurityErrorState } from "./SecurityErrorState";
-import { formatDateTime } from "./securityLabels";
+import { CurrentSessionSummary } from "./CurrentSessionSummary";
+import { formatDateTime, formatUser } from "./securityLabels";
 import "./SecurityObservatory.css";
 
 function isForbidden(...errors) {
@@ -25,6 +28,8 @@ function getRecordId(record) {
 }
 
 export function SecurityObservatoryPage() {
+  const { user } = useBasicAuthServices();
+  const { validateSession } = useUserSessionServices();
   const summary = useSecuritySummary();
   const events = useSecurityEvents();
   const eventDetail = useSecurityEventDetail();
@@ -34,6 +39,10 @@ export function SecurityObservatoryPage() {
   const [selectedSessionId, setSelectedSessionId] = useState(null);
 
   const forbidden = isForbidden(summary.error, events.error, sessions.error);
+
+  useEffect(() => {
+    validateSession().catch(() => {});
+  }, [validateSession]);
 
   const refreshAll = useCallback(() => {
     Promise.allSettled([
@@ -101,6 +110,12 @@ export function SecurityObservatoryPage() {
             <p>Authentication, session, and security activity</p>
           </div>
           <div className="security-header-actions">
+            {user && (
+              <div className="security-operator" title={`Signed in as ${formatUser(user)}`}>
+                <span>Signed in as</span>
+                <strong>{formatUser(user)}</strong>
+              </div>
+            )}
             <span className="read-only-chip">Read only</span>
             <button type="button" className="security-button primary" onClick={refreshAll}>
               <RiRefreshLine /> Refresh
@@ -116,6 +131,12 @@ export function SecurityObservatoryPage() {
           isLoading={summary.isLoading}
           error={summary.error}
           onRetry={summary.refetch}
+        />
+
+        <CurrentSessionSummary
+          user={user}
+          sessions={sessions.sessions}
+          summary={summary.summary}
         />
 
         <section className="security-panel" aria-labelledby="security-events-heading">

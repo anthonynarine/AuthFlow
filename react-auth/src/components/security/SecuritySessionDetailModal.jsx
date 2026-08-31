@@ -6,8 +6,8 @@ import {
   formatDateTime,
   formatSessionId,
   formatTime,
-  formatUser,
-  getEventLabel,
+  getRecordUserEmail,
+  getShortEventLabel,
   getSessionStatus,
 } from "./securityLabels";
 
@@ -85,7 +85,7 @@ export function SecuritySessionDetailModal({
           <>
             <dl className="detail-grid">
               <DetailRow label="Session UUID" value={session.uuid || session.id || session.session_id} />
-              <DetailRow label="User" value={formatUser(session.user)} />
+              <DetailRow label="User" value={getRecordUserEmail(session)} />
               <DetailRow label="Status"><StatusBadge status={getSessionStatus(session)} type="session" /></DetailRow>
               <DetailRow label="Authentication method" value={session.authentication_method || session.auth_method} />
               <DetailRow label="Authentication strength" value={session.authentication_strength || session.auth_strength} />
@@ -112,7 +112,7 @@ export function SecuritySessionDetailModal({
                   {timelineEvents.map((event) => (
                     <li key={event.id || event.uuid || `${event.event_type}-${event.timestamp}`}>
                       <time>{formatTime(event.timestamp || event.created_at)}</time>
-                      <span>{getEventLabel(event.event_type)}</span>
+                      <span>{getShortEventLabel(event.event_type)}</span>
                       <small>{event.reason_code || event.outcome || ""}</small>
                     </li>
                   ))}

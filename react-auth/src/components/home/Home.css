@@ -37,6 +37,20 @@
   gap: 1.25rem;
 }
 
+.signed-in-chip {
+  max-width: 12rem;
+  overflow: hidden;
+  padding: 0.35rem 0.65rem;
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-pill);
+  color: var(--color-text);
+  background: var(--color-surface-glass);
+  font-size: 0.78rem;
+  font-weight: 700;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
 .nav-icon {
   display: flex;
   color: var(--color-text-muted);
@@ -54,6 +68,28 @@
   font-size: 0.85rem;
   font-weight: 700;
   text-decoration: none;
+}
+
+.security-nav-disabled {
+  padding: 0;
+  border: 0;
+  background: transparent;
+  color: var(--color-text-muted);
+  cursor: not-allowed;
+  opacity: 0.62;
+}
+
+.security-nav-disabled:hover {
+  color: var(--color-text-muted);
+  transform: none;
+}
+
+.security-nav-disabled small {
+  padding: 0.15rem 0.4rem;
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-pill);
+  font-size: 0.65rem;
+  line-height: 1;
 }
 
 /* Hero */
@@ -280,6 +316,80 @@
   font-weight: 600;
 }
 
+.card-title-row {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 0.75rem;
+  margin-bottom: 0.5rem;
+}
+
+.card-title-row h3 {
+  margin: 0;
+}
+
+.status-pill {
+  flex-shrink: 0;
+  padding: 0.2rem 0.5rem;
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-pill);
+  color: var(--color-text-muted);
+  font-size: 0.65rem;
+  font-weight: 800;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+}
+
+.status-live {
+  border-color: rgba(26, 188, 156, 0.35);
+  color: var(--color-accent);
+  background: var(--color-accent-soft);
+}
+
+.platform-grid {
+  display: grid;
+  grid-template-columns: minmax(0, 1.25fr) repeat(2, minmax(0, 1fr));
+  gap: 1.25rem;
+}
+
+.platform-card {
+  padding: 1.5rem;
+}
+
+.platform-card h3 {
+  margin: 0;
+  color: var(--color-text);
+  font-size: 1.05rem;
+  font-weight: 600;
+}
+
+.platform-list {
+  display: grid;
+  gap: 0.65rem;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.platform-list li {
+  position: relative;
+  padding-left: 1rem;
+  color: var(--color-text-muted);
+  font-size: 0.9rem;
+  line-height: 1.45;
+}
+
+.platform-list li::before {
+  content: "";
+  position: absolute;
+  left: 0;
+  top: 0.55rem;
+  width: 0.35rem;
+  height: 0.35rem;
+  border-radius: 50%;
+  background: var(--color-accent);
+}
+
 .step-card p {
   margin: 0;
   color: var(--color-text-muted);
@@ -396,5 +506,9 @@
 
   .hero {
     padding-top: 3rem;
+  }
+
+  .platform-grid {
+    grid-template-columns: 1fr;
   }
 }

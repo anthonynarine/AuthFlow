@@ -68,6 +68,34 @@
   min-width: 13rem;
 }
 
+.security-operator {
+  max-width: 18rem;
+  padding: 0.65rem 0.8rem;
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-sm);
+  background: var(--color-surface-glass);
+  text-align: right;
+}
+
+.security-operator span {
+  display: block;
+  margin-bottom: 0.2rem;
+  color: var(--color-text-muted);
+  font-size: 0.7rem;
+  font-weight: 800;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+}
+
+.security-operator strong {
+  display: block;
+  overflow: hidden;
+  color: var(--color-text);
+  font-size: 0.9rem;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
 .security-button,
 .icon-button {
   border: 1px solid var(--color-border);
@@ -198,6 +226,49 @@
 
 .summary-card.replay-card {
   border-color: rgba(255, 193, 7, 0.45);
+}
+
+.current-session-panel {
+  background: rgba(35, 42, 52, 0.72);
+}
+
+.current-session-grid {
+  display: grid;
+  grid-template-columns: repeat(6, minmax(0, 1fr));
+  gap: 0.75rem;
+}
+
+.current-session-detail {
+  min-width: 0;
+  padding: 0.75rem;
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-sm);
+  background: var(--color-surface-glass);
+}
+
+.current-session-detail span {
+  display: block;
+  margin-bottom: 0.35rem;
+  color: var(--color-text-muted);
+  font-size: 0.7rem;
+  font-weight: 800;
+  letter-spacing: 0.07em;
+  text-transform: uppercase;
+}
+
+.current-session-detail strong {
+  display: block;
+  overflow: hidden;
+  color: var(--color-text);
+  font-size: 0.85rem;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.current-session-note {
+  margin: 0.85rem 0 0;
+  color: var(--color-text-muted);
+  font-size: 0.8rem;
 }
 
 .security-filters {
@@ -517,6 +588,10 @@
     grid-template-columns: repeat(3, minmax(0, 1fr));
   }
 
+  .current-session-grid {
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+  }
+
   .security-filters {
     grid-template-columns: repeat(3, minmax(0, 1fr));
   }
@@ -538,7 +613,12 @@
     align-items: flex-start;
   }
 
+  .security-operator {
+    text-align: left;
+  }
+
   .security-summary-grid,
+  .current-session-grid,
   .security-filters,
   .detail-grid {
     grid-template-columns: 1fr;

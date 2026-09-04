@@ -1,7 +1,6 @@
 import React, { useEffect } from "react";
 import "./Home.css";
 import { Link } from "react-router-dom";
-import { useTwoFactorAuthServices } from "../../context/auth/TwoFactorAuthContext";
 import { useBasicAuthServices } from "../../context/auth/BasicAuthContext";
 import { useUserSessionServices } from "../../context/auth/UserSessionContext";
 import { FiKey, FiMail } from 'react-icons/fi';
@@ -12,9 +11,9 @@ import {
   RiShieldKeyholeLine,
   RiRefreshLine,
 } from 'react-icons/ri';
-import { showErrorToast, showSuccessToast } from "../../utils/toastUtils/ToastUtils";
 import { AuthFlowDiagram } from "./AuthFlowDiagram";
 import { RequestFlow } from "./RequestFlow";
+import { AccountSecurityPanel } from "./AccountSecurityPanel";
 
 const steps = [
   {
@@ -69,6 +68,7 @@ const platformSections = [
       "Server-side sessions with logout and logout-all",
       "Password reset and inactive-user session revocation",
       "2FA",
+      "Generalized step-up authentication for sensitive account actions",
       "Staff-only Security Observatory with durable audit events",
     ],
   },
@@ -99,7 +99,6 @@ function formatCurrentUser(user) {
 }
 
 function HomePage() {
-  const { toggle2fa, twoFactorError } = useTwoFactorAuthServices();
   const { logout, guestLogin, isLoggedIn, isLoading, message, user, setError } = useBasicAuthServices();
   const { validateSession } = useUserSessionServices();
 
@@ -115,19 +114,6 @@ function HomePage() {
 
   const handleLogout = () => {
     logout();
-  };
-
-  const handleToggle2FA = async () => {
-    try {
-      const is2faEnabled = !user.is_2fa_enabled;
-      await toggle2fa(!user.is_2fa_enabled);
-      if (!is2faEnabled) {
-        showSuccessToast("Two-factor authentication disabled successfully.");
-      }
-    } catch (error) {
-      const errorMessage = twoFactorError || "Failed to toggle two-factor. Please try again";
-      showErrorToast(errorMessage);
-    }
   };
 
   const hasSecurityCapability = user
@@ -209,11 +195,6 @@ function HomePage() {
               ) : (
                 <Link to="/login" className="btn-pill btn-pill-outline">Login</Link>
               )}
-              {user && (
-                <button className="btn-pill btn-pill-outline" onClick={handleToggle2FA}>
-                  {user.is_2fa_enabled ? "Disable 2FA" : "Enable 2FA"}
-                </button>
-              )}
               <a
                 href="https://github.com/anthonynarine/AuthFlow"
                 target="_blank"
@@ -266,6 +247,8 @@ function HomePage() {
             ))}
           </ul>
         </section>
+
+        <AccountSecurityPanel />
 
         <section className="section">
           <p className="eyebrow">Operational visibility</p>

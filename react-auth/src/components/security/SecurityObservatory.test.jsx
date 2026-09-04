@@ -194,6 +194,25 @@ describe("Security Observatory components", () => {
     expect(screen.getByText("103")).toBeInTheDocument();
   });
 
+  test("step-up events render human-readable labels", () => {
+    render(
+      <SecurityEventsTable
+        events={[{ ...baseEvent, event_type: "STEP_UP_REQUIRED", user: 7, user_email: "staff@example.com" }]}
+        count={1}
+        page={1}
+        pageSize={25}
+        next={null}
+        previous={null}
+        isLoading={false}
+        error={null}
+        onPageChange={jest.fn()}
+        onSelectEvent={jest.fn()}
+      />
+    );
+
+    expect(screen.getByText("Additional verification required")).toBeInTheDocument();
+    expect(screen.getByText("STEP_UP_REQUIRED")).toBeInTheDocument();
+  });
   test("events table renders labels, severity badge, and outcome badge", () => {
     render(
       <SecurityEventsTable
@@ -328,3 +347,4 @@ describe("Security Observatory components", () => {
     expect(onSelectEvent).toHaveBeenCalledWith(baseEvent);
   });
 });
+

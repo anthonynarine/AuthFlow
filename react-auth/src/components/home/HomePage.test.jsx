@@ -46,6 +46,11 @@ jest.mock("./RequestFlow", () => ({
   RequestFlow: () => <div data-testid="request-flow" />,
 }));
 
+
+jest.mock("./AccountSecurityPanel", () => ({
+  AccountSecurityPanel: () => <div data-testid="account-security-panel" />,
+}));
+
 function LocationDisplay() {
   const location = useLocation();
   return <div data-testid="location">{location.pathname}</div>;
@@ -150,3 +155,7 @@ describe("HomePage Security Observatory navigation", () => {
     expect(screen.getByText("WebAuthn / passkeys")).toBeInTheDocument();
   });
 });
+
+
+
+

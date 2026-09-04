@@ -24,6 +24,24 @@ const initialState = {
   successMessage: "",
 };
 
+function flattenStepUpError(errorPayload, fallback) {
+  if (typeof errorPayload === "string") {
+    return errorPayload;
+  }
+
+  if (errorPayload && typeof errorPayload === "object") {
+    const message = Object.values(errorPayload)
+      .flat()
+      .filter(Boolean)
+      .join(" ");
+    if (message) {
+      return message;
+    }
+  }
+
+  return fallback;
+}
+
 export function useStepUpDialog() {
   const [state, setState] = useState(initialState);
 
@@ -115,7 +133,10 @@ export function useStepUpDialog() {
       setState((current) => ({
         ...current,
         status: "failed",
-        error: error.response?.data?.error || error.response?.data?.detail || fallbackMessage,
+        error: flattenStepUpError(
+          error.response?.data?.error || error.response?.data?.detail,
+          fallbackMessage
+        ),
         retryAfterSeconds: null,
         successMessage: "",
       }));

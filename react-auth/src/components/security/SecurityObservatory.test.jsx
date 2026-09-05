@@ -54,6 +54,34 @@ jest.mock("../../hooks/useSecuritySummary", () => ({
   }),
 }));
 
+jest.mock("./SecurityControlsSection", () => ({
+  SecurityControlsSection: () => <div>Controls section</div>,
+}));
+
+jest.mock("./SecurityFindingsSection", () => ({
+  SecurityFindingsSection: () => <div>Findings section</div>,
+}));
+
+jest.mock("./SecurityEvidenceSection", () => ({
+  SecurityEvidenceSection: () => <div>Evidence section</div>,
+}));
+
+jest.mock("../../hooks/useSecurityPosture", () => ({
+  useSecurityPosture: () => ({
+    posture: {
+      overall_status: "HEALTHY",
+      overall_status_label: "Healthy",
+      controls: { healthy: 5, needs_attention: 0, control_failure: 0, unknown: 0, not_applicable: 0 },
+      open_findings: { critical: 0, high: 0, warning: 0, info: 0 },
+      last_evaluated_at: "2026-08-31T00:00:00Z",
+    },
+    isLoading: false,
+    error: null,
+    lastUpdated: new Date("2026-08-31T00:00:00Z"),
+    refetch: jest.fn(),
+  }),
+}));
+
 jest.mock("../../hooks/useSecurityEvents", () => ({
   useSecurityEvents: () => ({
     events: [],
@@ -345,6 +373,51 @@ describe("Security Observatory components", () => {
 
     fireEvent.click(screen.getByRole("row", { name: /Replay detected/i }));
     expect(onSelectEvent).toHaveBeenCalledWith(baseEvent);
+  });
+
+  test("Observatory navigation still exposes events and sessions alongside new sections", () => {
+    render(
+      <MemoryRouter>
+        <SecurityObservatoryPage />
+      </MemoryRouter>
+    );
+
+    expect(screen.getByRole("button", { name: "Overview" })).toBeInTheDocument();
+    expect(screen.getByRole("button", { name: "Controls" })).toBeInTheDocument();
+    expect(screen.getByRole("button", { name: "Findings" })).toBeInTheDocument();
+    expect(screen.getByRole("button", { name: "Evidence" })).toBeInTheDocument();
+    expect(screen.getByRole("button", { name: "Events" })).toBeInTheDocument();
+    expect(screen.getByRole("button", { name: "Sessions" })).toBeInTheDocument();
+  });
+
+  test("switching to the Events tab still renders the events table", () => {
+    render(
+      <MemoryRouter>
+        <SecurityObservatoryPage />
+      </MemoryRouter>
+    );
+
+    fireEvent.click(screen.getByRole("button", { name: "Events" }));
+    expect(screen.getByRole("heading", { name: "Events" })).toBeInTheDocument();
+    expect(screen.getByText("No security events match these filters.")).toBeInTheDocument();
+  });
+
+  test("switching to the Sessions tab still renders the sessions table", () => {
+    render(
+      <MemoryRouter>
+        <SecurityObservatoryPage />
+      </MemoryRouter>
+    );
+
+    fireEvent.click(screen.getByRole("button", { name: "Sessions" }));
+    expect(screen.getByRole("heading", { name: "Authentication Sessions" })).toBeInTheDocument();
+    expect(screen.getByText("No sessions found.")).toBeInTheDocument();
+  });
+
+  test("ordinary 403 permission denial does not open the step-up dialog", () => {
+    render(<SecurityErrorState error={{ response: { status: 403 } }} />);
+
+    expect(screen.queryByRole("dialog")).not.toBeInTheDocument();
   });
 });
 

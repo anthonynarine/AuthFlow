@@ -176,6 +176,140 @@ export function getSessionStatus(session) {
   return "ACTIVE";
 }
 
+export const CONTROL_STATUSES = ["HEALTHY", "NEEDS_ATTENTION", "CONTROL_FAILURE", "UNKNOWN", "NOT_APPLICABLE"];
+
+export const CONTROL_STATUS_LABELS = {
+  HEALTHY: "Healthy",
+  NEEDS_ATTENTION: "Needs attention",
+  CONTROL_FAILURE: "Control failure",
+  UNKNOWN: "Unknown",
+  NOT_APPLICABLE: "Not applicable",
+};
+
+const CONTROL_STATUS_HELP = {
+  UNKNOWN: "No current evidence proves this control's health.",
+  NOT_APPLICABLE: "This control has been explicitly marked as not applicable.",
+};
+
+export function getControlStatusLabel(status) {
+  return CONTROL_STATUS_LABELS[status] || humanizeEnum(status);
+}
+
+export function getControlStatusHelp(status) {
+  return CONTROL_STATUS_HELP[status] || "";
+}
+
+export const CONTROL_TYPES = ["LIVE", "PERIODIC", "DOCUMENTARY", "MANUAL"];
+
+export const CONTROL_TYPE_LABELS = {
+  LIVE: "Live",
+  PERIODIC: "Periodic",
+  DOCUMENTARY: "Documentary",
+  MANUAL: "Manual",
+};
+
+const CONTROL_TYPE_DESCRIPTIONS = {
+  LIVE: "Continuously or operationally evaluated.",
+  PERIODIC: "Evaluated on a recurring schedule.",
+  DOCUMENTARY: "Supported primarily by policy or document evidence.",
+  MANUAL: "Requires deliberate human verification.",
+};
+
+export function getControlTypeLabel(type) {
+  return CONTROL_TYPE_LABELS[type] || humanizeEnum(type);
+}
+
+export function getControlTypeDescription(type) {
+  return CONTROL_TYPE_DESCRIPTIONS[type] || "";
+}
+
+export const EVIDENCE_RESULTS = ["PASS", "FAIL", "WARNING", "INFORMATIONAL"];
+
+export const EVIDENCE_RESULT_LABELS = {
+  PASS: "Pass",
+  FAIL: "Fail",
+  WARNING: "Warning",
+  INFORMATIONAL: "Informational",
+};
+
+export function getEvidenceResultLabel(result) {
+  return EVIDENCE_RESULT_LABELS[result] || humanizeEnum(result);
+}
+
+export const EVIDENCE_TYPES = [
+  "SECURITY_EVENT",
+  "AUTOMATED_TEST",
+  "CI_RESULT",
+  "CONFIGURATION_CHECK",
+  "MANUAL_VERIFICATION",
+  "POLICY_REVIEW",
+  "RISK_ASSESSMENT",
+  "BACKUP_TEST",
+  "RESTORE_TEST",
+  "VULNERABILITY_SCAN",
+  "PENETRATION_TEST",
+  "VENDOR_REVIEW",
+  "INCIDENT_EXERCISE",
+  "OTHER",
+];
+
+export const EVIDENCE_TYPE_LABELS = {
+  SECURITY_EVENT: "Security event",
+  AUTOMATED_TEST: "Automated test",
+  CI_RESULT: "CI result",
+  CONFIGURATION_CHECK: "Configuration check",
+  MANUAL_VERIFICATION: "Manual verification",
+  POLICY_REVIEW: "Policy review",
+  RISK_ASSESSMENT: "Risk assessment",
+  BACKUP_TEST: "Backup test",
+  RESTORE_TEST: "Restore test",
+  VULNERABILITY_SCAN: "Vulnerability scan",
+  PENETRATION_TEST: "Penetration test",
+  VENDOR_REVIEW: "Vendor review",
+  INCIDENT_EXERCISE: "Incident exercise",
+  OTHER: "Other",
+};
+
+export function getEvidenceTypeLabel(type) {
+  return EVIDENCE_TYPE_LABELS[type] || humanizeEnum(type);
+}
+
+export const FINDING_STATUSES = ["OPEN", "ACKNOWLEDGED", "RESOLVED", "ACCEPTED_RISK", "FALSE_POSITIVE"];
+
+export const FINDING_STATUS_LABELS = {
+  OPEN: "Open",
+  ACKNOWLEDGED: "Acknowledged",
+  RESOLVED: "Resolved",
+  ACCEPTED_RISK: "Accepted risk",
+  FALSE_POSITIVE: "False positive",
+};
+
+export function getFindingStatusLabel(status) {
+  return FINDING_STATUS_LABELS[status] || humanizeEnum(status);
+}
+
+export function isEvidenceExpired(evidence) {
+  if (evidence?.is_stale !== undefined && evidence?.is_stale !== null) {
+    return Boolean(evidence.is_stale);
+  }
+
+  if (!evidence?.valid_until) {
+    return false;
+  }
+
+  const validUntil = new Date(evidence.valid_until);
+  return !Number.isNaN(validUntil.getTime()) && validUntil <= new Date();
+}
+
+export function formatShortId(value) {
+  if (!value) {
+    return "—";
+  }
+
+  const text = String(value);
+  return text.length > 12 ? `${text.slice(0, 8)}…${text.slice(-4)}` : text;
+}
+
 export function normalizeListResponse(data) {
   if (Array.isArray(data)) {
     return {

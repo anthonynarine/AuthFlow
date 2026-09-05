@@ -8,12 +8,18 @@ import { useSecurityEvents } from "../../hooks/useSecurityEvents";
 import { useSecurityEventDetail } from "../../hooks/useSecurityEventDetail";
 import { useSecuritySessions } from "../../hooks/useSecuritySessions";
 import { useSecuritySessionDetail } from "../../hooks/useSecuritySessionDetail";
+import { useSecurityPosture } from "../../hooks/useSecurityPosture";
+import { SecurityNav } from "./SecurityNav";
 import { SecurityOverview } from "./SecurityOverview";
+import { PostureOverview } from "./PostureOverview";
 import { SecurityEventFilters } from "./SecurityEventFilters";
 import { SecurityEventsTable } from "./SecurityEventsTable";
 import { SecurityEventDetailModal } from "./SecurityEventDetailModal";
 import { SecuritySessionsTable } from "./SecuritySessionsTable";
 import { SecuritySessionDetailModal } from "./SecuritySessionDetailModal";
+import { SecurityControlsSection } from "./SecurityControlsSection";
+import { SecurityFindingsSection } from "./SecurityFindingsSection";
+import { SecurityEvidenceSection } from "./SecurityEvidenceSection";
 import { SecurityErrorState } from "./SecurityErrorState";
 import { CurrentSessionSummary } from "./CurrentSessionSummary";
 import { formatDateTime, formatUser } from "./securityLabels";
@@ -31,14 +37,16 @@ export function SecurityObservatoryPage() {
   const { user } = useBasicAuthServices();
   const { validateSession } = useUserSessionServices();
   const summary = useSecuritySummary();
+  const posture = useSecurityPosture();
   const events = useSecurityEvents();
   const eventDetail = useSecurityEventDetail();
   const sessions = useSecuritySessions();
   const sessionDetail = useSecuritySessionDetail();
+  const [activeSection, setActiveSection] = useState("overview");
   const [selectedEventId, setSelectedEventId] = useState(null);
   const [selectedSessionId, setSelectedSessionId] = useState(null);
 
-  const forbidden = isForbidden(summary.error, events.error, sessions.error);
+  const forbidden = isForbidden(summary.error, events.error, sessions.error, posture.error);
 
   useEffect(() => {
     validateSession().catch(() => {});
@@ -49,8 +57,9 @@ export function SecurityObservatoryPage() {
       summary.refetch(),
       events.refetch(),
       sessions.refetch(),
+      posture.refetch(),
     ]);
-  }, [events, sessions, summary]);
+  }, [events, posture, sessions, summary]);
 
   useEffect(() => {
     const handleFocus = () => refreshAll();
@@ -62,7 +71,7 @@ export function SecurityObservatoryPage() {
     };
   }, [refreshAll]);
 
-  const lastUpdated = [summary.lastUpdated, events.lastUpdated, sessions.lastUpdated]
+  const lastUpdated = [summary.lastUpdated, events.lastUpdated, sessions.lastUpdated, posture.lastUpdated]
     .filter(Boolean)
     .sort((a, b) => b - a)[0];
 
@@ -107,7 +116,7 @@ export function SecurityObservatoryPage() {
             </Link>
             <p className="security-kicker"><RiShieldKeyholeLine /> Gait Security</p>
             <h1>Security Observatory</h1>
-            <p>Authentication, session, and security activity</p>
+            <p>Authentication, session, and security posture</p>
           </div>
           <div className="security-header-actions">
             {user && (
@@ -126,67 +135,90 @@ export function SecurityObservatoryPage() {
           </div>
         </header>
 
-        <SecurityOverview
-          summary={summary.summary}
-          isLoading={summary.isLoading}
-          error={summary.error}
-          onRetry={summary.refetch}
-        />
+        <SecurityNav activeSection={activeSection} onSelect={setActiveSection} />
 
-        <CurrentSessionSummary
-          user={user}
-          sessions={sessions.sessions}
-          summary={summary.summary}
-        />
+        {activeSection === "overview" && (
+          <>
+            <PostureOverview
+              posture={posture.posture}
+              isLoading={posture.isLoading}
+              error={posture.error}
+              onRetry={posture.refetch}
+            />
 
-        <section className="security-panel" aria-labelledby="security-events-heading">
-          <div className="security-section-heading">
-            <div>
-              <p className="security-eyebrow">Recent Security Events</p>
-              <h2 id="security-events-heading">Events</h2>
+            <SecurityOverview
+              summary={summary.summary}
+              isLoading={summary.isLoading}
+              error={summary.error}
+              onRetry={summary.refetch}
+            />
+
+            <CurrentSessionSummary
+              user={user}
+              sessions={sessions.sessions}
+              summary={summary.summary}
+            />
+          </>
+        )}
+
+        {activeSection === "controls" && <SecurityControlsSection />}
+
+        {activeSection === "findings" && <SecurityFindingsSection />}
+
+        {activeSection === "evidence" && <SecurityEvidenceSection />}
+
+        {activeSection === "events" && (
+          <section className="security-panel" aria-labelledby="security-events-heading">
+            <div className="security-section-heading">
+              <div>
+                <p className="security-eyebrow">Recent Security Events</p>
+                <h2 id="security-events-heading">Events</h2>
+              </div>
             </div>
-          </div>
-          <SecurityEventFilters
-            filters={events.filters}
-            onChange={events.updateFilter}
-            onReset={events.resetFilters}
-          />
-          <SecurityEventsTable
-            events={events.events}
-            count={events.count}
-            page={events.page}
-            pageSize={events.pageSize}
-            next={events.next}
-            previous={events.previous}
-            isLoading={events.isLoading}
-            error={events.error}
-            onPageChange={events.setPage}
-            onSelectEvent={handleSelectEvent}
-            onRetry={events.refetch}
-          />
-        </section>
+            <SecurityEventFilters
+              filters={events.filters}
+              onChange={events.updateFilter}
+              onReset={events.resetFilters}
+            />
+            <SecurityEventsTable
+              events={events.events}
+              count={events.count}
+              page={events.page}
+              pageSize={events.pageSize}
+              next={events.next}
+              previous={events.previous}
+              isLoading={events.isLoading}
+              error={events.error}
+              onPageChange={events.setPage}
+              onSelectEvent={handleSelectEvent}
+              onRetry={events.refetch}
+            />
+          </section>
+        )}
 
-        <section className="security-panel" aria-labelledby="security-sessions-heading">
-          <div className="security-section-heading">
-            <div>
-              <p className="security-eyebrow">Sessions</p>
-              <h2 id="security-sessions-heading">Authentication Sessions</h2>
+        {activeSection === "sessions" && (
+          <section className="security-panel" aria-labelledby="security-sessions-heading">
+            <div className="security-section-heading">
+              <div>
+                <p className="security-eyebrow">Sessions</p>
+                <h2 id="security-sessions-heading">Authentication Sessions</h2>
+              </div>
             </div>
-          </div>
-          <SecuritySessionsTable
-            sessions={sessions.sessions}
-            count={sessions.count}
-            page={sessions.page}
-            pageSize={sessions.pageSize}
-            next={sessions.next}
-            previous={sessions.previous}
-            isLoading={sessions.isLoading}
-            error={sessions.error}
-            onPageChange={sessions.setPage}
-            onSelectSession={handleSelectSession}
-            onRetry={sessions.refetch}
-          />
-        </section>
+            <SecuritySessionsTable
+              sessions={sessions.sessions}
+              count={sessions.count}
+              page={sessions.page}
+              pageSize={sessions.pageSize}
+              next={sessions.next}
+              previous={sessions.previous}
+              isLoading={sessions.isLoading}
+              error={sessions.error}
+              onPageChange={sessions.setPage}
+              onSelectSession={handleSelectSession}
+              onRetry={sessions.refetch}
+            />
+          </section>
+        )}
       </section>
 
       <SecurityEventDetailModal

@@ -214,10 +214,151 @@
   margin-bottom: 1rem;
 }
 
+.security-section-heading-actions {
+  display: flex;
+  align-items: flex-start;
+  justify-content: flex-end;
+  gap: 0.6rem;
+  min-width: 0;
+  text-align: right;
+}
+
+.security-section-heading-actions .last-updated {
+  padding-top: 0.35rem;
+}
+
 .security-section-heading h2,
 .security-section-heading h3 {
   margin: 0;
   font-size: 1.15rem;
+}
+
+.security-info-button {
+  display: inline-grid;
+  place-items: center;
+  flex: 0 0 auto;
+  width: 1.9rem;
+  height: 1.9rem;
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-sm);
+  background: var(--color-surface-glass);
+  color: var(--color-text-muted);
+  cursor: pointer;
+  font-size: 1.05rem;
+  transition: border-color var(--transition-fast), color var(--transition-fast), background var(--transition-fast);
+}
+
+.security-info-button:hover,
+.security-info-button:focus-visible {
+  border-color: var(--color-accent);
+  color: var(--color-accent);
+  background: var(--color-accent-soft);
+}
+
+.security-info-button:focus-visible {
+  outline: 2px solid var(--color-accent);
+  outline-offset: 2px;
+}
+
+.security-info-backdrop {
+  position: fixed;
+  inset: 0;
+  z-index: 1100;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 1.25rem;
+  background: rgba(8, 10, 12, 0.72);
+  backdrop-filter: blur(4px);
+}
+
+.security-info-dialog {
+  width: min(520px, 100%);
+  max-height: min(82vh, 680px);
+  overflow: auto;
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-md);
+  background: var(--color-surface);
+  box-shadow: var(--shadow-lg);
+  padding: 1.15rem;
+}
+
+.security-info-dialog-head {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 1rem;
+  margin-bottom: 0.9rem;
+}
+
+.security-info-dialog-head h2 {
+  margin: 0;
+  color: var(--color-text);
+  font-size: 1.2rem;
+}
+
+.security-info-dialog-body {
+  color: var(--color-text-muted);
+  font-size: 0.9rem;
+  line-height: 1.55;
+}
+
+.security-info-dialog-body p {
+  margin: 0;
+}
+
+.security-info-dialog-body p + p,
+.security-info-dialog-body ul,
+.security-info-dialog-body ol {
+  margin-top: 0.75rem;
+}
+
+.help-lede {
+  color: var(--color-text);
+  font-size: 0.95rem;
+}
+
+.help-section {
+  margin-top: 1.1rem;
+}
+
+.help-section h3 {
+  margin: 0 0 0.35rem;
+  color: var(--color-accent);
+  font-size: 0.72rem;
+  font-weight: 800;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+}
+
+.help-section p {
+  margin: 0;
+}
+
+.help-status-list {
+  display: grid;
+  gap: 0.6rem;
+  margin: 0;
+}
+
+.help-status-list dt {
+  color: var(--color-text);
+  font-size: 0.78rem;
+  font-weight: 800;
+  letter-spacing: 0.03em;
+}
+
+.help-status-list dd {
+  margin: 0.15rem 0 0;
+  color: var(--color-text-muted);
+}
+
+.help-related {
+  margin-top: 1.1rem;
+  padding-top: 0.75rem;
+  border-top: 1px solid var(--color-border);
+  color: var(--color-text-muted);
+  font-size: 0.78rem;
 }
 
 .compact-heading {
@@ -707,6 +848,13 @@
   font-size: 1.35rem;
 }
 
+.control-detail-heading-row {
+  display: flex;
+  align-items: flex-start;
+  gap: 0.65rem;
+  min-width: 0;
+}
+
 .detail-grid {
   display: grid;
   grid-template-columns: repeat(2, minmax(0, 1fr));
@@ -811,6 +959,11 @@
 
   .security-header-actions {
     align-items: flex-start;
+  }
+
+  .security-section-heading-actions {
+    justify-content: flex-start;
+    text-align: left;
   }
 
   .security-operator {

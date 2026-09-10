@@ -195,4 +195,64 @@ describe("SecurityControlDetailModal", () => {
     expect(screen.getByText("No evidence has been recorded for this control yet.")).toBeInTheDocument();
     expect(screen.getByText("No findings match the current filters.")).toBeInTheDocument();
   });
+
+  test("renders a control-level info button when the control has authored help", async () => {
+    const onLoad = jest.fn().mockResolvedValue(baseControl);
+    const control = {
+      ...baseControl,
+      recent_evidence: [],
+      open_findings: [],
+      help: {
+        title: "TOTP Multi-Factor Authentication Enforcement",
+        short_description: "Accounts with TOTP enabled must complete the additional factor.",
+        healthy_means: "Accounts with TOTP enabled cannot complete authentication without a valid one-time code.",
+        status_explanation: "Trusted evidence shows the latest evidence is stale.",
+      },
+    };
+
+    render(
+      <SecurityControlDetailModal
+        controlKey="GAIT.MFA.TOTP"
+        control={control}
+        isLoading={false}
+        error={null}
+        onLoad={onLoad}
+        onClose={jest.fn()}
+      />
+    );
+
+    await waitFor(() => expect(onLoad).toHaveBeenCalled());
+    const infoButton = screen.getByRole("button", { name: "Explain TOTP Multi-Factor Authentication Enforcement" });
+    fireEvent.click(infoButton);
+
+    expect(
+      screen.getByRole("dialog", { name: "TOTP Multi-Factor Authentication Enforcement" })
+    ).toBeInTheDocument();
+    expect(
+      screen.getByText("Accounts with TOTP enabled must complete the additional factor.")
+    ).toBeInTheDocument();
+    expect(screen.getByText("What does HEALTHY mean?")).toBeInTheDocument();
+    expect(screen.getByText("What does the current status mean?")).toBeInTheDocument();
+    expect(screen.getByText("Trusted evidence shows the latest evidence is stale.")).toBeInTheDocument();
+  });
+
+  test("omits the info button rather than breaking the row when a control has no authored help", async () => {
+    const onLoad = jest.fn().mockResolvedValue(baseControl);
+    const control = { ...baseControl, recent_evidence: [], open_findings: [], help: null };
+
+    render(
+      <SecurityControlDetailModal
+        controlKey="GAIT.MFA.TOTP"
+        control={control}
+        isLoading={false}
+        error={null}
+        onLoad={onLoad}
+        onClose={jest.fn()}
+      />
+    );
+
+    await waitFor(() => expect(onLoad).toHaveBeenCalled());
+    expect(screen.getByText("TOTP multi-factor authentication")).toBeInTheDocument();
+    expect(screen.queryByRole("button", { name: /^Explain /i })).not.toBeInTheDocument();
+  });
 });

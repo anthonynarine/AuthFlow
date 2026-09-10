@@ -54,6 +54,17 @@ jest.mock("../../hooks/useSecuritySummary", () => ({
   }),
 }));
 
+let mockHelpTopics = {};
+
+jest.mock("../../hooks/useSecurityHelp", () => ({
+  useSecurityHelp: () => ({
+    isLoading: false,
+    error: null,
+    getTopic: (key) => mockHelpTopics[key] || null,
+    retry: jest.fn(),
+  }),
+}));
+
 jest.mock("./SecurityControlsSection", () => ({
   SecurityControlsSection: () => <div>Controls section</div>,
 }));
@@ -162,6 +173,7 @@ const baseEvent = {
 describe("Security Observatory components", () => {
   beforeEach(() => {
     mockValidateSession.mockResolvedValue({});
+    mockHelpTopics = {};
   });
 
   test("page header renders the signed-in operator", () => {
@@ -174,6 +186,16 @@ describe("Security Observatory components", () => {
     expect(screen.getByText("Signed in as")).toBeInTheDocument();
     expect(screen.getByText("Anthony Narine")).toBeInTheDocument();
     expect(mockValidateSession).toHaveBeenCalled();
+  });
+
+  test("page header links back to Security Command", () => {
+    render(
+      <MemoryRouter>
+        <SecurityObservatoryPage />
+      </MemoryRouter>
+    );
+
+    expect(screen.getByRole("link", { name: "Security Command" })).toHaveAttribute("href", "/security-command");
   });
 
   test("current session summary renders email, status, auth method, and timing", () => {
@@ -418,6 +440,76 @@ describe("Security Observatory components", () => {
     render(<SecurityErrorState error={{ response: { status: 403 } }} />);
 
     expect(screen.queryByRole("dialog")).not.toBeInTheDocument();
+  });
+
+  test("Overview posture panel shows backend-driven help when the topic is loaded", () => {
+    mockHelpTopics = {
+      security_posture: {
+        key: "security_posture",
+        title: "Security Posture",
+        short_description: "Gait's current summary of registered security-control health.",
+      },
+    };
+
+    render(
+      <MemoryRouter>
+        <SecurityObservatoryPage />
+      </MemoryRouter>
+    );
+
+    const button = screen.getByRole("button", { name: "Explain Security Posture" });
+    fireEvent.click(button);
+    expect(
+      screen.getByText("Gait's current summary of registered security-control health.")
+    ).toBeInTheDocument();
+  });
+
+  test("Overview does not show a posture info button when the topic has not loaded", () => {
+    render(
+      <MemoryRouter>
+        <SecurityObservatoryPage />
+      </MemoryRouter>
+    );
+
+    expect(screen.queryByRole("button", { name: "Explain Security Posture" })).not.toBeInTheDocument();
+  });
+
+  test("Events tab shows backend-driven help when the topic is loaded", () => {
+    mockHelpTopics = {
+      events: { key: "events", title: "Events", short_description: "The append-only audit history." },
+    };
+
+    render(
+      <MemoryRouter>
+        <SecurityObservatoryPage />
+      </MemoryRouter>
+    );
+
+    fireEvent.click(screen.getByRole("button", { name: "Events" }));
+    fireEvent.click(screen.getByRole("button", { name: "Explain Events" }));
+    expect(screen.getByText("The append-only audit history.")).toBeInTheDocument();
+  });
+
+  test("Sessions tab shows backend-driven help when the topic is loaded", () => {
+    mockHelpTopics = {
+      sessions: {
+        key: "sessions",
+        title: "Sessions",
+        short_description: "The server-authoritative record of whether a login is still valid.",
+      },
+    };
+
+    render(
+      <MemoryRouter>
+        <SecurityObservatoryPage />
+      </MemoryRouter>
+    );
+
+    fireEvent.click(screen.getByRole("button", { name: "Sessions" }));
+    fireEvent.click(screen.getByRole("button", { name: "Explain Authentication Sessions" }));
+    expect(
+      screen.getByText("The server-authoritative record of whether a login is still valid.")
+    ).toBeInTheDocument();
   });
 });
 

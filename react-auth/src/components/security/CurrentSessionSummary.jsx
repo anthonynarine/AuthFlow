@@ -1,4 +1,5 @@
 import React from "react";
+import { SecurityInfoButton } from "./SecurityInfoButton";
 import { StatusBadge } from "./StatusBadge";
 import {
   formatDateTime,
@@ -24,7 +25,7 @@ function Detail({ label, value, children }) {
   );
 }
 
-export function CurrentSessionSummary({ user, sessions = [], summary }) {
+export function CurrentSessionSummary({ user, sessions = [], summary, info }) {
   const currentSession = summary?.current_session || getCurrentSessionFromList(sessions);
   const email = currentSession ? getRecordUserEmail(currentSession) : formatUserEmail(user);
   const status = currentSession ? getSessionStatus(currentSession) : null;
@@ -36,6 +37,7 @@ export function CurrentSessionSummary({ user, sessions = [], summary }) {
           <p className="security-eyebrow">Current Session</p>
           <h2 id="current-session-heading">Signed-in context</h2>
         </div>
+        {info && <SecurityInfoButton title={info.title} label={info.label} content={info.content} />}
       </div>
       <div className="current-session-grid">
         <Detail label="User email" value={email} />

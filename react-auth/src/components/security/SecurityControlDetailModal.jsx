@@ -3,6 +3,7 @@ import { StatusBadge } from "./StatusBadge";
 import { SeverityBadge } from "./SeverityBadge";
 import { SecurityErrorState } from "./SecurityErrorState";
 import { SecurityLoadingState } from "./SecurityLoadingState";
+import { SecurityInfoButton } from "./SecurityInfoButton";
 import {
   formatDateTime,
   getControlStatusHelp,
@@ -46,9 +47,12 @@ export function SecurityControlDetailModal({ controlKey, control, isLoading, err
         onMouseDown={(mouseEvent) => mouseEvent.stopPropagation()}
       >
         <div className="security-modal-header">
-          <div>
-            <p className="security-eyebrow">Control Detail</p>
-            <h2 id="control-detail-heading">{control ? control.title : controlKey}</h2>
+          <div className="control-detail-heading-row">
+            <div>
+              <p className="security-eyebrow">Control Detail</p>
+              <h2 id="control-detail-heading">{control ? control.title : controlKey}</h2>
+            </div>
+            {control?.help && <SecurityInfoButton title={control.help.title || control.title} content={control.help} />}
           </div>
           <button type="button" className="icon-button" onClick={onClose} aria-label="Close control detail">
             ×

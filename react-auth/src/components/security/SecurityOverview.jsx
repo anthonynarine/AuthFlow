@@ -1,4 +1,5 @@
 import React from "react";
+import { SecurityInfoButton } from "./SecurityInfoButton";
 import { SecurityErrorState } from "./SecurityErrorState";
 import { SecurityLoadingState } from "./SecurityLoadingState";
 
@@ -10,7 +11,7 @@ const CARDS = [
   { key: "sessions_revoked", label: "Sessions Revoked" },
 ];
 
-export function SecurityOverview({ summary, isLoading, error, onRetry }) {
+export function SecurityOverview({ summary, isLoading, error, onRetry, info }) {
   if (isLoading && !summary) {
     return <SecurityLoadingState label="Loading security overview" />;
   }
@@ -28,7 +29,10 @@ export function SecurityOverview({ summary, isLoading, error, onRetry }) {
           <p className="security-eyebrow">Overview</p>
           <h2 id="security-overview-heading">Security Overview</h2>
         </div>
-        <span className="window-chip">{windowLabel}</span>
+        <div className="security-section-heading-actions">
+          <span className="window-chip">{windowLabel}</span>
+          {info && <SecurityInfoButton title={info.title} label={info.label} content={info.content} />}
+        </div>
       </div>
       <div className="security-summary-grid">
         {CARDS.map((card) => (

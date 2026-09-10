@@ -1,13 +1,17 @@
 import React, { useState } from "react";
 import { useSecurityEvidence } from "../../hooks/useSecurityEvidence";
 import { useSecurityEvidenceDetail } from "../../hooks/useSecurityEvidenceDetail";
+import { useSecurityHelp } from "../../hooks/useSecurityHelp";
 import { SecurityEvidenceFilters } from "./SecurityEvidenceFilters";
 import { SecurityEvidenceTable } from "./SecurityEvidenceTable";
 import { SecurityEvidenceDetailModal } from "./SecurityEvidenceDetailModal";
+import { SecurityInfoButton } from "./SecurityInfoButton";
 
 export function SecurityEvidenceSection() {
   const evidence = useSecurityEvidence();
   const evidenceDetail = useSecurityEvidenceDetail();
+  const help = useSecurityHelp();
+  const evidenceHelpTopic = help.getTopic("evidence");
   const [selectedEvidenceId, setSelectedEvidenceId] = useState(null);
 
   const handleSelectEvidence = (item) => {
@@ -26,6 +30,7 @@ export function SecurityEvidenceSection() {
           <p className="security-eyebrow">Security Evidence</p>
           <h2 id="security-evidence-heading">Evidence</h2>
         </div>
+        {evidenceHelpTopic && <SecurityInfoButton title="Security Evidence" content={evidenceHelpTopic} />}
       </div>
       <SecurityEvidenceFilters
         filters={evidence.filters}

@@ -2,14 +2,18 @@ import React, { useState } from "react";
 import { useSecurityFindings } from "../../hooks/useSecurityFindings";
 import { useSecurityFindingDetail } from "../../hooks/useSecurityFindingDetail";
 import { useSecurityDomains } from "../../hooks/useSecurityDomains";
+import { useSecurityHelp } from "../../hooks/useSecurityHelp";
 import { SecurityFindingsFilters } from "./SecurityFindingsFilters";
 import { SecurityFindingsTable } from "./SecurityFindingsTable";
 import { SecurityFindingDetailModal } from "./SecurityFindingDetailModal";
+import { SecurityInfoButton } from "./SecurityInfoButton";
 
 export function SecurityFindingsSection() {
   const findings = useSecurityFindings();
   const domains = useSecurityDomains();
   const findingDetail = useSecurityFindingDetail();
+  const help = useSecurityHelp();
+  const findingsHelpTopic = help.getTopic("findings");
   const [selectedFindingId, setSelectedFindingId] = useState(null);
 
   const handleSelectFinding = (finding) => {
@@ -28,6 +32,7 @@ export function SecurityFindingsSection() {
           <p className="security-eyebrow">Security Findings</p>
           <h2 id="security-findings-heading">Findings</h2>
         </div>
+        {findingsHelpTopic && <SecurityInfoButton title="Security Findings" content={findingsHelpTopic} />}
       </div>
       <SecurityFindingsFilters
         filters={findings.filters}

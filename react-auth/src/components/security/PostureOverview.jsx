@@ -1,6 +1,7 @@
 import React from "react";
 import { StatusBadge } from "./StatusBadge";
 import { SecurityErrorState } from "./SecurityErrorState";
+import { SecurityInfoButton } from "./SecurityInfoButton";
 import { SecurityLoadingState } from "./SecurityLoadingState";
 import { formatDateTime, getControlStatusHelp } from "./securityLabels";
 
@@ -19,7 +20,7 @@ const FINDING_ROWS = [
   { key: "info", label: "Info" },
 ];
 
-export function PostureOverview({ posture, isLoading, error, onRetry }) {
+export function PostureOverview({ posture, isLoading, error, onRetry, info }) {
   if (isLoading && !posture) {
     return <SecurityLoadingState label="Loading security posture" />;
   }
@@ -48,9 +49,12 @@ export function PostureOverview({ posture, isLoading, error, onRetry }) {
             />
           </h2>
         </div>
-        <span className="last-updated">
-          Last evaluated {posture.last_evaluated_at ? formatDateTime(posture.last_evaluated_at) : "Never"}
-        </span>
+        <div className="security-section-heading-actions">
+          <span className="last-updated">
+            Last evaluated {posture.last_evaluated_at ? formatDateTime(posture.last_evaluated_at) : "Never"}
+          </span>
+          {info && <SecurityInfoButton title={info.title} label={info.label} content={info.content} />}
+        </div>
       </div>
       {helperText && <p className="posture-help">{helperText}</p>}
       <div className="posture-columns">

@@ -9,7 +9,9 @@ import { useSecurityEventDetail } from "../../hooks/useSecurityEventDetail";
 import { useSecuritySessions } from "../../hooks/useSecuritySessions";
 import { useSecuritySessionDetail } from "../../hooks/useSecuritySessionDetail";
 import { useSecurityPosture } from "../../hooks/useSecurityPosture";
+import { useSecurityHelp } from "../../hooks/useSecurityHelp";
 import { SecurityNav } from "./SecurityNav";
+import { SecurityInfoButton } from "./SecurityInfoButton";
 import { SecurityOverview } from "./SecurityOverview";
 import { PostureOverview } from "./PostureOverview";
 import { SecurityEventFilters } from "./SecurityEventFilters";
@@ -42,6 +44,7 @@ export function SecurityObservatoryPage() {
   const eventDetail = useSecurityEventDetail();
   const sessions = useSecuritySessions();
   const sessionDetail = useSecuritySessionDetail();
+  const help = useSecurityHelp();
   const [activeSection, setActiveSection] = useState("overview");
   const [selectedEventId, setSelectedEventId] = useState(null);
   const [selectedSessionId, setSelectedSessionId] = useState(null);
@@ -126,6 +129,9 @@ export function SecurityObservatoryPage() {
               </div>
             )}
             <span className="read-only-chip">Read only</span>
+            <Link to="/security-command" className="security-button secondary">
+              Security Command
+            </Link>
             <button type="button" className="security-button primary" onClick={refreshAll}>
               <RiRefreshLine /> Refresh
             </button>
@@ -144,6 +150,7 @@ export function SecurityObservatoryPage() {
               isLoading={posture.isLoading}
               error={posture.error}
               onRetry={posture.refetch}
+              info={help.getTopic("security_posture") ? { content: help.getTopic("security_posture") } : null}
             />
 
             <SecurityOverview
@@ -157,6 +164,7 @@ export function SecurityObservatoryPage() {
               user={user}
               sessions={sessions.sessions}
               summary={summary.summary}
+              info={help.getTopic("sessions") ? { content: help.getTopic("sessions") } : null}
             />
           </>
         )}
@@ -174,6 +182,9 @@ export function SecurityObservatoryPage() {
                 <p className="security-eyebrow">Recent Security Events</p>
                 <h2 id="security-events-heading">Events</h2>
               </div>
+              {help.getTopic("events") && (
+                <SecurityInfoButton title="Events" content={help.getTopic("events")} />
+              )}
             </div>
             <SecurityEventFilters
               filters={events.filters}
@@ -203,6 +214,9 @@ export function SecurityObservatoryPage() {
                 <p className="security-eyebrow">Sessions</p>
                 <h2 id="security-sessions-heading">Authentication Sessions</h2>
               </div>
+              {help.getTopic("sessions") && (
+                <SecurityInfoButton title="Authentication Sessions" content={help.getTopic("sessions")} />
+              )}
             </div>
             <SecuritySessionsTable
               sessions={sessions.sessions}

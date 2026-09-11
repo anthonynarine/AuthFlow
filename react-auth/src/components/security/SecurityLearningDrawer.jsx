@@ -1,6 +1,8 @@
 import React, { useCallback, useEffect, useId, useRef, useState } from "react";
+import { useNavigate } from "react-router-dom";
 import { fetchLearningTopic } from "../../hooks/useSecurityLearning";
 import { SecurityLearningView } from "./SecurityLearningView";
+import { buildAskAboutPrompt } from "../security-command/sageResponse";
 import "./SecurityLearning.css";
 
 /**
@@ -15,6 +17,7 @@ import "./SecurityLearning.css";
 export function SecurityLearningDrawer({ topicKey, onClose }) {
   const titleId = useId();
   const closeRef = useRef(null);
+  const navigate = useNavigate();
   const [stack, setStack] = useState(() => [topicKey]);
   const [topic, setTopic] = useState(null);
   const [isLoading, setIsLoading] = useState(true);
@@ -86,6 +89,17 @@ export function SecurityLearningDrawer({ topicKey, onClose }) {
     [currentKey, isNavigating]
   );
 
+  // B-UX3: hands the current topic off to Sage via Security Command's
+  // Copilot, the third rung of the ⓘ -> Learn more -> Ask Gait ladder.
+  // Sage itself decides how to answer -- this only supplies the starting
+  // message text, never a mode/routing parameter.
+  const handleAskGait = useCallback(() => {
+    if (!topic?.title) {
+      return;
+    }
+    navigate("/security-command", { state: { sagePrompt: buildAskAboutPrompt(topic.title) } });
+  }, [navigate, topic]);
+
   const goBack = useCallback(() => {
     if (stack.length <= 1 || isNavigating) {
       return;
@@ -154,6 +168,11 @@ export function SecurityLearningDrawer({ topicKey, onClose }) {
                 </p>
               )}
               <SecurityLearningView topic={topic} onSelectRelated={navigateTo} />
+              {topic?.title && (
+                <button type="button" className="help-learn-more" onClick={handleAskGait}>
+                  Ask Gait about this →
+                </button>
+              )}
             </>
           )}
         </div>

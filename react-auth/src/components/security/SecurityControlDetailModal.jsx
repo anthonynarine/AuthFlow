@@ -1,9 +1,11 @@
 import React, { useEffect } from "react";
+import { useNavigate } from "react-router-dom";
 import { StatusBadge } from "./StatusBadge";
 import { SeverityBadge } from "./SeverityBadge";
 import { SecurityErrorState } from "./SecurityErrorState";
 import { SecurityLoadingState } from "./SecurityLoadingState";
 import { SecurityInfoButton } from "./SecurityInfoButton";
+import { buildAskAboutPrompt } from "../security-command/sageResponse";
 import {
   formatDateTime,
   getControlStatusLabel,
@@ -23,7 +25,11 @@ function DetailRow({ label, value, children }) {
   );
 }
 
+const UNHEALTHY_STATUSES = new Set(["NEEDS_ATTENTION", "CONTROL_FAILURE"]);
+
 export function SecurityControlDetailModal({ controlKey, control, isLoading, error, onLoad, onClose }) {
+  const navigate = useNavigate();
+
   useEffect(() => {
     if (controlKey) {
       onLoad(controlKey).catch(() => {});
@@ -33,6 +39,19 @@ export function SecurityControlDetailModal({ controlKey, control, isLoading, err
   if (!controlKey) {
     return null;
   }
+
+  // B-UX3 "Teach this": hands this control off to Sage, phrased from
+  // fields already shown on screen (title, status label) -- never
+  // operational data the operator hasn't already seen.
+  const handleTeachThis = () => {
+    if (!control) {
+      return;
+    }
+    const prompt = UNHEALTHY_STATUSES.has(control.status)
+      ? `Why is ${control.title} ${(control.status_label || getControlStatusLabel(control.status)).toLowerCase()}?`
+      : buildAskAboutPrompt(control.title);
+    navigate("/security-command", { state: { sagePrompt: prompt } });
+  };
 
   return (
     <div className="security-modal-backdrop" role="presentation" onMouseDown={onClose}>
@@ -51,9 +70,16 @@ export function SecurityControlDetailModal({ controlKey, control, isLoading, err
             </div>
             {control?.help && <SecurityInfoButton title={control.help.title || control.title} content={control.help} />}
           </div>
-          <button type="button" className="icon-button" onClick={onClose} aria-label="Close control detail">
-            ×
-          </button>
+          <div className="control-detail-heading-actions">
+            {control && (
+              <button type="button" className="link-button" onClick={handleTeachThis}>
+                Teach this
+              </button>
+            )}
+            <button type="button" className="icon-button" onClick={onClose} aria-label="Close control detail">
+              ×
+            </button>
+          </div>
         </div>
         {isLoading && <SecurityLoadingState label="Loading control detail" />}
         {error && <SecurityErrorState error={error} compact />}

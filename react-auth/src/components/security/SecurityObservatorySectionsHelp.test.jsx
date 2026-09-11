@@ -1,11 +1,19 @@
 import React from "react";
 import "@testing-library/jest-dom";
-import { fireEvent, render, screen, waitFor } from "@testing-library/react";
+import { fireEvent, render as rtlRender, screen, waitFor } from "@testing-library/react";
+import { MemoryRouter } from "react-router-dom";
 import { SecurityControlsSection } from "./SecurityControlsSection";
 import { SecurityFindingsSection } from "./SecurityFindingsSection";
 import { SecurityEvidenceSection } from "./SecurityEvidenceSection";
 import { authAxios } from "../../interceptors/axios";
 import { __resetSecurityHelpCacheForTests } from "../../hooks/useSecurityHelp";
+
+// SecurityControlsSection can open SecurityControlDetailModal, which now
+// navigates to Security Command for its B-UX3 "Teach this" action, so
+// every render needs a Router ancestor.
+function render(ui) {
+  return rtlRender(<MemoryRouter>{ui}</MemoryRouter>);
+}
 
 jest.mock("../../interceptors/axios", () => ({
   authAxios: {

@@ -1,9 +1,22 @@
 import React from "react";
 import "@testing-library/jest-dom";
-import { fireEvent, render, screen, waitFor } from "@testing-library/react";
+import { fireEvent, render as rtlRender, screen, waitFor } from "@testing-library/react";
+import { MemoryRouter } from "react-router-dom";
 import { SecurityLearningDrawer } from "./SecurityLearningDrawer";
 import { __resetSecurityLearningCacheForTests } from "../../hooks/useSecurityLearning";
 import { authAxios } from "../../interceptors/axios";
+
+const mockNavigate = jest.fn();
+jest.mock("react-router-dom", () => ({
+  ...jest.requireActual("react-router-dom"),
+  useNavigate: () => mockNavigate,
+}));
+
+// SecurityLearningDrawer now navigates to Security Command for its B-UX3
+// "Ask Gait about this" action, so every render needs a Router ancestor.
+function render(ui) {
+  return rtlRender(<MemoryRouter>{ui}</MemoryRouter>);
+}
 
 jest.mock("../../interceptors/axios", () => ({
   authAxios: {
@@ -58,6 +71,7 @@ function mockRoute(routes) {
 describe("SecurityLearningDrawer", () => {
   beforeEach(() => {
     jest.clearAllMocks();
+    mockNavigate.mockReset();
     __resetSecurityLearningCacheForTests();
   });
 
@@ -176,5 +190,19 @@ describe("SecurityLearningDrawer", () => {
 
     const relatedButton = screen.getByRole("button", { name: "Token Family" });
     expect(relatedButton.tagName).toBe("BUTTON");
+  });
+
+  test("B-UX3: Ask Gait about this hands the topic title off to Security Command's Copilot", async () => {
+    mockRoute({ "/security/learning/refresh_replay_detection/": { data: REFRESH_REPLAY } });
+
+    render(<SecurityLearningDrawer topicKey="refresh_replay_detection" onClose={jest.fn()} />);
+    await screen.findByRole("heading", { name: "Refresh Replay Detection" });
+
+    const askGait = screen.getByRole("button", { name: "Ask Gait about this →" });
+    fireEvent.click(askGait);
+
+    expect(mockNavigate).toHaveBeenCalledWith("/security-command", {
+      state: { sagePrompt: "Explain Refresh Replay Detection" },
+    });
   });
 });

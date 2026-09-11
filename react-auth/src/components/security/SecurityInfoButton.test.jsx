@@ -1,9 +1,17 @@
 import React from "react";
 import "@testing-library/jest-dom";
-import { fireEvent, render, screen, waitFor } from "@testing-library/react";
+import { fireEvent, render as rtlRender, screen, waitFor } from "@testing-library/react";
+import { MemoryRouter } from "react-router-dom";
 import { SecurityInfoButton } from "./SecurityInfoButton";
 import { __resetSecurityLearningCacheForTests } from "../../hooks/useSecurityLearning";
 import { authAxios } from "../../interceptors/axios";
+
+// "Learn more" opens SecurityLearningDrawer, which now navigates to
+// Security Command for its B-UX3 "Ask Gait about this" action, so every
+// render needs a Router ancestor.
+function render(ui) {
+  return rtlRender(<MemoryRouter>{ui}</MemoryRouter>);
+}
 
 jest.mock("../../interceptors/axios", () => ({
   authAxios: {

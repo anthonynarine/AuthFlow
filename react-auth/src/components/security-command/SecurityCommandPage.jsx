@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from "react";
-import { Link } from "react-router-dom";
+import { Link, useLocation, useNavigate } from "react-router-dom";
 import { RiArrowGoBackLine, RiShieldKeyholeLine } from "react-icons/ri";
 import { useBasicAuthServices } from "../../context/auth/BasicAuthContext";
 import { useUserSessionServices } from "../../context/auth/UserSessionContext";
@@ -28,6 +28,8 @@ function isForbidden(...errors) {
 export function SecurityCommandPage() {
   const { user } = useBasicAuthServices();
   const { validateSession } = useUserSessionServices();
+  const location = useLocation();
+  const navigate = useNavigate();
   const posture = useSecurityPosture();
   const activeCases = useActiveSecurityCases();
   const help = useSecurityHelp();
@@ -193,6 +195,12 @@ export function SecurityCommandPage() {
                 caseId={selectedCase?.id}
                 findingId={selectedCase?.finding_id}
                 nextAvailableAction={snapshotState.snapshot?.next_available_action}
+                initialPrompt={location.state?.sagePrompt}
+                onInitialPromptConsumed={() => {
+                  // Clear the hand-off state so browser back / a remount
+                  // never resends the same "Ask Gait about this" prompt.
+                  navigate(location.pathname, { replace: true, state: {} });
+                }}
                 onOperationalResponse={() => {
                   // Backend remains authoritative: never infer new workflow
                   // state from the Copilot response, just refetch it

@@ -845,3 +845,275 @@
   outline: 2px solid var(--color-accent);
   outline-offset: 1px;
 }
+
+/* B-UX3 -- mastery mode controls */
+
+.copilot-mode-controls {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.4rem;
+  margin-top: 0.75rem;
+}
+
+.copilot-mode-button {
+  padding: 0.3rem 0.65rem;
+  border: 1px solid var(--color-border-strong);
+  border-radius: var(--radius-pill);
+  background: transparent;
+  color: var(--color-text);
+  font-size: 0.74rem;
+  font-weight: 700;
+  cursor: pointer;
+  transition: border-color var(--transition-fast), color var(--transition-fast);
+}
+
+.copilot-mode-button:hover:not(:disabled) {
+  border-color: var(--color-accent);
+  color: var(--color-accent);
+}
+
+.copilot-mode-button:focus-visible {
+  outline: 2px solid var(--color-accent);
+  outline-offset: 2px;
+}
+
+.copilot-mode-button:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
+.copilot-panel-suggestions--mastery {
+  margin-top: -0.4rem;
+}
+
+.copilot-suggestion--mastery {
+  border-style: dashed;
+}
+
+/* B-UX3 -- Sage grounded response */
+
+.sage-response {
+  display: flex;
+  flex-direction: column;
+  gap: 0.6rem;
+  margin-top: 0.4rem;
+}
+
+.sage-response-head {
+  display: flex;
+  align-items: center;
+  gap: 0.4rem;
+  flex-wrap: wrap;
+}
+
+.sage-basis-badge {
+  min-width: 0;
+}
+
+.sage-basis-success {
+  background: var(--color-accent-soft);
+  border-color: var(--color-accent);
+}
+
+.sage-basis-neutral {
+  background: var(--color-surface-glass);
+  border-color: var(--color-border-strong);
+}
+
+.sage-basis-attention {
+  background: rgba(255, 193, 7, 0.12);
+  border-color: rgba(255, 193, 7, 0.4);
+}
+
+.sage-mode-chip {
+  padding: 0.2rem 0.55rem;
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-pill);
+  color: var(--color-text-muted);
+  font-size: 0.68rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+}
+
+.sage-section-label {
+  margin: 0 0 0.3rem;
+  color: var(--color-text-muted);
+  font-size: 0.68rem;
+  font-weight: 800;
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+}
+
+.sage-current-truth {
+  padding: 0.65rem 0.75rem;
+  border: 1px solid var(--color-accent);
+  border-radius: var(--radius-sm);
+  background: var(--color-accent-soft);
+}
+
+.sage-fact-list {
+  margin: 0;
+  padding-left: 1.1rem;
+  color: var(--color-text);
+  font-size: 0.84rem;
+  line-height: 1.5;
+}
+
+.sage-interpretation-list {
+  margin-top: 0.4rem;
+  color: var(--color-text-muted);
+}
+
+.sage-knowledge {
+  display: flex;
+  flex-direction: column;
+  gap: 0.4rem;
+}
+
+.sage-knowledge-answer {
+  margin: 0;
+  color: var(--color-text);
+  white-space: pre-wrap;
+}
+
+.sage-excerpt-list {
+  margin: 0;
+  padding: 0;
+  list-style: none;
+  display: grid;
+  gap: 0.5rem;
+}
+
+.sage-excerpt-card {
+  padding: 0.6rem 0.7rem;
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-sm);
+  background: var(--color-surface-glass);
+}
+
+.sage-excerpt-title {
+  margin: 0 0 0.3rem;
+  color: var(--color-text);
+  font-size: 0.82rem;
+  font-weight: 700;
+}
+
+.sage-excerpt-index {
+  margin-right: 0.35rem;
+  color: var(--color-accent);
+}
+
+.sage-excerpt-heading {
+  color: var(--color-text-muted);
+  font-weight: 400;
+}
+
+.sage-excerpt-text {
+  margin: 0;
+  color: var(--color-text-muted);
+  font-size: 0.82rem;
+  line-height: 1.5;
+  white-space: pre-wrap;
+}
+
+.sage-fallback-note {
+  font-style: italic;
+}
+
+.sage-quiz-actions {
+  display: flex;
+  gap: 0.5rem;
+}
+
+.sage-limitations {
+  margin: 0;
+  padding-left: 1.1rem;
+  color: var(--color-text-muted);
+  font-size: 0.76rem;
+  line-height: 1.5;
+}
+
+.sage-next-reading-list {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.4rem;
+  margin-top: 0.3rem;
+}
+
+.sage-sources-trigger {
+  align-self: flex-start;
+  font-size: 0.8rem;
+}
+
+.sage-citation-list {
+  margin: 0;
+  padding: 0;
+  list-style: none;
+  display: grid;
+  gap: 0.75rem;
+}
+
+.sage-citation-row {
+  padding: 0.75rem;
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-sm);
+  background: var(--color-surface-glass);
+}
+
+.sage-citation-head {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 0.5rem;
+}
+
+.sage-citation-domain {
+  color: var(--color-text-muted);
+  font-size: 0.7rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+}
+
+.sage-citation-heading {
+  margin: 0.2rem 0;
+  color: var(--color-text-muted);
+  font-size: 0.78rem;
+}
+
+.sage-citation-origin {
+  display: block;
+  margin-top: 0.2rem;
+  color: var(--color-text-muted);
+  font-size: 0.76rem;
+  word-break: break-word;
+}
+
+.sage-citation-excerpt {
+  margin: 0.45rem 0 0;
+  color: var(--color-text);
+  font-size: 0.82rem;
+  line-height: 1.5;
+}
+
+.sage-citation-details {
+  margin-top: 0.5rem;
+}
+
+.sage-citation-details summary {
+  color: var(--color-accent);
+  font-size: 0.76rem;
+  cursor: pointer;
+}
+
+.sage-citation-detail-grid {
+  margin-top: 0.5rem;
+  grid-template-columns: 1fr;
+}
+
+@media (max-width: 720px) {
+  .copilot-mode-controls {
+    gap: 0.3rem;
+  }
+}

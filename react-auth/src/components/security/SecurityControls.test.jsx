@@ -1,9 +1,22 @@
 import React from "react";
 import "@testing-library/jest-dom";
-import { fireEvent, render, screen, waitFor } from "@testing-library/react";
+import { fireEvent, render as rtlRender, screen, waitFor } from "@testing-library/react";
+import { MemoryRouter } from "react-router-dom";
 import { SecurityControlsFilters } from "./SecurityControlsFilters";
 import { SecurityControlsTable } from "./SecurityControlsTable";
 import { SecurityControlDetailModal } from "./SecurityControlDetailModal";
+
+// SecurityControlDetailModal now navigates to Security Command for its
+// B-UX3 "Teach this" action, so every render needs a Router ancestor.
+function render(ui) {
+  return rtlRender(<MemoryRouter>{ui}</MemoryRouter>);
+}
+
+const mockNavigate = jest.fn();
+jest.mock("react-router-dom", () => ({
+  ...jest.requireActual("react-router-dom"),
+  useNavigate: () => mockNavigate,
+}));
 
 // SecurityControlDetailModal renders SecurityInfoButton, whose "Learn more"
 // affordance lazily imports the real authAxios client via this hook; stub
@@ -184,6 +197,54 @@ describe("SecurityControlDetailModal", () => {
     expect(screen.getByText("Evidence is stale.")).toBeInTheDocument();
     expect(screen.getByText("TOTP verification succeeded")).toBeInTheDocument();
     expect(screen.getByText("TOTP secret rotation overdue")).toBeInTheDocument();
+  });
+
+  test("B-UX3 Teach this asks Sage a status-aware question for an unhealthy control", async () => {
+    mockNavigate.mockReset();
+    const onLoad = jest.fn().mockResolvedValue(baseControl);
+    const control = { ...baseControl, recent_evidence: [], open_findings: [] };
+
+    render(
+      <SecurityControlDetailModal
+        controlKey="GAIT.MFA.TOTP"
+        control={control}
+        isLoading={false}
+        error={null}
+        onLoad={onLoad}
+        onClose={jest.fn()}
+      />
+    );
+    await waitFor(() => expect(onLoad).toHaveBeenCalled());
+
+    fireEvent.click(screen.getByRole("button", { name: "Teach this" }));
+
+    expect(mockNavigate).toHaveBeenCalledWith("/security-command", {
+      state: { sagePrompt: "Why is TOTP multi-factor authentication needs attention?" },
+    });
+  });
+
+  test("B-UX3 Teach this asks a plain explain question for a healthy control", async () => {
+    mockNavigate.mockReset();
+    const onLoad = jest.fn().mockResolvedValue(baseControl);
+    const control = { ...baseControl, status: "HEALTHY", status_label: "Healthy", recent_evidence: [], open_findings: [] };
+
+    render(
+      <SecurityControlDetailModal
+        controlKey="GAIT.MFA.TOTP"
+        control={control}
+        isLoading={false}
+        error={null}
+        onLoad={onLoad}
+        onClose={jest.fn()}
+      />
+    );
+    await waitFor(() => expect(onLoad).toHaveBeenCalled());
+
+    fireEvent.click(screen.getByRole("button", { name: "Teach this" }));
+
+    expect(mockNavigate).toHaveBeenCalledWith("/security-command", {
+      state: { sagePrompt: "Explain TOTP multi-factor authentication" },
+    });
   });
 
   test("shows an empty state when a control has no evidence or findings yet", async () => {

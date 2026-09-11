@@ -9,8 +9,11 @@ import { ResetPassword } from "./components/reset-password/ResetPassword";
 import { QRCodeSetup } from "./components/two-factor/2fa-setup/QRCodeSetup";
 import { NotFound } from "./components/not-found/NotFound";
 import HomePage from "./components/home/HomePage";
+import GaitArchitecturePage from "./components/home/GaitArchitecturePage";
 import { SecurityObservatoryPage } from "./components/security/SecurityObservatoryPage";
+import { SecurityLearnPage } from "./components/security/SecurityLearnPage";
 import { SecurityCommandPage } from "./components/security-command/SecurityCommandPage";
+import { SecurityExercisesPage } from "./components/security-exercises/SecurityExercisesPage";
 import "./App.css"
 import { Footer } from "./components/footer/Footer";
 import BasicAuthProvider from "./context/auth/BasicAuthContext";
@@ -31,6 +34,7 @@ function App() {
                 <UserSessionProvider>
                   <Routes>
                     <Route path="/" element={<HomePage />} />
+                    <Route path="/architecture" element={<GaitArchitecturePage />} />
                     <Route path="/register" element={<RegisterPage />} />
                     <Route path="/login" element={<LoginPage />} />
                     <Route path="/forgot-password" element={<ForgotPassword />} />
@@ -40,6 +44,8 @@ function App() {
                     <Route path="/security" element={<SecurityObservatoryPage />} />
                     <Route path="/security-command" element={<SecurityCommandPage />} />
                     <Route path="/security-observatory" element={<SecurityObservatoryPage />} />
+                    <Route path="/security-exercises" element={<SecurityExercisesPage />} />
+                    <Route path="/security-learn" element={<SecurityLearnPage />} />
                     <Route path="/reset-password/:uidb64/:token" element={<ResetPassword />} />
                     <Route path="/setup-2fa" element={<QRCodeSetup />} />
                     <Route path="*" element={<NotFound />} />

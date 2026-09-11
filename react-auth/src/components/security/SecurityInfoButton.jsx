@@ -1,7 +1,14 @@
 import React, { useEffect, useId, useRef, useState } from "react";
 import { RiInformationFill } from "react-icons/ri";
-import { getHelpSections, getRelatedViewLabel, getStatusExplanationEntries } from "./securityHelpPresentation";
+import {
+  getCurrentStatusExplanationEntry,
+  getHelpSections,
+  getRelatedViewLabel,
+  getStatusExplanationEntries,
+} from "./securityHelpPresentation";
 import { normalizeSecurityRoleText } from "../security-command/roleTerminology";
+import { SecurityLearningDrawer } from "./SecurityLearningDrawer";
+import "./SecurityLearning.css";
 
 /**
  * Renders one backend-provided help object (a security/help_content.py
@@ -9,10 +16,15 @@ import { normalizeSecurityRoleText } from "../security-command/roleTerminology";
  * popup body. This component owns presentation only -- headings, order,
  * and layout -- never the explanatory text itself, which is rendered
  * verbatim (through the canonical-role-terminology normalizer only).
+ *
+ * When the backend attaches `learning_topic_key` (B-UX2A), a restrained
+ * "Learn more" action is shown that hands off to the deeper
+ * SecurityLearningDrawer -- this popup itself stays a quick explanation.
  */
-function SecurityHelpContent({ help }) {
+function SecurityHelpContent({ help, currentStatus, onLearnMore }) {
   const sections = getHelpSections(help);
-  const statusEntries = getStatusExplanationEntries(help);
+  const currentStatusEntry = getCurrentStatusExplanationEntry(help, currentStatus);
+  const statusEntries = currentStatus ? [] : getStatusExplanationEntries(help);
   const relatedViewLabel = getRelatedViewLabel(help.related_view);
 
   return (
@@ -24,6 +36,17 @@ function SecurityHelpContent({ help }) {
           <p>{normalizeSecurityRoleText(section.body)}</p>
         </div>
       ))}
+      {currentStatusEntry && (
+        <div className="help-section help-status-section">
+          <h3>Current status meaning</h3>
+          <dl className="help-status-list">
+            <div>
+              <dt>{currentStatusEntry.statusLabel}</dt>
+              <dd>{normalizeSecurityRoleText(currentStatusEntry.text)}</dd>
+            </div>
+          </dl>
+        </div>
+      )}
       {statusEntries.length > 0 && (
         <div className="help-section help-status-section">
           <h3>Status meanings</h3>
@@ -38,14 +61,21 @@ function SecurityHelpContent({ help }) {
         </div>
       )}
       {relatedViewLabel && <p className="help-related">Related: {relatedViewLabel}</p>}
+      {onLearnMore && (
+        <button type="button" className="help-learn-more" onClick={onLearnMore}>
+          Learn more →
+        </button>
+      )}
     </>
   );
 }
 
-export function SecurityInfoButton({ title, children, label, content }) {
+export function SecurityInfoButton({ title, children, label, content, currentStatus }) {
   const [isOpen, setIsOpen] = useState(false);
+  const [learningTopicKey, setLearningTopicKey] = useState(null);
   const titleId = useId();
   const closeRef = useRef(null);
+  const triggerRef = useRef(null);
   const resolvedTitle = title || content?.title;
 
   useEffect(() => {
@@ -66,9 +96,20 @@ export function SecurityInfoButton({ title, children, label, content }) {
     };
   }, [isOpen]);
 
+  const handleLearnMore = () => {
+    setIsOpen(false);
+    setLearningTopicKey(content.learning_topic_key);
+  };
+
+  const closeLearningDrawer = () => {
+    setLearningTopicKey(null);
+    window.requestAnimationFrame(() => triggerRef.current?.focus());
+  };
+
   return (
     <>
       <button
+        ref={triggerRef}
         type="button"
         className="security-info-button"
         onClick={() => setIsOpen(true)}
@@ -98,10 +139,21 @@ export function SecurityInfoButton({ title, children, label, content }) {
               </button>
             </div>
             <div className="security-info-dialog-body">
-              {content ? <SecurityHelpContent help={content} /> : children}
+              {content ? (
+                <SecurityHelpContent
+                  help={content}
+                  currentStatus={currentStatus}
+                  onLearnMore={content.learning_topic_key ? handleLearnMore : null}
+                />
+              ) : (
+                children
+              )}
             </div>
           </div>
         </div>
+      )}
+      {learningTopicKey && (
+        <SecurityLearningDrawer topicKey={learningTopicKey} onClose={closeLearningDrawer} />
       )}
     </>
   );

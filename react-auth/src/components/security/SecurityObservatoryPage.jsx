@@ -132,6 +132,12 @@ export function SecurityObservatoryPage() {
             <Link to="/security-command" className="security-button secondary">
               Security Command
             </Link>
+            <Link to="/security-exercises" className="security-button secondary">
+              Security Exercises
+            </Link>
+            <Link to="/security-learn" className="security-button secondary">
+              Learn Gait
+            </Link>
             <button type="button" className="security-button primary" onClick={refreshAll}>
               <RiRefreshLine /> Refresh
             </button>

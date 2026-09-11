@@ -186,17 +186,8 @@ export const CONTROL_STATUS_LABELS = {
   NOT_APPLICABLE: "Not applicable",
 };
 
-const CONTROL_STATUS_HELP = {
-  UNKNOWN: "No current evidence proves this control's health.",
-  NOT_APPLICABLE: "This control has been explicitly marked as not applicable.",
-};
-
 export function getControlStatusLabel(status) {
   return CONTROL_STATUS_LABELS[status] || humanizeEnum(status);
-}
-
-export function getControlStatusHelp(status) {
-  return CONTROL_STATUS_HELP[status] || "";
 }
 
 export const CONTROL_TYPES = ["LIVE", "PERIODIC", "DOCUMENTARY", "MANUAL"];

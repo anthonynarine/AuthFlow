@@ -2,8 +2,79 @@ import React from "react";
 import "@testing-library/jest-dom";
 import { fireEvent, render, screen, waitFor } from "@testing-library/react";
 import { SecurityInfoButton } from "./SecurityInfoButton";
+import { __resetSecurityLearningCacheForTests } from "../../hooks/useSecurityLearning";
+import { authAxios } from "../../interceptors/axios";
+
+jest.mock("../../interceptors/axios", () => ({
+  authAxios: {
+    get: jest.fn(),
+  },
+}));
 
 describe("SecurityInfoButton", () => {
+  beforeEach(() => {
+    jest.clearAllMocks();
+    __resetSecurityLearningCacheForTests();
+  });
+
+  test("shows Learn more when help carries a learning_topic_key", () => {
+    render(
+      <SecurityInfoButton
+        content={{
+          title: "Refresh Token Replay Protection",
+          short_description: "x",
+          learning_topic_key: "refresh_replay_detection",
+        }}
+      />
+    );
+    fireEvent.click(screen.getByRole("button", { name: "Explain Refresh Token Replay Protection" }));
+    expect(screen.getByRole("button", { name: "Learn more →" })).toBeInTheDocument();
+  });
+
+  test("does not show Learn more when help has no learning_topic_key", () => {
+    render(<SecurityInfoButton content={{ title: "Findings", short_description: "x" }} />);
+    fireEvent.click(screen.getByRole("button", { name: "Explain Findings" }));
+    expect(screen.queryByRole("button", { name: "Learn more →" })).not.toBeInTheDocument();
+  });
+
+  test("clicking Learn more closes the quick popup and opens the correct learning topic", async () => {
+    authAxios.get.mockResolvedValue({
+      data: {
+        key: "refresh_replay_detection",
+        title: "Refresh Replay Detection",
+        category: "Authentication & Sessions",
+        short_summary: "Reusing a consumed refresh credential is rejected.",
+        why_it_exists: "x",
+        how_it_works: "x",
+        how_gait_uses_it: "x",
+        example: "x",
+        failure_scenario: "x",
+        security_invariant: "A previously consumed refresh credential is always rejected.",
+        key_takeaways: ["Detected purely from consumed_at"],
+        related_topics: [],
+        implementation_references: [],
+        classification: "INTERNAL",
+      },
+    });
+
+    render(
+      <SecurityInfoButton
+        content={{
+          title: "Refresh Token Replay Protection",
+          short_description: "x",
+          learning_topic_key: "refresh_replay_detection",
+        }}
+      />
+    );
+    fireEvent.click(screen.getByRole("button", { name: "Explain Refresh Token Replay Protection" }));
+    fireEvent.click(screen.getByRole("button", { name: "Learn more →" }));
+
+    expect(screen.queryByRole("dialog", { name: "Refresh Token Replay Protection" })).not.toBeInTheDocument();
+    await waitFor(() => expect(authAxios.get).toHaveBeenCalledWith("/security/learning/refresh_replay_detection/"));
+    expect(await screen.findByRole("heading", { name: "Refresh Replay Detection" })).toBeInTheDocument();
+    expect(screen.getByText("A previously consumed refresh credential is always rejected.")).toBeInTheDocument();
+  });
+
   test("has a meaningful accessible label derived from the title, not a generic one", () => {
     render(<SecurityInfoButton title="Security Posture">content</SecurityInfoButton>);
     expect(screen.getByRole("button", { name: "Explain Security Posture" })).toBeInTheDocument();
@@ -72,6 +143,45 @@ describe("SecurityInfoButton", () => {
     expect(screen.getByText("This session is currently active.")).toBeInTheDocument();
     expect(screen.getByText("REVOKED")).toBeInTheDocument();
     expect(screen.getByText("This session has been revoked.")).toBeInTheDocument();
+  });
+
+  test("renders only the exact current status explanation when currentStatus is provided", () => {
+    const help = {
+      key: "security_posture",
+      title: "Security Posture",
+      short_description: "Current posture.",
+      status_explanations: {
+        HEALTHY: "All controls are currently healthy.",
+        CONTROL_FAILURE: "The latest authoritative evidence indicates failure.",
+      },
+    };
+
+    render(<SecurityInfoButton content={help} currentStatus="CONTROL_FAILURE" />);
+    fireEvent.click(screen.getByRole("button", { name: "Explain Security Posture" }));
+
+    expect(screen.getByText("Current status meaning")).toBeInTheDocument();
+    expect(screen.getByText("CONTROL FAILURE")).toBeInTheDocument();
+    expect(screen.getByText("The latest authoritative evidence indicates failure.")).toBeInTheDocument();
+    expect(screen.queryByText("All controls are currently healthy.")).not.toBeInTheDocument();
+    expect(screen.queryByText("Status meanings")).not.toBeInTheDocument();
+  });
+
+  test("does not fabricate a current status explanation when the exact key is absent", () => {
+    const help = {
+      title: "Security Posture",
+      short_description: "Current posture.",
+      status_explanations: {
+        HEALTHY: "All controls are currently healthy.",
+      },
+    };
+
+    render(<SecurityInfoButton content={help} currentStatus="UNKNOWN" />);
+    fireEvent.click(screen.getByRole("button", { name: "Explain Security Posture" }));
+
+    expect(screen.getByText("Current posture.")).toBeInTheDocument();
+    expect(screen.queryByText("Current status meaning")).not.toBeInTheDocument();
+    expect(screen.queryByText("Status meanings")).not.toBeInTheDocument();
+    expect(screen.queryByText(/unknown/i)).not.toBeInTheDocument();
   });
 
   test("renders a control's singular status_explanation as its own section", () => {

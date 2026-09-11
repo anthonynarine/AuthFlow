@@ -37,7 +37,14 @@ export function CurrentSessionSummary({ user, sessions = [], summary, info }) {
           <p className="security-eyebrow">Current Session</p>
           <h2 id="current-session-heading">Signed-in context</h2>
         </div>
-        {info && <SecurityInfoButton title={info.title} label={info.label} content={info.content} />}
+        {info && (
+          <SecurityInfoButton
+            title={info.title}
+            label={info.label}
+            content={info.content}
+            currentStatus={status}
+          />
+        )}
       </div>
       <div className="current-session-grid">
         <Detail label="User email" value={email} />

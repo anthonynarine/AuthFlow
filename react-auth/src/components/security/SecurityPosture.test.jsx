@@ -3,6 +3,16 @@ import "@testing-library/jest-dom";
 import { render, screen } from "@testing-library/react";
 import { PostureOverview } from "./PostureOverview";
 
+// PostureOverview renders SecurityInfoButton, whose "Learn more" affordance
+// lazily imports the real authAxios client via this hook; stub it so these
+// tests never touch the network (or the real, unmockable axios package
+// Jest can't parse here).
+jest.mock("../../hooks/useSecurityLearning", () => ({
+  fetchLearningTopic: jest.fn(() => Promise.reject(new Error("not mocked in this test"))),
+  useSecurityLearningIndex: () => ({ topics: [], isLoading: false, error: null, retry: jest.fn() }),
+  __resetSecurityLearningCacheForTests: jest.fn(),
+}));
+
 const healthyPosture = {
   overall_status: "HEALTHY",
   overall_status_label: "Healthy",
@@ -35,7 +45,7 @@ describe("PostureOverview", () => {
     const heading = screen.getByRole("heading", { level: 2 });
     expect(heading.textContent).toMatch(/Overall:\s*Unknown/);
     expect(heading.textContent).not.toMatch(/Overall:\s*Healthy/);
-    expect(screen.getByText(/no current evidence proves this control's health/i)).toBeInTheDocument();
+    expect(screen.queryByText(/no current evidence proves this control's health/i)).not.toBeInTheDocument();
     expect(screen.getByText("8")).toBeInTheDocument();
   });
 

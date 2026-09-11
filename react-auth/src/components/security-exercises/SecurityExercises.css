@@ -1,0 +1,363 @@
+.playbook-catalog-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+  gap: 1rem;
+  margin-top: 1rem;
+}
+
+.playbook-card {
+  display: flex;
+  flex-direction: column;
+  gap: 0.6rem;
+  padding: 1rem;
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-md);
+  background: var(--color-surface-glass);
+}
+
+.playbook-card-head {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 0.5rem;
+}
+
+.playbook-card-category {
+  color: var(--color-text-muted);
+  font-size: 0.75rem;
+  font-weight: 700;
+  text-transform: uppercase;
+}
+
+.playbook-card-title {
+  margin: 0;
+  font-size: 1.05rem;
+}
+
+.playbook-card-description {
+  margin: 0;
+  color: var(--color-text-muted);
+  font-size: 0.88rem;
+}
+
+.playbook-card-controls {
+  margin-top: 0.25rem;
+}
+
+.playbook-card-meta {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 0.5rem;
+  margin: 0;
+}
+
+.playbook-card-meta dt {
+  color: var(--color-text-muted);
+  font-size: 0.7rem;
+  font-weight: 800;
+  text-transform: uppercase;
+}
+
+.playbook-card-meta dd {
+  margin: 0.15rem 0 0;
+}
+
+.playbook-card-actions {
+  display: flex;
+  gap: 0.5rem;
+  margin-top: auto;
+  padding-top: 0.5rem;
+}
+
+.playbook-status-success,
+.exercise-status-success {
+  background: var(--color-accent-soft);
+  border-color: var(--color-accent);
+}
+
+.playbook-status-neutral,
+.exercise-status-neutral {
+  background: var(--color-surface-glass);
+  border-color: var(--color-border-strong);
+}
+
+.playbook-status-danger,
+.exercise-status-danger {
+  background: var(--color-danger-bg);
+  border-color: var(--color-danger-border);
+}
+
+.exercise-status-attention {
+  background: rgba(255, 193, 7, 0.12);
+  border-color: rgba(255, 193, 7, 0.4);
+}
+
+.security-checkbox-field {
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+.stale-banner {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 0.5rem;
+  margin: 0 0 0.75rem;
+}
+
+.security-modal-footer {
+  display: flex;
+  justify-content: flex-end;
+  gap: 0.5rem;
+  margin-top: 1rem;
+}
+
+.run-exercise-environment-field {
+  display: flex;
+  flex-direction: column;
+  gap: 0.3rem;
+  max-width: 16rem;
+  margin: 0.75rem 0;
+}
+
+.exercise-run-result {
+  margin-top: 0.75rem;
+}
+
+.exercise-run-result-head {
+  display: flex;
+  align-items: center;
+  gap: 0.6rem;
+  margin-bottom: 0.5rem;
+}
+
+.security-truth-note {
+  font-style: italic;
+}
+
+.exercise-run-history-list {
+  display: grid;
+  gap: 0.5rem;
+  margin: 1rem 0 0;
+  padding: 0;
+  list-style: none;
+}
+
+.exercise-run-history-row {
+  display: grid;
+  grid-template-columns: minmax(0, 2fr) auto auto auto;
+  align-items: center;
+  gap: 0.75rem;
+  width: 100%;
+  padding: 0.75rem;
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-sm);
+  background: var(--color-surface-glass);
+  color: var(--color-text);
+  text-align: left;
+  cursor: pointer;
+}
+
+.exercise-run-history-row:hover,
+.exercise-run-history-row:focus-visible {
+  border-color: var(--color-accent);
+}
+
+.exercise-run-history-title {
+  display: flex;
+  flex-direction: column;
+  gap: 0.1rem;
+  min-width: 0;
+}
+
+/* B-RED1D (Itachi) -- Schedules */
+
+.link-button {
+  background: none;
+  border: none;
+  padding: 0;
+  color: var(--color-accent);
+  text-decoration: underline;
+  cursor: pointer;
+  font: inherit;
+}
+
+.schedule-list-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+  gap: 1rem;
+  margin-top: 1rem;
+}
+
+.schedule-card {
+  display: flex;
+  flex-direction: column;
+  gap: 0.6rem;
+  padding: 1rem;
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-md);
+  background: var(--color-surface-glass);
+}
+
+.schedule-card-head {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 0.5rem;
+}
+
+.schedule-card-title {
+  margin: 0;
+  font-size: 1.05rem;
+}
+
+.schedule-card-playbook {
+  margin: 0;
+  font-size: 0.85rem;
+}
+
+.schedule-card-meta {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 0.5rem;
+  margin: 0;
+}
+
+.schedule-card-meta dt {
+  color: var(--color-text-muted);
+  font-size: 0.7rem;
+  font-weight: 800;
+  text-transform: uppercase;
+}
+
+.schedule-card-meta dd {
+  margin: 0.15rem 0 0;
+}
+
+.schedule-card-actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.5rem;
+  margin-top: auto;
+  padding-top: 0.5rem;
+}
+
+.schedule-card-confirm {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 0.5rem;
+  margin-top: auto;
+  padding-top: 0.5rem;
+}
+
+/* Enabled/Disabled uses its own class prefix -- never PASSED/FAILED/HEALTHY tones. */
+.schedule-state-success {
+  background: var(--color-accent-soft);
+  border-color: var(--color-accent);
+}
+
+.schedule-state-neutral {
+  background: var(--color-surface-glass);
+  border-color: var(--color-border-strong);
+}
+
+/* Occurrence status uses its own class prefix, distinct from
+   .exercise-status-* (run result), so the two vocabularies never look
+   interchangeable. */
+.occurrence-status-neutral {
+  background: var(--color-surface-glass);
+  border-color: var(--color-border-strong);
+}
+
+.occurrence-status-attention {
+  background: rgba(255, 193, 7, 0.12);
+  border-color: rgba(255, 193, 7, 0.4);
+}
+
+.occurrence-status-danger {
+  background: var(--color-danger-bg);
+  border-color: var(--color-danger-border);
+}
+
+.schedule-form {
+  display: flex;
+  flex-direction: column;
+  gap: 0.75rem;
+}
+
+.schedule-form-field {
+  display: flex;
+  flex-direction: column;
+  gap: 0.3rem;
+}
+
+.schedule-form-success {
+  margin-top: 0.5rem;
+}
+
+.schedule-occurrence-toolbar {
+  display: flex;
+  justify-content: flex-end;
+  margin-bottom: 0.5rem;
+}
+
+.occurrence-history-list {
+  display: grid;
+  gap: 0.6rem;
+  margin: 0.5rem 0 0;
+  padding: 0;
+  list-style: none;
+}
+
+.occurrence-history-row {
+  padding: 0.75rem;
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-sm);
+  background: var(--color-surface-glass);
+}
+
+.occurrence-history-row-head {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 0.6rem;
+}
+
+.occurrence-history-explanation {
+  margin: 0.35rem 0;
+}
+
+.occurrence-history-row-meta {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.75rem;
+  font-size: 0.85rem;
+  color: var(--color-text-muted);
+}
+
+@media (max-width: 720px) {
+  .playbook-catalog-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .playbook-card-meta {
+    grid-template-columns: 1fr;
+  }
+
+  .exercise-run-history-row {
+    grid-template-columns: 1fr;
+    align-items: flex-start;
+    text-align: left;
+  }
+
+  .schedule-list-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .schedule-card-meta {
+    grid-template-columns: 1fr;
+  }
+}

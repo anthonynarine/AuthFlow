@@ -1,0 +1,425 @@
+/* Shared visual language for every Gait architecture diagram. Node
+   colors carry fixed meaning everywhere they appear:
+     deterministic = teal   (Incident Commander / Gateway / control logic)
+     ai            = violet (Copilot / specialist agents reasoning)
+     human         = amber  (operator authority / approval)
+     truth         = sky    (controls / evidence / findings)
+     enforcement   = slate  (auth, sessions, MFA, replay protection)
+     protected     = neutral (Lumen, Identity, company services)
+     warning       = red    (failure / needs attention) */
+
+.diagram-reveal {
+  opacity: 0;
+  transform: translateY(14px);
+  transition: opacity 0.5s ease, transform 0.5s ease;
+}
+
+.diagram-reveal.is-visible {
+  opacity: 1;
+  transform: translateY(0);
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .diagram-reveal {
+    opacity: 1;
+    transform: none;
+    transition: none;
+  }
+}
+
+.diagram-frame {
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-md);
+  background: rgba(255, 255, 255, 0.025);
+  padding: 1.5rem;
+  margin-top: 2rem;
+}
+
+.diagram-frame-header {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 1rem;
+  flex-wrap: wrap;
+}
+
+.diagram-frame-eyebrow {
+  margin: 0 0 0.25rem;
+  color: var(--color-text-muted);
+  font-size: 0.72rem;
+  font-weight: 800;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+}
+
+.diagram-frame-title {
+  margin: 0;
+  color: var(--color-text);
+  font-size: 1.05rem;
+  font-weight: 800;
+}
+
+.diagram-frame-subtitle {
+  max-width: 640px;
+  margin: 0.6rem 0 0;
+  color: var(--color-text-muted);
+  font-size: 0.92rem;
+  line-height: 1.6;
+}
+
+.diagram-frame-body {
+  margin-top: 1.5rem;
+}
+
+.diagram-frame-footnote {
+  margin: 1.25rem 0 0;
+  padding-top: 1rem;
+  border-top: 1px dashed var(--color-border);
+  color: var(--color-text-muted);
+  font-size: 0.85rem;
+  line-height: 1.55;
+}
+
+/* Node */
+
+.diagram-node {
+  display: flex;
+  flex-direction: column;
+  gap: 0.35rem;
+  padding: 0.85rem 1rem;
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-sm);
+  background: rgba(255, 255, 255, 0.03);
+  text-align: left;
+}
+
+.diagram-node-top {
+  display: flex;
+  align-items: center;
+  gap: 0.4rem;
+  min-height: 1.1rem;
+}
+
+.diagram-node-icon {
+  font-size: 1rem;
+  flex-shrink: 0;
+}
+
+.diagram-node-eyebrow {
+  flex: 1;
+  font-size: 0.66rem;
+  font-weight: 800;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  opacity: 0.85;
+}
+
+.diagram-node-title {
+  margin: 0;
+  color: var(--color-text);
+  font-size: 0.92rem;
+  font-weight: 750;
+}
+
+.diagram-node-desc {
+  margin: 0;
+  color: var(--color-text-muted);
+  font-size: 0.82rem;
+  line-height: 1.5;
+}
+
+.diagram-node--sm .diagram-node-title {
+  font-size: 0.82rem;
+}
+
+.diagram-node--lg {
+  padding: 1.1rem 1.25rem;
+}
+
+.diagram-node--lg .diagram-node-title {
+  font-size: 1.05rem;
+}
+
+/* Variant colors */
+
+.diagram-node--deterministic { border-color: var(--diagram-deterministic-border); background: var(--diagram-deterministic-bg); }
+.diagram-node--deterministic .diagram-node-eyebrow,
+.diagram-node--deterministic .diagram-node-icon { color: var(--diagram-deterministic); }
+
+.diagram-node--ai { border-color: var(--diagram-ai-border); background: var(--diagram-ai-bg); }
+.diagram-node--ai .diagram-node-eyebrow,
+.diagram-node--ai .diagram-node-icon { color: var(--diagram-ai); }
+
+.diagram-node--human { border-color: var(--diagram-human-border); background: var(--diagram-human-bg); }
+.diagram-node--human .diagram-node-eyebrow,
+.diagram-node--human .diagram-node-icon { color: var(--diagram-human); }
+
+.diagram-node--truth { border-color: var(--diagram-truth-border); background: var(--diagram-truth-bg); }
+.diagram-node--truth .diagram-node-eyebrow,
+.diagram-node--truth .diagram-node-icon { color: var(--diagram-truth); }
+
+.diagram-node--enforcement { border-color: var(--diagram-enforcement-border); background: var(--diagram-enforcement-bg); }
+.diagram-node--enforcement .diagram-node-eyebrow,
+.diagram-node--enforcement .diagram-node-icon { color: var(--diagram-enforcement); }
+
+.diagram-node--protected { border-color: var(--diagram-protected-border); background: var(--diagram-protected-bg); }
+.diagram-node--protected .diagram-node-eyebrow,
+.diagram-node--protected .diagram-node-icon { color: var(--diagram-protected); }
+
+.diagram-node--warning { border-color: var(--diagram-warning-border); background: var(--diagram-warning-bg); }
+.diagram-node--warning .diagram-node-eyebrow,
+.diagram-node--warning .diagram-node-icon { color: var(--diagram-warning); }
+
+.diagram-node--neutral .diagram-node-eyebrow,
+.diagram-node--neutral .diagram-node-icon { color: var(--color-text-muted); }
+
+/* Connector */
+
+.flow-connector {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: var(--color-text-muted);
+}
+
+.flow-connector--down {
+  flex-direction: column;
+  min-height: 2.25rem;
+}
+
+.flow-connector--right {
+  flex-direction: row;
+  min-width: 2.25rem;
+}
+
+.flow-connector-line {
+  position: relative;
+  background: var(--color-border-strong);
+}
+
+.flow-connector--down .flow-connector-line {
+  width: 2px;
+  flex: 1;
+}
+
+.flow-connector--right .flow-connector-line {
+  height: 2px;
+  flex: 1;
+}
+
+.flow-connector-arrow {
+  width: 0;
+  height: 0;
+  flex-shrink: 0;
+}
+
+.flow-connector--down .flow-connector-arrow {
+  border-left: 5px solid transparent;
+  border-right: 5px solid transparent;
+  border-top: 7px solid var(--color-border-strong);
+}
+
+.flow-connector--right .flow-connector-arrow {
+  border-top: 5px solid transparent;
+  border-bottom: 5px solid transparent;
+  border-left: 7px solid var(--color-border-strong);
+}
+
+.flow-connector-label {
+  margin: 0.2rem 0;
+  font-size: 0.68rem;
+  font-weight: 700;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+  color: var(--color-text-muted);
+}
+
+.flow-connector.is-animated .flow-connector-line::after {
+  content: "";
+  position: absolute;
+  background: var(--diagram-deterministic);
+  border-radius: var(--radius-pill);
+  box-shadow: 0 0 6px var(--diagram-deterministic);
+}
+
+.flow-connector--down.is-animated .flow-connector-line::after {
+  left: -2px;
+  width: 6px;
+  height: 6px;
+  animation: flow-down 2.2s ease-in-out infinite;
+}
+
+.flow-connector--right.is-animated .flow-connector-line::after {
+  top: -2px;
+  width: 6px;
+  height: 6px;
+  animation: flow-right 2.2s ease-in-out infinite;
+}
+
+@keyframes flow-down {
+  0% { top: 0; opacity: 0; }
+  15% { opacity: 1; }
+  85% { opacity: 1; }
+  100% { top: 100%; opacity: 0; }
+}
+
+@keyframes flow-right {
+  0% { left: 0; opacity: 0; }
+  15% { opacity: 1; }
+  85% { opacity: 1; }
+  100% { left: 100%; opacity: 0; }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .flow-connector.is-animated .flow-connector-line::after {
+    animation: none;
+    opacity: 0;
+  }
+}
+
+/* Loop-back connector (Verify -> Observe) */
+
+.loop-back {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 0.4rem;
+  margin: 0.5rem auto 0;
+  max-width: 320px;
+}
+
+.loop-back-svg {
+  width: 100%;
+  height: auto;
+  overflow: visible;
+}
+
+.loop-back-path {
+  stroke: var(--diagram-deterministic);
+  stroke-width: 2;
+  stroke-linecap: round;
+  stroke-dasharray: 6 8;
+  animation: loop-dash 6s linear infinite;
+}
+
+.loop-back-arrowhead {
+  fill: var(--diagram-deterministic);
+}
+
+@keyframes loop-dash {
+  to { stroke-dashoffset: -140; }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .loop-back-path { animation: none; }
+}
+
+.loop-back-label {
+  color: var(--color-text-muted);
+  font-size: 0.72rem;
+  font-weight: 700;
+  letter-spacing: 0.05em;
+  text-transform: uppercase;
+  text-align: center;
+}
+
+/* Capability tag (Built / Next / Future) */
+
+.capability-tag {
+  display: inline-flex;
+  align-items: center;
+  min-height: 1.5rem;
+  padding: 0.2rem 0.55rem;
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-pill);
+  font-size: 0.65rem;
+  font-weight: 900;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+  white-space: nowrap;
+}
+
+.capability-tag--healthy {
+  border-color: rgba(26, 188, 156, 0.32);
+  background: rgba(26, 188, 156, 0.12);
+  color: var(--color-accent);
+}
+
+.capability-tag--warning {
+  border-color: rgba(245, 184, 91, 0.34);
+  background: rgba(245, 184, 91, 0.12);
+  color: var(--diagram-human);
+}
+
+.capability-tag--neutral {
+  color: var(--color-text-muted);
+}
+
+/* Legend */
+
+.diagram-legend {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.6rem 1.1rem;
+  margin: 1.25rem 0 0;
+  padding: 0;
+  list-style: none;
+}
+
+.diagram-legend li {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.4rem;
+  color: var(--color-text-muted);
+  font-size: 0.76rem;
+}
+
+.legend-dot {
+  width: 0.6rem;
+  height: 0.6rem;
+  border-radius: 50%;
+  flex-shrink: 0;
+}
+
+.legend-dot--deterministic { background: var(--diagram-deterministic); }
+.legend-dot--ai { background: var(--diagram-ai); }
+.legend-dot--human { background: var(--diagram-human); }
+.legend-dot--truth { background: var(--diagram-truth); }
+.legend-dot--enforcement { background: var(--diagram-enforcement); }
+.legend-dot--protected { background: var(--diagram-protected); }
+.legend-dot--warning { background: var(--diagram-warning); }
+.legend-dot--neutral { background: var(--color-text-muted); }
+
+/* Generic layout helpers diagrams compose with */
+
+.diagram-row {
+  display: flex;
+  align-items: stretch;
+  gap: 1rem;
+}
+
+.diagram-column {
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+}
+
+.diagram-branch-row {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(160px, 1fr));
+  gap: 1rem;
+}
+
+@media (max-width: 720px) {
+  .diagram-row {
+    flex-direction: column;
+  }
+
+  .flow-connector--right {
+    min-width: 0;
+    min-height: 2.25rem;
+    transform: rotate(90deg);
+    width: 1.5rem;
+    align-self: center;
+  }
+}

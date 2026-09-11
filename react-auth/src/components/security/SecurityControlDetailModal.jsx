@@ -6,7 +6,6 @@ import { SecurityLoadingState } from "./SecurityLoadingState";
 import { SecurityInfoButton } from "./SecurityInfoButton";
 import {
   formatDateTime,
-  getControlStatusHelp,
   getControlStatusLabel,
   getControlTypeDescription,
   getEvidenceResultLabel,
@@ -34,8 +33,6 @@ export function SecurityControlDetailModal({ controlKey, control, isLoading, err
   if (!controlKey) {
     return null;
   }
-
-  const helperText = control ? getControlStatusHelp(control.status) : "";
 
   return (
     <div className="security-modal-backdrop" role="presentation" onMouseDown={onClose}>
@@ -86,7 +83,6 @@ export function SecurityControlDetailModal({ controlKey, control, isLoading, err
               <DetailRow label="Last evidence" value={formatDateTime(control.last_evidence_at)} />
               <DetailRow label="Next review" value={formatDateTime(control.next_review_at)} />
             </dl>
-            {helperText && <p className="posture-help">{helperText}</p>}
 
             <div className="security-subsection">
               <h3>Related evidence</h3>

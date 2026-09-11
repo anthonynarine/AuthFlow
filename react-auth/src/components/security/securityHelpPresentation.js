@@ -58,6 +58,28 @@ export function getStatusExplanationEntries(help) {
   }));
 }
 
+/**
+ * Looks up the explanation for one known backend status key. This is exact
+ * by design: callers pass the status value they received from the backend,
+ * and we do not normalize or substitute another security meaning.
+ */
+export function getCurrentStatusExplanationEntry(help, currentStatus) {
+  const statusExplanations = help?.status_explanations;
+  if (!currentStatus || !statusExplanations || typeof statusExplanations !== "object") {
+    return null;
+  }
+
+  if (!Object.prototype.hasOwnProperty.call(statusExplanations, currentStatus)) {
+    return null;
+  }
+
+  return {
+    statusKey: currentStatus,
+    statusLabel: humanizeEnum(currentStatus).toUpperCase(),
+    text: statusExplanations[currentStatus],
+  };
+}
+
 /** Formats a related_view topic key into a readable label. Not a route. */
 export function getRelatedViewLabel(relatedView) {
   if (!relatedView) {

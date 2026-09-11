@@ -25,6 +25,37 @@
   --shadow-glow-accent: 0 0 36px rgba(26, 188, 156, 0.2);
   --transition-fast: 0.15s ease;
   --transition-base: 0.25s ease;
+
+  /* Diagram semantic roles — consistent meaning across every architecture
+     diagram: human authority, AI reasoning, deterministic control, trusted
+     evidence, enforcement, protected systems, warning/failure, healthy. */
+  --diagram-human: #f5b85b;
+  --diagram-human-bg: rgba(245, 184, 91, 0.1);
+  --diagram-human-border: rgba(245, 184, 91, 0.32);
+
+  --diagram-ai: #a78bfa;
+  --diagram-ai-bg: rgba(167, 139, 250, 0.1);
+  --diagram-ai-border: rgba(167, 139, 250, 0.32);
+
+  --diagram-deterministic: var(--color-accent);
+  --diagram-deterministic-bg: rgba(26, 188, 156, 0.1);
+  --diagram-deterministic-border: rgba(26, 188, 156, 0.32);
+
+  --diagram-truth: #38bdf8;
+  --diagram-truth-bg: rgba(56, 189, 248, 0.1);
+  --diagram-truth-border: rgba(56, 189, 248, 0.32);
+
+  --diagram-enforcement: #64748b;
+  --diagram-enforcement-bg: rgba(100, 116, 139, 0.14);
+  --diagram-enforcement-border: rgba(148, 163, 184, 0.32);
+
+  --diagram-protected: #e8eaed;
+  --diagram-protected-bg: rgba(255, 255, 255, 0.035);
+  --diagram-protected-border: var(--color-border-strong);
+
+  --diagram-warning: var(--color-danger);
+  --diagram-warning-bg: var(--color-danger-bg);
+  --diagram-warning-border: var(--color-danger-border);
 }
 
 *,

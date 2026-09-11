@@ -81,8 +81,14 @@ export function SecurityCommandPage() {
               </div>
             )}
             <span className="read-only-chip">Read only</span>
+            <Link to="/security-exercises" className="security-button secondary">
+              Security Exercises
+            </Link>
             <Link to="/security-observatory" className="security-button secondary">
               Security Observatory
+            </Link>
+            <Link to="/security-learn" className="security-button secondary">
+              Learn Gait
             </Link>
           </div>
         </header>
@@ -187,6 +193,16 @@ export function SecurityCommandPage() {
                 caseId={selectedCase?.id}
                 findingId={selectedCase?.finding_id}
                 nextAvailableAction={snapshotState.snapshot?.next_available_action}
+                onOperationalResponse={() => {
+                  // Backend remains authoritative: never infer new workflow
+                  // state from the Copilot response, just refetch it
+                  // immediately. Snapshot first (current truth), then the
+                  // incremental cursor-based timeline, then the active-case
+                  // summary. Normal polling continues underneath this.
+                  snapshotState.refetch({ silent: true }).catch(() => {});
+                  timelineState.refetch().catch(() => {});
+                  activeCases.refetch().catch(() => {});
+                }}
               />
             </div>
           </section>

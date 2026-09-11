@@ -43,7 +43,11 @@ export function HumanAttentionBanner({ snapshot, isLoading, isStale, lastUpdated
           )}
         </div>
         {humanAttentionHelpTopic && (
-          <SecurityInfoButton title="Human Approver Attention" content={humanAttentionHelpTopic} />
+          <SecurityInfoButton
+            title="Human Approver Attention"
+            content={humanAttentionHelpTopic}
+            currentStatus={snapshot.human_attention_state}
+          />
         )}
       </div>
       {snapshot.human_attention_reason && (

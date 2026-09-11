@@ -3,7 +3,7 @@ import { StatusBadge } from "./StatusBadge";
 import { SecurityErrorState } from "./SecurityErrorState";
 import { SecurityInfoButton } from "./SecurityInfoButton";
 import { SecurityLoadingState } from "./SecurityLoadingState";
-import { formatDateTime, getControlStatusHelp } from "./securityLabels";
+import { formatDateTime } from "./securityLabels";
 
 const CONTROL_ROWS = [
   { key: "healthy", label: "Healthy" },
@@ -33,8 +33,6 @@ export function PostureOverview({ posture, isLoading, error, onRetry, info }) {
     return null;
   }
 
-  const helperText = getControlStatusHelp(posture.overall_status);
-
   return (
     <section className="security-panel posture-panel" aria-labelledby="security-posture-heading">
       <div className="security-section-heading">
@@ -53,10 +51,16 @@ export function PostureOverview({ posture, isLoading, error, onRetry, info }) {
           <span className="last-updated">
             Last evaluated {posture.last_evaluated_at ? formatDateTime(posture.last_evaluated_at) : "Never"}
           </span>
-          {info && <SecurityInfoButton title={info.title} label={info.label} content={info.content} />}
+          {info && (
+            <SecurityInfoButton
+              title={info.title}
+              label={info.label}
+              content={info.content}
+              currentStatus={posture.overall_status}
+            />
+          )}
         </div>
       </div>
-      {helperText && <p className="posture-help">{helperText}</p>}
       <div className="posture-columns">
         <div className="posture-group">
           <h3>Controls</h3>

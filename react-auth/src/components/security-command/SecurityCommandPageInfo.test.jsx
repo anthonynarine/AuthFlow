@@ -135,6 +135,10 @@ const HELP_TOPICS = [
     title: "Human Attention",
     short_description: "Whether a human decision or action is actually required right now.",
     why_it_matters: "The model does not decide when human approval is required.",
+    status_explanations: {
+      HUMAN_APPROVAL_REQUIRED: "A Human Approver must review the exact validated artifact before release.",
+      NO_ACTION_REQUIRED: "No human decision is currently waiting.",
+    },
   },
   {
     key: "selected_case",
@@ -231,6 +235,15 @@ describe("Security Command page info controls", () => {
     expect(screen.getByText(/Incident Commander coordinates and routes/i)).toBeInTheDocument();
     expect(screen.getByText(/Blue Team investigates and diagnoses/i)).toBeInTheDocument();
     expect(screen.getAllByText(/Human Approver/i).length).toBeGreaterThan(0);
+
+    fireEvent.click(screen.getByRole("button", { name: "Close" }));
+    fireEvent.click(screen.getByRole("button", { name: "Explain Human Approver Attention" }));
+    expect(screen.getByText("Current status meaning")).toBeInTheDocument();
+    expect(screen.getByText("HUMAN APPROVAL REQUIRED")).toBeInTheDocument();
+    expect(
+      screen.getByText("A Human Approver must review the exact validated artifact before release.")
+    ).toBeInTheDocument();
+    expect(screen.queryByText("No human decision is currently waiting.")).not.toBeInTheDocument();
 
     fireEvent.click(screen.getByRole("button", { name: "Close" }));
     fireEvent.click(screen.getByRole("button", { name: "Explain Post-Deploy Verification" }));

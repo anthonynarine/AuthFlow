@@ -11,7 +11,25 @@ const OPERATIONAL_PROMPT_BY_ACTION = {
   VALIDATE_REPAIR: "Ask Security Validator to verify",
 };
 
-export function SecurityCopilotPanel({ caseId, findingId, nextAvailableAction }) {
+// Incident Commander action_status values that mean a request actually reached
+// the workflow engine and may have changed backend state. FAILED is included
+// deliberately: a live test proved Gateway can deny execution after a
+// task/run/audit row already exists, so "the operation failed" is not the
+// same as "nothing changed." SUGGESTED and NO_ACTION never reach Incident
+// Commander routing, so they are intentionally excluded.
+const OPERATIONAL_REFRESH_ACTION_STATUSES = new Set([
+  "DISPATCHED",
+  "FAILED",
+  "ALREADY_COMPLETE",
+  "NOT_ELIGIBLE",
+  "DENIED",
+]);
+
+function isOperationalRefreshResponse(response) {
+  return Boolean(response && OPERATIONAL_REFRESH_ACTION_STATUSES.has(response.action_status));
+}
+
+export function SecurityCopilotPanel({ caseId, findingId, nextAvailableAction, onOperationalResponse }) {
   const { messages, send, isSending } = useSecurityCopilot({ caseId, findingId });
   const [draft, setDraft] = useState("");
   const listRef = useRef(null);
@@ -28,12 +46,28 @@ export function SecurityCopilotPanel({ caseId, findingId, nextAvailableAction })
     suggestedPrompts.push(operationalPrompt);
   }
 
+  // The backend response is trusted state about whether the request changed
+  // anything -- Incident Commander's action_status, not the prose answer.
+  // On a match, tell SecurityCommandPage to refetch trusted workflow state
+  // immediately instead of waiting for the next poll. A copilot request
+  // failure (network/HTTP) is already handled inside useSecurityCopilot and
+  // must not trigger a refresh here.
+  const dispatch = (message) => {
+    send(message)
+      .then((response) => {
+        if (isOperationalRefreshResponse(response)) {
+          onOperationalResponse?.();
+        }
+      })
+      .catch(() => {});
+  };
+
   const handleSubmit = (event) => {
     event.preventDefault();
     if (!draft.trim() || isSending) {
       return;
     }
-    send(draft);
+    dispatch(draft);
     setDraft("");
   };
 
@@ -41,7 +75,7 @@ export function SecurityCopilotPanel({ caseId, findingId, nextAvailableAction })
     if (isSending) {
       return;
     }
-    send(prompt);
+    dispatch(prompt);
   };
 
   return (

@@ -1,4 +1,9 @@
-import { getHelpSections, getRelatedViewLabel, getStatusExplanationEntries } from "./securityHelpPresentation";
+import {
+  getCurrentStatusExplanationEntry,
+  getHelpSections,
+  getRelatedViewLabel,
+  getStatusExplanationEntries,
+} from "./securityHelpPresentation";
 
 describe("securityHelpPresentation", () => {
   test("getHelpSections skips missing fields and preserves reading order", () => {
@@ -26,6 +31,31 @@ describe("securityHelpPresentation", () => {
 
   test("getStatusExplanationEntries returns an empty list when absent", () => {
     expect(getStatusExplanationEntries({})).toEqual([]);
+  });
+
+  test("getCurrentStatusExplanationEntry uses the exact backend status key", () => {
+    const help = {
+      status_explanations: {
+        CONTROL_FAILURE: "The current evidence says the control failed.",
+        HEALTHY: "The current evidence says the control is healthy.",
+      },
+    };
+
+    expect(getCurrentStatusExplanationEntry(help, "CONTROL_FAILURE")).toEqual({
+      statusKey: "CONTROL_FAILURE",
+      statusLabel: "CONTROL FAILURE",
+      text: "The current evidence says the control failed.",
+    });
+    expect(getCurrentStatusExplanationEntry(help, "control_failure")).toBe(null);
+  });
+
+  test("getCurrentStatusExplanationEntry returns null for an unknown status", () => {
+    expect(
+      getCurrentStatusExplanationEntry(
+        { status_explanations: { HEALTHY: "Healthy." } },
+        "UNKNOWN"
+      )
+    ).toBe(null);
   });
 
   test("getRelatedViewLabel formats a topic key into a readable label without inventing a route", () => {

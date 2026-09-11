@@ -5,6 +5,16 @@ import { SecurityControlsFilters } from "./SecurityControlsFilters";
 import { SecurityControlsTable } from "./SecurityControlsTable";
 import { SecurityControlDetailModal } from "./SecurityControlDetailModal";
 
+// SecurityControlDetailModal renders SecurityInfoButton, whose "Learn more"
+// affordance lazily imports the real authAxios client via this hook; stub
+// it so these tests never touch the network (or the real, unmockable axios
+// package Jest can't parse here).
+jest.mock("../../hooks/useSecurityLearning", () => ({
+  fetchLearningTopic: jest.fn(() => Promise.reject(new Error("not mocked in this test"))),
+  useSecurityLearningIndex: () => ({ topics: [], isLoading: false, error: null, retry: jest.fn() }),
+  __resetSecurityLearningCacheForTests: jest.fn(),
+}));
+
 const domains = [
   { key: "MFA", label: "Multi-factor authentication" },
   { key: "SESSION", label: "Session" },

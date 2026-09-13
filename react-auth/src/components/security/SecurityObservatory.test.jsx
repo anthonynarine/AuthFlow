@@ -103,6 +103,31 @@ jest.mock("../../hooks/useSecurityPosture", () => ({
   }),
 }));
 
+jest.mock("../../hooks/useAiBudgetStatus", () => ({
+  useAiBudgetStatus: () => ({
+    budget: {
+      period_key: "2026-08",
+      monthly_limit_usd: "10.00",
+      amount_spent_usd: "1.00",
+      amount_reserved_usd: "0",
+      amount_remaining_usd: "9.00",
+      percent_consumed: "10.00",
+      total_input_tokens: 100,
+      total_output_tokens: 50,
+      model_call_count: 1,
+      investigation_count: 1,
+      status: "NORMAL",
+      requires_attention: false,
+      reset_at: "2026-09-01T00:00:00Z",
+      seconds_until_reset: 86400,
+    },
+    isLoading: false,
+    error: null,
+    lastUpdated: new Date("2026-08-31T00:00:00Z"),
+    refetch: jest.fn(),
+  }),
+}));
+
 jest.mock("../../hooks/useSecurityEvents", () => ({
   useSecurityEvents: () => ({
     events: [],
@@ -193,7 +218,7 @@ describe("Security Observatory components", () => {
       </MemoryRouter>
     );
 
-    expect(screen.getByText("Signed in as")).toBeInTheDocument();
+    expect(screen.getByTitle("Signed in as Anthony Narine")).toBeInTheDocument();
     expect(screen.getByText("Anthony Narine")).toBeInTheDocument();
     expect(mockValidateSession).toHaveBeenCalled();
   });

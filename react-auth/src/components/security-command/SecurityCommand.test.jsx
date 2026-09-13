@@ -251,19 +251,11 @@ describe("Security Command case and Human Review terminology", () => {
     expect(screen.getByText("Awaiting Human Approver")).toBeInTheDocument();
     expect(screen.getByText("Human Approver required")).toBeInTheDocument();
     expect(screen.getByText("Release Engineer release")).toBeInTheDocument();
-    expect(screen.getByText("Human Review / Approval")).toBeInTheDocument();
-    expect(screen.getByText("DIAGNOSIS")).toBeInTheDocument();
-    expect(screen.getByText("Produced by Blue Team")).toBeInTheDocument();
-    expect(screen.getByText("ADVERSARIAL TEST")).toBeInTheDocument();
-    expect(screen.getByText("Produced by Red Team")).toBeInTheDocument();
-    expect(screen.getByText("REPAIR")).toBeInTheDocument();
-    expect(screen.getByText("Produced by Green Team")).toBeInTheDocument();
-    expect(screen.getByText("VALIDATION")).toBeInTheDocument();
-    expect(screen.getByText("Produced by Security Validator")).toBeInTheDocument();
-    expect(screen.getByText("APPROVAL")).toBeInTheDocument();
-    expect(screen.getByText("Human Approver")).toBeInTheDocument();
-    expect(screen.getByText("DEPLOYMENT")).toBeInTheDocument();
-    expect(screen.getByText("Release Engineer")).toBeInTheDocument();
+    // No recommendation was supplied, so the Strategy Recommendation card
+    // renders its empty state rather than the old disabled approval stub.
+    expect(
+      screen.getByText("No strategy recommendation has been generated for this security concern.")
+    ).toBeInTheDocument();
   });
 
   test("normalizes Human Attention approval states and reasons", () => {

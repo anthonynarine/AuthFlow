@@ -113,6 +113,27 @@ jest.mock("../../hooks/useSecurityCopilot", () => ({
   }),
 }));
 
+jest.mock("../../hooks/useSecurityFindingRecommendation", () => ({
+  useSecurityFindingRecommendation: () => ({
+    recommendation: null,
+    isLoading: false,
+    error: null,
+    refetch: jest.fn().mockResolvedValue([]),
+  }),
+}));
+
+jest.mock("../../hooks/useSecurityRecommendationActions", () => ({
+  useSecurityRecommendationActions: () => ({
+    generateRecommendation: jest.fn(),
+    acceptRecommendation: jest.fn(),
+    dismissRecommendation: jest.fn(),
+    isSubmitting: false,
+    submitError: null,
+    lastAction: null,
+    resetError: jest.fn(),
+  }),
+}));
+
 const HELP_TOPICS = [
   {
     key: "security_posture",
@@ -212,10 +233,6 @@ describe("Security Command page info controls", () => {
       "Explain Specialist Workflow",
       "Explain Case Timeline",
       "Explain Security Copilot",
-      "Explain Human Review",
-      "Explain Security Validation",
-      "Explain Deployment",
-      "Explain Post-Deploy Verification",
     ];
 
     for (const label of labels) {
@@ -244,33 +261,6 @@ describe("Security Command page info controls", () => {
       screen.getByText("A Human Approver must review the exact validated artifact before release.")
     ).toBeInTheDocument();
     expect(screen.queryByText("No human decision is currently waiting.")).not.toBeInTheDocument();
-
-    fireEvent.click(screen.getByRole("button", { name: "Close" }));
-    fireEvent.click(screen.getByRole("button", { name: "Explain Post-Deploy Verification" }));
-    expect(screen.getByRole("dialog", { name: "Post-Deploy Verification" })).toBeInTheDocument();
-    expect(
-      screen.getByText(/Deployment succeeding is not the same as the security issue being fixed/i)
-    ).toBeInTheDocument();
-  });
-
-  test("does not fabricate validation/deployment/post-deploy help when those topics are absent", async () => {
-    authAxios.get.mockResolvedValue({
-      data: HELP_TOPICS.filter(
-        (topic) => !["security_validation", "deployment", "post_deploy_verification"].includes(topic.key)
-      ),
-    });
-
-    render(
-      <MemoryRouter>
-        <SecurityCommandPage />
-      </MemoryRouter>
-    );
-
-    expect(await screen.findByText("VALIDATION")).toBeInTheDocument();
-    expect(screen.getByText("POST-DEPLOY VERIFICATION")).toBeInTheDocument();
-    expect(screen.queryByRole("button", { name: "Explain Security Validation" })).not.toBeInTheDocument();
-    expect(screen.queryByRole("button", { name: "Explain Deployment" })).not.toBeInTheDocument();
-    expect(screen.queryByRole("button", { name: "Explain Post-Deploy Verification" })).not.toBeInTheDocument();
   });
 
   test("does not break Security Command when the help API fails", async () => {

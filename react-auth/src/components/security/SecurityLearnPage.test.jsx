@@ -9,7 +9,14 @@ import { authAxios } from "../../interceptors/axios";
 jest.mock("../../interceptors/axios", () => ({
   authAxios: {
     get: jest.fn(),
+    defaults: { baseURL: "http://localhost:8000/api" },
   },
+}));
+
+jest.mock("../../context/auth/BasicAuthContext", () => ({
+  useBasicAuthServices: () => ({
+    user: { first_name: "Security", last_name: "Staff", email: "security@example.test", is_staff: true },
+  }),
 }));
 
 function renderPage() {

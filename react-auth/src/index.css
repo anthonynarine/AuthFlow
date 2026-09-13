@@ -1,4 +1,8 @@
 :root {
+  color-scheme: dark;
+  scrollbar-color: var(--color-border-strong) transparent;
+  scrollbar-width: thin;
+
   --color-bg: #121212;
   --color-surface: #1b2129;
   --color-surface-alt: #232a34;
@@ -76,4 +80,30 @@ body {
 code {
   font-family: source-code-pro, Menlo, Monaco, Consolas, 'Courier New',
     monospace;
+}
+
+/* Themed scrollbars (Chrome/Edge/Safari). Firefox uses the
+   scrollbar-color/scrollbar-width declared on :root above. */
+::-webkit-scrollbar {
+  width: 10px;
+  height: 10px;
+}
+
+::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+::-webkit-scrollbar-thumb {
+  background-color: var(--color-border-strong);
+  border: 2px solid transparent;
+  border-radius: var(--radius-pill);
+  background-clip: content-box;
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background-color: var(--color-accent);
+}
+
+::-webkit-scrollbar-corner {
+  background: transparent;
 }

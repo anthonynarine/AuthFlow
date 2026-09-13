@@ -8,7 +8,8 @@ import { useExerciseRunHistory } from "../../hooks/useExerciseRunHistory";
 import { useScheduleList } from "../../hooks/useScheduleList";
 import { useScheduleMutations } from "../../hooks/useScheduleMutations";
 import { SecurityErrorState } from "../security/SecurityErrorState";
-import { formatUser } from "../security/securityLabels";
+import { SecurityPageSwitcher } from "../security/SecurityPageSwitcher";
+import { SecurityOperatorBadge } from "../security/SecurityOperatorBadge";
 import { ExerciseCatalogFilters } from "./ExerciseCatalogFilters";
 import { PlaybookCatalogList } from "./PlaybookCatalogList";
 import { PlaybookDetailModal } from "./PlaybookDetailModal";
@@ -132,24 +133,11 @@ export function SecurityExercisesPage() {
             <p>Browse the approved adversarial verification catalog and run governed, bounded exercises.</p>
           </div>
           <div className="security-header-actions">
-            {user && (
-              <div className="security-operator" title={`Signed in as ${formatUser(user)}`}>
-                <span>Signed in as</span>
-                <strong>{formatUser(user)}</strong>
-              </div>
-            )}
-            {!canRunExercises && <span className="read-only-chip">View only</span>}
-            <Link to="/security-command" className="security-button secondary">
-              Security Command
-            </Link>
-            <Link to="/security-observatory" className="security-button secondary">
-              Security Observatory
-            </Link>
-            <Link to="/security-learn" className="security-button secondary">
-              Learn Gait
-            </Link>
+            <SecurityOperatorBadge user={user} statusLabel={!canRunExercises ? "View only" : null} />
           </div>
         </header>
+
+        <SecurityPageSwitcher current="exercises" user={user} />
 
         <nav className="security-nav" aria-label="Security Exercises sections">
           {SECTIONS.map((section) => {

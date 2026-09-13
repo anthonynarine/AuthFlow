@@ -8,16 +8,26 @@ import { useActiveSecurityCases } from "../../hooks/useActiveSecurityCases";
 import { useSecurityCaseSnapshot } from "../../hooks/useSecurityCaseSnapshot";
 import { useSecurityCaseTimeline } from "../../hooks/useSecurityCaseTimeline";
 import { useSecurityHelp } from "../../hooks/useSecurityHelp";
+import { useSecurityFindingRecommendation } from "../../hooks/useSecurityFindingRecommendation";
+import { useSecurityRecommendationActions } from "../../hooks/useSecurityRecommendationActions";
+import { useSecurityCaseInvestigationSummary } from "../../hooks/useSecurityCaseInvestigationSummary";
+import { useSecurityCaseDiagnosis } from "../../hooks/useSecurityCaseDiagnosis";
 import { PostureOverview } from "../security/PostureOverview";
+import { SecurityPageSwitcher } from "../security/SecurityPageSwitcher";
 import { SecurityErrorState } from "../security/SecurityErrorState";
 import { SecurityInfoButton } from "../security/SecurityInfoButton";
-import { formatUser } from "../security/securityLabels";
+import { SecurityOperatorBadge } from "../security/SecurityOperatorBadge";
+import { canRunSecurityExercises } from "../security-exercises/securityExerciseLabels";
 import { ActiveCasesPanel } from "./ActiveCasesPanel";
 import { CaseHeader } from "./CaseHeader";
 import { WorkflowProgress } from "./WorkflowProgress";
 import { HumanAttentionBanner } from "./HumanAttentionBanner";
 import { CaseTimeline } from "./CaseTimeline";
 import { SecurityCopilotPanel } from "./SecurityCopilotPanel";
+import { SpecialistCard } from "./SpecialistCard";
+import { CommanderRoutingPanel } from "./CommanderRoutingPanel";
+import { InvestigationBlockedNotice } from "./InvestigationBlockedNotice";
+import { DiagnosisPanel } from "./DiagnosisPanel";
 import "../security/SecurityObservatory.css";
 import "./SecurityCommand.css";
 
@@ -37,6 +47,50 @@ export function SecurityCommandPage() {
 
   const snapshotState = useSecurityCaseSnapshot(selectedCase?.id);
   const timelineState = useSecurityCaseTimeline(selectedCase?.id);
+  const recommendationState = useSecurityFindingRecommendation(selectedCase?.finding_id);
+  const recommendationActions = useSecurityRecommendationActions();
+  const investigationSummaryState = useSecurityCaseInvestigationSummary(selectedCase?.id);
+  const diagnosisState = useSecurityCaseDiagnosis(selectedCase?.id);
+  const canActOnRecommendation = canRunSecurityExercises(user);
+
+  const handleGenerateRecommendation = () => {
+    if (!selectedCase?.finding_id) {
+      return;
+    }
+    recommendationActions
+      .generateRecommendation(selectedCase.finding_id)
+      .then(() => {
+        recommendationState.refetch().catch(() => {});
+      })
+      .catch(() => {});
+  };
+
+  const handleAcceptRecommendation = (recommendation) => {
+    recommendationActions
+      .acceptRecommendation(recommendation.id)
+      .then(() => {
+        // Backend remains authoritative: never mark HANDED_OFF
+        // optimistically, just refetch the real state. Accepting an
+        // INVESTIGATE recommendation can create/advance a case, so the
+        // existing case-scoped hooks are refetched too.
+        recommendationState.refetch().catch(() => {});
+        snapshotState.refetch({ silent: true }).catch(() => {});
+        timelineState.refetch().catch(() => {});
+        activeCases.refetch().catch(() => {});
+        investigationSummaryState.refetch().catch(() => {});
+        diagnosisState.refetch().catch(() => {});
+      })
+      .catch(() => {});
+  };
+
+  const handleDismissRecommendation = (recommendation) => {
+    recommendationActions
+      .dismissRecommendation(recommendation.id)
+      .then(() => {
+        recommendationState.refetch().catch(() => {});
+      })
+      .catch(() => {});
+  };
 
   useEffect(() => {
     validateSession().catch(() => {});
@@ -76,24 +130,11 @@ export function SecurityCommandPage() {
             <p>Operate Gait — current workflow, specialist status, and Copilot.</p>
           </div>
           <div className="security-header-actions">
-            {user && (
-              <div className="security-operator" title={`Signed in as ${formatUser(user)}`}>
-                <span>Signed in as</span>
-                <strong>{formatUser(user)}</strong>
-              </div>
-            )}
-            <span className="read-only-chip">Read only</span>
-            <Link to="/security-exercises" className="security-button secondary">
-              Security Exercises
-            </Link>
-            <Link to="/security-observatory" className="security-button secondary">
-              Security Observatory
-            </Link>
-            <Link to="/security-learn" className="security-button secondary">
-              Learn Gait
-            </Link>
+            <SecurityOperatorBadge user={user} statusLabel="Read only" />
           </div>
         </header>
+
+        <SecurityPageSwitcher current="command" user={user} />
 
         <div className="command-center-grid">
           <section className="command-column command-column--posture" aria-labelledby="command-posture-heading">
@@ -138,7 +179,27 @@ export function SecurityCommandPage() {
               selectedCase={selectedCase}
               snapshot={snapshotState.snapshot}
               isSnapshotLoading={snapshotState.isLoading}
+              recommendation={recommendationState.recommendation}
+              isRecommendationLoading={recommendationState.isLoading}
+              recommendationError={recommendationState.error}
+              onRetryRecommendation={recommendationState.refetch}
+              onGenerateRecommendation={handleGenerateRecommendation}
+              onAcceptRecommendation={handleAcceptRecommendation}
+              onDismissRecommendation={handleDismissRecommendation}
+              isRecommendationSubmitting={recommendationActions.isSubmitting}
+              canActOnRecommendation={canActOnRecommendation}
+              recommendationActionError={recommendationActions.submitError}
+              lastRecommendationAction={recommendationActions.lastAction}
+              investigationSummary={investigationSummaryState.summary}
+              isInvestigationSummaryLoading={investigationSummaryState.isLoading}
+              diagnosis={diagnosisState.diagnosis}
+              isDiagnosisLoading={diagnosisState.isLoading}
             />
+            {selectedCase && investigationSummaryState.summary?.case_status === "INVESTIGATION_BLOCKED" && (
+              <InvestigationBlockedNotice
+                reasonCategory={investigationSummaryState.summary?.investigation_blocked_reason_category}
+              />
+            )}
             {selectedCase && (
               <section className="security-panel" aria-labelledby="workflow-progress-heading">
                 <div className="security-section-heading">
@@ -154,6 +215,56 @@ export function SecurityCommandPage() {
                   specialists={snapshotState.snapshot?.specialists}
                   humanAttentionState={snapshotState.snapshot?.human_attention_state}
                   isLoading={snapshotState.isLoading}
+                />
+              </section>
+            )}
+            {selectedCase && investigationSummaryState.summary?.specialist_display_name && (
+              <section className="security-panel" aria-labelledby="commander-routing-heading">
+                <div className="security-section-heading">
+                  <div>
+                    <p className="security-eyebrow">Commander Routing</p>
+                    <h2 id="commander-routing-heading" className="sr-only">Commander routing</h2>
+                  </div>
+                  {help.getTopic("commander_specialist_routing") && (
+                    <SecurityInfoButton
+                      title="Commander Routing"
+                      content={help.getTopic("commander_specialist_routing")}
+                    />
+                  )}
+                </div>
+                <div className="commander-routing-and-specialist">
+                  <CommanderRoutingPanel
+                    specialistDisplayName={investigationSummaryState.summary.specialist_display_name}
+                    routingReasonCode={investigationSummaryState.summary.routing_reason_code}
+                    routingVersion={investigationSummaryState.summary.routing_version}
+                    fallbackUsed={investigationSummaryState.summary.fallback_used}
+                    isPreview={investigationSummaryState.summary.is_preview}
+                  />
+                  <SpecialistCard
+                    specialistDisplayName={investigationSummaryState.summary.specialist_display_name}
+                    statusLabel={snapshotState.snapshot?.status_label}
+                    environment={investigationSummaryState.summary.environment}
+                    isPreview={investigationSummaryState.summary.is_preview}
+                    isLoading={investigationSummaryState.isLoading}
+                  />
+                </div>
+              </section>
+            )}
+            {selectedCase && diagnosisState.diagnosis && (
+              <section className="security-panel" aria-labelledby="diagnosis-panel-heading">
+                <div className="security-section-heading">
+                  <div>
+                    <p className="security-eyebrow">AI Diagnosis</p>
+                    <h2 id="diagnosis-panel-heading" className="sr-only">AI diagnosis</h2>
+                  </div>
+                  {help.getTopic("grounded_diagnosis") && (
+                    <SecurityInfoButton title="AI Diagnosis" content={help.getTopic("grounded_diagnosis")} />
+                  )}
+                </div>
+                <DiagnosisPanel
+                  diagnosis={diagnosisState.diagnosis}
+                  isLoading={diagnosisState.isLoading}
+                  isActivelyInvestigating={snapshotState.snapshot?.current_state === "INVESTIGATING"}
                 />
               </section>
             )}
@@ -210,6 +321,8 @@ export function SecurityCommandPage() {
                   snapshotState.refetch({ silent: true }).catch(() => {});
                   timelineState.refetch().catch(() => {});
                   activeCases.refetch().catch(() => {});
+                  investigationSummaryState.refetch().catch(() => {});
+                  diagnosisState.refetch().catch(() => {});
                 }}
               />
             </div>

@@ -4,29 +4,29 @@ import { SecurityInfoButton } from "../security/SecurityInfoButton";
 import { formatShortId } from "../security/securityLabels";
 import { useSecurityHelp } from "../../hooks/useSecurityHelp";
 import { normalizeSecurityRoleText } from "./roleTerminology";
+import { StrategyRecommendationCard } from "./StrategyRecommendationCard";
+import { CommanderHandoffCard } from "./CommanderHandoffCard";
 
-const REVIEW_SECTIONS = [
-  { label: "DIAGNOSIS", producer: "Produced by Blue Team" },
-  { label: "ADVERSARIAL TEST", producer: "Produced by Red Team" },
-  { label: "REPAIR", producer: "Produced by Green Team" },
-  {
-    label: "VALIDATION",
-    producer: "Produced by Security Validator",
-    topicKey: "security_validation",
-  },
-  { label: "APPROVAL", producer: "Human Approver" },
-  { label: "DEPLOYMENT", producer: "Release Engineer", topicKey: "deployment" },
-  {
-    label: "POST-DEPLOY VERIFICATION",
-    producer: "Security Truth",
-    topicKey: "post_deploy_verification",
-  },
-];
-
-export function CaseHeader({ selectedCase, snapshot, isSnapshotLoading }) {
+export function CaseHeader({
+  selectedCase,
+  snapshot,
+  isSnapshotLoading,
+  recommendation,
+  isRecommendationLoading,
+  recommendationError,
+  onRetryRecommendation,
+  onGenerateRecommendation,
+  onAcceptRecommendation,
+  onDismissRecommendation,
+  isRecommendationSubmitting,
+  canActOnRecommendation,
+  recommendationActionError,
+  lastRecommendationAction,
+  investigationSummary,
+  isInvestigationSummaryLoading,
+}) {
   const help = useSecurityHelp();
   const selectedCaseHelpTopic = help.getTopic("selected_case");
-  const humanReviewHelpTopic = help.getTopic("human_review");
 
   if (!selectedCase) {
     return (
@@ -52,6 +52,12 @@ export function CaseHeader({ selectedCase, snapshot, isSnapshotLoading }) {
         <span>Case #{formatShortId(selectedCase.id)}</span>
       </div>
 
+      {!isInvestigationSummaryLoading && investigationSummary?.specialist_display_name && (
+        <p className="case-header-specialist">
+          Assigned: <strong>{investigationSummary.specialist_display_name}</strong>
+        </p>
+      )}
+
       {isSnapshotLoading && !snapshot ? (
         <p className="case-header-loading">Loading current workflow state…</p>
       ) : snapshot ? (
@@ -71,37 +77,21 @@ export function CaseHeader({ selectedCase, snapshot, isSnapshotLoading }) {
         </dl>
       ) : null}
 
-      <div className="case-header-approval-stub">
-        <p className="case-header-approval-stub-label">
-          Human Review / Approval
-          {humanReviewHelpTopic && <SecurityInfoButton title="Human Review" content={humanReviewHelpTopic} />}
-        </p>
-        <dl className="case-header-review-sections" aria-label="Human review sections">
-          {REVIEW_SECTIONS.map(({ label, producer, topicKey }) => {
-            const sectionHelpTopic = topicKey ? help.getTopic(topicKey) : null;
-            return (
-              <div key={label}>
-                <dt>
-                  {label}
-                  {sectionHelpTopic && (
-                    <SecurityInfoButton title={sectionHelpTopic.title} content={sectionHelpTopic} />
-                  )}
-                </dt>
-                <dd>{producer}</dd>
-              </div>
-            );
-          })}
-        </dl>
-        <div className="case-header-approval-stub-actions">
-          <button type="button" disabled>Review Green Team Repair</button>
-          <button type="button" disabled>View Diff</button>
-          <button type="button" disabled>View Validation</button>
-          <button type="button" disabled>Approve</button>
-          <button type="button" disabled>Reject</button>
-        </div>
-        <p className="case-header-approval-stub-note">
-          Human Approver authority is not implemented yet — coming in the next milestone.
-        </p>
+      <div className="case-header-strategy">
+        <StrategyRecommendationCard
+          recommendation={recommendation}
+          isLoading={isRecommendationLoading}
+          error={recommendationError}
+          onRetry={onRetryRecommendation}
+          onGenerate={onGenerateRecommendation}
+          onAccept={onAcceptRecommendation}
+          onDismiss={onDismissRecommendation}
+          isSubmitting={isRecommendationSubmitting}
+          canAct={canActOnRecommendation}
+          actionError={recommendationActionError}
+          lastAction={lastRecommendationAction}
+        />
+        <CommanderHandoffCard recommendation={recommendation} />
       </div>
     </div>
   );

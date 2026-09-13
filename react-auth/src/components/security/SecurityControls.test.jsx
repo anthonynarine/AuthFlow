@@ -105,6 +105,40 @@ describe("SecurityControlsTable", () => {
     expect(container.querySelector(".control-status-healthy")).not.toBeInTheDocument();
   });
 
+  test("Domain column header explains the domain glossary in plain language", () => {
+    render(
+      <SecurityControlsTable
+        controls={[baseControl]}
+        isLoading={false}
+        error={null}
+        onSelectControl={jest.fn()}
+        onRetry={jest.fn()}
+      />
+    );
+
+    fireEvent.click(screen.getByRole("button", { name: "Explain Security Domains" }));
+    expect(screen.getByRole("dialog", { name: "Security Domains" })).toBeInTheDocument();
+    expect(
+      screen.getByText("A second proof of identity beyond just a password.")
+    ).toBeInTheDocument();
+  });
+
+  test("Type column header explains the control-type glossary in plain language", () => {
+    render(
+      <SecurityControlsTable
+        controls={[baseControl]}
+        isLoading={false}
+        error={null}
+        onSelectControl={jest.fn()}
+        onRetry={jest.fn()}
+      />
+    );
+
+    fireEvent.click(screen.getByRole("button", { name: "Explain Control Types" }));
+    expect(screen.getByRole("dialog", { name: "Control Types" })).toBeInTheDocument();
+    expect(screen.getByText("Continuously or operationally evaluated.")).toBeInTheDocument();
+  });
+
   test("empty state is shown when no controls match filters", () => {
     render(
       <SecurityControlsTable controls={[]} isLoading={false} error={null} onSelectControl={jest.fn()} onRetry={jest.fn()} />

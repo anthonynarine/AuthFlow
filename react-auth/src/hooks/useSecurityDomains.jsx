@@ -1,5 +1,6 @@
 import { useCallback, useEffect, useState } from "react";
 import { authAxios } from "../interceptors/axios";
+import { getSecurityTruthEnvironment } from "../components/security/securityLabels";
 
 export function useSecurityDomains() {
   const [domains, setDomains] = useState([]);
@@ -10,7 +11,9 @@ export function useSecurityDomains() {
     setIsLoading(true);
     setError(null);
     try {
-      const { data } = await authAxios.get("/security/domains/");
+      const { data } = await authAxios.get("/security/domains/", {
+        params: { environment: getSecurityTruthEnvironment() },
+      });
       const list = Array.isArray(data) ? data : [];
       setDomains(list);
       return list;

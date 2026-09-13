@@ -1,3 +1,33 @@
+/**
+ * The security architecture docs page is server-rendered HTML served
+ * directly by django_auth (Mermaid diagrams, pan/zoom), not a client-side
+ * route -- a plain external link. Derived from the same env vars
+ * src/interceptors/axios.js uses for its own baseURL, read directly
+ * (not via the axios instance) so this widely-shared, previously
+ * axios-free utility module doesn't drag the real, Jest-unmockable axios
+ * package into every file that imports it.
+ */
+export function getSecurityArchitectureDocsUrl() {
+  const apiBase =
+    process.env.REACT_APP_USE_PRODUCTION_API === "true"
+      ? process.env.REACT_APP_PRODUCTION_URL
+      : process.env.REACT_APP_DEV_URL;
+  return `${(apiBase || "").replace(/\/api\/?$/, "")}/docs/security/architecture/`;
+}
+
+/**
+ * B-OBS-ENV1: Security Truth (posture/domains) is now scoped by deployment
+ * environment ("local"|"test"|"ci"|"staging"|"production") and the backend
+ * requires this query param -- there is no server-side default. This app
+ * only ever talks to one backend at a time (dev or production, chosen by
+ * REACT_APP_USE_PRODUCTION_API, same as getSecurityArchitectureDocsUrl()
+ * above), so the environment follows that same switch rather than needing
+ * its own separate setting.
+ */
+export function getSecurityTruthEnvironment() {
+  return process.env.REACT_APP_USE_PRODUCTION_API === "true" ? "production" : "local";
+}
+
 export const EVENT_TYPE_LABELS = {
   LOGIN_SUCCESS: "Login successful",
   LOGIN_FAILURE: "Login failed",
@@ -212,6 +242,49 @@ export function getControlTypeLabel(type) {
 
 export function getControlTypeDescription(type) {
   return CONTROL_TYPE_DESCRIPTIONS[type] || "";
+}
+
+export function getControlTypeGlossary() {
+  return CONTROL_TYPES.map((type) => [getControlTypeLabel(type), getControlTypeDescription(type)]);
+}
+
+/**
+ * SecurityControl.Domain has 19 fine-grained values (security/models.py) --
+ * more categories than a first-time operator can be expected to already
+ * know. Keyed by the human-readable domain_label the backend already sends
+ * (not the raw enum key, which the controls list payload doesn't expose),
+ * these are plain-language glossary entries, not a redefinition of any
+ * specific control -- individual control titles/descriptions remain
+ * backend-authoritative.
+ */
+const CONTROL_DOMAIN_DESCRIPTIONS = {
+  Identity: "Who a user is and how their identity is established.",
+  Session: "How a logged-in session is created, tracked, and ended.",
+  "Multi-factor authentication": "A second proof of identity beyond just a password.",
+  "Authentication assurance": "How confident Gait is that a login attempt is genuinely the real user.",
+  "Abuse control": "Preventing or throttling malicious or excessive request patterns.",
+  Audit: "Recording what happened so it can be reviewed later.",
+  Authorization: "What an authenticated user or agent is allowed to do.",
+  "Data protection": "Keeping stored and transmitted data safe from exposure.",
+  Database: "Security properties of the database layer itself.",
+  Infrastructure: "Security of the servers, network, and hosting environment.",
+  "Backup & recovery": "Whether data can be restored if something goes wrong.",
+  "Incident response": "How Gait detects and reacts to a live security incident.",
+  Monitoring: "Ongoing visibility into what the system is doing.",
+  "Secure SDLC": "Security built into how code is written and shipped, not bolted on after.",
+  "Vulnerability management": "Finding and tracking known weaknesses before they're exploited.",
+  Governance: "Policies and oversight for how security decisions get made.",
+  "Vendor risk": "Security risk introduced by third-party services Gait depends on.",
+  "Compliance evidence": "Proof needed to satisfy a regulatory or contractual requirement.",
+  "Agent security": "Constraints on what Gait's own AI/automation agents are allowed to do.",
+};
+
+export function getControlDomainDescription(domainLabel) {
+  return CONTROL_DOMAIN_DESCRIPTIONS[domainLabel] || "";
+}
+
+export function getControlDomainGlossary() {
+  return Object.entries(CONTROL_DOMAIN_DESCRIPTIONS);
 }
 
 export const EVIDENCE_RESULTS = ["PASS", "FAIL", "WARNING", "INFORMATIONAL"];

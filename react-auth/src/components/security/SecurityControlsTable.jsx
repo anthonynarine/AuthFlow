@@ -3,7 +3,37 @@ import { StatusBadge } from "./StatusBadge";
 import { SecurityEmptyState } from "./SecurityEmptyState";
 import { SecurityErrorState } from "./SecurityErrorState";
 import { SecurityLoadingState } from "./SecurityLoadingState";
-import { formatDateTime, getControlStatusLabel } from "./securityLabels";
+import { SecurityInfoButton } from "./SecurityInfoButton";
+import {
+  formatDateTime,
+  getControlDomainGlossary,
+  getControlStatusLabel,
+  getControlTypeGlossary,
+} from "./securityLabels";
+
+function Glossary({ label, entries }) {
+  return (
+    <dl className="help-status-list" aria-label={label}>
+      {entries.map(([term, description]) => (
+        <div key={term}>
+          <dt>{term}</dt>
+          <dd>{description}</dd>
+        </div>
+      ))}
+    </dl>
+  );
+}
+
+function ColumnHeading({ label, glossaryTitle, entries }) {
+  return (
+    <span className="security-th-heading">
+      {label}
+      <SecurityInfoButton title={glossaryTitle}>
+        <Glossary label={glossaryTitle} entries={entries} />
+      </SecurityInfoButton>
+    </span>
+  );
+}
 
 export function SecurityControlsTable({ controls, isLoading, error, onSelectControl, onRetry }) {
   if (isLoading && controls.length === 0) {
@@ -24,8 +54,12 @@ export function SecurityControlsTable({ controls, isLoading, error, onSelectCont
         <thead>
           <tr>
             <th scope="col">Control</th>
-            <th scope="col">Domain</th>
-            <th scope="col">Type</th>
+            <th scope="col">
+              <ColumnHeading label="Domain" glossaryTitle="Security Domains" entries={getControlDomainGlossary()} />
+            </th>
+            <th scope="col">
+              <ColumnHeading label="Type" glossaryTitle="Control Types" entries={getControlTypeGlossary()} />
+            </th>
             <th scope="col">Status</th>
             <th scope="col">Status reason</th>
             <th scope="col">Last evaluated</th>

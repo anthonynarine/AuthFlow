@@ -116,6 +116,45 @@ jest.mock("../../hooks/useSecurityCopilot", () => ({
   }),
 }));
 
+jest.mock("../../hooks/useSecurityFindingRecommendation", () => ({
+  useSecurityFindingRecommendation: () => ({
+    recommendation: null,
+    isLoading: false,
+    error: null,
+    refetch: jest.fn().mockResolvedValue([]),
+  }),
+}));
+
+jest.mock("../../hooks/useSecurityRecommendationActions", () => ({
+  useSecurityRecommendationActions: () => ({
+    generateRecommendation: jest.fn(),
+    acceptRecommendation: jest.fn(),
+    dismissRecommendation: jest.fn(),
+    isSubmitting: false,
+    submitError: null,
+    lastAction: null,
+    resetError: jest.fn(),
+  }),
+}));
+
+jest.mock("../../hooks/useSecurityCaseInvestigationSummary", () => ({
+  useSecurityCaseInvestigationSummary: () => ({
+    summary: null,
+    isLoading: false,
+    error: null,
+    refetch: jest.fn().mockResolvedValue(null),
+  }),
+}));
+
+jest.mock("../../hooks/useSecurityCaseDiagnosis", () => ({
+  useSecurityCaseDiagnosis: () => ({
+    diagnosis: null,
+    isLoading: false,
+    error: null,
+    refetch: jest.fn().mockResolvedValue(null),
+  }),
+}));
+
 async function askCopilot(text) {
   fireEvent.change(screen.getByLabelText("Ask Security Copilot"), { target: { value: text } });
   fireEvent.click(screen.getByRole("button", { name: "Send" }));

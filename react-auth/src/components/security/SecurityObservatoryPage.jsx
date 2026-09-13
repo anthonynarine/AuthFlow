@@ -9,11 +9,15 @@ import { useSecurityEventDetail } from "../../hooks/useSecurityEventDetail";
 import { useSecuritySessions } from "../../hooks/useSecuritySessions";
 import { useSecuritySessionDetail } from "../../hooks/useSecuritySessionDetail";
 import { useSecurityPosture } from "../../hooks/useSecurityPosture";
+import { useAiBudgetStatus } from "../../hooks/useAiBudgetStatus";
 import { useSecurityHelp } from "../../hooks/useSecurityHelp";
 import { SecurityNav } from "./SecurityNav";
+import { SecurityPageSwitcher } from "./SecurityPageSwitcher";
+import { SecurityOperatorBadge } from "./SecurityOperatorBadge";
 import { SecurityInfoButton } from "./SecurityInfoButton";
 import { SecurityOverview } from "./SecurityOverview";
 import { PostureOverview } from "./PostureOverview";
+import { AiBudgetCountdown } from "./AiBudgetCountdown";
 import { SecurityEventFilters } from "./SecurityEventFilters";
 import { SecurityEventsTable } from "./SecurityEventsTable";
 import { SecurityEventDetailModal } from "./SecurityEventDetailModal";
@@ -24,7 +28,7 @@ import { SecurityFindingsSection } from "./SecurityFindingsSection";
 import { SecurityEvidenceSection } from "./SecurityEvidenceSection";
 import { SecurityErrorState } from "./SecurityErrorState";
 import { CurrentSessionSummary } from "./CurrentSessionSummary";
-import { formatDateTime, formatUser } from "./securityLabels";
+import { formatDateTime } from "./securityLabels";
 import "./SecurityObservatory.css";
 
 function isForbidden(...errors) {
@@ -44,12 +48,13 @@ export function SecurityObservatoryPage() {
   const eventDetail = useSecurityEventDetail();
   const sessions = useSecuritySessions();
   const sessionDetail = useSecuritySessionDetail();
+  const aiBudget = useAiBudgetStatus();
   const help = useSecurityHelp();
   const [activeSection, setActiveSection] = useState("overview");
   const [selectedEventId, setSelectedEventId] = useState(null);
   const [selectedSessionId, setSelectedSessionId] = useState(null);
 
-  const forbidden = isForbidden(summary.error, events.error, sessions.error, posture.error);
+  const forbidden = isForbidden(summary.error, events.error, sessions.error, posture.error, aiBudget.error);
 
   useEffect(() => {
     validateSession().catch(() => {});
@@ -61,8 +66,9 @@ export function SecurityObservatoryPage() {
       events.refetch(),
       sessions.refetch(),
       posture.refetch(),
+      aiBudget.refetch(),
     ]);
-  }, [events, posture, sessions, summary]);
+  }, [aiBudget, events, posture, sessions, summary]);
 
   useEffect(() => {
     const handleFocus = () => refreshAll();
@@ -74,7 +80,13 @@ export function SecurityObservatoryPage() {
     };
   }, [refreshAll]);
 
-  const lastUpdated = [summary.lastUpdated, events.lastUpdated, sessions.lastUpdated, posture.lastUpdated]
+  const lastUpdated = [
+    summary.lastUpdated,
+    events.lastUpdated,
+    sessions.lastUpdated,
+    posture.lastUpdated,
+    aiBudget.lastUpdated,
+  ]
     .filter(Boolean)
     .sort((a, b) => b - a)[0];
 
@@ -122,22 +134,7 @@ export function SecurityObservatoryPage() {
             <p>Authentication, session, and security posture</p>
           </div>
           <div className="security-header-actions">
-            {user && (
-              <div className="security-operator" title={`Signed in as ${formatUser(user)}`}>
-                <span>Signed in as</span>
-                <strong>{formatUser(user)}</strong>
-              </div>
-            )}
-            <span className="read-only-chip">Read only</span>
-            <Link to="/security-command" className="security-button secondary">
-              Security Command
-            </Link>
-            <Link to="/security-exercises" className="security-button secondary">
-              Security Exercises
-            </Link>
-            <Link to="/security-learn" className="security-button secondary">
-              Learn Gait
-            </Link>
+            <SecurityOperatorBadge user={user} statusLabel="Read only" />
             <button type="button" className="security-button primary" onClick={refreshAll}>
               <RiRefreshLine /> Refresh
             </button>
@@ -146,6 +143,8 @@ export function SecurityObservatoryPage() {
             </span>
           </div>
         </header>
+
+        <SecurityPageSwitcher current="observatory" user={user} />
 
         <SecurityNav activeSection={activeSection} onSelect={setActiveSection} />
 
@@ -157,6 +156,18 @@ export function SecurityObservatoryPage() {
               error={posture.error}
               onRetry={posture.refetch}
               info={help.getTopic("security_posture") ? { content: help.getTopic("security_posture") } : null}
+              onViewControls={() => setActiveSection("controls")}
+              onViewFindings={() => setActiveSection("findings")}
+            />
+
+            <AiBudgetCountdown
+              budget={aiBudget.budget}
+              isLoading={aiBudget.isLoading}
+              error={aiBudget.error}
+              onRetry={aiBudget.refetch}
+              info={
+                help.getTopic("ai_budget_countdown") ? { content: help.getTopic("ai_budget_countdown") } : null
+              }
             />
 
             <SecurityOverview

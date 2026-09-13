@@ -1,5 +1,6 @@
 import { useCallback, useEffect, useState } from "react";
 import { authAxios } from "../interceptors/axios";
+import { getSecurityTruthEnvironment } from "../components/security/securityLabels";
 
 export function useSecurityPosture() {
   const [posture, setPosture] = useState(null);
@@ -11,7 +12,9 @@ export function useSecurityPosture() {
     setIsLoading(true);
     setError(null);
     try {
-      const { data } = await authAxios.get("/security/posture/");
+      const { data } = await authAxios.get("/security/posture/", {
+        params: { environment: getSecurityTruthEnvironment() },
+      });
       setPosture(data);
       setLastUpdated(new Date());
       return data;

@@ -6,6 +6,10 @@ import { FounderIssuesPage } from "./FounderIssuesPage";
 import { useFounderIssues } from "../../hooks/useFounderIssues";
 
 jest.mock("../../hooks/useFounderIssues", () => ({ useFounderIssues: jest.fn() }));
+// UI2: FounderNav now reads is_staff to decide PLATFORM vs tenant links.
+jest.mock("../../context/auth/BasicAuthContext", () => ({
+  useBasicAuthServices: () => ({ user: { is_staff: true } }),
+}));
 
 function issue(overrides) {
   return {

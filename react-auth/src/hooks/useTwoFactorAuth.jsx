@@ -73,7 +73,7 @@ export const useTwoFactorAuth = () => {
                     refreshToken: data.refresh_token,
                 });
                 setIsLoggedIn(true);
-                navigate("/");
+                navigate("/workspace");
 
                 // Reset the initial state if it was part of the initial setup
                 if (isInitialSetup) {

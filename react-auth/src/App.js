@@ -15,6 +15,10 @@ import { SecurityObservatoryPage } from "./components/security/SecurityObservato
 import { SecurityLearnPage } from "./components/security/SecurityLearnPage";
 import { SecurityCommandPage } from "./components/security-command/SecurityCommandPage";
 import { SecurityExercisesPage } from "./components/security-exercises/SecurityExercisesPage";
+import { FounderHomePage } from "./components/workspace/FounderHomePage";
+import { FounderIssuesPage } from "./components/workspace/FounderIssuesPage";
+import { FounderIssueWorkspacePage } from "./components/workspace/FounderIssueWorkspacePage";
+import { SecurityTeamPage } from "./components/workspace/SecurityTeamPage";
 import "./App.css"
 import { Footer } from "./components/footer/Footer";
 import BasicAuthProvider from "./context/auth/BasicAuthContext";
@@ -48,6 +52,10 @@ function App() {
                     <Route path="/security-observatory" element={<SecurityObservatoryPage />} />
                     <Route path="/security-exercises" element={<SecurityExercisesPage />} />
                     <Route path="/security-learn" element={<SecurityLearnPage />} />
+                    <Route path="/workspace" element={<FounderHomePage />} />
+                    <Route path="/workspace/issues" element={<FounderIssuesPage />} />
+                    <Route path="/workspace/issues/:id" element={<FounderIssueWorkspacePage />} />
+                    <Route path="/workspace/team" element={<SecurityTeamPage />} />
                     <Route path="/reset-password/:uidb64/:token" element={<ResetPassword />} />
                     <Route path="/setup-2fa" element={<QRCodeSetup />} />
                     <Route path="*" element={<NotFound />} />

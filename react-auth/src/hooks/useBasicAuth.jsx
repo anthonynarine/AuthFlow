@@ -20,7 +20,7 @@ export const useBasicAuth = () => {
             await publicAxios.post("/login/", { email, password });
             setIsLoggedIn(true);
             setIs2FARequired(false);
-            navigate("/");
+            navigate("/workspace");
         } catch (error) {
             if (error.response?.status === 401 && error.response.data?.["2fa_required"]) {
                 setIs2FARequired(true);
@@ -40,7 +40,7 @@ export const useBasicAuth = () => {
             await publicAxios.post("/guest-login/");
             setIsLoggedIn(true);
             setIs2FARequired(false);
-            navigate("/");
+            navigate("/workspace");
         } catch (error) {
             setError("Guest login is unavailable right now. Please try again shortly.");
             console.error("Guest login error:", error);

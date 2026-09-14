@@ -55,6 +55,8 @@ describe("useTwoFactorAuth A1.5 integration", () => {
             refreshToken: "refresh-2fa",
         });
         expect(mockSetIsLoggedIn).toHaveBeenCalledWith(true);
-        expect(mockNavigate).toHaveBeenCalledWith("/");
+        // UI1: a successful login now lands in the founder workspace, not the
+        // public marketing homepage.
+        expect(mockNavigate).toHaveBeenCalledWith("/workspace");
     });
 });

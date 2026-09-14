@@ -1,6 +1,13 @@
 import React from "react";
 import { Link } from "react-router-dom";
-import { RiBookOpenLine, RiExternalLinkLine, RiRadarLine, RiSwordLine, RiTerminalBoxLine } from "react-icons/ri";
+import {
+  RiArrowGoBackLine,
+  RiBookOpenLine,
+  RiExternalLinkLine,
+  RiRadarLine,
+  RiSwordLine,
+  RiTerminalBoxLine,
+} from "react-icons/ri";
 import { canRunSecurityExercises } from "../security-exercises/securityExerciseLabels";
 import { getSecurityArchitectureDocsUrl } from "./securityLabels";
 
@@ -28,6 +35,10 @@ export function SecurityPageSwitcher({ current, user }) {
 
   return (
     <nav className="security-page-switcher" aria-label="Security pages">
+      <Link key="founder-workspace" to="/workspace" className="security-tab">
+        <RiArrowGoBackLine aria-hidden="true" />
+        Founder Workspace
+      </Link>
       {PAGES.map((page) => {
         const isActive = page.key === current;
         const Icon = page.icon;

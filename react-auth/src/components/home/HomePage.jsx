@@ -61,12 +61,34 @@ const agentFleet = [
   },
 ];
 
-const strategicInterests = [
-  "Licensing",
-  "Commercial partnerships",
-  "Design partnerships",
-  "Investment",
-  "Acquisition of the technology",
+const earlyAccessAudience = [
+  "Solo founders and indie hackers",
+  "Small engineering teams without a security hire",
+  "Pre-compliance startups (SOC 2 / HIPAA on the roadmap)",
+  "Agencies responsible for client applications",
+];
+
+const fiveQuestions = [
+  {
+    q: "What happened?",
+    a: "Gait tells you exactly what it detected, in plain language — not a raw alert feed.",
+  },
+  {
+    q: "Does it matter?",
+    a: "Every issue comes with a plain-English risk and impact, so you're never left guessing what “high severity” actually means for you.",
+  },
+  {
+    q: "Can you prove it?",
+    a: "Gait safely reproduces the issue in a sandboxed environment before ever proposing a fix — so “maybe broken” becomes “confirmed broken.”",
+  },
+  {
+    q: "Can you fix it?",
+    a: "Gait prepares a real, tested repair, independently validated before it's ever shown to you.",
+  },
+  {
+    q: "What do you need to approve?",
+    a: "Only the decision that actually requires you. Gait investigates, tests, and prepares on its own — you authorize anything that touches production.",
+  },
 ];
 
 const lumenProtectionScope = [
@@ -92,54 +114,40 @@ function StatusPill({ children, tone = "neutral" }) {
   return <span className={`product-status-pill ${tone}`}>{children}</span>;
 }
 
-function CommandCenterMockup() {
+function FounderIssueMockup() {
   return (
-    <div className="command-center-mockup" aria-label="Gait Security Command product preview">
+    <div className="command-center-mockup founder-mockup" aria-label="Example Gait issue, shown for illustration">
       <div className="command-topbar">
-        <span>GAIT SECURITY COMMAND</span>
-        <StatusPill tone="healthy">Healthy</StatusPill>
+        <span>GAIT · YOUR SECURITY TEAM</span>
+        <StatusPill tone="healthy">Protected</StatusPill>
       </div>
-      <div className="command-grid">
-        <section className="command-pane">
-          <p className="panel-label">Security Posture</p>
-          <div className="posture-row large">
-            <span>Overall</span>
-            <StatusPill tone="healthy">Healthy</StatusPill>
+      <div className="founder-mockup-body">
+        <div className="mock-finding">
+          <div className="mock-finding-top">
+            <h3>Suspicious refresh-token replay detected</h3>
+            <StatusPill tone="warning">High risk</StatusPill>
           </div>
-          <div className="posture-row"><span>Healthy controls</span><strong>42</strong></div>
-          <div className="posture-row"><span>Needs attention</span><strong>1</strong></div>
-          <div className="posture-row"><span>Open findings</span><strong>1</strong></div>
-          <div className="domain-list">
-            <div><span>Authentication</span><StatusPill tone="healthy">Healthy</StatusPill></div>
-            <div><span>Session Security</span><StatusPill tone="warning">Review</StatusPill></div>
-            <div><span>Abuse Protection</span><StatusPill tone="healthy">Healthy</StatusPill></div>
+          <p>Someone tried to reuse a token that should no longer work. Gait blocked it — no account was compromised.</p>
+          <div className="repair-grid mini">
+            <span>Investigated</span><strong>Done</strong>
+            <span>Reproduced</span><strong>Confirmed, safely</strong>
+            <span>Fix prepared</span><strong>Ready</strong>
+            <span>Validated</span><strong>Passed</strong>
+            <span>Approval</span><strong className="pending">Needs you</strong>
           </div>
-        </section>
-
-        <section className="command-pane copilot-pane">
-          <p className="panel-label">Security Copilot</p>
-          <div className="chat-line user">You: Anything wrong?</div>
+          <div className="repair-actions">
+            <button type="button">Review fix</button>
+            <button type="button">Approve</button>
+          </div>
+        </div>
+        <div className="mock-chat">
+          <div className="chat-line user">You: Is this serious?</div>
           <div className="chat-line gait">
-            Gait: One control failed overnight. Blue Team identified the likely root cause. Green Team is preparing a candidate fix.
+            Gait: No — it was blocked before it could be used. I'd approve the fix so it can't be attempted again.
           </div>
-          <div className="prompt-stack">
-            <button type="button">Explain finding</button>
-            <button type="button">Show evidence</button>
-            <button type="button">Show repair</button>
-          </div>
-        </section>
-
-        <section className="command-pane active-case">
-          <p className="panel-label">Active Case</p>
-          <h3>Refresh Replay #381</h3>
-          <div className="case-grid">
-            <span>Blue Team</span><StatusPill tone="healthy">Done</StatusPill>
-            <span>Red Team</span><StatusPill tone="healthy">Done</StatusPill>
-            <span>Green Team</span><StatusPill tone="running">Running</StatusPill>
-            <span>Security Validator</span><StatusPill tone="neutral">Waiting</StatusPill>
-          </div>
-        </section>
+        </div>
       </div>
+      <p className="section-note mockup-caption">Example issue, shown for illustration.</p>
     </div>
   );
 }
@@ -264,9 +272,13 @@ function HomePage() {
           <span>Gait</span>
         </a>
         <nav className="site-nav product-nav" aria-label="Product navigation">
-          <a href="#what-it-protects">What It Protects</a>
+          <a href="#how-it-works">How It Works</a>
+          <a href="#what-it-protects">Proof It Works</a>
           <a href="#fleet">Fleet</a>
           <Link to="/architecture">Full Architecture</Link>
+          {!isLoggedIn && (
+            <Link to="/early-access" className="nav-cta secondary">Early Access</Link>
+          )}
           {isLoggedIn && user && (
             <span className="signed-in-chip" title={`Signed in as ${formatCurrentUser(user)}`}>
               {formatCurrentUser(user)}
@@ -301,47 +313,64 @@ function HomePage() {
         <section className="hero product-hero" id="product">
           <div className="hero-content product-hero-content">
             <div className="hero-copy">
-              <span className="eyebrow-badge">Our company's security control plane</span>
-              <h1>The Security Operating System Behind Our Software</h1>
+              <span className="eyebrow-badge">Now in early access</span>
+              <h1>Your AI security team.</h1>
               <p className="hero-subtitle">
-                Gait is a self-repairing security platform governed by evidence and human approval. It combines
-                hardened enforcement, continuous observability, constrained security agents, independent validation,
-                and Human Approver-controlled deployment.
+                Gait watches your application, investigates what it finds, and prepares a fix — in plain English,
+                not security jargon. You approve anything that actually matters.
               </p>
-              <p className="trust-tagline">AI reasons. Code authorizes. Evidence establishes truth. Human Approvers control production.</p>
-              <p className="hero-secondary-tagline">Built internally. Designed to become a platform.</p>
+              <p className="trust-tagline">AI investigates. Evidence decides what's true. You approve anything that touches production.</p>
+              <p className="hero-secondary-tagline">Built for teams without a security hire.</p>
               <p className="hero-supporting-copy">
-                Gait currently serves as the security and operational foundation for my applications. Its reusable
-                observability, agent-governance, investigation, repair, and validation architecture is being designed
-                so it can eventually be extracted into a standalone security platform.
+                Gait started as the internal security system protecting Lumen, a healthcare application built toward
+                full HIPAA compliance. We're now opening it to a small number of early teams who need real security
+                discipline but can't yet justify a security hire.
               </p>
               {message && <p className="session-message">{message}</p>}
               <div className="hero-actions">
-                <Link to="/architecture" className="btn-pill btn-pill-primary">
-                  View Architecture <RiArrowRightLine />
+                <Link to="/early-access" className="btn-pill btn-pill-primary">
+                  Join Early Access <RiArrowRightLine />
                 </Link>
-                <a href="#what-it-protects" className="btn-pill btn-pill-secondary">See What It Protects</a>
+                <a href="#how-it-works" className="btn-pill btn-pill-secondary">See How It Works</a>
                 {!isLoggedIn && (
                   <button className="btn-pill btn-pill-outline" onClick={guestLogin} disabled={isLoading}>
-                    {isLoading ? "Signing in..." : "Try the live auth layer"}
+                    {isLoading ? "Signing in..." : "Explore the live demo"}
                   </button>
                 )}
               </div>
             </div>
-            <CommandCenterMockup />
+            <FounderIssueMockup />
           </div>
         </section>
 
-        {/* 2. What Gait protects */}
-        <section className="section protects-section" id="what-it-protects">
-          <p className="eyebrow">What Gait protects</p>
-          <h2>Built to Protect Lumen.</h2>
+        {/* 2. How it works */}
+        <section className="section how-it-works-section" id="how-it-works">
+          <p className="eyebrow">How it works</p>
+          <h2>Five questions. One team answering them.</h2>
           <p className="section-lede">
-            Lumen is a healthcare vascular ultrasound reporting platform: clinicians and technologists use it to
-            capture, review, and sign vascular studies. That workflow is security-sensitive. It handles clinical
-            user access, protected operational data, and processes that need strong security, auditability, and
-            long-term operational discipline, not a one-time hardening pass. Lumen is being built toward full HIPAA
-            compliance and DICOM interoperability.
+            You don't manage agents, read logs, or learn security vocabulary. Gait answers these in order, every time.
+          </p>
+          <ol className="workflow-list">
+            {fiveQuestions.map((item, index) => (
+              <li key={item.q}>
+                <span className="workflow-number">{String(index + 1).padStart(2, "0")}</span>
+                <div>
+                  <h3>{item.q}</h3>
+                  <p>{item.a}</p>
+                </div>
+              </li>
+            ))}
+          </ol>
+        </section>
+
+        {/* 3. Proof it works */}
+        <section className="section protects-section" id="what-it-protects">
+          <p className="eyebrow">Proof it works</p>
+          <h2>Battle-Tested on a Real Healthcare Application.</h2>
+          <p className="section-lede">
+            Before we offered Gait to anyone else, we used it to protect Lumen — a vascular ultrasound reporting
+            platform used by clinicians and technologists, built toward full HIPAA compliance and DICOM
+            interoperability. Real clinical workflows. Real stakes. This is the same system, not a demo.
           </p>
           <LumenGaitProtectionVisual />
           <p className="section-note protects-scope-label">Gait protects, around Lumen:</p>
@@ -351,13 +380,12 @@ function HomePage() {
           <ProtectionMapDiagram />
         </section>
 
-        {/* 3. Security Fleet */}
+        {/* 4. Security Fleet */}
         <section className="section agents-section" id="fleet">
-          <p className="eyebrow">Security agent fleet</p>
-          <h2>Specialized agents. Separate authority.</h2>
+          <p className="eyebrow">Your security team</p>
+          <h2>Meet the team working for you.</h2>
           <p className="section-lede">
-            Gait uses AI agents, but does not trust them with unrestricted authority. Each specialist below is
-            constrained to one job.
+            Gait uses AI agents, but never gives any single one full authority. Each has exactly one job.
           </p>
           <AgentFleetDiagram />
           <div className="agent-grid">
@@ -374,12 +402,12 @@ function HomePage() {
           </div>
         </section>
 
-        {/* 4. Security Command Center */}
+        {/* 5. Under the hood */}
         <section className="section command-section" id="command-center">
-          <p className="eyebrow">Security Command Center</p>
-          <h2>One place to understand what needs attention.</h2>
+          <p className="eyebrow">Under the hood</p>
+          <h2>Real agents. Real validation. Every time.</h2>
           <p className="section-lede">
-            A preview of the internal operator console. Realistic sample state, shown here for illustration.
+            For the technically curious: here's what's actually happening behind "Gait prepared a fix."
           </p>
           <div className="repair-ready">
             <div>
@@ -404,35 +432,39 @@ function HomePage() {
           </div>
         </section>
 
-        {/* Business inquiries */}
-        <section className="section business-inquiries-section">
+        {/* Early access */}
+        <section className="section business-inquiries-section" id="early-access">
           <div className="business-inquiries-card">
-            <p className="eyebrow">Business inquiries</p>
-            <h2>Built Internally. Potentially Available Externally.</h2>
+            <p className="eyebrow">Early access</p>
+            <h2>We're Onboarding Early Teams by Hand.</h2>
             <p className="section-lede">
-              Gait is currently being developed as our company's security and operations platform. We're open to
-              strategic conversations regarding:
+              Gait's multi-tenant support is still being built, so for now early access means talking to us
+              directly, not a self-serve signup. Tell us about your app and we'll figure out if it's a fit.
             </p>
             <ul className="business-inquiries-list">
-              {strategicInterests.map((item) => <li key={item}>{item}</li>)}
+              {earlyAccessAudience.map((item) => <li key={item}>{item}</li>)}
             </ul>
-            <Link to="/send-email" className="btn-pill btn-pill-secondary">Contact Us</Link>
+            <Link to="/early-access" className="btn-pill btn-pill-primary">Request Early Access</Link>
+            <p className="section-note early-access-footnote">
+              Also open to partnership, investment, and licensing conversations —{" "}
+              <Link to="/send-email">contact us directly</Link>.
+            </p>
           </div>
         </section>
 
         <section className="section final-cta">
           <RiShieldCheckLine />
-          <h2>Serious security discipline, built into how we operate.</h2>
+          <h2>A security team, without the security hire.</h2>
           <p>
-            Gait gives our team continuous security assurance, constrained autonomous security engineering, and
-            clear human control over high-consequence actions, today for our own systems.
+            Gait gives you continuous investigation, safe reproduction, tested fixes, and full control over
+            anything that matters — without needing to learn what a SOC, SIEM, or CVE is.
           </p>
           <div className="hero-actions">
             <Link to="/architecture" className="btn-pill btn-pill-primary">Explore the Architecture</Link>
             {canViewSecurity && isLoggedIn ? (
-              <Link to="/security-command" className="btn-pill btn-pill-secondary">See the Security Command Center</Link>
+              <Link to="/security-command" className="btn-pill btn-pill-secondary">Open Security Command</Link>
             ) : (
-              <Link to="/login" className="btn-pill btn-pill-secondary"><RiLoginBoxLine /> Login</Link>
+              <Link to="/early-access" className="btn-pill btn-pill-secondary"><RiLoginBoxLine /> Request Early Access</Link>
             )}
             <a
               href="https://github.com/anthonynarine/AuthFlow"
@@ -444,7 +476,7 @@ function HomePage() {
             </a>
           </div>
           <p className="capability-line">
-            Give the agent the capability to perform the task, not possession of the infrastructure.
+            Intelligence doesn't grant authority. Yours is the only approval that matters.
           </p>
         </section>
       </main>

@@ -82,18 +82,24 @@ describe("HomePage product positioning and security navigation", () => {
     jest.clearAllMocks();
   });
 
-  test("positions Gait as our internal security system, not a standalone SaaS", () => {
+  test("positions Gait as an early-access AI security team product, not a mature self-serve SaaS", () => {
     renderHome({
       isLoggedIn: false,
       user: null,
     });
 
-    expect(screen.getByRole("heading", { name: "The Security Operating System Behind Our Software" })).toBeInTheDocument();
+    expect(screen.getByRole("heading", { name: "Your AI security team." })).toBeInTheDocument();
+    expect(screen.getByText("Now in early access")).toBeInTheDocument();
     expect(
-      screen.getByText(/Gait is a self-repairing security platform governed by evidence and human approval/)
+      screen.getByText(/Gait watches your application, investigates what it finds, and prepares a fix/)
     ).toBeInTheDocument();
-    expect(screen.getByText("AI reasons. Code authorizes. Evidence establishes truth. Human Approvers control production.")).toBeInTheDocument();
-    expect(screen.getByText("Built internally. Designed to become a platform.")).toBeInTheDocument();
+    expect(
+      screen.getByText("AI investigates. Evidence decides what's true. You approve anything that touches production.")
+    ).toBeInTheDocument();
+    expect(screen.getByText("Built for teams without a security hire.")).toBeInTheDocument();
+    expect(
+      screen.queryByRole("heading", { name: "The Security Operating System Behind Our Software" })
+    ).not.toBeInTheDocument();
     expect(
       screen.queryByRole("heading", { name: "Your Security Engineering Team, Built Into the Platform." })
     ).not.toBeInTheDocument();
@@ -164,7 +170,7 @@ describe("HomePage product positioning and security navigation", () => {
       user: null,
     });
 
-    expect(screen.getByRole("heading", { name: "Built to Protect Lumen." })).toBeInTheDocument();
+    expect(screen.getByRole("heading", { name: "Battle-Tested on a Real Healthcare Application." })).toBeInTheDocument();
     expect(screen.getAllByText(/vascular ultrasound reporting platform/).length).toBeGreaterThan(0);
     expect(screen.getByText(/built toward full HIPAA compliance and DICOM interoperability/)).toBeInTheDocument();
     const wrapVisual = screen.getByLabelText("Lumen wrapped by Gait security operations");
@@ -198,8 +204,19 @@ describe("HomePage product positioning and security navigation", () => {
 
     // But every path to it is present and points at the real route.
     expect(screen.getByRole("link", { name: "Full Architecture" })).toHaveAttribute("href", "/architecture");
-    expect(screen.getByRole("link", { name: /View Architecture/ })).toHaveAttribute("href", "/architecture");
     expect(screen.getByRole("link", { name: "Explore the Architecture" })).toHaveAttribute("href", "/architecture");
+  });
+
+  test("hero leads with early access and how-it-works, not the architecture deep-dive", () => {
+    renderHome({
+      isLoggedIn: false,
+      user: null,
+    });
+
+    const heroJoinLink = screen.getByRole("link", { name: /Join Early Access/ });
+    expect(heroJoinLink).toHaveAttribute("href", "/early-access");
+    expect(screen.getByRole("link", { name: "See How It Works" })).toHaveAttribute("href", "#how-it-works");
+    expect(screen.getByRole("link", { name: "Early Access" })).toHaveAttribute("href", "/early-access");
   });
 
   test("agent fleet section marks Security Copilot as built", () => {
@@ -215,19 +232,24 @@ describe("HomePage product positioning and security navigation", () => {
     expect(copilotCard).not.toHaveTextContent("future");
   });
 
-  test("business inquiries note is present without overselling as a current SaaS offering", () => {
+  test("early access section is honest about hand-onboarding, not a self-serve signup", () => {
     renderHome({
       isLoggedIn: false,
       user: null,
     });
 
-    expect(screen.getByRole("heading", { name: "Built Internally. Potentially Available Externally." })).toBeInTheDocument();
-    expect(screen.getByText(/We're open to strategic conversations regarding/)).toBeInTheDocument();
-    expect(screen.getByText("Licensing")).toBeInTheDocument();
-    expect(screen.getByText("Acquisition of the technology")).toBeInTheDocument();
+    expect(screen.getByRole("heading", { name: "We're Onboarding Early Teams by Hand." })).toBeInTheDocument();
+    expect(
+      screen.getByText(/multi-tenant support is still being built, so for now early access means talking to us/)
+    ).toBeInTheDocument();
+    expect(screen.getByText("Solo founders and indie hackers")).toBeInTheDocument();
+    expect(screen.getByText("Agencies responsible for client applications")).toBeInTheDocument();
 
-    const contactLink = screen.getByRole("link", { name: "Contact Us" });
-    expect(contactLink).toHaveAttribute("href", "/send-email");
+    const requestLinks = screen.getAllByRole("link", { name: /Request Early Access/ });
+    expect(requestLinks.length).toBeGreaterThan(0);
+    requestLinks.forEach((link) => expect(link).toHaveAttribute("href", "/early-access"));
+
+    expect(screen.getByRole("link", { name: "contact us directly" })).toHaveAttribute("href", "/send-email");
   });
 });
 

@@ -5,6 +5,7 @@ import { RegisterPage } from "./components/register/RegisterPage";
 import { ReactFeatures } from "./components/app-features/ReactFeatures";
 import ChatComponent from "./components/app-features/ChatComponent";
 import { SendEmail } from "./components/mail/SendEmail";
+import { EarlyAccessPage } from "./components/early-access/EarlyAccessPage";
 import { ResetPassword } from "./components/reset-password/ResetPassword";
 import { QRCodeSetup } from "./components/two-factor/2fa-setup/QRCodeSetup";
 import { NotFound } from "./components/not-found/NotFound";
@@ -41,6 +42,7 @@ function App() {
                     <Route path="/react-features" element={<ReactFeatures />} />
                     <Route path="/chat-completion" element={<ChatComponent />} />
                     <Route path="/send-email" element={<SendEmail />} />
+                    <Route path="/early-access" element={<EarlyAccessPage />} />
                     <Route path="/security" element={<SecurityObservatoryPage />} />
                     <Route path="/security-command" element={<SecurityCommandPage />} />
                     <Route path="/security-observatory" element={<SecurityObservatoryPage />} />

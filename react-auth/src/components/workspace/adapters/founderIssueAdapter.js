@@ -43,13 +43,42 @@ export function getFounderFindingStatusLabel(status) {
 }
 
 // human_attention_state values that mean a human decision is genuinely
-// required right now (see security_agents/command_query.py and
-// HumanAttentionBanner.jsx's own TONE_BY_STATE, which groups BLOCKED and
-// FAILED with the same "danger" urgency as an approval gate). This is the
-// ONLY signal used to decide "Needs You" -- never a client-invented flag.
-const NEEDS_YOU_STATES = new Set(["HUMAN_APPROVAL_REQUIRED", "BLOCKED", "FAILED"]);
+// required right now. UI1.1 verified this precisely against the actual
+// backend source (security_agents/command_query.py's
+// SecurityCommandQueryService._human_attention_state), which is the
+// function that genuinely backs this field -- not the wider vocabulary
+// HumanAttentionBanner.jsx's TONE_BY_STATE defensively maps (that map
+// includes values, like FAILED, this function never actually returns; a
+// case-level FAILED status is reported as human_attention_state=BLOCKED,
+// not FAILED). The real, complete vocabulary is exactly five values:
+// HUMAN_APPROVAL_REQUIRED, BLOCKED, NONE, IN_PROGRESS,
+// NEXT_ACTION_AVAILABLE. Only the first two ever mean "a human decision
+// is what's being waited on" -- this is the ONLY signal used to decide
+// "Needs You" for those two, never a client-invented flag.
+const NEEDS_YOU_STATES = new Set(["HUMAN_APPROVAL_REQUIRED", "BLOCKED"]);
+
+// current_state === DEPLOY_AUTHORIZED is a real, separate "needs you"
+// case that human_attention_state alone does not capture: it reports
+// NEXT_ACTION_AVAILABLE (the same value as an ordinary Gait-owned next
+// step) because from the case-state-machine's point of view the human
+// decision already happened -- approval was granted. But UI1 found a
+// genuine resume risk here: the one-time execution token is only ever
+// handed to the browser that called approve/, and if that call chain
+// never reaches execute/ (tab closed, network drop), the case can sit at
+// DEPLOY_AUTHORIZED indefinitely with no automatic next step. Read-only
+// re-inspection of deployment_approval.py confirms a real, safe recovery
+// exists (revoke the stuck APPROVED approval -> orchestration.
+// reconcile_case_after_revocation rolls the case back to
+// AWAITING_DEPLOY_APPROVAL -> request a fresh approval) -- so this is
+// treated as needing the founder, with its own explicit reason text
+// rather than reusing whatever human_attention_reason (if any) is set.
+export const STUCK_DEPLOY_REASON =
+  "Gait approved this deployment but hasn't started it yet. If this doesn't move within a few minutes, you can restart the approval.";
 
 export function deriveNeedsYou(snapshot) {
+  if (snapshot?.current_state === "DEPLOY_AUTHORIZED") {
+    return { flag: true, reason: STUCK_DEPLOY_REASON, state: snapshot.human_attention_state || null };
+  }
   if (!snapshot?.human_attention_state) {
     return { flag: false, reason: null, state: null };
   }
@@ -60,16 +89,20 @@ export function deriveNeedsYou(snapshot) {
   };
 }
 
-// Which human-approval gate (if any) current_state points at. Two real
-// gates exist on the backend today (security_agents/models.py
-// SecurityAgentCase.Status): AWAITING_REPAIR_APPROVAL and
-// AWAITING_DEPLOY_APPROVAL. Only the deploy gate has a frontend-callable
-// approval endpoint (security-agents/deployment-approvals/*) as of this
-// milestone -- see BACKEND_UI_CONTRACT_GAP in the final report for the
-// repair-approval gate.
+// Which approval surface (if any) current_state points at. Three real
+// cases exist on the backend today (security_agents/models.py
+// SecurityAgentCase.Status): AWAITING_REPAIR_APPROVAL,
+// AWAITING_DEPLOY_APPROVAL, and DEPLOY_AUTHORIZED-stuck-without-progress.
+// Only the deploy-approval and deploy-stuck cases have frontend-callable
+// endpoints (security-agents/deployment-approvals/*) as of this
+// milestone -- see BACKEND_UI_CONTRACT_GAP: REPAIR_APPROVAL_ACTION in the
+// UI1.1 report for the repair gate, which stays read-only/non-interactive.
 export function deriveApprovalKind(snapshot) {
   if (snapshot?.current_state === "AWAITING_DEPLOY_APPROVAL") {
     return "deploy";
+  }
+  if (snapshot?.current_state === "DEPLOY_AUTHORIZED") {
+    return "deploy_stuck";
   }
   if (snapshot?.current_state === "AWAITING_REPAIR_APPROVAL") {
     return "repair";

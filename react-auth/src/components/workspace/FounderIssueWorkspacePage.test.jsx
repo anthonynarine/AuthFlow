@@ -89,6 +89,25 @@ describe("FounderIssueWorkspacePage", () => {
     expect(screen.getAllByText("Not available yet.").length).toBe(3);
   });
 
+  test("post-deploy verification honesty: DEPLOYED never renders as verified/resolved, and Deployment started shows real progress", () => {
+    renderWorkspace({
+      issue: baseIssue({ needsYou: false, approvalKind: null, currentState: "DEPLOYED", isResolved: false }),
+    });
+
+    // "Deployment started" reflects real progress once DEPLOYED — this was
+    // a real bug (stuck showing "active" forever) fixed in UI1.1.
+    expect(screen.getByText("✓ Deployment started")).toBeInTheDocument();
+    // Post-deployment verification can never be claimed done or in
+    // progress — there is no backend signal proving it happened.
+    expect(screen.getByText("○ Post-deployment verification")).toBeInTheDocument();
+    expect(screen.queryByText("✓ Post-deployment verification")).not.toBeInTheDocument();
+    expect(screen.queryByText("● Post-deployment verification")).not.toBeInTheDocument();
+    // Never any invented verification claim anywhere on the page.
+    expect(screen.queryByText(/confirmed the issue is fixed/i)).not.toBeInTheDocument();
+    expect(screen.queryByText(/no longer be reproduced/i)).not.toBeInTheDocument();
+    expect(screen.queryByText("Resolved ✓")).not.toBeInTheDocument();
+  });
+
   test("does not show an Approval card unless the backend actually flagged needsYou", () => {
     renderWorkspace({ issue: baseIssue({ needsYou: false, approvalKind: null }) });
     expect(screen.queryByTestId("approval-card")).not.toBeInTheDocument();

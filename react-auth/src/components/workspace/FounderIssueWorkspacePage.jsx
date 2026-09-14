@@ -47,18 +47,26 @@ function Lifecycle({ steps }) {
   );
 }
 
+// UI1.1 fix: "Deployment started" was only ever marked done while
+// currentState === "DEPLOYING" — once a deployment actually reached
+// DEPLOYED, that step stayed stuck showing "active" forever, understating
+// real progress. "Post-deployment verification" stays "○" (pending) in
+// every case: there is no backend signal (BACKEND_UI_CONTRACT_GAP —
+// no post-deploy re-verification proof) that Gait is actively verifying
+// anything, so it is never shown as active/in-progress, only pending —
+// and it can never be marked done here. The only place this workspace
+// ever claims verification is the separate "Resolved ✓" card, and only
+// when finding.status is actually RESOLVED.
 function DeployingStatus({ currentState }) {
-  const doneKeys = { approved: true, validated: true };
-  if (currentState === "DEPLOYING") {
-    doneKeys.started = true;
-  }
+  const startedDone = currentState === "DEPLOYING" || currentState === "DEPLOYED";
+  const doneKeys = { approved: true, validated: true, started: startedDone };
   return (
     <div className="founder-deploy-status">
       <h2>Deploying fix</h2>
       <ul className="founder-deploy-checklist">
         {DEPLOY_CHECKLIST_STEPS.map((step) => {
           const isDone = Boolean(doneKeys[step.key]);
-          const isActive = !isDone && step.key === "started";
+          const isActive = !isDone && step.key === "started" && !startedDone;
           return (
             <li key={step.key} className={isDone ? "is-done" : isActive ? "is-active" : ""}>
               {isDone ? "✓" : isActive ? "●" : "○"} {step.label}

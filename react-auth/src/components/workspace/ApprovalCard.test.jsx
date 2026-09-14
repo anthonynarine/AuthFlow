@@ -23,11 +23,24 @@ beforeEach(() => {
   jest.clearAllMocks();
 });
 
-describe("ApprovalCard — repair-approval gap", () => {
+describe("ApprovalCard — repair-approval gap (BACKEND_UI_CONTRACT_GAP: REPAIR_APPROVAL_ACTION)", () => {
   test("shows a non-interactive waiting state when the gate is a repair approval (no backend endpoint exists)", () => {
     render(<ApprovalCard caseId="case-1" approvalKind="repair" />);
     expect(screen.getByText("Waiting for approval")).toBeInTheDocument();
-    expect(screen.queryByRole("button", { name: /approve/i })).not.toBeInTheDocument();
+    expect(
+      screen.getByText(/an approval action that is not yet available in this workspace/)
+    ).toBeInTheDocument();
+  });
+
+  test("offers no button of any kind for the repair-approval gate — never a deployment action standing in for it", () => {
+    render(<ApprovalCard caseId="case-1" approvalKind="repair" />);
+    expect(screen.queryByRole("button")).not.toBeInTheDocument();
+  });
+
+  test("never calls any backend endpoint for the repair-approval gate", () => {
+    render(<ApprovalCard caseId="case-1" approvalKind="repair" />);
+    expect(authAxios.get).not.toHaveBeenCalled();
+    expect(authAxios.post).not.toHaveBeenCalled();
   });
 });
 
@@ -145,5 +158,88 @@ describe("ApprovalCard — deploy approval", () => {
 
     expect(authAxios.post).toHaveBeenCalledTimes(1);
     resolveApprove({ data: { ...APPROVAL, case_status: "AWAITING_DEPLOY_APPROVAL" } });
+  });
+});
+
+describe("ApprovalCard — DEPLOYMENT_APPROVAL_RECOVERY (stuck deploy)", () => {
+  const STUCK_APPROVAL = { ...APPROVAL, status: "APPROVED", approved_at: "2026-09-13T10:05:00Z" };
+
+  test("an APPROVED-but-not-consumed approval shows the recovery explanation, never the approve/reject flow", async () => {
+    authAxios.get.mockResolvedValueOnce({ data: [STUCK_APPROVAL] });
+    render(<ApprovalCard caseId="case-1" approvalKind="deploy_stuck" />);
+
+    expect(await screen.findByText(/hasn't started it yet/)).toBeInTheDocument();
+    expect(screen.queryByRole("button", { name: "Approve deployment" })).not.toBeInTheDocument();
+    expect(screen.queryByRole("button", { name: "Reject" })).not.toBeInTheDocument();
+  });
+
+  test("never offers to reuse the old token — no execute call is ever made from this branch", async () => {
+    authAxios.get.mockResolvedValueOnce({ data: [STUCK_APPROVAL] });
+    render(<ApprovalCard caseId="case-1" approvalKind="deploy_stuck" />);
+    await screen.findByText(/hasn't started it yet/);
+    expect(authAxios.post).not.toHaveBeenCalled();
+  });
+
+  test("Restart approval revokes the stuck approval and requests a brand new one — never reusing the old token", async () => {
+    authAxios.get.mockResolvedValueOnce({ data: [STUCK_APPROVAL] });
+    authAxios.post.mockImplementation((url, body) => {
+      if (url.endsWith("/revoke/")) {
+        return Promise.resolve({ data: { ...STUCK_APPROVAL, status: "REVOKED" } });
+      }
+      if (url.endsWith("/request/")) {
+        expect(body).toEqual({ case_id: "case-1", target_environment: "production" });
+        return Promise.resolve({ data: { ...APPROVAL, id: "approval-2", status: "PENDING" } });
+      }
+      return Promise.reject(new Error(`unexpected url ${url}`));
+    });
+
+    render(<ApprovalCard caseId="case-1" approvalKind="deploy_stuck" />);
+    fireEvent.click(await screen.findByRole("button", { name: "Restart approval" }));
+
+    await waitFor(() =>
+      expect(authAxios.post).toHaveBeenCalledWith(
+        "/security-agents/deployment-approvals/approval-1/revoke/",
+        expect.objectContaining({ reason: expect.any(String) })
+      )
+    );
+    expect(authAxios.post).toHaveBeenCalledWith(
+      "/security-agents/deployment-approvals/request/",
+      { case_id: "case-1", target_environment: "production" }
+    );
+    // Never calls execute/ with the old (now-invalid) approval id.
+    expect(authAxios.post).not.toHaveBeenCalledWith(
+      expect.stringContaining("approval-1/execute/"),
+      expect.anything()
+    );
+  });
+
+  test("a restart failure is shown honestly, not silently retried or reported as success", async () => {
+    authAxios.get.mockResolvedValueOnce({ data: [STUCK_APPROVAL] });
+    authAxios.post.mockRejectedValueOnce({ response: { data: { error: "NOT_APPROVED" } } });
+
+    render(<ApprovalCard caseId="case-1" approvalKind="deploy_stuck" />);
+    fireEvent.click(await screen.findByRole("button", { name: "Restart approval" }));
+
+    expect(await screen.findByText("NOT_APPROVED")).toBeInTheDocument();
+  });
+
+  test("restart cannot be double-submitted while in flight", async () => {
+    authAxios.get.mockResolvedValueOnce({ data: [STUCK_APPROVAL] });
+    let resolveRevoke;
+    authAxios.post.mockImplementation(
+      () =>
+        new Promise((resolve) => {
+          resolveRevoke = resolve;
+        })
+    );
+
+    render(<ApprovalCard caseId="case-1" approvalKind="deploy_stuck" />);
+    const restartButton = await screen.findByRole("button", { name: "Restart approval" });
+    fireEvent.click(restartButton);
+    fireEvent.click(restartButton);
+    fireEvent.click(restartButton);
+
+    expect(authAxios.post).toHaveBeenCalledTimes(1);
+    resolveRevoke({ data: { ...STUCK_APPROVAL, status: "REVOKED" } });
   });
 });

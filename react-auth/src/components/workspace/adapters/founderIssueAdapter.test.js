@@ -17,27 +17,46 @@ describe("deriveNeedsYou", () => {
     expect(result.reason).toBe("Validator approved; human must approve exact artifact.");
   });
 
-  test("flags BLOCKED and FAILED as needing the founder", () => {
+  test("flags BLOCKED as needing the founder", () => {
+    // A case-level FAILED or DEPLOYMENT_FAILED status is reported by the
+    // backend as human_attention_state=BLOCKED, never as "FAILED" — the
+    // real, complete vocabulary (security_agents/command_query.py
+    // ._human_attention_state) is exactly HUMAN_APPROVAL_REQUIRED,
+    // BLOCKED, NONE, IN_PROGRESS, NEXT_ACTION_AVAILABLE. Verified
+    // read-only against backend source for UI1.1.
     expect(deriveNeedsYou({ human_attention_state: "BLOCKED" }).flag).toBe(true);
-    expect(deriveNeedsYou({ human_attention_state: "FAILED" }).flag).toBe(true);
   });
 
-  test("does not flag ordinary agent workflow states", () => {
-    expect(deriveNeedsYou({ human_attention_state: "NO_ACTION_REQUIRED" }).flag).toBe(false);
-    expect(deriveNeedsYou({ human_attention_state: "ACTION_AVAILABLE" }).flag).toBe(false);
-    expect(deriveNeedsYou({ human_attention_state: "COMPLETE" }).flag).toBe(false);
+  test("does not flag ordinary agent workflow states — the real backend vocabulary, not an imagined one", () => {
+    expect(deriveNeedsYou({ human_attention_state: "NONE" }).flag).toBe(false);
+    expect(deriveNeedsYou({ human_attention_state: "IN_PROGRESS" }).flag).toBe(false);
+    expect(deriveNeedsYou({ human_attention_state: "NEXT_ACTION_AVAILABLE" }).flag).toBe(false);
   });
 
   test("never flags anything when there is no snapshot yet", () => {
     expect(deriveNeedsYou(null)).toEqual({ flag: false, reason: null, state: null });
     expect(deriveNeedsYou(undefined)).toEqual({ flag: false, reason: null, state: null });
   });
+
+  test("DEPLOYMENT_APPROVAL_RECOVERY: DEPLOY_AUTHORIZED needs the founder even though its own human_attention_state is NEXT_ACTION_AVAILABLE", () => {
+    // This is the exact resume-risk UI1 flagged: the approval already
+    // happened, so the state machine no longer reports a pending human
+    // decision — but if execute/ never ran, nothing will move without
+    // the founder restarting it.
+    const result = deriveNeedsYou({
+      current_state: "DEPLOY_AUTHORIZED",
+      human_attention_state: "NEXT_ACTION_AVAILABLE",
+    });
+    expect(result.flag).toBe(true);
+    expect(result.reason).toMatch(/hasn't started it yet/);
+  });
 });
 
 describe("deriveApprovalKind", () => {
-  test("distinguishes the deploy gate from the repair gate", () => {
+  test("distinguishes the deploy gate, the repair gate, and a stuck deploy", () => {
     expect(deriveApprovalKind({ current_state: "AWAITING_DEPLOY_APPROVAL" })).toBe("deploy");
     expect(deriveApprovalKind({ current_state: "AWAITING_REPAIR_APPROVAL" })).toBe("repair");
+    expect(deriveApprovalKind({ current_state: "DEPLOY_AUTHORIZED" })).toBe("deploy_stuck");
     expect(deriveApprovalKind({ current_state: "INVESTIGATING" })).toBe(null);
     expect(deriveApprovalKind(null)).toBe(null);
   });

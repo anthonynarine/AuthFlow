@@ -2,6 +2,7 @@ import React, { useState } from "react";
 import { useDeploymentApprovalForCase } from "../../hooks/useDeploymentApprovalForCase";
 import { useDeploymentApprovalActions } from "../../hooks/useDeploymentApprovalActions";
 import { formatDateTime, formatShortId } from "../security/securityLabels";
+import { STUCK_DEPLOY_REASON } from "./adapters/founderIssueAdapter";
 
 function ConfirmDeployDialog({ approval, onCancel, onConfirm, isSubmitting, error }) {
   return (
@@ -61,21 +62,81 @@ function describeActionError(error) {
   return "Something went wrong. Please try again.";
 }
 
+/**
+ * UI1.1 — DEPLOYMENT_APPROVAL_RECOVERY. The approval this case's already-
+ * consumed decision points at is sitting at APPROVED, not PENDING: the
+ * founder (or someone) approved it, but the one-time execution token
+ * never reached execute/ (tab closed, network drop, or the deployment
+ * simply failed and nobody retried before leaving the page). The token
+ * itself cannot be recovered by design — Gait never persists it — so the
+ * only safe path forward is a genuinely new approval, not a workaround.
+ */
+function StuckDeployCard({ approval, actions, onRestart }) {
+  const restarted = actions.status === "restarted";
+
+  return (
+    <div className="founder-approval-card">
+      <h2>Needs you</h2>
+      <p className="founder-needs-you-reason" style={{ marginBottom: "1rem" }}>
+        {STUCK_DEPLOY_REASON}
+      </p>
+      <dl className="founder-approval-fact-grid">
+        <div className="founder-approval-fact">
+          <dt>Environment</dt>
+          <dd>{approval.target_environment}</dd>
+        </div>
+        <div className="founder-approval-fact">
+          <dt>Approved change</dt>
+          <dd>{formatShortId(approval.repair_commit_sha)}</dd>
+        </div>
+        <div className="founder-approval-fact">
+          <dt>Approved</dt>
+          <dd>{formatDateTime(approval.approved_at)}</dd>
+        </div>
+      </dl>
+
+      {restarted ? (
+        <p>A fresh approval has been requested — review and approve it below when it's ready.</p>
+      ) : (
+        <>
+          {actions.status === "error" && (
+            <p className="founder-inline-error">{describeActionError(actions.error)}</p>
+          )}
+          <p style={{ color: "var(--color-text-muted)", fontSize: "0.85rem" }}>
+            The original one-time authorization can't be reused or recovered — that's deliberate, the same way a
+            single-use payment link can't be replayed. Restarting asks Gait for a brand new approval to review.
+          </p>
+          <div className="founder-approval-actions">
+            <button type="button" className="fw-btn primary" onClick={onRestart} disabled={actions.isSubmitting}>
+              {actions.isSubmitting ? "Restarting…" : "Restart approval"}
+            </button>
+          </div>
+        </>
+      )}
+    </div>
+  );
+}
+
 export function ApprovalCard({ caseId, approvalKind, onActionComplete }) {
   const [confirmOpen, setConfirmOpen] = useState(false);
-  const approvalState = useDeploymentApprovalForCase(caseId, approvalKind === "deploy");
+  const relevant = approvalKind === "deploy" || approvalKind === "deploy_stuck";
+  const approvalState = useDeploymentApprovalForCase(caseId, relevant);
   const actions = useDeploymentApprovalActions();
 
   if (approvalKind === "repair") {
     return (
       <div className="founder-approval-card">
         <h2>Waiting for approval</h2>
-        <p>Gait is waiting for a decision before it starts preparing a repair for this issue.</p>
+        <p>
+          Gait is waiting for a decision before it starts preparing a repair for this issue. Gait is waiting for an
+          approval action that is not yet available in this workspace — there's nothing to click here yet, and
+          nothing has been skipped.
+        </p>
       </div>
     );
   }
 
-  if (approvalKind !== "deploy") {
+  if (!relevant) {
     return null;
   }
 
@@ -97,6 +158,35 @@ export function ApprovalCard({ caseId, approvalKind, onActionComplete }) {
   }
 
   const approval = approvalState.approval;
+
+  const handleRestart = async () => {
+    try {
+      await actions.restartApproval(approval);
+      await approvalState.refetch();
+      onActionComplete?.();
+    } catch {
+      // Error state already surfaced via actions.error / status.
+    }
+  };
+
+  // The approval this case actually points at right now is APPROVED, not
+  // PENDING — the stuck-deployment / recovery case, regardless of which
+  // approvalKind the parent's last snapshot poll reported.
+  if (approval.status === "APPROVED") {
+    return <StuckDeployCard approval={approval} actions={actions} onRestart={handleRestart} />;
+  }
+
+  if (approval.status !== "PENDING") {
+    // REJECTED/REVOKED/CONSUMED/expired and the parent hasn't caught up to
+    // a new state yet — never show stale action buttons for a decided
+    // approval.
+    return (
+      <div className="founder-approval-card">
+        <h2>Waiting for approval</h2>
+        <p>Gait is preparing the next step for this issue.</p>
+      </div>
+    );
+  }
 
   const handleConfirm = async () => {
     try {

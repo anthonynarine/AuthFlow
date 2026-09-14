@@ -1,7 +1,6 @@
 import React, { useEffect, useMemo, useState } from "react";
 import { Link } from "react-router-dom";
-import { authAxios } from "../../interceptors/axios";
-import { useActiveSecurityCases } from "../../hooks/useActiveSecurityCases";
+import { cachedGet } from "../../hooks/requestCache";
 import { useFounderIssues } from "../../hooks/useFounderIssues";
 import { FounderNav } from "./FounderNav";
 import { formatDateTime } from "../security/securityLabels";
@@ -22,6 +21,10 @@ const ROSTER = [
 // A small, bounded (one call per active case) real-data lookup — reuses the
 // existing investigation-summary endpoint, the same one CaseHeader already
 // calls for a single selected case. No new backend surface.
+//
+// UI1.1: routed through `cachedGet` so this de-dupes against any other
+// concurrent caller of the same case's investigation-summary, and reuses
+// a short-lived cached value instead of re-fetching on quick repeat visits.
 function useActiveInvestigations(cases) {
   const [byCaseId, setByCaseId] = useState({});
 
@@ -29,10 +32,9 @@ function useActiveInvestigations(cases) {
     let cancelled = false;
     Promise.all(
       cases.map((item) =>
-        authAxios
-          .get(`/security-agents/cases/${item.id}/investigation-summary/`)
-          .then((res) => [item.id, res.data])
-          .catch(() => [item.id, null])
+        cachedGet(`/security-agents/cases/${item.caseId}/investigation-summary/`)
+          .then((res) => [item.caseId, res.data])
+          .catch(() => [item.caseId, null])
       )
     ).then((entries) => {
       if (!cancelled) {
@@ -48,9 +50,14 @@ function useActiveInvestigations(cases) {
 }
 
 export function SecurityTeamPage() {
-  const activeCases = useActiveSecurityCases();
+  // UI1.1: no separate useActiveSecurityCases() call here — that would be
+  // a second, independent GET /security/cases/active/ on top of the one
+  // useFounderIssues() already makes. Active cases are derived from the
+  // same founder issues this page already needs for "Recently resolved."
   const issuesState = useFounderIssues();
-  const investigationsByCaseId = useActiveInvestigations(activeCases.cases);
+
+  const activeIssues = useMemo(() => issuesState.issues.filter((issue) => issue.isActiveCase), [issuesState.issues]);
+  const investigationsByCaseId = useActiveInvestigations(activeIssues);
 
   const recentlyResolved = useMemo(() => {
     return issuesState.issues
@@ -85,16 +92,18 @@ export function SecurityTeamPage() {
 
         <section className="founder-section" aria-labelledby="active-heading">
           <h2 className="founder-section-title" id="active-heading">Active investigations right now</h2>
-          {activeCases.cases.length === 0 ? (
+          {issuesState.isLoading && activeIssues.length === 0 ? (
+            <p className="founder-empty">Loading…</p>
+          ) : activeIssues.length === 0 ? (
             <p className="founder-empty">Nothing is being actively worked on right now.</p>
           ) : (
             <div>
-              {activeCases.cases.map((item) => {
-                const summary = investigationsByCaseId[item.id];
+              {activeIssues.map((issue) => {
+                const summary = investigationsByCaseId[issue.caseId];
                 return (
-                  <div className="founder-activity-row" key={item.id}>
+                  <div className="founder-activity-row" key={issue.caseId}>
                     <span>
-                      <Link to={`/workspace/issues/${item.finding_id}`}>{item.finding_title}</Link>
+                      <Link to={`/workspace/issues/${issue.id}`}>{issue.title}</Link>
                     </span>
                     <span>{summary?.specialist_display_name || "Assessing…"}</span>
                   </div>

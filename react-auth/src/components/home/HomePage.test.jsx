@@ -164,7 +164,7 @@ describe("HomePage product positioning and security navigation", () => {
     expect(screen.queryByRole("button", { name: /Security Command, staff only/i })).not.toBeInTheDocument();
   });
 
-  test("homepage explains the Lumen protection relationship", () => {
+  test("homepage explains how Gait protects your application, with Lumen as the proof point", () => {
     renderHome({
       isLoggedIn: false,
       user: null,
@@ -173,17 +173,17 @@ describe("HomePage product positioning and security navigation", () => {
     expect(screen.getByRole("heading", { name: "Battle-Tested on a Real Healthcare Application." })).toBeInTheDocument();
     expect(screen.getAllByText(/vascular ultrasound reporting platform/).length).toBeGreaterThan(0);
     expect(screen.getByText(/built toward full HIPAA compliance and DICOM interoperability/)).toBeInTheDocument();
-    const wrapVisual = screen.getByLabelText("Lumen wrapped by Gait security operations");
+    const wrapVisual = screen.getByLabelText("Your app wrapped by Gait security operations");
     expect(wrapVisual).toBeInTheDocument();
-    expect(within(wrapVisual).getByText("Lumen")).toBeInTheDocument();
+    expect(within(wrapVisual).getByText("Your App")).toBeInTheDocument();
+    expect(within(wrapVisual).queryByText("Lumen")).not.toBeInTheDocument();
     expect(within(wrapVisual).queryByText("Vascular ultrasound reporting")).not.toBeInTheDocument();
     expect(within(wrapVisual).queryByText("Capture, review, and sign clinical studies.")).not.toBeInTheDocument();
-    expect(within(wrapVisual).getByText("Security Observatory")).toBeInTheDocument();
-    expect(within(wrapVisual).getByText("Incident Commander")).toBeInTheDocument();
-    expect(within(wrapVisual).getByText("Blue Team")).toBeInTheDocument();
-    expect(within(wrapVisual).getByText("Red Team")).toBeInTheDocument();
-    expect(within(wrapVisual).getByText("Green Team")).toBeInTheDocument();
-    expect(within(wrapVisual).getByText("Security Truth")).toBeInTheDocument();
+    expect(within(wrapVisual).getAllByText("Incident Commander").length).toBeGreaterThan(0);
+    expect(within(wrapVisual).getAllByText("Blue Team").length).toBeGreaterThan(0);
+    expect(within(wrapVisual).getAllByText("Red Team").length).toBeGreaterThan(0);
+    expect(within(wrapVisual).getAllByText("Green Team").length).toBeGreaterThan(0);
+    expect(within(wrapVisual).getAllByText("Human Approver").length).toBeGreaterThan(0);
     expect(
       within(wrapVisual).getByText(/Gait surrounds it with observability, constrained security agents/)
     ).toBeInTheDocument();
@@ -219,17 +219,22 @@ describe("HomePage product positioning and security navigation", () => {
     expect(screen.getByRole("link", { name: "Early Access" })).toHaveAttribute("href", "/early-access");
   });
 
-  test("agent fleet section marks Security Copilot as built", () => {
+  test("agent fleet section shows gait.explain's mandate and the recovered incident", () => {
     renderHome({
       isLoggedIn: false,
       user: null,
     });
 
-    const copilotHeadings = screen.getAllByRole("heading", { name: "Security Copilot" });
-    const copilotCard = copilotHeadings.map((heading) => heading.closest("article")).find(Boolean);
-    expect(copilotCard).toHaveTextContent("A natural-language interface");
-    expect(copilotCard).not.toHaveTextContent("Next");
-    expect(copilotCard).not.toHaveTextContent("future");
+    fireEvent.click(screen.getByRole("tab", { name: "gait.explain · Explain" }));
+
+    const heading = screen.getByRole("heading", { name: "Explain" });
+    const panel = heading.closest(".team-detail");
+    expect(panel).toHaveTextContent("Explain answers in plain language");
+    expect(panel).not.toHaveTextContent("Security Copilot");
+
+    expect(screen.getByText("YOU ASKED")).toBeInTheDocument();
+    expect(screen.getByText("Is this serious?")).toBeInTheDocument();
+    expect(screen.getByText("No — blocked before use.")).toBeInTheDocument();
   });
 
   test("early access section is honest about hand-onboarding, not a self-serve signup", () => {

@@ -69,9 +69,19 @@ export function DiagramNode({
   tag,
   size = "md",
   className = "",
+  onClick,
+  isActive,
 }) {
+  const interactive = typeof onClick === "function";
+  const Tag = interactive ? "button" : "div";
+
   return (
-    <div className={`diagram-node diagram-node--${variant} diagram-node--${size} ${className}`}>
+    <Tag
+      type={interactive ? "button" : undefined}
+      aria-pressed={interactive ? Boolean(isActive) : undefined}
+      onClick={onClick}
+      className={`diagram-node diagram-node--${variant} diagram-node--${size} ${interactive ? "diagram-node--clickable" : ""} ${className}`}
+    >
       <div className="diagram-node-top">
         {Icon && <Icon className="diagram-node-icon" aria-hidden="true" />}
         {eyebrow && <span className="diagram-node-eyebrow">{eyebrow}</span>}
@@ -79,7 +89,7 @@ export function DiagramNode({
       </div>
       {title && <h4 className="diagram-node-title">{title}</h4>}
       {description && <p className="diagram-node-desc">{description}</p>}
-    </div>
+    </Tag>
   );
 }
 

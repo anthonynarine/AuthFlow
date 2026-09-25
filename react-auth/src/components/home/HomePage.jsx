@@ -7,7 +7,6 @@ import { useUserSessionServices } from "../../context/auth/UserSessionContext";
 import {
   RiArrowRightLine,
   RiArrowRightUpLine,
-  RiChat3Line,
   RiCrosshair2Line,
   RiDatabase2Line,
   RiEyeLine,
@@ -27,150 +26,122 @@ import {
 import { ProtectionMapDiagram } from "./diagrams/ProtectionMapDiagram";
 import { AgentFleetDiagram } from "./diagrams/AgentFleetDiagram";
 
-const incidentContext = {
-  runpack: "rp_7f3a9c2d",
-};
-
+// The seven roles below mirror Gait's real separation of duties
+// (docs/GAIT_SECURITY_OPERATING_SYSTEM.md section 13, and the display names in
+// security_agents/presentation.py): six AI agents plus the Human Approver, who
+// is always a person. The case walked through here is an illustrative example
+// of that workflow, not a recorded incident.
 const agentFleet = [
   {
-    id: "gait.watch",
-    job: "Watch",
-    icon: RiEyeLine,
-    mandate: "Ingest intent, write trace, stop.",
-    summary:
-      "Watch reads intent before anything runs. At 00:14:02.011Z it recorded a write_file call aimed at an external upload URL — and stopped there.",
-    limits: "It cannot issue a verdict, choose the next agent, or take any action beyond writing the trace.",
-    lastAction: "Recorded write_file toward an external upload URL. No verdict.",
-    status: "recorded",
-    lastSeen: "2026-09-16T00:14:02.011Z",
-    artifactId: "art_1c04e9b7",
-    evidence: {
-      heading: "LOGGED",
-      lines: ["write_file → external upload URL", "Logged. No action taken."],
-    },
-  },
-  {
-    id: "gait.coordinate",
-    job: "Coordinate",
+    id: "security_commander_v1",
+    job: "Incident Commander",
+    verb: "Coordinates",
     icon: RiFlowChart,
-    mandate: "Pick the next legal agent, seal scope, stop.",
+    mandate: "Route the case to the right specialist. Hold no specialist power itself.",
     summary:
-      "Coordinate reads Watch's trace and decides who responds next. Here it routed Diagnose, then Attack, and sealed scope to this one call.",
-    limits: "It cannot diagnose, execute, or approve anything — only sequence agents already authorized to act.",
-    lastAction: "Routed Diagnose, then Attack. Scope sealed to this call.",
+      "The refresh-rotation control started failing. Incident Commander opened a case and routed it to Blue Team's Identity specialist.",
+    limits: "It can't investigate, attack, repair or deploy. Every specialist it dispatches runs under its own identity, never the Commander's.",
     status: "routed",
-    lastSeen: "2026-09-16T00:14:08.402Z",
-    artifactId: "art_6a3d0f19",
+    artifact: "Case opened",
     evidence: {
       heading: "ROUTED",
-      lines: ["next: gait.diagnose → gait.attack", "Scope sealed to this call."],
+      lines: ["control GAIT.AUTH.REFRESH_ROTATION: failing", "next: Blue Team (Identity specialist)"],
     },
   },
   {
-    id: "gait.diagnose",
-    job: "Diagnose",
+    id: "security_investigator_v1",
+    job: "Blue Team",
+    verb: "Investigates",
     icon: RiSearchEyeLine,
-    mandate: "Name cause from traces, stop.",
+    mandate: "Diagnose from existing evidence and bounded code reads. Change nothing.",
     summary:
-      "Diagnose reads traces and names the likely cause, nothing else. It identified an exfiltration pattern in the tool call and stopped.",
-    limits: "It cannot propose or stage a fix, and it cannot expand the scope Coordinate sealed.",
-    lastAction: "Named exfil pattern via tool call. Fix not in scope.",
-    status: "recorded",
-    lastSeen: "2026-09-16T00:14:19.118Z",
-    artifactId: "art_9e27b450",
+      "Blue Team read the evidence and the relevant code, and named the likely cause: a refresh token could still be used after it had been rotated.",
+    limits: "It can't change code, and its diagnosis isn't treated as truth. Later steps must prove it.",
+    status: "diagnosed",
+    artifact: "DiagnosisReport",
     evidence: {
-      heading: "NAMED",
-      lines: ["cause: exfil pattern via tool call", "Fix not authorized from this agent."],
+      heading: "DIAGNOSED",
+      lines: ["cause: rotated refresh token still accepted", "suspected file named for repair"],
     },
   },
   {
-    id: "gait.attack",
-    job: "Attack",
+    id: "security_red_team_v1",
+    job: "Red Team",
+    verb: "Attacks",
     icon: RiCrosshair2Line,
-    mandate: "Probe only a declared path; a block is success; no persist, no exfil.",
+    mandate: "Run only allowlisted probes, only in local, test or CI.",
     summary:
-      "Attack probes only the path it's told to, inside sandboxed bounds. Its probe hit the tool boundary, opened no socket, and was blocked.",
-    limits: "It cannot persist, exfiltrate, or touch any path outside the one it was given — a block is a successful run.",
-    lastAction: "Probe evaluated at boundary. No socket opened. Blocked.",
-    status: "blocked",
-    lastSeen: "2026-09-16T00:14:41.573Z",
-    artifactId: "art_0c77e1d4",
+      "Red Team ran its refresh-replay probe in a sandboxed test environment and replayed an old token. It was accepted, so the failure is confirmed, not just suspected.",
+    limits: "It can only run a small set of reviewed probes, with no network egress and never against production.",
+    status: "reproduced",
+    artifact: "Probe result",
     evidence: {
-      heading: "BLOCKED",
-      lines: ["probe evaluated at boundary", "Blocked at the tool boundary. No payload left the host."],
+      heading: "REPRODUCED",
+      lines: ["probe: refresh replay", "old token accepted. Failure confirmed."],
     },
   },
   {
-    id: "gait.fix",
-    job: "Fix",
+    id: "security_repair_v1",
+    job: "Green Team",
+    verb: "Repairs",
     icon: RiToolsLine,
-    mandate: "Stage the smallest change; cannot go live.",
+    mandate: "Propose a scoped fix on an isolated branch. Never merge, never deploy.",
     summary:
-      "Fix stages the smallest possible change and nothing more. There was no failing asset to repair here, so it staged nothing.",
-    limits: "It cannot deploy, cannot go live, and cannot approve its own work.",
-    lastAction: "No failing asset. Nothing staged.",
-    status: "idle",
-    lastSeen: "2026-09-16T00:15:02.284Z",
-    artifactId: "art_4b1f9a02",
+      "Green Team wrote a fix in an isolated git worktree, limited to the file the diagnosis named, and ran the tests there.",
+    limits: "It can't merge, deploy, or approve its own work. Touching any file outside scope is refused.",
+    status: "proposed",
+    artifact: "RepairProposal",
     evidence: {
-      heading: "IDLE",
-      lines: ["no failing asset", "Nothing staged."],
+      heading: "PROPOSED",
+      lines: ["branch: isolated repair worktree", "1 file changed, within scope"],
     },
   },
   {
-    id: "gait.verify",
-    job: "Verify",
+    id: "security_validator_v1",
+    job: "Security Validator",
+    verb: "Verifies",
     icon: RiShieldCheckLine,
-    mandate: "Attest digest and policy; a pass is not execute.",
+    mandate: "Independently prove the fix works. Never trust the Green Team's word.",
     summary:
-      "Verify attests a digest and a policy — it doesn't act on either. It confirmed the pack's digest matched and that the deny decision was authentic.",
-    limits: "A pass from Verify is not permission to execute; it cannot modify the artifact or approve anything.",
-    lastAction: "Pack digest matches. Deny is authentic.",
-    status: "recorded",
-    lastSeen: "2026-09-16T00:15:07.091Z",
-    artifactId: "art_d581c73e",
+      "Security Validator reproduced the attack before and after the fix, checked the real git diff, and ran the regression suite. Verdict: valid.",
+    limits: "It runs as a different identity from the Green Team, its verdict is computed rather than argued, and a pass is not permission to deploy.",
+    status: "valid",
+    artifact: "ValidationReport",
     evidence: {
-      heading: "ATTESTED",
-      lines: ["pack digest: match", "verdict: deny is authentic"],
+      heading: "VALID",
+      lines: ["before: replay accepted · after: rejected", "diff scope verified · regression tests pass"],
     },
   },
   {
-    id: "gait.execute",
-    job: "Execute",
-    icon: RiTerminalBoxLine,
-    mandate: "Run only an approval bound to this target and this hour; else fail-closed.",
+    id: "you (admin role)",
+    job: "Human Approver",
+    verb: "Approves",
+    icon: RiUserLine,
+    mandate: "A real person with the admin role. The only step that can't be an agent.",
     summary:
-      "Execute runs only an approval that's signed, bound to this exact target, inside the hour it was issued for. It received \"just send it\" with no approval bound to this target, and refused.",
-    limits: "Without a signed, matching approval it fails closed — it cannot self-authorize or act outside that window.",
-    lastAction: "Received \"just send it.\" No approval bound to target. Denied.",
-    status: "denied",
-    lastSeen: "2026-09-16T00:15:11.647Z",
-    artifactId: "art_f0398bb1",
+      "You review the validated fix and approve one exact commit, for one action, in one environment. The approval can be used once, and it expires.",
+    limits: "No agent can approve anything. If the code changes after you approve, the approval stops working.",
+    status: "approved",
+    artifact: "Single-use approval",
     evidence: {
-      heading: "DENIED",
-      lines: ["request: \"just send it\"", "Denied — no signed approval bound to this target."],
+      heading: "APPROVED",
+      lines: ["exact commit, one action, one environment", "single-use · expires"],
     },
   },
   {
-    id: "gait.explain",
-    job: "Explain",
-    icon: RiChat3Line,
-    mandate: "Answer in language; point at the pack; mint no tools.",
+    id: "security_deployer_v1",
+    job: "Release Engineer",
+    verb: "Releases",
+    icon: RiRocketLine,
+    mandate: "Deploy exactly what was approved, once.",
     summary:
-      "Explain answers in plain language and points at the signed pack behind the answer — it doesn't investigate or act. Asked \"Is this serious?\", its only legal answer was \"No — blocked before use.\"",
-    limits: "It cannot mint tools, execute anything, or approve anything — it can only read and explain what's already recorded.",
-    lastAction: "Answered from the pack. No — blocked before use.",
-    status: "recorded",
-    lastSeen: "2026-09-16T00:15:18.440Z",
-    artifactId: "art_77ad2e6c",
+      "Release Engineer deployed exactly the approved commit. Then Security Truth re-checked the control with fresh evidence, and only a healthy result closed the finding.",
+    limits: "It can't choose what to deploy. A successful deploy doesn't count as a fix until trusted evidence says so.",
+    status: "deployed",
+    artifact: "Deployment + fresh evidence",
     evidence: {
-      heading: "YOU ASKED",
-      scopeLine: "scope: gait.explain only",
-      isAsk: true,
-      thread: [
-        { speaker: "You", text: "Is this serious?" },
-        { speaker: "Gait", text: "No — blocked before use." },
-      ],
+      heading: "DEPLOYED",
+      lines: ["deployed: the approved commit, exactly", "control re-checked: healthy · finding resolved"],
     },
   },
 ];
@@ -227,7 +198,7 @@ function formatCurrentUser(user) {
 
 function StatStrip() {
   const stats = [
-    { value: "7", label: "Constrained agents, each with exactly one job" },
+    { value: "6", label: "AI agents, each with exactly one job" },
     { value: "1", label: "Approval that actually requires you" },
     { value: "473/473", label: "Tests passing on the last validated fix" },
   ];
@@ -359,10 +330,6 @@ function AppGaitProtectionVisual() {
   );
 }
 
-function timeOfDay(isoTimestamp) {
-  return isoTimestamp.slice(11, 23);
-}
-
 function TeamRosterRow({ agent, isActive, onSelect }) {
   const Icon = agent.icon;
   return (
@@ -379,7 +346,7 @@ function TeamRosterRow({ agent, isActive, onSelect }) {
       </span>
       <span className="team-roster-text">
         <span className="team-roster-job">{agent.job}</span>
-        <span className="team-roster-id">{agent.id}</span>
+        <span className="team-roster-id">{agent.verb}</span>
       </span>
       {isActive ? (
         <span className="team-roster-chip">ONE JOB</span>
@@ -401,7 +368,7 @@ function TeamDetailPanel({ agent }) {
       <p className="team-detail-summary">{agent.summary}</p>
       <p className="team-detail-limits">{agent.limits}</p>
       <p className="team-detail-meta">
-        {agent.id} · last seen {timeOfDay(agent.lastSeen)} · {agent.artifactId}
+        {agent.id} · output: {agent.artifact}
       </p>
     </div>
   );
@@ -435,7 +402,7 @@ function TeamEvidenceCard({ agent, animationClass }) {
           ))}
         </div>
       )}
-      <p className="team-evidence-footer">runpack {incidentContext.runpack} · signed · offline-verifiable</p>
+      <p className="team-evidence-footer">example case · the workflow Gait runs</p>
     </div>
   );
 }
@@ -612,12 +579,16 @@ function HomePage() {
         {/* 2. Security Fleet — the team, up front */}
         <section className="section agents-section" id="fleet">
           <p className="eyebrow">Your security team</p>
-          <h2 className="display-serif">Eight agents. One job each.</h2>
+          <h2 className="display-serif">Six agents and you. One job each.</h2>
           <p className="section-lede">
-            No agent here holds two jobs, and none can act outside its mandate. What follows is a real incident,
-            replayed from the runpack that recorded it.
+            No agent holds two jobs, and none can act outside its mandate. Step through an example case: a
+            refresh-token replay failure, from the first failing check to a verified fix.
           </p>
           <TeamShowcase />
+          <p className="section-note fleet-copilot-note">
+            Alongside the team, <strong>Security Copilot</strong> answers your questions in plain language. It
+            explains what the team found; it can't act on anything.
+          </p>
         </section>
 
         {/* 3. Proof it works — real deployment, then how it actually works */}
@@ -689,10 +660,10 @@ function HomePage() {
               <h3>Refresh Replay Protection Failure</h3>
             </div>
             <div className="repair-grid">
-              <span>Root cause</span><strong>Identified</strong>
-              <AgentHint name="Attack" /><strong>Reproduced</strong>
-              <AgentHint name="Fix" /><strong>Prepared</strong>
-              <AgentHint name="Verify" /><strong>VALID</strong>
+              <AgentHint name="Blue Team" /><strong>Root cause identified</strong>
+              <AgentHint name="Red Team" /><strong>Reproduced</strong>
+              <AgentHint name="Green Team" /><strong>Prepared</strong>
+              <AgentHint name="Security Validator" /><strong>VALID</strong>
               <span>Tests</span><strong>473 / 473 passing</strong>
               <span>Exact artifact</span><strong>abc123</strong>
               <span>Risk</span><strong>LOW</strong>

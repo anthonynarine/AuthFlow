@@ -732,6 +732,21 @@
 .team-roster-status--blocked,
 .team-roster-status--denied { color: var(--color-danger); }
 .team-roster-status--idle { color: var(--color-text-muted); }
+.team-roster-status--diagnosed,
+.team-roster-status--proposed { color: var(--diagram-truth); }
+.team-roster-status--reproduced { color: var(--color-danger); }
+.team-roster-status--valid,
+.team-roster-status--approved,
+.team-roster-status--deployed { color: var(--color-accent); }
+
+.fleet-copilot-note {
+  max-width: 780px;
+  margin: 1.5rem 0 0;
+}
+
+.fleet-copilot-note strong {
+  color: var(--color-text);
+}
 
 .team-roster-chip {
   flex-shrink: 0;

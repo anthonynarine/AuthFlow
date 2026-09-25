@@ -219,22 +219,34 @@ describe("HomePage product positioning and security navigation", () => {
     expect(screen.getByRole("link", { name: "Early Access" })).toHaveAttribute("href", "/early-access");
   });
 
-  test("agent fleet section shows gait.explain's mandate and the recovered incident", () => {
+  test("agent fleet uses Gait's real roles: six agents plus the Human Approver", () => {
     renderHome({
       isLoggedIn: false,
       user: null,
     });
 
-    fireEvent.click(screen.getByRole("tab", { name: "gait.explain · Explain" }));
+    expect(screen.getByRole("heading", { name: "Six agents and you. One job each." })).toBeInTheDocument();
+    const roster = screen.getByRole("tablist", { name: "Agent roster" });
+    const tabs = within(roster).getAllByRole("tab");
+    expect(tabs.map((tab) => tab.getAttribute("aria-label"))).toEqual([
+      "security_commander_v1 · Incident Commander",
+      "security_investigator_v1 · Blue Team",
+      "security_red_team_v1 · Red Team",
+      "security_repair_v1 · Green Team",
+      "security_validator_v1 · Security Validator",
+      "you (admin role) · Human Approver",
+      "security_deployer_v1 · Release Engineer",
+    ]);
 
-    const heading = screen.getByRole("heading", { name: "Explain" });
-    const panel = heading.closest(".team-detail");
-    expect(panel).toHaveTextContent("Explain answers in plain language");
-    expect(panel).not.toHaveTextContent("Security Copilot");
+    fireEvent.click(screen.getByRole("tab", { name: "you (admin role) · Human Approver" }));
+    const panel = screen.getByRole("heading", { level: 3, name: "Human Approver" }).closest(".team-detail");
+    expect(panel).toHaveTextContent("No agent can approve anything.");
+    expect(screen.getByText("APPROVED")).toBeInTheDocument();
 
-    expect(screen.getByText("YOU ASKED")).toBeInTheDocument();
-    expect(screen.getByText("Is this serious?")).toBeInTheDocument();
-    expect(screen.getByText("No — blocked before use.")).toBeInTheDocument();
+    // Copilot explains but is not part of the chain; the invented roles are gone.
+    expect(screen.getByText(/answers your questions in plain language/)).toBeInTheDocument();
+    expect(screen.queryByText("Eight agents. One job each.")).not.toBeInTheDocument();
+    expect(screen.queryByText(/runpack/)).not.toBeInTheDocument();
   });
 
   test("early access section is honest about hand-onboarding, not a self-serve signup", () => {

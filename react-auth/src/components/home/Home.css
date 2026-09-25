@@ -102,13 +102,16 @@
 
 .product-hero-content {
   display: grid;
-  grid-template-columns: 1fr;
+  /* minmax(0, 1fr), not 1fr: a bare 1fr track can't shrink below its widest
+     content, which pushed the hero ~130px off-screen on phones. */
+  grid-template-columns: minmax(0, 1fr);
   max-width: 1180px;
   margin: 0 auto;
 }
 
 .hero-copy {
   max-width: 680px;
+  min-width: 0; /* grid item: never let content force it wider than its track */
   margin: 0 auto;
 }
 
@@ -148,7 +151,9 @@
 
 .stat-strip {
   display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+  /* min(150px, 100%): on phones a 150px minimum x3 (+gaps) = 498px forced the
+     whole hero off-screen; now columns wrap and each can shrink to fit. */
+  grid-template-columns: repeat(auto-fit, minmax(min(150px, 100%), 1fr));
   gap: 1.5rem;
   max-width: 640px;
   margin-top: 2.25rem;
@@ -896,7 +901,7 @@
 
 @media (max-width: 980px) {
   .team-console {
-    grid-template-columns: 1fr;
+    grid-template-columns: minmax(0, 1fr);
   }
 
   .team-detail {
@@ -1575,6 +1580,12 @@ blockquote {
 }
 
 @media (max-width: 640px) {
+  /* Small phones: stack the hero stats instead of squeezing 2-3 columns. */
+  .stat-strip {
+    grid-template-columns: minmax(0, 1fr);
+    gap: 1rem;
+  }
+
   .site-header {
     padding: 1rem;
   }

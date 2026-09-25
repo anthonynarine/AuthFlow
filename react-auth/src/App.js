@@ -2,8 +2,6 @@ import { Route, Routes } from "react-router-dom";
 import { LoginPage } from "./components/login/LoginPage";
 import { ForgotPassword } from "./components/forgot-password/ForgotPassword";
 import { RegisterPage } from "./components/register/RegisterPage";
-import { ReactFeatures } from "./components/app-features/ReactFeatures";
-import ChatComponent from "./components/app-features/ChatComponent";
 import { SendEmail } from "./components/mail/SendEmail";
 import { EarlyAccessPage } from "./components/early-access/EarlyAccessPage";
 import { ResetPassword } from "./components/reset-password/ResetPassword";
@@ -43,8 +41,6 @@ function App() {
                     <Route path="/register" element={<RegisterPage />} />
                     <Route path="/login" element={<LoginPage />} />
                     <Route path="/forgot-password" element={<ForgotPassword />} />
-                    <Route path="/react-features" element={<ReactFeatures />} />
-                    <Route path="/chat-completion" element={<ChatComponent />} />
                     <Route path="/send-email" element={<SendEmail />} />
                     <Route path="/early-access" element={<EarlyAccessPage />} />
                     <Route path="/security" element={<SecurityObservatoryPage />} />

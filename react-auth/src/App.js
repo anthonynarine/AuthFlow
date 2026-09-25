@@ -10,6 +10,7 @@ import { NotFound } from "./components/not-found/NotFound";
 import HomePage from "./components/home/HomePage";
 import GaitArchitecturePage from "./components/home/GaitArchitecturePage";
 import { DevelopersPage } from "./components/developers/DevelopersPage";
+import { RouteTitle } from "./app/RouteTitle";
 import { SecurityObservatoryPage } from "./components/security/SecurityObservatoryPage";
 import { SecurityLearnPage } from "./components/security/SecurityLearnPage";
 import { SecurityCommandPage } from "./components/security-command/SecurityCommandPage";
@@ -33,6 +34,7 @@ function App() {
     <div className="app-container">
       <div className="routes-content" style={{ flex: 1, overflowY: 'auto' }}>
       <ToastContainer />
+      <RouteTitle />
           <BasicAuthProvider>
             <TwoFactorAuthProvider>
                 <UserSessionProvider>

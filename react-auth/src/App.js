@@ -9,6 +9,7 @@ import { QRCodeSetup } from "./components/two-factor/2fa-setup/QRCodeSetup";
 import { NotFound } from "./components/not-found/NotFound";
 import HomePage from "./components/home/HomePage";
 import GaitArchitecturePage from "./components/home/GaitArchitecturePage";
+import { DevelopersPage } from "./components/developers/DevelopersPage";
 import { SecurityObservatoryPage } from "./components/security/SecurityObservatoryPage";
 import { SecurityLearnPage } from "./components/security/SecurityLearnPage";
 import { SecurityCommandPage } from "./components/security-command/SecurityCommandPage";
@@ -38,6 +39,7 @@ function App() {
                   <Routes>
                     <Route path="/" element={<HomePage />} />
                     <Route path="/architecture" element={<GaitArchitecturePage />} />
+                    <Route path="/developers" element={<DevelopersPage />} />
                     <Route path="/register" element={<RegisterPage />} />
                     <Route path="/login" element={<LoginPage />} />
                     <Route path="/forgot-password" element={<ForgotPassword />} />

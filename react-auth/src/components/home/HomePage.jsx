@@ -540,6 +540,7 @@ function HomePage() {
           <a href="#fleet">Fleet</a>
           <a href="#how-it-works">How It Works</a>
           <Link to="/architecture">Full Architecture</Link>
+          <Link to="/developers">Developers</Link>
           {!isLoggedIn && (
             <Link to="/early-access" className="nav-cta secondary">Early Access</Link>
           )}
@@ -703,6 +704,22 @@ function HomePage() {
             </div>
             <p className="section-note">Demo workflow preview. Consequential actions remain backend-authorized and Human Approver-controlled.</p>
           </div>
+        </section>
+
+        {/* Developers: gait-sdk */}
+        <section className="section developers-teaser" id="developers">
+          <p className="eyebrow">For developers</p>
+          <h2>Trust Gait's identities in your own Python API.</h2>
+          <p className="section-lede">
+            gait-sdk verifies Gait's signed tokens inside your Django REST Framework or FastAPI service, locally
+            and fail-closed. Gait authenticates, the SDK verifies, and your app keeps every authorization decision.
+          </p>
+          <div className="developers-teaser-install">
+            <code>pip install gait-sdk</code>
+          </div>
+          <Link to="/developers" className="btn-pill btn-pill-secondary">
+            <RiTerminalBoxLine /> Read the developer guide
+          </Link>
         </section>
 
         {/* Early access */}

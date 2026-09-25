@@ -1,0 +1,389 @@
+/* gait-sdk developer page. Shares the homepage shell (Home.css); only
+   page-specific pieces live here. Every grid uses minmax(0, ...) or
+   min(..., 100%) so nothing forces the page wider than a phone. */
+
+.sdk-hero h1 {
+  margin: 0.5rem 0 0;
+  color: #f5f7fa;
+  font-size: 3.6rem;
+  line-height: 1;
+}
+
+.sdk-hero-lede {
+  max-width: 640px;
+  margin: 1.2rem 0 0;
+  color: var(--color-text-muted);
+  font-size: 1.1rem;
+  line-height: 1.6;
+}
+
+.sdk-install {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 1rem;
+  max-width: 440px;
+  margin-top: 1.75rem;
+  padding: 0.7rem 0.75rem 0.7rem 1rem;
+  border: 1px solid rgba(26, 188, 156, 0.35);
+  border-radius: var(--radius-sm);
+  background: rgba(26, 188, 156, 0.07);
+}
+
+.sdk-install code {
+  min-width: 0;
+  overflow-x: auto;
+  color: var(--color-text);
+  font-size: 1rem;
+  white-space: nowrap;
+}
+
+.sdk-install code::before {
+  content: "$ ";
+  color: var(--color-accent);
+}
+
+.sdk-copy {
+  display: inline-flex;
+  flex-shrink: 0;
+  align-items: center;
+  gap: 0.3rem;
+  padding: 0.3rem 0.6rem;
+  border: 1px solid var(--color-border-strong);
+  border-radius: var(--radius-sm);
+  background: rgba(255, 255, 255, 0.05);
+  color: var(--color-text-muted);
+  font-size: 0.75rem;
+  font-weight: 700;
+  cursor: pointer;
+  transition: color var(--transition-fast), border-color var(--transition-fast);
+}
+
+.sdk-copy:hover {
+  border-color: var(--color-accent);
+  color: var(--color-text);
+}
+
+.sdk-chips {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.5rem;
+  margin: 1.1rem 0 0;
+  padding: 0;
+  list-style: none;
+}
+
+.sdk-chips li {
+  padding: 0.3rem 0.7rem;
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-pill);
+  background: rgba(255, 255, 255, 0.04);
+  color: var(--color-text-muted);
+  font-size: 0.78rem;
+  font-weight: 650;
+}
+
+/* The three-owner boundary */
+.sdk-boundary {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(min(240px, 100%), 1fr));
+  gap: 1rem;
+}
+
+.sdk-boundary-item {
+  padding: 1.2rem;
+  border: 1px solid var(--color-border);
+  border-top: 3px solid var(--color-accent);
+  border-radius: var(--radius-md);
+  background: rgba(255, 255, 255, 0.025);
+}
+
+.sdk-boundary-item p {
+  margin: 0;
+}
+
+.sdk-boundary-who {
+  color: var(--color-text);
+  font-size: 1.05rem;
+  font-weight: 800;
+}
+
+.sdk-boundary-verb {
+  color: var(--color-accent);
+  font-size: 0.78rem;
+  font-weight: 800;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+}
+
+.sdk-boundary-question {
+  margin-top: 0.8rem !important;
+  color: var(--color-text);
+  font-style: italic;
+}
+
+.sdk-boundary-detail {
+  margin-top: 0.35rem !important;
+  color: var(--color-text-muted);
+  font-size: 0.88rem;
+}
+
+/* Request-path diagram: a row on desktop, a column on phones */
+.sdk-flow {
+  display: flex;
+  align-items: stretch;
+  gap: 0.5rem;
+}
+
+.sdk-flow .diagram-node {
+  flex: 1 1 0;
+  min-width: 0;
+}
+
+.sdk-flow-h {
+  align-self: center;
+  flex: 0 0 2.25rem;
+}
+
+.sdk-flow-v {
+  display: none !important;
+}
+
+/* Quick start */
+.sdk-tabs {
+  display: inline-flex;
+  flex-wrap: wrap;
+  gap: 0.25rem;
+  margin-bottom: 1.5rem;
+  padding: 0.25rem;
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-sm);
+  background: rgba(255, 255, 255, 0.03);
+}
+
+.sdk-tabs button {
+  padding: 0.5rem 0.9rem;
+  border: 0;
+  border-radius: 6px;
+  background: transparent;
+  color: var(--color-text-muted);
+  font-size: 0.88rem;
+  font-weight: 750;
+  cursor: pointer;
+}
+
+.sdk-tabs button.is-active {
+  background: var(--color-accent-soft);
+  color: var(--color-accent);
+}
+
+.sdk-steps {
+  display: grid;
+  gap: 1.75rem;
+  max-width: 860px;
+}
+
+.sdk-step {
+  min-width: 0;
+}
+
+.sdk-step h3 {
+  display: flex;
+  align-items: center;
+  gap: 0.6rem;
+  margin: 0 0 0.75rem;
+  color: var(--color-text);
+  font-size: 1.1rem;
+  font-weight: 800;
+}
+
+.sdk-step h3 span {
+  display: inline-grid;
+  place-items: center;
+  width: 1.7rem;
+  height: 1.7rem;
+  border-radius: 50%;
+  background: var(--color-accent-soft);
+  color: var(--color-accent);
+  font-size: 0.85rem;
+}
+
+.sdk-step .section-note {
+  margin: 0.6rem 0 0;
+  font-size: 0.88rem;
+}
+
+.sdk-code {
+  overflow: hidden;
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-sm);
+  background: #0b0f14;
+}
+
+.sdk-code-bar {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 0.4rem 0.5rem 0.4rem 0.9rem;
+  border-bottom: 1px solid var(--color-border);
+  color: var(--color-text-muted);
+  font-size: 0.75rem;
+  font-weight: 700;
+}
+
+.sdk-code pre {
+  margin: 0;
+  padding: 1rem;
+  overflow-x: auto;
+  color: #d6dde5;
+  font-size: 0.82rem;
+  line-height: 1.6;
+}
+
+.sdk-callout {
+  margin: 0;
+}
+
+.sdk-callout h4 {
+  display: flex;
+  align-items: center;
+  gap: 0.45rem;
+}
+
+.sdk-callout h4 svg {
+  color: var(--color-accent);
+}
+
+.developers-page p code,
+.sdk-callout code {
+  padding: 0.1rem 0.35rem;
+  border-radius: 4px;
+  background: rgba(255, 255, 255, 0.07);
+  color: var(--color-text);
+  font-size: 0.88em;
+}
+
+/* Cards: modules and docs */
+.sdk-cards {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(min(260px, 100%), 1fr));
+  gap: 1rem;
+}
+
+.sdk-card {
+  display: block;
+  min-width: 0;
+  padding: 1.1rem 1.2rem;
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-md);
+  background: rgba(255, 255, 255, 0.025);
+  color: inherit;
+  text-decoration: none;
+}
+
+.sdk-card h3 {
+  display: flex;
+  align-items: center;
+  gap: 0.45rem;
+  margin: 0 0 0.45rem;
+  color: var(--color-text);
+  font-size: 1rem;
+  font-weight: 800;
+}
+
+.sdk-card > code {
+  display: inline-block;
+  max-width: 100%;
+  overflow-wrap: anywhere;
+  color: var(--color-accent);
+  font-size: 0.8rem;
+}
+
+.sdk-card p {
+  margin: 0.5rem 0 0;
+  color: var(--color-text-muted);
+  font-size: 0.88rem;
+  line-height: 1.55;
+}
+
+.sdk-doc-link {
+  transition: border-color var(--transition-fast), transform var(--transition-fast);
+}
+
+.sdk-doc-link:hover {
+  border-color: rgba(26, 188, 156, 0.45);
+  transform: translateY(-1px);
+}
+
+.sdk-doc-link h3 svg {
+  color: var(--color-accent);
+}
+
+/* Security guarantees */
+.sdk-guarantees {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(min(340px, 100%), 1fr));
+  gap: 0.9rem 1.5rem;
+  margin: 0 0 1.25rem;
+  padding: 0;
+  list-style: none;
+}
+
+.sdk-guarantees li {
+  display: flex;
+  gap: 0.6rem;
+}
+
+.sdk-guarantees li svg {
+  flex-shrink: 0;
+  margin-top: 0.2rem;
+  color: var(--color-accent);
+}
+
+.sdk-guarantees p {
+  margin: 0;
+  color: var(--color-text-muted);
+  font-size: 0.92rem;
+  line-height: 1.55;
+}
+
+.sdk-guarantees strong {
+  color: var(--color-text);
+}
+
+.developers-page .section-note a {
+  color: var(--color-accent);
+}
+
+.sdk-availability {
+  margin-top: 2rem;
+}
+
+.sdk-availability .section-note {
+  margin: 0;
+}
+
+@media (max-width: 860px) {
+  .sdk-flow {
+    flex-direction: column;
+  }
+
+  .sdk-flow-h {
+    display: none !important;
+  }
+
+  .sdk-flow-v {
+    display: flex !important;
+    align-self: center;
+  }
+}
+
+@media (max-width: 640px) {
+  .sdk-hero h1 {
+    font-size: 2.6rem;
+  }
+
+  .sdk-install code {
+    font-size: 0.9rem;
+  }
+}

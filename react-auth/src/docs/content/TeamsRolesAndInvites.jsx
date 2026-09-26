@@ -16,17 +16,20 @@ const INVITE_FLOW = `sequenceDiagram
     T->>G: Choose Join
     G-->>T: You're an Admin of Acme`;
 
-const TWO_UMBRELLAS = `flowchart TB
+// The four ways in are nodes, not edge labels: as labels, two parallel edges
+// into the same box drew their labels on top of each other.
+const TWO_UMBRELLAS = `flowchart LR
     classDef acct fill:#123029,stroke:#1abc9c,color:#e8eaed,stroke-width:2px
     classDef gait fill:#1b2129,stroke:#38bdf8,color:#e8eaed,stroke-width:2px
     classDef prod fill:#3a2016,stroke:#fb8a5c,color:#e8eaed,stroke-width:2px
+    classDef way fill:#232a34,stroke:#5b6572,color:#e8eaed,stroke-width:1px
     classDef no fill:#3a1f24,stroke:#ff6b6b,color:#ffd6d6,stroke-width:2px,stroke-dasharray:6 4
 
     A["Gait account<br/>(anyone can register)<br/>= member of nothing"]:::acct
-    A -- "creates a company<br/>→ Owner" --> G["① Gait company<br/>e.g. app-one<br/>the security team"]:::gait
-    A -- "Gait invite from an<br/>Owner/Admin + verified email" --> G
-    A -- "creates an org in the product<br/>→ its Owner" --> P["② Inside the product<br/>e.g. App One's customer org<br/>its end users"]:::prod
-    A -- "the product's own invite<br/>from that org's Owner/Admin" --> P
+    A --> W1["creates a company<br/>→ its Owner"]:::way --> G["① Gait company<br/>e.g. app-one<br/>the security team"]:::gait
+    A --> W2["Gait invite from an Owner/Admin<br/>+ verified email"]:::way --> G
+    A --> W3["creates an org in the product<br/>→ its Owner"]:::way --> P["② Inside the product<br/>e.g. App One's customer org<br/>its end users"]:::prod
+    A --> W4["the product's own invite<br/>from that org's Owner/Admin"]:::way --> P
     K["Connection key"]:::no -. "can't invite,<br/>never makes a member" .-> G`;
 
 const SITES = `flowchart TB

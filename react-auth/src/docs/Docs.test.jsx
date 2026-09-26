@@ -106,12 +106,13 @@ describe("docs pages", () => {
 
         const pager = screen.getByRole("navigation", { name: "Previous and next page" });
         expect(within(pager).queryByText("Previous")).toBeNull();
-        fireEvent.click(within(pager).getByRole("link", { name: /Next.*Getting started/ }));
+        const second = DOC_PAGES[1];
+        fireEvent.click(within(pager).getByRole("link", { name: new RegExp(`Next.*${second.title}`) }));
 
-        expect(screen.getByTestId("location")).toHaveTextContent("/docs/getting-started");
-        const title = screen.getByRole("heading", { level: 1, name: "Getting started" });
+        expect(screen.getByTestId("location")).toHaveTextContent(`/docs/${second.slug}`);
+        const title = screen.getByRole("heading", { level: 1, name: second.title });
         expect(title).toHaveFocus();
-        expect(within(sidebar).getByRole("link", { name: "Getting started" })).toHaveAttribute("aria-current", "page");
+        expect(within(sidebar).getByRole("link", { name: second.title })).toHaveAttribute("aria-current", "page");
         await settleDiagrams();
     });
 

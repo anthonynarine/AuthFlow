@@ -57,7 +57,8 @@ function loadMermaid() {
                     securityLevel: "strict",
                     theme: "base",
                     themeVariables: THEME_VARIABLES,
-                    flowchart: { htmlLabels: false },
+                    // Wide enough that an email pair like "a@x · b@x" stays on one line.
+                    flowchart: { htmlLabels: false, wrappingWidth: 280 },
                 });
                 return mermaid;
             })

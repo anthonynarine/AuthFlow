@@ -1,0 +1,136 @@
+/*
+ * Isolation page: flow steps, journey steps and branches. The --iso-* colors
+ * match the mermaid classDefs in IsolationDiagrams.jsx (one color per role,
+ * used the same way everywhere on the page).
+ */
+.docs-shell {
+  --iso-one: #fb8a5c;
+  --iso-one-bg: rgba(251, 138, 92, 0.1);
+  --iso-one-border: rgba(251, 138, 92, 0.45);
+
+  --iso-two: #7aa7ff;
+  --iso-two-bg: rgba(122, 167, 255, 0.1);
+  --iso-two-border: rgba(122, 167, 255, 0.45);
+
+  --iso-wall: var(--color-danger);
+  --iso-wall-bg: var(--color-danger-bg);
+  --iso-wall-border: var(--color-danger-border);
+
+  --iso-ok: #34d399;
+  --iso-ok-bg: rgba(52, 211, 153, 0.08);
+  --iso-ok-border: rgba(52, 211, 153, 0.4);
+
+  --iso-gait-bg: var(--color-surface-glass-strong);
+  --iso-gait-border: var(--color-border-strong);
+}
+
+.doc-h3 { margin: 24px 0 10px; font-size: 1.1rem; font-weight: 650; scroll-margin-top: 72px; }
+
+/* Short flows */
+.iso-flow { margin: 0 0 20px; }
+.docs-article .iso-flow-steps {
+  margin: 0 0 0 11px;
+  padding: 0;
+  list-style: none;
+  counter-reset: iso-step;
+  border-left: 2px solid var(--color-border-strong);
+}
+.docs-article .iso-flow-steps > li {
+  counter-increment: iso-step;
+  position: relative;
+  margin: 0;
+  padding: 8px 0 12px 24px;
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+.iso-flow-steps > li::before {
+  content: counter(iso-step);
+  position: absolute;
+  left: -12px;
+  top: 8px;
+  width: 22px;
+  height: 22px;
+  border-radius: 50%;
+  display: grid;
+  place-items: center;
+  font-size: 0.72rem;
+  font-weight: 700;
+  background: var(--color-surface-alt);
+  border: 1px solid var(--color-border-strong);
+  color: var(--color-text);
+}
+.iso-flow-step--ok::before { border-color: var(--iso-ok); color: var(--iso-ok); }
+.iso-flow-step--denied::before { border-color: var(--iso-wall); color: var(--iso-wall); }
+.iso-flow-step--denied .iso-flow-text { color: var(--iso-wall); font-weight: 600; }
+.iso-flow-actors { display: flex; flex-wrap: wrap; align-items: center; gap: 6px; }
+.iso-flow-arrow { color: var(--color-text-muted); }
+.iso-flow-text { overflow-wrap: anywhere; }
+.docs-article .iso-flow-note {
+  margin: 4px 0 0;
+  padding: 8px 12px;
+  border-radius: var(--radius-sm);
+  border: 1px dashed var(--iso-wall-border);
+  background: var(--iso-wall-bg);
+  font-size: 0.9rem;
+}
+
+.iso-actor {
+  display: inline-block;
+  padding: 1px 8px;
+  border: 1px solid;
+  border-radius: var(--radius-pill);
+  font-size: 0.75rem;
+  font-weight: 600;
+  line-height: 1.6;
+}
+.iso-actor--one { color: var(--iso-one); border-color: var(--iso-one-border); background: var(--iso-one-bg); }
+.iso-actor--two { color: var(--iso-two); border-color: var(--iso-two-border); background: var(--iso-two-bg); }
+.iso-actor--gait { color: var(--color-text); border-color: var(--iso-gait-border); background: var(--iso-gait-bg); }
+
+/* Journey step lists with a status badge on each step */
+.docs-article .iso-steps { margin: 0 0 16px; padding: 0; list-style: none; counter-reset: iso-journey; }
+.docs-article .iso-steps > li {
+  counter-increment: iso-journey;
+  display: grid;
+  grid-template-columns: 24px minmax(0, 1fr) auto;
+  gap: 10px;
+  align-items: start;
+  margin: 0;
+  padding: 10px 0;
+  border-bottom: 1px solid var(--color-border);
+}
+.iso-steps > li::before {
+  content: counter(iso-journey);
+  font-weight: 700;
+  color: var(--color-text-muted);
+  font-variant-numeric: tabular-nums;
+}
+.iso-steps .iso-step-text { overflow-wrap: anywhere; }
+.iso-step-note { display: block; margin-top: 2px; font-size: 0.8rem; color: var(--color-text-muted); }
+
+.iso-branches {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 12px;
+  margin: 0 0 16px;
+}
+.iso-branch {
+  padding: 12px;
+  border: 1.5px solid;
+  border-radius: var(--radius-md);
+}
+.iso-branch--fail { border-color: var(--iso-wall-border); background: var(--iso-wall-bg); }
+.iso-branch--pass { border-color: var(--iso-ok-border); background: var(--iso-ok-bg); }
+.docs-article .iso-branch-title { margin: 0 0 6px; font-weight: 700; font-size: 0.85rem; }
+.iso-branch--fail .iso-branch-title { color: var(--iso-wall); }
+.iso-branch--pass .iso-branch-title { color: var(--iso-ok); }
+.docs-article .iso-branch ol { margin: 0; padding-left: 1.2em; font-size: 0.9rem; }
+
+@media (max-width: 860px) {
+  .doc-h3 { scroll-margin-top: 110px; } /* clear the sticky mobile contents bar, like .doc-h2 */
+}
+
+@media (max-width: 600px) {
+  .iso-branches { grid-template-columns: minmax(0, 1fr); }
+}

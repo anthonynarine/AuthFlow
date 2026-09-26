@@ -1,6 +1,13 @@
 import React, { useEffect, useRef, useState } from "react";
 import { Link } from "react-router-dom";
 import { docPath } from "../manifest";
+import { STATUS_LABELS, statusOf } from "../featureStatus";
+
+/** "Live" / "Pending" for a feature key from featureStatus.js (or a fixed status, for legends). */
+export function StatusBadge({ feature, status: fixedStatus }) {
+    const status = fixedStatus || statusOf(feature);
+    return <span className={`doc-status doc-status--${status}`}>{STATUS_LABELS[status]}</span>;
+}
 
 /** A top-level section of a docs page. Its h2 feeds the "On this page" list. */
 export function DocSection({ id, title, children }) {

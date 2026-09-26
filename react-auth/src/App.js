@@ -25,6 +25,7 @@ import { AppSetupPage } from "./components/workspace/AppSetupPage";
 import { ConsoleLayout } from "./console/layout/ConsoleLayout";
 import { ConsoleEntry } from "./console/pages/ConsoleEntry";
 import { SectionPlaceholder } from "./console/pages/SectionPlaceholder";
+import { OverviewPage } from "./console/pages/overview/OverviewPage";
 import { DocsPage } from "./docs/DocsPage";
 import { DOCS_BASE, DOC_PAGES, docPath } from "./docs/manifest";
 import "./App.css"
@@ -78,7 +79,7 @@ function App() {
                     <Route path="/console" element={<ConsoleEntry />} />
                     <Route path="/console/:orgSlug" element={<ConsoleLayout />}>
                       <Route index element={<Navigate to="overview" replace />} />
-                      <Route path="overview" element={<SectionPlaceholder title="Overview" description="Security posture across your environments." />} />
+                      <Route path="overview" element={<OverviewPage />} />
                       <Route path="applications" element={<SectionPlaceholder title="Applications" description="The software that reports to Gait, and its credentials." />} />
                       <Route path="security" element={<SectionPlaceholder title="Security" description="Controls, findings and evidence for this environment." />} />
                       <Route path="members" element={<SectionPlaceholder title="Members" description="Who can see and manage this organization." />} />

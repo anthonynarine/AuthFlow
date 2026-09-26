@@ -1,8 +1,8 @@
-import { useCallback, useMemo } from "react";
-import { useQuery } from "@tanstack/react-query";
+import { useCallback, useEffect, useMemo } from "react";
+import { useQuery, useQueryClient } from "@tanstack/react-query";
 import { useParams, useSearchParams } from "react-router-dom";
 import { fetchMyOrganizations, fetchPostureOverview } from "../api/consoleApi";
-import { consoleKeys } from "../api/queryKeys";
+import { belongsToOtherOrganization, consoleKeys } from "../api/queryKeys";
 
 export const ENVIRONMENTS = ["production", "staging", "test", "ci", "local"];
 export const ENVIRONMENT_LABELS = {
@@ -35,6 +35,13 @@ export function useConsoleScope() {
     const { orgSlug } = useParams();
     const [searchParams, setSearchParams] = useSearchParams();
     const organizations = useMyOrganizations();
+    const queryClient = useQueryClient();
+
+    // Switching company drops everything cached for any other company, so
+    // one company's data can never be shown (even briefly) under another.
+    useEffect(() => {
+        queryClient.removeQueries({ predicate: (query) => belongsToOtherOrganization(query.queryKey, orgSlug) });
+    }, [queryClient, orgSlug]);
 
     const membership = useMemo(
         () => (organizations.data || []).find((row) => row.slug === orgSlug) || null,

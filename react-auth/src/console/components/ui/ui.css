@@ -133,3 +133,7 @@
   overflow: hidden; clip: rect(0, 0, 0, 0);
   white-space: nowrap; border: 0;
 }
+
+/* Small shared helpers */
+.gc-muted { color: var(--color-text-muted); }
+.gc-badge-row { display: inline-flex; flex-wrap: wrap; align-items: center; gap: 6px; }

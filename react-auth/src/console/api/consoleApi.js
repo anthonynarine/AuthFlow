@@ -19,3 +19,27 @@ export async function fetchPostureOverview(organizationSlug) {
     const { data } = await authAxios.get(`${org(organizationSlug)}/security/posture/overview/`);
     return data;
 }
+
+/** One environment's posture: overall status, control counts, open findings by severity. */
+export async function fetchPosture(organizationSlug, environment) {
+    const { data } = await authAxios.get(`${org(organizationSlug)}/security/posture/`, { params: { environment } });
+    return data;
+}
+
+/** Every control that applies to this company, each with its state in `environment`. */
+export async function fetchControls(organizationSlug, environment) {
+    const { data } = await authAxios.get(`${org(organizationSlug)}/security/controls/`, { params: { environment } });
+    return data;
+}
+
+/**
+ * The newest evidence for one control in one environment (or null). Its
+ * `trust` (SELF_REPORTED / GAIT_VERIFIED) is what the console shows as
+ * the source of that control's result.
+ */
+export async function fetchLatestEvidence(organizationSlug, environment, controlKey) {
+    const { data } = await authAxios.get(`${org(organizationSlug)}/security/evidence/`, {
+        params: { environment, control: controlKey, page_size: 1 },
+    });
+    return data.results[0] || null;
+}

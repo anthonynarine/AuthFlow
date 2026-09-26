@@ -88,7 +88,7 @@ test("journey badges: Live only if a customer can do it in the console today", a
     renderIsolation();
     await settleDiagrams();
     const journey1 = screen.getByRole("list", { name: "Journey 1 steps" });
-    expect(badgesIn(journey1)).toEqual(["Live", "Pending", "Live", "Live", "Live", "Live"]);
+    expect(badgesIn(journey1)).toEqual(Array(6).fill("Live")); // E1 and F3 are live
     // The findings screen shipped (F3), so its "API only" note is gone.
     expect(within(journey1).getAllByRole("listitem")[5]).not.toHaveTextContent("Findings screen (F3)");
     expect(badgesIn(screen.getByRole("list", { name: "Journey 2 steps" }))).toEqual(["Live", "Live"]);
@@ -105,11 +105,18 @@ test("journey badges: Live only if a customer can do it in the console today", a
 
 test("updating the status object is all it takes to flip a badge", async () => {
     const original = FEATURE_STATUS.emailVerification;
-    FEATURE_STATUS.emailVerification = "live";
+    FEATURE_STATUS.emailVerification = "pending";
     try {
         renderIsolation();
         await settleDiagrams();
-        expect(badgesIn(screen.getByRole("list", { name: "Journey 1 steps" }))).toEqual(Array(6).fill("Live"));
+        expect(badgesIn(screen.getByRole("list", { name: "Journey 1 steps" }))).toEqual([
+            "Live",
+            "Pending",
+            "Live",
+            "Live",
+            "Live",
+            "Live",
+        ]);
         // The legend is fixed, not tied to a feature.
         expect(screen.getByText(/means you can do it today/)).toHaveTextContent("Pending means it isn't available");
     } finally {

@@ -9,8 +9,8 @@
 export const STATUS_AS_OF = "2026-09-26";
 
 export const FEATURE_STATUS = {
-    // Stage E1: confirming your email address.
-    emailVerification: "pending",
+    // Stage E1: confirming your email address. Live with the E1-E3 release.
+    emailVerification: "live",
     // Stage F4: the console's Members screen and invite-accept page.
     membersAndInviteAccept: "pending",
     // Stage F3: the console's Findings screen (watch, acknowledge, accept

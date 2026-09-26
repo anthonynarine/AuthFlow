@@ -1,6 +1,7 @@
 import React from "react";
 import { Link } from "react-router-dom";
 import { DocLink, DocSection, DocTable } from "../components/DocPrimitives";
+import { statusOf } from "../featureStatus";
 
 function Problems({ caption, rows }) {
     return (
@@ -41,7 +42,9 @@ export default function Troubleshooting() {
                         ],
                         [
                             "You can't create a company until you confirm your email",
-                            "Your email address isn't confirmed yet (once email confirmation is live).",
+                            statusOf("emailVerification") === "live"
+                                ? "Your email address isn't confirmed yet."
+                                : "Your email address isn't confirmed yet (once email confirmation is live).",
                             "Open the link Gait emailed you, or send a new one from the console.",
                         ],
                         [

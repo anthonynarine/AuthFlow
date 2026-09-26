@@ -83,7 +83,7 @@ describe("What Gait is", () => {
             "Live",
             "Live",
             "Live",
-            "Pending Members screen, email confirmation",
+            "Pending Members screen",
             "Early access",
         ]);
         expect(screen.getByText(/Status as of 26 September 2026/)).toBeInTheDocument();
@@ -121,7 +121,7 @@ describe("Quickstart", () => {
         const table = screen.getByRole("table", { name: "Quickstart checklist" });
         expect(statusCells(table, 2)).toEqual([
             "Live",
-            "Pending email confirmation",
+            "Live",
             "Live",
             "Live",
             "Live",

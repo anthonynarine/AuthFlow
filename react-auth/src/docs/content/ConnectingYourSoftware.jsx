@@ -1,22 +1,6 @@
 import React from "react";
 import { Callout, CodeBlock, DocLink, DocSection } from "../components/DocPrimitives";
-
-const INSTALL = `pip install "gait-sdk[django]==0.5.1"   # Django projects
-pip install "gait-sdk==0.5.1"           # anything else`;
-
-// Placeholder only. Never replace it with anything that looks like a real key.
-const ENV_VARS = `GAIT_AUTH_URL=https://api.gaitobservatory.com/api
-GAIT_APPLICATION_CREDENTIAL=<your connection key>`;
-
-const REPORT = `import asyncio
-from gait_sdk.security import APPLICATION_SELF_CHECK, send_security_signal
-
-asyncio.run(send_security_signal(
-    signal_type=APPLICATION_SELF_CHECK,
-    result="FAIL",                                       # or "PASS"
-    source_reference="self-check:2026-09-25T20:00Z:1",   # unique per run
-    payload={"checks": {"debug_disabled": "FAIL", "hsts_enabled": "PASS"}},
-))`;
+import { ENV_VARS, INSTALL, REPORT } from "./snippets";
 
 export default function ConnectingYourSoftware() {
     return (

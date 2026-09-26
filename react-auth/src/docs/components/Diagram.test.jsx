@@ -31,3 +31,13 @@ test("mermaid loads on demand in strict mode, one render at a time", async () =>
     expect(renderSpy).toHaveBeenCalledTimes(2);
     expect(maxActive).toBe(1);
 });
+
+test("records the drawing's natural width so phones never stretch a small diagram", async () => {
+    const spy = jest
+        .spyOn(mermaid, "render")
+        .mockResolvedValue({ svg: '<svg viewBox="0 0 259.5 966" data-testid="narrow"></svg>' });
+    render(<Diagram source="flowchart TB; A-->B" description="A narrow one." />);
+    await waitFor(() => expect(document.querySelector(".doc-diagram-svg")).not.toBeNull());
+    expect(document.querySelector(".doc-diagram-svg").style.getPropertyValue("--diagram-natural-width")).toBe("260px");
+    spy.mockRestore();
+});

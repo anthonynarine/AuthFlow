@@ -1,7 +1,8 @@
 import React, { useEffect, useRef, useState } from "react";
 import { Link, NavLink, useLocation, useParams } from "react-router-dom";
-import { DOC_PAGES, DOCS_BASE, docPath, findDocPage } from "./manifest";
+import { DOC_GROUPS, DOC_PAGES, DOCS_BASE, docPath, findDocPage } from "./manifest";
 import { DOC_CONTENT } from "./content";
+import { DocsSearch } from "./search/DocsSearch";
 import "./docs.css";
 
 /*
@@ -13,19 +14,26 @@ import "./docs.css";
 
 function DocsNavList({ onNavigate }) {
     return (
-        <ol className="docs-nav-list">
-            {DOC_PAGES.map((page) => (
-                <li key={page.slug}>
-                    <NavLink
-                        to={docPath(page.slug)}
-                        className={({ isActive }) => `docs-nav-link${isActive ? " is-active" : ""}`}
-                        onClick={onNavigate}
-                    >
-                        {page.title}
-                    </NavLink>
-                </li>
+        <div className="docs-nav-groups">
+            {DOC_GROUPS.map((group) => (
+                <div key={group.title} className="docs-nav-group">
+                    <p className="docs-nav-group-title">{group.title}</p>
+                    <ul className="docs-nav-list" aria-label={group.title}>
+                        {group.pages.map((page) => (
+                            <li key={page.slug}>
+                                <NavLink
+                                    to={docPath(page.slug)}
+                                    className={({ isActive }) => `docs-nav-link${isActive ? " is-active" : ""}`}
+                                    onClick={onNavigate}
+                                >
+                                    {page.title}
+                                </NavLink>
+                            </li>
+                        ))}
+                    </ul>
+                </div>
             ))}
-        </ol>
+        </div>
     );
 }
 
@@ -118,7 +126,7 @@ export function DocsPage() {
 
             <div className="docs-body">
                 <nav className="docs-sidebar" aria-label="Documentation">
-                    <p className="docs-sidebar-title">Documentation</p>
+                    <DocsSearch />
                     <DocsNavList />
                 </nav>
 
@@ -132,6 +140,7 @@ export function DocsPage() {
                         <span className="docs-mobile-nav-current">{page ? page.title : "Documentation"}</span>
                     </summary>
                     <nav aria-label="Documentation contents">
+                        <DocsSearch onNavigate={() => setMobileOpen(false)} />
                         <DocsNavList onNavigate={() => setMobileOpen(false)} />
                     </nav>
                 </details>

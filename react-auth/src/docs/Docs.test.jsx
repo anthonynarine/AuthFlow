@@ -100,9 +100,10 @@ describe("docs pages", () => {
     });
 
     test("the sidebar marks the current page, and next/previous move through the docs in order", async () => {
-        renderDocs("/docs/people-and-applications");
+        const first = DOC_PAGES[0];
+        renderDocs(`/docs/${first.slug}`);
         const sidebar = screen.getByRole("navigation", { name: "Documentation" });
-        expect(within(sidebar).getByRole("link", { name: "People and applications" })).toHaveAttribute("aria-current", "page");
+        expect(within(sidebar).getByRole("link", { name: first.title })).toHaveAttribute("aria-current", "page");
 
         const pager = screen.getByRole("navigation", { name: "Previous and next page" });
         expect(within(pager).queryByText("Previous")).toBeNull();
@@ -250,7 +251,7 @@ describe("docs are public", () => {
         expect(mockAxiosCalls).toEqual([]);
         expect(xhrOpen).not.toHaveBeenCalled();
         expect(fetchSpy).not.toHaveBeenCalled();
-        expect(screen.getByTestId("location")).toHaveTextContent("/docs/troubleshooting");
+        expect(screen.getByTestId("location")).toHaveTextContent(`/docs/${DOC_PAGES[DOC_PAGES.length - 1].slug}`);
     });
 
     test("/docs opens the first page", async () => {

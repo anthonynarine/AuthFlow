@@ -359,7 +359,8 @@
   .docs-title { font-size: 1.6rem; }
   .doc-h2, .docs-article { scroll-margin-top: 110px; }
   /* Keep diagram text readable: scroll the diagram sideways instead of shrinking it. */
-  .doc-diagram-svg svg { min-width: 560px; max-width: none !important; }
+  /* ...but never wider than the diagram's natural width (set by Diagram.jsx). */
+  .doc-diagram-svg svg { min-width: min(560px, var(--diagram-natural-width, 560px)); max-width: none !important; }
 }
 
 @media (max-width: 480px) {
@@ -382,3 +383,66 @@
 }
 .doc-status--live { color: #34d399; background: rgba(52, 211, 153, 0.12); border-color: rgba(52, 211, 153, 0.35); }
 .doc-status--pending { color: var(--diagram-human); background: var(--diagram-human-bg); border-color: var(--diagram-human-border); }
+
+/* Navigation groups */
+.docs-nav-group + .docs-nav-group { margin-top: 18px; }
+.docs-nav-group-title {
+  margin: 0 0 6px;
+  padding: 0 10px;
+  font-size: 0.72rem;
+  font-weight: 650;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  color: var(--color-text-muted);
+}
+
+/* Search */
+.docs-search { margin: 0 0 20px; }
+.docs-search-input {
+  width: 100%;
+  padding: 8px 12px;
+  font: inherit;
+  font-size: 0.9rem;
+  color: var(--color-text);
+  background: var(--color-surface);
+  border: 1px solid var(--color-border-strong);
+  border-radius: var(--radius-sm);
+}
+.docs-search-input::placeholder { color: var(--color-text-muted); }
+.docs-search-input:focus-visible { outline: 2px solid var(--color-accent); outline-offset: 1px; }
+.docs-search-status { margin: 8px 2px 0; font-size: 0.85rem; color: var(--color-text-muted); }
+.docs-search-results {
+  list-style: none;
+  margin: 8px 0 0;
+  padding: 4px;
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-sm);
+  background: var(--color-surface);
+}
+.docs-shell .docs-search-result {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  padding: 8px;
+  border-radius: 6px;
+  text-decoration: none;
+  color: var(--color-text);
+}
+.docs-shell .docs-search-result:hover,
+.docs-shell .docs-search-result:focus-visible { background: var(--color-accent-soft); color: var(--color-text); }
+.docs-search-result-title { font-size: 0.85rem; font-weight: 600; line-height: 1.35; }
+.docs-search-result-section { font-weight: 500; color: var(--color-text-muted); }
+.docs-search-result-snippet { font-size: 0.78rem; line-height: 1.45; color: var(--color-text-muted); overflow-wrap: anywhere; }
+.docs-search-result-snippet mark { background: none; color: var(--color-accent); font-weight: 650; }
+
+/* Status cells (badge + what a Pending item waits on) */
+.doc-status-cell { display: inline-flex; flex-wrap: wrap; align-items: center; gap: 6px; }
+.doc-status-note { font-size: 0.78rem; color: var(--color-text-muted); }
+.doc-status--earlyAccess { color: var(--diagram-truth); background: var(--diagram-truth-bg); border-color: var(--diagram-truth-border); }
+
+/* Glossary */
+.doc-glossary { margin: 0; }
+.doc-glossary-entry { padding: 12px 0; border-bottom: 1px solid var(--color-border); scroll-margin-top: 72px; }
+.doc-glossary dt { font-weight: 650; margin: 0 0 4px; }
+.doc-glossary dd { margin: 0; }
+.doc-glossary-more { display: inline-block; font-size: 0.85rem; color: var(--color-text-muted); }

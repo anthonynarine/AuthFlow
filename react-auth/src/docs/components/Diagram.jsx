@@ -82,6 +82,13 @@ function renderDiagram(source) {
     return job;
 }
 
+// The drawing's natural width, from its viewBox, so narrow screens never
+// stretch a small diagram (see the --diagram-natural-width rule in docs.css).
+function naturalWidth(svg) {
+    const match = /viewBox="[-\d.]+ [-\d.]+ ([\d.]+) /.exec(svg);
+    return match ? Math.ceil(Number(match[1])) : null;
+}
+
 /**
  * A mermaid diagram with a plain-language description. The description is
  * always visible as the figure caption, so the page still makes sense to a
@@ -105,13 +112,19 @@ export function Diagram({ source, description }) {
         };
     }, [source]);
 
+    const width = state.status === "ready" ? naturalWidth(state.svg) : null;
+
     return (
         <figure className="doc-diagram">
             {/* The caption carries the meaning for screen readers; the drawing is a visual duplicate. */}
             <div className="doc-diagram-canvas" aria-hidden="true" data-status={state.status}>
                 {state.status === "ready" && (
                     // Sanitized by mermaid (securityLevel "strict") from a static source string.
-                    <div className="doc-diagram-svg" dangerouslySetInnerHTML={{ __html: state.svg }} />
+                    <div
+                        className="doc-diagram-svg"
+                        style={width ? { "--diagram-natural-width": `${width}px` } : undefined}
+                        dangerouslySetInnerHTML={{ __html: state.svg }}
+                    />
                 )}
                 {state.status === "loading" && <p className="doc-diagram-status">Loading diagram…</p>}
                 {state.status === "error" && (

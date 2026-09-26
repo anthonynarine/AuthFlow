@@ -28,16 +28,18 @@ function stripHash() {
 export function VerifyEmailPage() {
     const { user } = useBasicAuthServices();
     const { validateSession } = useUserSessionServices();
-    const [token] = useState(() => readTokenFromHash(window.location.hash));
-    const [state, setState] = useState(token ? { status: "verifying" } : { status: "invalid" });
+    // Kept in a ref (memory only) so a retry can reuse it; never rendered or stored.
+    const tokenRef = useRef(readTokenFromHash(window.location.hash));
+    const [state, setState] = useState(tokenRef.current ? { status: "verifying" } : { status: "invalid" });
     const [checkedSession, setCheckedSession] = useState(false);
     const started = useRef(false);
     const retry = useRetryAfter();
 
     const submit = async () => {
         setState({ status: "verifying" });
+        setCheckedSession(false);
         try {
-            const data = await verifyEmailToken(token);
+            const data = await verifyEmailToken(tokenRef.current);
             setState({ status: "confirmed", email: data.email });
             // A signed-in tab (this one or another) should drop its banner now.
             Promise.resolve(validateSession()).catch(() => {});
@@ -55,7 +57,7 @@ export function VerifyEmailPage() {
         if (started.current) return;
         started.current = true;
         if (window.location.hash) stripHash();
-        if (token) {
+        if (tokenRef.current) {
             submit();
         } else {
             // No token: find out whether they're signed in, to offer a new link.
@@ -64,10 +66,26 @@ export function VerifyEmailPage() {
         // eslint-disable-next-line react-hooks/exhaustive-deps
     }, []);
 
+    // Another link opened in this same tab only changes the fragment (no
+    // reload): take its token, strip it, and verify that one.
+    useEffect(() => {
+        const onHashChange = () => {
+            const next = readTokenFromHash(window.location.hash);
+            if (window.location.hash) stripHash();
+            if (next) {
+                tokenRef.current = next;
+                submit();
+            }
+        };
+        window.addEventListener("hashchange", onHashChange);
+        return () => window.removeEventListener("hashchange", onHashChange);
+        // eslint-disable-next-line react-hooks/exhaustive-deps
+    }, []);
+
     // After an invalid link, a signed-in session tells us whether they're
     // already confirmed (nothing to do) or need a new link.
     useEffect(() => {
-        if (state.status === "invalid" && token && !checkedSession) {
+        if (state.status === "invalid" && tokenRef.current && !checkedSession) {
             Promise.resolve(validateSession()).catch(() => {}).finally(() => setCheckedSession(true));
         }
         // eslint-disable-next-line react-hooks/exhaustive-deps
@@ -78,7 +96,7 @@ export function VerifyEmailPage() {
         body = (
             <>
                 <h1 className="gv-title">Confirming your email…</h1>
-                <p className="gv-text" role="status">This takes a moment.</p>
+                <p className="gv-text">This takes a moment.</p>
             </>
         );
     } else if (state.status === "confirmed") {
@@ -98,8 +116,8 @@ export function VerifyEmailPage() {
         body = (
             <>
                 <h1 className="gv-title">Too many attempts</h1>
-                <p className="gv-text" role="status">
-                    {retry.waiting ? `Please wait ${retry.remaining} seconds, then try again.` : "You can try again now."}
+                <p className="gv-text">
+                    {retry.waiting ? "Please wait a little, then try again." : "You can try again now."}
                 </p>
                 <button type="button" className="gv-button" onClick={submit} disabled={retry.waiting}>
                     {retry.waiting ? `Try again in ${retry.remaining}s` : "Try again"}
@@ -135,10 +153,18 @@ export function VerifyEmailPage() {
         );
     }
 
+    // Announce each new state once (not every countdown tick).
+    const announcement = {
+        verifying: "Confirming your email",
+        confirmed: "Email confirmed",
+        "rate-limited": "Too many attempts",
+    }[state.status] || (user && user.email_verified === true ? "Your email is already confirmed" : "This link can't be used");
+
     return (
         <main className="gv-page">
-            <section className="gv-card" aria-live="polite">
+            <section className="gv-card">
                 <p className="gv-brand"><span aria-hidden="true">◆</span> Gait</p>
+                <p className="gv-visually-hidden" role="status" aria-live="polite">{announcement}</p>
                 {body}
             </section>
         </main>

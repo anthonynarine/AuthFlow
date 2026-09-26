@@ -138,6 +138,24 @@ describe("/verify-email", () => {
         await act(async () => {}); // fake timers: no macrotask flush here
     });
 
+    test("a second link opened in the same tab (fragment change, no reload) is stripped and verified too", async () => {
+        mockUser = { email: "me@example.test", email_verified: true };
+        verifyEmailToken
+            .mockResolvedValueOnce({ email_verified: true, email: "me@example.test" })
+            .mockRejectedValueOnce({ response: { status: 400, data: { code: "VERIFICATION_INVALID" } } });
+        visitVerify(`#token=${TOKEN}`);
+        expect(await screen.findByRole("heading", { name: "Email confirmed" })).toBeInTheDocument();
+
+        await act(async () => {
+            window.history.replaceState(null, "", `/verify-email#token=${TOKEN}-2`);
+            window.dispatchEvent(new HashChangeEvent("hashchange"));
+        });
+        expect(window.location.hash).toBe("");
+        expect(await screen.findByRole("heading", { name: "Your email is already confirmed" })).toBeInTheDocument();
+        expect(verifyEmailToken).toHaveBeenNthCalledWith(2, `${TOKEN}-2`);
+        await settle();
+    });
+
     test("no token in the link: invalid, and nothing is sent", async () => {
         visitVerify("");
         await settle();

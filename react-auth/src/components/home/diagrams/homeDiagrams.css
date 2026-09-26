@@ -1,13 +1,6 @@
-/* Layout CSS specific to the nine homepage diagrams. Generic node /
+/* Layout CSS specific to the homepage and architecture-page diagrams. Generic node /
    connector / frame styling lives in components/diagrams/diagrams.css —
    this file only positions those primitives for each composition. */
-
-/* Diagram 1 — Protection map */
-
-.protection-map { align-items: center; }
-.protection-map-gait { max-width: 420px; text-align: center; }
-.protection-map-gait .diagram-node-top { justify-content: center; }
-.protection-map-targets { width: 100%; }
 
 /* Diagram 2 — Evolution timeline */
 

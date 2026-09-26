@@ -95,13 +95,12 @@ export function AgentFleetDiagram() {
         <RiPlayCircleFill className="topology-hint-icon" aria-hidden="true" />
         Select a station. Follow the work.
       </p>
-      <div className="topology-track" role="tablist" aria-label="Agent topology stations">
+      <div className="topology-track" role="group" aria-label="Agent topology stations">
         {stations.map((station, index) => (
           <button
             key={station.key}
             type="button"
-            role="tab"
-            aria-selected={index === activeIndex}
+            aria-pressed={index === activeIndex}
             className={`topology-station ${index === activeIndex ? "is-active" : ""} ${index <= activeIndex ? "is-done" : ""}`}
             onClick={() => selectFromTrack(index)}
           >

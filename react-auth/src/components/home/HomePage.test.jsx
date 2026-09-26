@@ -3,6 +3,7 @@ import "@testing-library/jest-dom";
 import { fireEvent, render, screen, within } from "@testing-library/react";
 import { MemoryRouter, Route, Routes, useLocation } from "react-router-dom";
 import HomePage from "./HomePage";
+import { FEATURE_STATUS, STATUS_LABELS } from "../../docs/featureStatus";
 
 const mockValidateSession = jest.fn();
 const mockSetError = jest.fn();
@@ -20,35 +21,15 @@ jest.mock("../../context/auth/BasicAuthContext", () => ({
   useBasicAuthServices: () => mockAuthServices,
 }));
 
-jest.mock("../../context/auth/TwoFactorAuthContext", () => ({
-  useTwoFactorAuthServices: () => ({
-    toggle2fa: jest.fn(),
-    twoFactorError: null,
-  }),
-}));
-
 jest.mock("../../context/auth/UserSessionContext", () => ({
   useUserSessionServices: () => ({
     validateSession: mockValidateSession,
   }),
 }));
 
-jest.mock("../../utils/toastUtils/ToastUtils", () => ({
-  showErrorToast: jest.fn(),
-  showSuccessToast: jest.fn(),
-}));
-
-jest.mock("./AuthFlowDiagram", () => ({
-  AuthFlowDiagram: () => <div data-testid="auth-flow-diagram" />,
-}));
-
-jest.mock("./RequestFlow", () => ({
-  RequestFlow: () => <div data-testid="request-flow" />,
-}));
-
-
-jest.mock("./AccountSecurityPanel", () => ({
-  AccountSecurityPanel: () => <div data-testid="account-security-panel" />,
+// Mermaid is covered by the Diagram tests; here only the description matters.
+jest.mock("../../docs/components/Diagram", () => ({
+  Diagram: ({ description }) => <figure data-testid="diagram">{description}</figure>,
 }));
 
 function LocationDisplay() {
@@ -77,32 +58,162 @@ function renderHome(authOverrides = {}) {
   );
 }
 
-describe("HomePage product positioning and security navigation", () => {
+function statusRow(feature) {
+  return screen.getByRole("heading", { level: 3, name: feature }).closest("li");
+}
+
+describe("HomePage product positioning", () => {
   beforeEach(() => {
     jest.clearAllMocks();
   });
 
-  test("positions Gait as an early-access AI security team product, not a mature self-serve SaaS", () => {
-    renderHome({
-      isLoggedIn: false,
-      user: null,
-    });
+  test("leads with what customers get today, with none of the old overclaims", () => {
+    const { container } = renderHome({ isLoggedIn: false, user: null });
 
-    expect(screen.getByRole("heading", { name: "Your AI security team." })).toBeInTheDocument();
-    expect(screen.getByText("Now in early access")).toBeInTheDocument();
     expect(
-      screen.getByText(/Gait watches your application, investigates what it finds, and prepares a fix/)
+      screen.getByRole("heading", { level: 1, name: "See the security of every app you ship, in one private place." })
+    ).toBeInTheDocument();
+    expect(screen.getByText(/reports its own security checks with gait-sdk/)).toBeInTheDocument();
+
+    const text = container.textContent;
+    expect(text).not.toMatch(/473/);
+    expect(text).not.toMatch(/Your AI security team/i);
+    expect(text).not.toMatch(/watches your application/i);
+    expect(text).not.toMatch(/still being built/i);
+    expect(text).not.toMatch(/clinicians/i);
+    expect(text).not.toMatch(/Battle-tested/i);
+    expect(screen.queryByRole("button", { name: /Explore the live demo/i })).not.toBeInTheDocument();
+    expect(screen.queryByRole("button", { name: "Approve" })).not.toBeInTheDocument();
+  });
+
+  test("the status section renders from FEATURE_STATUS", () => {
+    renderHome({ isLoggedIn: false, user: null });
+
+    expect(within(statusRow("Findings")).getByText(STATUS_LABELS[FEATURE_STATUS.core])).toBeInTheDocument();
+    expect(
+      within(statusRow("Acting on findings in the console")).getByText(STATUS_LABELS[FEATURE_STATUS.findingsScreen])
     ).toBeInTheDocument();
     expect(
-      screen.getByText("AI investigates. Evidence decides what's true. You approve anything that touches production.")
+      within(statusRow("Sign-in for your own product")).getByText(STATUS_LABELS[FEATURE_STATUS.productSignIn])
     ).toBeInTheDocument();
-    expect(screen.getByText("Built for teams without a security hire.")).toBeInTheDocument();
-    expect(
-      screen.queryByRole("heading", { name: "The Security Operating System Behind Our Software" })
-    ).not.toBeInTheDocument();
-    expect(
-      screen.queryByRole("heading", { name: "Your Security Engineering Team, Built Into the Platform." })
-    ).not.toBeInTheDocument();
+    expect(screen.getByText("AI investigation and fixes for your apps: planned.")).toBeInTheDocument();
+  });
+
+  test("flipping a FEATURE_STATUS key changes the page (nothing is hard-coded)", () => {
+    const original = FEATURE_STATUS.findingsScreen;
+    FEATURE_STATUS.findingsScreen = "live";
+    try {
+      renderHome({ isLoggedIn: false, user: null });
+      const row = statusRow("Acting on findings in the console");
+      expect(within(row).getByText(STATUS_LABELS.live)).toBeInTheDocument();
+      expect(within(row).queryByText(STATUS_LABELS.pending)).not.toBeInTheDocument();
+    } finally {
+      FEATURE_STATUS.findingsScreen = original;
+    }
+  });
+
+  test("links to the Quickstart, isolation and automated-security-response docs", () => {
+    renderHome({ isLoggedIn: false, user: null });
+
+    const quickstart = screen.getAllByRole("link", { name: /Read the Quickstart/ });
+    expect(quickstart.length).toBeGreaterThan(0);
+    quickstart.forEach((link) => expect(link).toHaveAttribute("href", "/docs/quickstart"));
+    expect(screen.getByRole("link", { name: /Isolation and setup/ })).toHaveAttribute("href", "/docs/isolation");
+    expect(screen.getByRole("link", { name: /Automated security response/ })).toHaveAttribute(
+      "href",
+      "/docs/automated-security-response"
+    );
+    expect(screen.getByRole("link", { name: /Connecting your software/ })).toHaveAttribute(
+      "href",
+      "/docs/connecting-your-software"
+    );
+    expect(screen.getByRole("link", { name: /Developer guide/ })).toHaveAttribute("href", "/developers");
+    screen.getAllByRole("link", { name: /Request early access/i }).forEach((link) =>
+      expect(link).toHaveAttribute("href", "/early-access")
+    );
+  });
+
+  test("the agents section is scoped to Gait itself: never on your software", () => {
+    renderHome({ isLoggedIn: false, user: null });
+
+    const section = screen.getByRole("region", { name: /Six AI agents and a person look after Gait's own platform/ });
+    expect(section).toHaveTextContent("never on your software");
+    expect(section).toHaveTextContent("Automated deployment is off by default.");
+    ["Incident Commander", "Blue Team", "Red Team", "Green Team", "Security Validator", "Release Engineer", "Human Approver"].forEach(
+      (name) => expect(within(section).getAllByText(name).length).toBeGreaterThan(0)
+    );
+    expect(section).toHaveTextContent("A person approves every deployment.");
+    expect(section).toHaveTextContent("Everything is recorded. Each step leaves an audit trail.");
+    const guarantees = within(section).getByRole("list", { name: "Guarantees" });
+    expect(within(guarantees).getAllByRole("listitem")).toHaveLength(5);
+    expect(section).toHaveTextContent("Security Copilot");
+  });
+
+  test("the agent track uses toggle buttons, not a partial tabs pattern", () => {
+    renderHome({ isLoggedIn: false, user: null });
+
+    expect(screen.queryAllByRole("tab")).toHaveLength(0);
+    const track = screen.getByRole("group", { name: "Agent topology stations" });
+    const station = within(track).getByRole("button", { name: /Human Approver/ });
+    expect(station).toHaveAttribute("aria-pressed", "false");
+    fireEvent.click(station);
+    expect(station).toHaveAttribute("aria-pressed", "true");
+  });
+
+  test("the origin is one line, with no usage claims", () => {
+    renderHome({ isLoggedIn: false, user: null });
+
+    expect(screen.getByText("Built first to secure Lumen, our healthcare reporting app.")).toBeInTheDocument();
+    expect(screen.getAllByText(/Lumen/)).toHaveLength(1);
+  });
+
+  test("the header brand uses the single-ink gate mark", () => {
+    renderHome({ isLoggedIn: false, user: null });
+
+    const brand = screen.getByRole("link", { name: "Gait home" });
+    const mark = within(brand).getByTestId("gate-mark");
+    expect(mark).toHaveAttribute("stroke", "currentColor");
+    expect(mark).toHaveAttribute("viewBox", "0 0 16 16");
+    ["M4.5 13.2V4.6", "M11.5 13.2V4.6", "M4.5 4.6h7"].forEach((d) =>
+      expect(mark).toContainHTML(`<path d="${d}"></path>`)
+    );
+  });
+
+  test("Docs and Developers are in the header, behind a menu button on phones", () => {
+    renderHome({ isLoggedIn: false, user: null });
+
+    const nav = screen.getByRole("navigation", { name: "Product navigation" });
+    expect(within(nav).getByRole("link", { name: "Docs" })).toHaveAttribute("href", "/docs");
+    expect(within(nav).getByRole("link", { name: "Developers" })).toHaveAttribute("href", "/developers");
+
+    const toggle = screen.getByRole("button", { name: "Menu" });
+    expect(toggle).toHaveAttribute("aria-expanded", "false");
+    fireEvent.click(toggle);
+    expect(toggle).toHaveAttribute("aria-expanded", "true");
+    expect(nav).toHaveClass("is-open");
+  });
+});
+
+describe("HomePage Console link", () => {
+  test("appears in the header and hero when signed in", () => {
+    renderHome({ user: { email: "user@example.com", is_staff: false } });
+
+    const nav = screen.getByRole("navigation", { name: "Product navigation" });
+    expect(within(nav).getByRole("link", { name: "Console" })).toHaveAttribute("href", "/console");
+    expect(screen.getByRole("link", { name: "Open console" })).toHaveAttribute("href", "/console");
+  });
+
+  test("is absent when signed out", () => {
+    renderHome({ isLoggedIn: false, user: null });
+
+    expect(screen.queryByRole("link", { name: /console/i })).not.toBeInTheDocument();
+    expect(screen.getByRole("link", { name: "Login" })).toHaveAttribute("href", "/login");
+  });
+});
+
+describe("HomePage security navigation (staff gating)", () => {
+  beforeEach(() => {
+    jest.clearAllMocks();
   });
 
   test("staff capability sees enabled Security Command link and can navigate", () => {
@@ -163,114 +274,4 @@ describe("HomePage product positioning and security navigation", () => {
     expect(screen.queryByRole("link", { name: /Security Command/i })).not.toBeInTheDocument();
     expect(screen.queryByRole("button", { name: /Security Command, staff only/i })).not.toBeInTheDocument();
   });
-
-  test("homepage explains how Gait protects your application, with Lumen as the proof point", () => {
-    renderHome({
-      isLoggedIn: false,
-      user: null,
-    });
-
-    expect(screen.getByRole("heading", { name: "Battle-Tested on a Real Healthcare Application." })).toBeInTheDocument();
-    expect(screen.getAllByText(/vascular ultrasound reporting platform/).length).toBeGreaterThan(0);
-    expect(screen.getByText(/built toward full HIPAA compliance and DICOM interoperability/)).toBeInTheDocument();
-    const wrapVisual = screen.getByLabelText("Your app wrapped by Gait security operations");
-    expect(wrapVisual).toBeInTheDocument();
-    expect(within(wrapVisual).getByText("Your App")).toBeInTheDocument();
-    expect(within(wrapVisual).queryByText("Lumen")).not.toBeInTheDocument();
-    expect(within(wrapVisual).queryByText("Vascular ultrasound reporting")).not.toBeInTheDocument();
-    expect(within(wrapVisual).queryByText("Capture, review, and sign clinical studies.")).not.toBeInTheDocument();
-    expect(within(wrapVisual).getAllByText("Incident Commander").length).toBeGreaterThan(0);
-    expect(within(wrapVisual).getAllByText("Blue Team").length).toBeGreaterThan(0);
-    expect(within(wrapVisual).getAllByText("Red Team").length).toBeGreaterThan(0);
-    expect(within(wrapVisual).getAllByText("Green Team").length).toBeGreaterThan(0);
-    expect(within(wrapVisual).getAllByText("Human Approver").length).toBeGreaterThan(0);
-    expect(
-      within(wrapVisual).getByText(/Gait surrounds it with observability, constrained security agents/)
-    ).toBeInTheDocument();
-    expect(screen.getByText("authentication")).toBeInTheDocument();
-    expect(screen.getByText(/future HL7 \/ DICOM healthcare security components/)).toBeInTheDocument();
-  });
-
-  test("the deep-dive architecture story is reachable from the hero, nav, and closing CTA, not on the homepage itself", () => {
-    renderHome({
-      isLoggedIn: false,
-      user: null,
-    });
-
-    // Content that now lives on the /architecture page is gone from home.
-    expect(screen.queryByRole("heading", { name: "Current" })).not.toBeInTheDocument();
-    expect(screen.queryByLabelText("Gait self-repairing security loop")).not.toBeInTheDocument();
-    expect(screen.queryByText(/The future SaaS is expected to extract Gait's reusable/)).not.toBeInTheDocument();
-
-    // But every path to it is present and points at the real route.
-    expect(screen.getByRole("link", { name: "Full Architecture" })).toHaveAttribute("href", "/architecture");
-    expect(screen.getByRole("link", { name: "Docs" })).toHaveAttribute("href", "/docs");
-    expect(screen.getByRole("link", { name: "Explore the Architecture" })).toHaveAttribute("href", "/architecture");
-  });
-
-  test("hero leads with early access and how-it-works, not the architecture deep-dive", () => {
-    renderHome({
-      isLoggedIn: false,
-      user: null,
-    });
-
-    const heroJoinLink = screen.getByRole("link", { name: /Join Early Access/ });
-    expect(heroJoinLink).toHaveAttribute("href", "/early-access");
-    expect(screen.getByRole("link", { name: "See How It Works" })).toHaveAttribute("href", "#how-it-works");
-    expect(screen.getByRole("link", { name: "Early Access" })).toHaveAttribute("href", "/early-access");
-  });
-
-  test("agent fleet uses Gait's real roles: six agents plus the Human Approver", () => {
-    renderHome({
-      isLoggedIn: false,
-      user: null,
-    });
-
-    expect(screen.getByRole("heading", { name: "Six agents and you. One job each." })).toBeInTheDocument();
-    const roster = screen.getByRole("tablist", { name: "Agent roster" });
-    const tabs = within(roster).getAllByRole("tab");
-    expect(tabs.map((tab) => tab.getAttribute("aria-label"))).toEqual([
-      "security_commander_v1 · Incident Commander",
-      "security_investigator_v1 · Blue Team",
-      "security_red_team_v1 · Red Team",
-      "security_repair_v1 · Green Team",
-      "security_validator_v1 · Security Validator",
-      "you (admin role) · Human Approver",
-      "security_deployer_v1 · Release Engineer",
-    ]);
-
-    fireEvent.click(screen.getByRole("tab", { name: "you (admin role) · Human Approver" }));
-    const panel = screen.getByRole("heading", { level: 3, name: "Human Approver" }).closest(".team-detail");
-    expect(panel).toHaveTextContent("No agent can approve anything.");
-    expect(screen.getByText("APPROVED")).toBeInTheDocument();
-
-    // Copilot explains but is not part of the chain; the invented roles are gone.
-    expect(screen.getByText(/answers your questions in plain language/)).toBeInTheDocument();
-    expect(screen.queryByText("Eight agents. One job each.")).not.toBeInTheDocument();
-    expect(screen.queryByText(/runpack/)).not.toBeInTheDocument();
-  });
-
-  test("early access section is honest about hand-onboarding, not a self-serve signup", () => {
-    renderHome({
-      isLoggedIn: false,
-      user: null,
-    });
-
-    expect(screen.getByRole("heading", { name: "We're Onboarding Early Teams by Hand." })).toBeInTheDocument();
-    expect(
-      screen.getByText(/multi-tenant support is still being built, so for now early access means talking to us/)
-    ).toBeInTheDocument();
-    expect(screen.getByText("Solo founders and indie hackers")).toBeInTheDocument();
-    expect(screen.getByText("Agencies responsible for client applications")).toBeInTheDocument();
-
-    const requestLinks = screen.getAllByRole("link", { name: /Request Early Access/ });
-    expect(requestLinks.length).toBeGreaterThan(0);
-    requestLinks.forEach((link) => expect(link).toHaveAttribute("href", "/early-access"));
-
-    expect(screen.getByRole("link", { name: "contact us directly" })).toHaveAttribute("href", "/send-email");
-  });
 });
-
-
-
-

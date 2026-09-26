@@ -29,6 +29,11 @@ export const DOC_PAGES = [
         summary: "The one idea to get right first: people and applications are different kinds of identity.",
     },
     {
+        slug: "isolation",
+        title: "Isolation and setup",
+        summary: "How Gait keeps one customer apart from another, and the four journeys that make up a working setup.",
+    },
+    {
         slug: "getting-started",
         title: "Getting started",
         summary: "Sign in, create your company, add an application and get its connection key.",

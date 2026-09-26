@@ -367,3 +367,18 @@
   .docs-pager-link--next { text-align: left; }
   .docs-header-nav { gap: 12px; }
 }
+
+/* Live / Pending badges (values in featureStatus.js) */
+.doc-status {
+  display: inline-flex;
+  align-items: center;
+  padding: 1px 9px;
+  border: 1px solid;
+  border-radius: var(--radius-pill);
+  font-size: 0.72rem;
+  font-weight: 650;
+  line-height: 1.6;
+  white-space: nowrap;
+}
+.doc-status--live { color: #34d399; background: rgba(52, 211, 153, 0.12); border-color: rgba(52, 211, 153, 0.35); }
+.doc-status--pending { color: var(--diagram-human); background: var(--diagram-human-bg); border-color: var(--diagram-human-border); }

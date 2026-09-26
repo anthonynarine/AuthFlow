@@ -1,6 +1,6 @@
 import { useCallback, useState } from "react";
 import { useNavigate } from "react-router-dom";
-import { authAxios } from "../interceptors/axios";
+import { authAxios, publicAxios, SESSION_TRANSPORT } from "../interceptors/axios";
 import { persistAuthTokens } from "../interceptors/tokenStorage";
 import { useBasicAuthServices } from "../context/auth/BasicAuthContext";
 
@@ -66,7 +66,11 @@ export const useTwoFactorAuth = () => {
         // Choose the endpoint based on whether it's an initial setup or a regular login.
         const endpoint = isInitialSetup ? "/verify-otp/" : "/two-factor-login/";
         try {
-            const { data, status } = await authAxios.post(endpoint, { otp });
+            // Two-factor LOGIN asks for the refresh token as an HttpOnly cookie;
+            // initial 2FA setup happens inside an existing session.
+            const body = isInitialSetup ? { otp } : { otp, ...SESSION_TRANSPORT };
+            const client = isInitialSetup ? authAxios : publicAxios;
+            const { data, status } = await client.post(endpoint, body);
             if (status === 200) {
                 persistAuthTokens({
                     accessToken: data.access_token,

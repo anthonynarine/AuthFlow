@@ -1,84 +1,48 @@
-import { getAccessToken, getRefreshToken, persistAuthTokens } from "./tokenStorage";
+/**
+ * Serialize session refreshes.
+ *
+ * Gait rotates the refresh cookie on every refresh and treats a second use
+ * of an already-rotated cookie as replay (it revokes the whole session).
+ * The cookie jar is shared by every tab, so refreshes must never overlap:
+ *
+ *   - within a tab:  one in-flight promise shared by every caller
+ *   - across tabs:   the Web Locks API -- only one tab holds the refresh
+ *                    lock at a time, so each refresh presents the cookie the
+ *                    previous one just set
+ *
+ * Without navigator.locks (very old browsers) only the in-tab guarantee
+ * holds; the worst case is a replay-revoked session, i.e. a sign-out.
+ */
 
-const REFRESH_LOCK_NAME = "auth-refresh";
+const REFRESH_LOCK_NAME = "gait-auth-refresh";
+
+let inFlight = null;
 
 function getBrowserLocks() {
     if (typeof navigator === "undefined") {
         return null;
     }
-
-    return navigator.locks || null;
-}
-
-export function isBrowserRefreshCoordinationAvailable() {
-    const locks = getBrowserLocks();
-    return Boolean(locks && typeof locks.request === "function");
+    return navigator.locks && typeof navigator.locks.request === "function" ? navigator.locks : null;
 }
 
 /**
- * Coordinate refresh-token rotation across same-origin tabs.
+ * Run `refreshAction` so that no two refreshes ever overlap.
  *
- * The coordinator re-reads the current access token after the browser-wide
- * lock is acquired. If another tab already rotated the token, the refresh
- * operation is skipped and the current access token is returned.
- *
- * @param {Object} params
- * @param {string | null | undefined} params.failedAccessToken - Access token
- *     that triggered the 401 response.
- * @param {Function} params.refreshAction - Performs the refresh request when
- *     coordination still requires it.
- * @returns {Promise<{accessToken: string | null, refreshToken: string | null, rotated: boolean}>}
+ * @param {() => Promise<string>} refreshAction - performs the refresh and
+ *     resolves to the new access token.
+ * @returns {Promise<string>} the new access token.
  */
-export async function refreshWithBrowserCoordination({
-    failedAccessToken,
-    refreshAction,
-}) {
-    const locks = getBrowserLocks();
-
-    if (!locks || typeof locks.request !== "function") {
-        throw new Error("Browser refresh coordination is unavailable.");
+export function refreshWithBrowserCoordination(refreshAction) {
+    if (inFlight) {
+        return inFlight;
     }
+    const locks = getBrowserLocks();
+    const run = locks
+        ? locks.request(REFRESH_LOCK_NAME, { mode: "exclusive" }, () => refreshAction())
+        : refreshAction();
 
-    return locks.request(REFRESH_LOCK_NAME, { mode: "exclusive" }, async () => {
-        const currentAccessToken = getAccessToken();
-
-        if (
-            currentAccessToken &&
-            failedAccessToken &&
-            currentAccessToken !== failedAccessToken
-        ) {
-            return {
-                accessToken: currentAccessToken,
-                refreshToken: getRefreshToken(),
-                rotated: false,
-            };
-        }
-
-        const currentRefreshToken = getRefreshToken();
-
-        if (!currentRefreshToken) {
-            throw new Error("Refresh token is missing.");
-        }
-
-        const refreshedTokens = await refreshAction({
-            currentAccessToken,
-            currentRefreshToken,
-            failedAccessToken,
-        });
-
-        if (!refreshedTokens || !refreshedTokens.accessToken) {
-            throw new Error("Refresh action did not return a new access token.");
-        }
-
-        persistAuthTokens({
-            accessToken: refreshedTokens.accessToken,
-            refreshToken: refreshedTokens.refreshToken || null,
-        });
-
-        return {
-            accessToken: refreshedTokens.accessToken,
-            refreshToken: refreshedTokens.refreshToken || null,
-            rotated: true,
-        };
+    inFlight = Promise.resolve(run).finally(() => {
+        inFlight = null;
     });
+    return inFlight;
 }

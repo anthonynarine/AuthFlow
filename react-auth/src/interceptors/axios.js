@@ -1,175 +1,137 @@
 import axios from "axios";
 import Cookies from "js-cookie";
 import { refreshWithBrowserCoordination } from "./refreshCoordinator";
-import {
-    clearAuthTokens,
-    getAccessToken,
-    isProduction,
-    persistAuthTokens,
-} from "./tokenStorage";
+import { clearAuthTokens, getAccessToken, persistAuthTokens } from "./tokenStorage";
 
-// Define a variable 'baseURL' that will store the base URL for API requests.
-const baseURL = process.env.REACT_APP_USE_PRODUCTION_API === 'true'
-    // First, check if the REACT_APP_USE_PRODUCTION_API environment variable is explicitly set to 'true'.
+/**
+ * Gait HTTP clients (Gait console F0 -- secure session transport).
+ *
+ * Session model:
+ *   - access token: JS memory only (tokenStorage.js), sent as
+ *     `Authorization: Bearer` by authAxios
+ *   - refresh token: Gait's HttpOnly cookie on /api/auth/, never visible here
+ *   - login / 2FA login / guest login ask for `session_transport: "cookie"`
+ *   - /api/auth/refresh/ restores or renews the access token;
+ *     /api/auth/logout/ revokes the session server-side
+ *
+ * Every request carries `X-Gait-Auth`, which Gait requires on cookie-flow
+ * requests (an HTML form cannot set it, and a cross-origin script can only
+ * set it after passing CORS) -- see django_auth user/refresh_cookie.py.
+ */
+
+const baseURL = process.env.REACT_APP_USE_PRODUCTION_API === "true"
     ? process.env.REACT_APP_PRODUCTION_URL
-    // If it is true, set 'baseURL' to the value of the REACT_APP_PRODUCTION_URL environment variable.
-    : process.env.NODE_ENV === 'development'
-        // If REACT_APP_USE_PRODUCTION_API is not 'true', check if the application is running in development mode.
+    : process.env.NODE_ENV === "development"
         ? process.env.REACT_APP_DEV_URL
-        // If the NODE_ENV is 'development', set 'baseURL' to the value of the REACT_APP_DEV_URL environment variable.
         : process.env.REACT_APP_PRODUCTION_URL;
-        // If none of the above conditions are met, default to using the production URL.
-        // This covers scenarios where NODE_ENV might be set to 'test' or 'production', or any other non-development environment.
 
-// Function to log and handle errors in Axios requests or responses.
+const isSecureOrigin = typeof window !== "undefined" && window.location?.protocol === "https:";
+
+export const SESSION_TRANSPORT = { session_transport: "cookie" };
+export const SESSION_ENDED_EVENT = "gait:session-ended";
+
 const logError = (error) => {
-    console.error(`Error in request to ${error.config.url}: ${error.message}`);
+    console.error(`Error in request to ${error.config?.url}: ${error.message}`);
     return Promise.reject(error);
 };
 
-
-// Axios instance for public (non-authenticated) requests. Configured with base URL and CSRF token handling.
-const publicAxios = axios.create({
-    baseURL: baseURL,
-    withCredentials: true, // Necessary for cookies, especially if CSRF protection is enabled server-side.
-});
-
-// Interceptor to attach CSRF token for every public request
-publicAxios.interceptors.request.use((config) => {
+function attachCommonHeaders(config) {
+    config.headers = config.headers || {};
+    config.headers["X-Gait-Auth"] = "1";
     const csrfToken = Cookies.get("csrftoken");
     if (csrfToken) {
         config.headers["X-CSRFToken"] = csrfToken;
     }
-
     return config;
-}, logError);
+}
 
-publicAxios.interceptors.response.use((response) => {
-    // Update CSRF token if a new one is provided in the response
-    const newCsrfToken = response.headers["x-csrftoken"];
+function rememberCsrfToken(response) {
+    const newCsrfToken = response.headers?.["x-csrftoken"];
     if (newCsrfToken) {
-        Cookies.set("csrftoken", newCsrfToken, {
-            secure: isProduction,
-            sameSite: isProduction ? "None" : "Lax"
-        });
+        Cookies.set("csrftoken", newCsrfToken, { secure: isSecureOrigin, sameSite: "Lax" });
     }
-    persistAuthTokens({
-        accessToken: response.data.access_token,
-        refreshToken: response.data.refresh_token,
+}
+
+function announceSessionEnded() {
+    clearAuthTokens();
+    if (typeof window !== "undefined") {
+        window.dispatchEvent(new Event(SESSION_ENDED_EVENT));
+    }
+}
+
+// Session endpoints only (refresh/logout): no interceptors that could recurse.
+const sessionAxios = axios.create({ baseURL, withCredentials: true });
+sessionAxios.interceptors.request.use(attachCommonHeaders);
+
+/** Obtain a new access token from the HttpOnly refresh cookie. Rejects if there is no live session. */
+export function refreshSession() {
+    return refreshWithBrowserCoordination(async () => {
+        const { data } = await sessionAxios.post("/auth/refresh/", {});
+        if (!data?.access_token) {
+            throw new Error("Refresh response did not include an access token.");
+        }
+        persistAuthTokens({ accessToken: data.access_token });
+        return data.access_token;
     });
+}
 
-    // Handle logout response and remove tokens
-    if (response.config.url.includes("/logout/")) {
-      clearAuthTokens();
+/** Revoke the session server-side and forget the access token locally. */
+export async function logoutSession() {
+    try {
+        await sessionAxios.post("/auth/logout/", {});
+    } finally {
+        clearAuthTokens();
     }
+}
 
+// Public (unauthenticated) requests: login, register, password reset, ...
+const publicAxios = axios.create({ baseURL, withCredentials: true });
+
+publicAxios.interceptors.request.use(attachCommonHeaders, logError);
+publicAxios.interceptors.response.use((response) => {
+    rememberCsrfToken(response);
+    persistAuthTokens({ accessToken: response.data?.access_token });
     return response;
 }, logError);
 
-// AUTHENTICATED AXIOS INSTANCE for private (authenticated) requests with token and CSRF handling.
-const authAxios = axios.create({
-    baseURL: baseURL,
-    withCredentials: true,
-});
+// Authenticated requests.
+const authAxios = axios.create({ baseURL, withCredentials: true });
 
-// Interceptor to attach the access token to each request
-authAxios.interceptors.request.use((config) => {
-    const accessToken = getAccessToken();
-    const explicitAuthorization = config.headers["Authorization"];
-
-    function extractBearerToken(headerValue) {
-        if (!headerValue || typeof headerValue !== "string") {
-            return null;
+authAxios.interceptors.request.use(async (config) => {
+    attachCommonHeaders(config);
+    // After a reload the in-memory token is gone: restore it from the refresh
+    // cookie before the first authenticated call instead of failing it.
+    if (!getAccessToken() && !config.skipAuthRefresh) {
+        try {
+            await refreshSession();
+        } catch {
+            // No live session: send the request unauthenticated and let the
+            // caller see the 401 (without a second refresh attempt).
+            config._retry = true;
         }
-
-        const [scheme, token] = headerValue.split(" ");
-        return scheme === "Bearer" && token ? token : null;
     }
-
-    // Don't override an Authorization header a caller already set explicitly
-    // (e.g. the /token-refresh/ call below, which must send the refresh token,
-    // not the expired access token).
-    if (accessToken && !explicitAuthorization) {
+    const accessToken = getAccessToken();
+    if (accessToken && !config.headers["Authorization"]) {
         config.headers["Authorization"] = `Bearer ${accessToken}`;
     }
-
-    const requestAccessToken = extractBearerToken(
-        config.headers["Authorization"] || explicitAuthorization
-    );
-
-    if (requestAccessToken && !config.skipAuthRefresh && !isRefreshRequest(config)) {
-        config._authAccessToken = requestAccessToken;
-    }
-
-    const csrfToken = Cookies.get("csrftoken");
-    if (csrfToken) {
-        config.headers["X-CSRFToken"] = csrfToken;
-    }
-
     return config;
 }, logError);
 
-function isRefreshRequest(config) {
-    return config?.url?.includes("/token-refresh/");
-}
-
-async function refreshAuthentication(failedAccessToken) {
-    const result = await refreshWithBrowserCoordination({
-        failedAccessToken,
-        refreshAction: async ({ currentRefreshToken }) => {
-            const response = await authAxios.post(
-                "/token-refresh/",
-                {},
-                {
-                    headers: { Authorization: `Bearer ${currentRefreshToken}` },
-                    withCredentials: true,
-                    skipAuthRefresh: true,
-                }
-            );
-
-            return {
-                accessToken: response.data.access_token,
-                refreshToken: response.data.refresh_token,
-            };
-        },
-    });
-
-    return result.accessToken;
-}
-
-// Response interceptor for handling automatic token refresh on authentication failures
 authAxios.interceptors.response.use(
     (response) => {
-        // Check for and update the CSRF token as needed
-        const newCsrfToken = response.headers["x-csrftoken"];
-        if (newCsrfToken) {
-            Cookies.set("csrftoken", newCsrfToken, {
-                secure: isProduction,
-                sameSite: isProduction ? "None" : "Lax"
-            });
-        }
+        rememberCsrfToken(response);
         return response;
     },
     async (error) => {
         const originalRequest = error.config;
-        // Handle expired access tokens and attempt to refresh them once
-        if (
-            error.response?.status === 401 &&
-            !originalRequest._retry &&
-            !originalRequest.skipAuthRefresh &&
-            !isRefreshRequest(originalRequest)
-        ) {
+        if (error.response?.status === 401 && originalRequest && !originalRequest._retry && !originalRequest.skipAuthRefresh) {
             originalRequest._retry = true;
             try {
-                const failedAccessToken = originalRequest._authAccessToken
-                    || getAccessToken();
-                const newAccessToken = await refreshAuthentication(failedAccessToken);
+                const newAccessToken = await refreshSession();
                 originalRequest.headers["Authorization"] = `Bearer ${newAccessToken}`;
-                authAxios.defaults.headers.common["Authorization"] = `Bearer ${newAccessToken}`;
                 return authAxios(originalRequest);
             } catch (refreshError) {
-                console.error("Failed to refresh token", refreshError);
-                clearAuthTokens();
+                announceSessionEnded();
                 return Promise.reject(refreshError);
             }
         }
@@ -177,5 +139,4 @@ authAxios.interceptors.response.use(
     }
 );
 
-
-export { authAxios, publicAxios };
+export { authAxios, publicAxios, sessionAxios };

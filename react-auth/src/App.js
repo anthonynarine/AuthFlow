@@ -1,4 +1,4 @@
-import { Route, Routes } from "react-router-dom";
+import { Navigate, Route, Routes, useLocation } from "react-router-dom";
 import { LoginPage } from "./components/login/LoginPage";
 import { ForgotPassword } from "./components/forgot-password/ForgotPassword";
 import { RegisterPage } from "./components/register/RegisterPage";
@@ -15,10 +15,16 @@ import { SecurityObservatoryPage } from "./components/security/SecurityObservato
 import { SecurityLearnPage } from "./components/security/SecurityLearnPage";
 import { SecurityCommandPage } from "./components/security-command/SecurityCommandPage";
 import { SecurityExercisesPage } from "./components/security-exercises/SecurityExercisesPage";
-import { FounderHomePage } from "./components/workspace/FounderHomePage";
 import { FounderIssuesPage } from "./components/workspace/FounderIssuesPage";
 import { FounderIssueWorkspacePage } from "./components/workspace/FounderIssueWorkspacePage";
 import { SecurityTeamPage } from "./components/workspace/SecurityTeamPage";
+import { WorkspaceEntry } from "./components/workspace/WorkspaceEntry";
+import { OnboardingWizardPage } from "./components/workspace/onboarding/OnboardingWizardPage";
+import { AppsHomePage } from "./components/workspace/AppsHomePage";
+import { AppSetupPage } from "./components/workspace/AppSetupPage";
+import { ConsoleLayout } from "./console/layout/ConsoleLayout";
+import { ConsoleEntry } from "./console/pages/ConsoleEntry";
+import { SectionPlaceholder } from "./console/pages/SectionPlaceholder";
 import "./App.css"
 import { Footer } from "./components/footer/Footer";
 import BasicAuthProvider from "./context/auth/BasicAuthContext";
@@ -29,6 +35,9 @@ import 'react-toastify/dist/ReactToastify.css';
 
 
 function App() {
+  // The console is a full-height app shell; the marketing footer would sit on top of it.
+  const { pathname } = useLocation();
+  const isConsole = pathname === "/console" || pathname.startsWith("/console/");
   return (
     <>
     <div className="app-container">
@@ -52,10 +61,22 @@ function App() {
                     <Route path="/security-observatory" element={<SecurityObservatoryPage />} />
                     <Route path="/security-exercises" element={<SecurityExercisesPage />} />
                     <Route path="/security-learn" element={<SecurityLearnPage />} />
-                    <Route path="/workspace" element={<FounderHomePage />} />
+                    <Route path="/workspace" element={<WorkspaceEntry />} />
+                    <Route path="/workspace/onboarding" element={<OnboardingWizardPage />} />
+                    <Route path="/workspace/apps" element={<AppsHomePage />} />
+                    <Route path="/workspace/apps/:id/setup" element={<AppSetupPage />} />
                     <Route path="/workspace/issues" element={<FounderIssuesPage />} />
                     <Route path="/workspace/issues/:id" element={<FounderIssueWorkspacePage />} />
                     <Route path="/workspace/team" element={<SecurityTeamPage />} />
+                    <Route path="/console" element={<ConsoleEntry />} />
+                    <Route path="/console/:orgSlug" element={<ConsoleLayout />}>
+                      <Route index element={<Navigate to="overview" replace />} />
+                      <Route path="overview" element={<SectionPlaceholder title="Overview" description="Security posture across your environments." />} />
+                      <Route path="applications" element={<SectionPlaceholder title="Applications" description="The software that reports to Gait, and its credentials." />} />
+                      <Route path="security" element={<SectionPlaceholder title="Security" description="Controls, findings and evidence for this environment." />} />
+                      <Route path="members" element={<SectionPlaceholder title="Members" description="Who can see and manage this organization." />} />
+                      <Route path="settings" element={<SectionPlaceholder title="Settings" description="Organization details." />} />
+                    </Route>
                     <Route path="/reset-password/:uidb64/:token" element={<ResetPassword />} />
                     <Route path="/setup-2fa" element={<QRCodeSetup />} />
                     <Route path="*" element={<NotFound />} />
@@ -64,7 +85,7 @@ function App() {
             </TwoFactorAuthProvider>
           </BasicAuthProvider> 
       </div>
-      <Footer />
+      {isConsole ? null : <Footer />}
     </div>
     </>
   );

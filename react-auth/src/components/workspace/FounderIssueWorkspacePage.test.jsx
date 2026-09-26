@@ -6,6 +6,10 @@ import { FounderIssueWorkspacePage } from "./FounderIssueWorkspacePage";
 import { useFounderIssue } from "../../hooks/useFounderIssue";
 
 jest.mock("../../hooks/useFounderIssue", () => ({ useFounderIssue: jest.fn() }));
+// UI2: FounderNav now reads is_staff to decide PLATFORM vs tenant links.
+jest.mock("../../context/auth/BasicAuthContext", () => ({
+  useBasicAuthServices: () => ({ user: { is_staff: true } }),
+}));
 
 jest.mock("./ApprovalCard", () => ({
   ApprovalCard: ({ approvalKind }) => <div data-testid="approval-card">approval-card:{approvalKind}</div>,

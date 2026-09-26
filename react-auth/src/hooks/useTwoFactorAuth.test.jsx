@@ -1,6 +1,6 @@
 import { renderHook, act } from "@testing-library/react";
 import { useTwoFactorAuth } from "./useTwoFactorAuth";
-import { authAxios } from "../interceptors/axios";
+import { authAxios, publicAxios } from "../interceptors/axios";
 import { persistAuthTokens } from "../interceptors/tokenStorage";
 
 const mockNavigate = jest.fn();
@@ -12,11 +12,9 @@ jest.mock("react-router-dom", () => ({
 }));
 
 jest.mock("../interceptors/axios", () => ({
-    authAxios: {
-        post: jest.fn(),
-        patch: jest.fn(),
-        get: jest.fn(),
-    },
+    authAxios: { post: jest.fn(), patch: jest.fn(), get: jest.fn() },
+    publicAxios: { post: jest.fn() },
+    SESSION_TRANSPORT: { session_transport: "cookie" },
 }));
 
 jest.mock("../interceptors/tokenStorage", () => ({
@@ -30,18 +28,15 @@ jest.mock("../context/auth/BasicAuthContext", () => ({
     }),
 }));
 
-describe("useTwoFactorAuth A1.5 integration", () => {
+describe("useTwoFactorAuth session transport", () => {
     beforeEach(() => {
         jest.clearAllMocks();
-        mockNavigate.mockClear();
-        mockSetIsLoggedIn.mockClear();
-        mockSetUser.mockClear();
     });
 
-    test("2FA login stores access and refresh tokens", async () => {
-        authAxios.post.mockResolvedValue({
+    test("2FA login asks for cookie transport and keeps only the access token", async () => {
+        publicAxios.post.mockResolvedValue({
             status: 200,
-            data: { access_token: "access-2fa", refresh_token: "refresh-2fa" },
+            data: { access_token: "access-2fa" },
         });
         const { result } = renderHook(() => useTwoFactorAuth());
 
@@ -49,14 +44,13 @@ describe("useTwoFactorAuth A1.5 integration", () => {
             await result.current.verify2FA("123456");
         });
 
-        expect(authAxios.post).toHaveBeenCalledWith("/two-factor-login/", { otp: "123456" });
-        expect(persistAuthTokens).toHaveBeenCalledWith({
-            accessToken: "access-2fa",
-            refreshToken: "refresh-2fa",
+        expect(publicAxios.post).toHaveBeenCalledWith("/two-factor-login/", {
+            otp: "123456",
+            session_transport: "cookie",
         });
+        expect(authAxios.post).not.toHaveBeenCalled();
+        expect(persistAuthTokens).toHaveBeenCalledWith(expect.objectContaining({ accessToken: "access-2fa" }));
         expect(mockSetIsLoggedIn).toHaveBeenCalledWith(true);
-        // UI1: a successful login now lands in the founder workspace, not the
-        // public marketing homepage.
         expect(mockNavigate).toHaveBeenCalledWith("/workspace");
     });
 });

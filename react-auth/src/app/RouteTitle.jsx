@@ -2,7 +2,7 @@ import { useEffect } from "react";
 import { useLocation } from "react-router-dom";
 import { DOC_PAGES, docTitle } from "../docs/manifest";
 
-export const DEFAULT_TITLE = "Gait: Your AI security team";
+export const DEFAULT_TITLE = "Gait: See the security of every app you ship";
 
 // One place for every page's browser-tab title. Pages not listed here
 // (including 404s) fall back to DEFAULT_TITLE, which matches index.html.

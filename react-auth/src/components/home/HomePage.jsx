@@ -1,190 +1,133 @@
-import React, { useEffect, useRef, useState } from "react";
+import React, { useEffect, useState } from "react";
 import "./Home.css";
 import "./diagrams/homeDiagrams.css";
+import "../../docs/docs.css";
 import { Link } from "react-router-dom";
 import { useBasicAuthServices } from "../../context/auth/BasicAuthContext";
 import { useUserSessionServices } from "../../context/auth/UserSessionContext";
 import {
   RiArrowRightLine,
-  RiArrowRightUpLine,
-  RiCrosshair2Line,
-  RiDatabase2Line,
-  RiEyeLine,
-  RiFlowChart,
-  RiGitPullRequestLine,
-  RiInformationLine,
-  RiLoginBoxLine,
-  RiRocketLine,
-  RiSearchEyeLine,
+  RiBookOpenLine,
+  RiCloseLine,
+  RiMenuLine,
   RiShieldCheckLine,
   RiShieldKeyholeLine,
-  RiSwordLine,
   RiTerminalBoxLine,
-  RiToolsLine,
-  RiUserLine,
 } from "react-icons/ri";
-import { ProtectionMapDiagram } from "./diagrams/ProtectionMapDiagram";
 import { AgentFleetDiagram } from "./diagrams/AgentFleetDiagram";
+import { Diagram } from "../../docs/components/Diagram";
+import { StatusCell } from "../../docs/components/StatusCell";
+import { CodeBlock, StatusBadge } from "../../docs/components/DocPrimitives";
+import { statusAsOfLabel } from "../../docs/featureStatus";
+import { docPath } from "../../docs/manifest";
+import { INSTALL, REPORT } from "../../docs/content/snippets";
 
-// The seven roles below mirror Gait's real separation of duties
-// (docs/GAIT_SECURITY_OPERATING_SYSTEM.md section 13, and the display names in
-// security_agents/presentation.py): six AI agents plus the Human Approver, who
-// is always a person. The case walked through here is an illustrative example
-// of that workflow, not a recorded incident.
-const agentFleet = [
+/*
+ * Every customer-facing claim on this page comes from the public docs in the
+ * Gait repo (docs/public/WHAT_GAIT_IS.md, HOW_IT_WORKS.md,
+ * AUTOMATED_SECURITY_RESPONSE.md) or from src/docs/featureStatus.js. Change
+ * those first; don't add claims here that they don't make.
+ */
+
+// The same drawing as the "How it works" docs page (HOW_IT_WORKS.md, "The big
+// picture"), top to bottom so it stays readable in a narrow column.
+const BIG_PICTURE = `flowchart TB
+    classDef people fill:#123029,stroke:#1abc9c,color:#e8eaed,stroke-width:2px
+    classDef gait fill:#1b2129,stroke:#38bdf8,color:#e8eaed,stroke-width:2px
+    classDef soft fill:#2a2340,stroke:#a78bfa,color:#e8eaed,stroke-width:2px
+    classDef users fill:#3a2016,stroke:#fb8a5c,color:#e8eaed,stroke-width:2px
+
+    TEAM["Your team<br/>Owner · Admin · Member"]:::people
+    subgraph GAIT["Gait"]
+        CO["Company: Acme<br/>applications · keys · findings"]:::gait
+    end
+    APP["Your software<br/>Acme API · production<br/>gait-sdk + connection key"]:::soft
+    USERS["Your product's users<br/>(optional, early access)"]:::users
+
+    TEAM -- "sign in to the console" --> CO
+    APP -- "reports security checks" --> CO
+    USERS -. "sign in with Gait;<br/>your product decides access" .-> APP`;
+
+const BIG_PICTURE_DESCRIPTION =
+  "Your team (Owner, Admin, Member) signs in to the console and works in the company Acme inside Gait, which holds applications, keys and findings. Your software, such as Acme API in production, uses the gait-sdk and a connection key to report security checks to that company. Optionally, in early access, your product's own users sign in with Gait, and your product decides what they can access.";
+
+// HOW_IT_WORKS.md, "Step by step", steps 1-4. Step 5 (acting on findings in
+// the console) waits on the Findings screen and is listed under status below.
+const HOW_IT_WORKS_STEPS = [
   {
-    id: "security_commander_v1",
-    job: "Incident Commander",
-    verb: "Coordinates",
-    icon: RiFlowChart,
-    mandate: "Route the case to the right specialist. Hold no specialist power itself.",
-    summary:
-      "The refresh-rotation control started failing. Incident Commander opened a case and routed it to Blue Team's Identity specialist.",
-    limits: "It can't investigate, attack, repair or deploy. Every specialist it dispatches runs under its own identity, never the Commander's.",
-    status: "routed",
-    artifact: "Case opened",
-    evidence: {
-      heading: "ROUTED",
-      lines: ["control GAIT.AUTH.REFRESH_ROTATION: failing", "next: Blue Team (Identity specialist)"],
-    },
+    title: "Your team signs in",
+    body: "to the Gait console and works inside your company. Each person has a role: Owner, Admin or Member.",
   },
   {
-    id: "security_investigator_v1",
-    job: "Blue Team",
-    verb: "Investigates",
-    icon: RiSearchEyeLine,
-    mandate: "Diagnose from existing evidence and bounded code reads. Change nothing.",
-    summary:
-      "Blue Team read the evidence and the relevant code, and named the likely cause: a refresh token could still be used after it had been rotated.",
-    limits: "It can't change code, and its diagnosis isn't treated as truth. Later steps must prove it.",
-    status: "diagnosed",
-    artifact: "DiagnosisReport",
-    evidence: {
-      heading: "DIAGNOSED",
-      lines: ["cause: rotated refresh token still accepted", "suspected file named for repair"],
-    },
+    title: "You register each piece of software, per environment.",
+    body: "Acme API in local and Acme API in production are two applications, each with its own connection key.",
   },
   {
-    id: "security_red_team_v1",
-    job: "Red Team",
-    verb: "Attacks",
-    icon: RiCrosshair2Line,
-    mandate: "Run only allowlisted probes, only in local, test or CI.",
-    summary:
-      "Red Team ran its refresh-replay probe in a sandboxed test environment and replayed an old token. It was accepted, so the failure is confirmed, not just suspected.",
-    limits: "It can only run a small set of reviewed probes, with no network egress and never against production.",
-    status: "reproduced",
-    artifact: "Probe result",
-    evidence: {
-      heading: "REPRODUCED",
-      lines: ["probe: refresh replay", "old token accepted. Failure confirmed."],
-    },
+    title: "Your software reports security checks.",
+    body: "It runs its own checks (for example \"debug mode is off\") and sends PASS or FAIL to Gait with the gait-sdk. The connection key tells Gait which application, and so which company, the report belongs to.",
   },
   {
-    id: "security_repair_v1",
-    job: "Green Team",
-    verb: "Repairs",
-    icon: RiToolsLine,
-    mandate: "Propose a scoped fix on an isolated branch. Never merge, never deploy.",
-    summary:
-      "Green Team wrote a fix in an isolated git worktree, limited to the file the diagnosis named, and ran the tests there.",
-    limits: "It can't merge, deploy, or approve its own work. Touching any file outside scope is refused.",
-    status: "proposed",
-    artifact: "RepairProposal",
-    evidence: {
-      heading: "PROPOSED",
-      lines: ["branch: isolated repair worktree", "1 file changed, within scope"],
-    },
-  },
-  {
-    id: "security_validator_v1",
-    job: "Security Validator",
-    verb: "Verifies",
-    icon: RiShieldCheckLine,
-    mandate: "Independently prove the fix works. Never trust the Green Team's word.",
-    summary:
-      "Security Validator reproduced the attack before and after the fix, checked the real git diff, and ran the regression suite. Verdict: valid.",
-    limits: "It runs as a different identity from the Green Team, its verdict is computed rather than argued, and a pass is not permission to deploy.",
-    status: "valid",
-    artifact: "ValidationReport",
-    evidence: {
-      heading: "VALID",
-      lines: ["before: replay accepted · after: rejected", "diff scope verified · regression tests pass"],
-    },
-  },
-  {
-    id: "you (admin role)",
-    job: "Human Approver",
-    verb: "Approves",
-    icon: RiUserLine,
-    mandate: "A real person with the admin role. The only step that can't be an agent.",
-    summary:
-      "You review the validated fix and approve one exact commit, for one action, in one environment. The approval can be used once, and it expires.",
-    limits: "No agent can approve anything. If the code changes after you approve, the approval stops working.",
-    status: "approved",
-    artifact: "Single-use approval",
-    evidence: {
-      heading: "APPROVED",
-      lines: ["exact commit, one action, one environment", "single-use · expires"],
-    },
-  },
-  {
-    id: "security_deployer_v1",
-    job: "Release Engineer",
-    verb: "Releases",
-    icon: RiRocketLine,
-    mandate: "Deploy exactly what was approved, once.",
-    summary:
-      "Release Engineer deployed exactly the approved commit. Then Security Truth re-checked the control with fresh evidence, and only a healthy result closed the finding.",
-    limits: "It can't choose what to deploy. A successful deploy doesn't count as a fix until trusted evidence says so.",
-    status: "deployed",
-    artifact: "Deployment + fresh evidence",
-    evidence: {
-      heading: "DEPLOYED",
-      lines: ["deployed: the approved commit, exactly", "control re-checked: healthy · finding resolved"],
-    },
+    title: "Gait keeps score.",
+    body: "Every report is stored as evidence. A FAIL opens a finding for that application; a later PASS closes it. Each environment has its own picture, so a problem in local never muddies production.",
   },
 ];
 
-const earlyAccessAudience = [
-  "Solo founders and indie hackers",
-  "Small engineering teams without a security hire",
-  "Pre-compliance startups (SOC 2 / HIPAA on the roadmap)",
-  "Agencies responsible for client applications",
+// WHAT_GAIT_IS.md, "What you get". The status column is never written here:
+// it comes from FEATURE_STATUS through StatusCell.
+const WHAT_YOU_GET = [
+  {
+    feature: "A private company space",
+    description:
+      "Your team's own area in the Gait console. Your people, applications, keys and findings live there, and nobody outside your company can see any of it.",
+    features: ["core"],
+  },
+  {
+    feature: "Security checks from your software",
+    description:
+      "Your application reports its own security checks to Gait using the gait-sdk and a connection key. Gait keeps the history and tracks what's healthy and what isn't.",
+    features: ["core"],
+  },
+  {
+    feature: "Findings",
+    description: "When a check fails, Gait opens a finding for that application. It closes when a later check passes.",
+    features: ["core"],
+  },
+  {
+    feature: "Acting on findings in the console",
+    description: "Acknowledge a finding, or accept the risk with a written reason.",
+    features: ["findingsScreen"],
+  },
+  {
+    feature: "Your team",
+    description: "Invite teammates as Owner, Admin or Member.",
+    features: ["membersAndInviteAccept", "emailVerification"],
+  },
+  {
+    feature: "Sign-in for your own product",
+    description:
+      "Your product can let its users sign in with Gait accounts and verify them with the gait-sdk, while your product keeps its own organizations and roles.",
+    features: ["productSignIn"],
+  },
 ];
 
-const fiveQuestions = [
+// AUTOMATED_SECURITY_RESPONSE.md, "The guarantees" (the first four).
+const GAIT_GUARANTEES = [
   {
-    q: "What happened?",
-    a: "Gait tells you exactly what it detected, in plain language — not a raw alert feed.",
+    title: "A person approves every deployment.",
+    body: "A fix can't reach production without an administrator approving that exact fix. Each approval works once, for one change, and expires.",
   },
   {
-    q: "Does it matter?",
-    a: "Every issue comes with a plain-English risk and impact, so you're never left guessing what “high severity” actually means for you.",
+    title: "Fixes are checked by something other than what wrote them.",
+    body: "A separate step reproduces the problem, confirms the fix resolves it, checks that it only changed what it said it would, and runs the tests.",
   },
   {
-    q: "Can you prove it?",
-    a: "Gait safely reproduces the issue in a sandboxed environment before ever proposing a fix — so “maybe broken” becomes “confirmed broken.”",
+    title: "Every fix starts isolated.",
+    body: "Fixes are prepared in a separate copy of the code and never touch the live service until approved.",
   },
   {
-    q: "Can you fix it?",
-    a: "Gait prepares a real, tested repair, independently validated before it's ever shown to you.",
+    title: "\"Deployed\" doesn't mean \"fixed\".",
+    body: "A problem only counts as resolved when fresh checks show it's healthy again.",
   },
-  {
-    q: "What do you need to approve?",
-    a: "Only the decision that actually requires you. Gait investigates, tests, and prepares on its own — you authorize anything that touches production.",
-  },
-];
-
-const lumenProtectionScope = [
-  "authentication",
-  "multi-factor authentication (MFA)",
-  "sessions",
-  "authorization",
-  "security controls",
-  "deployments",
-  "agent workflows",
-  "future HL7 / DICOM healthcare security components",
 ];
 
 function formatCurrentUser(user) {
@@ -196,264 +139,10 @@ function formatCurrentUser(user) {
   return name || user.email || user.username || "Signed-in user";
 }
 
-function StatStrip() {
-  const stats = [
-    { value: "6", label: "AI agents, each with exactly one job" },
-    { value: "1", label: "Approval that actually requires you" },
-    { value: "473/473", label: "Tests passing on the last validated fix" },
-  ];
-
-  return (
-    <div className="stat-strip">
-      {stats.map((stat) => (
-        <div className="stat-tile" key={stat.label}>
-          <strong>{stat.value}</strong>
-          <span>{stat.label}</span>
-        </div>
-      ))}
-    </div>
-  );
-}
-
-function WorkflowTabs({ questions, activeIndex, onSelect }) {
-  return (
-    <div className="workflow-tabbar" role="tablist" aria-label="Five questions Gait answers">
-      {questions.map((item, index) => (
-        <button
-          key={item.q}
-          type="button"
-          role="tab"
-          aria-selected={index === activeIndex}
-          className={`workflow-tab ${index === activeIndex ? "is-active" : ""}`}
-          onClick={() => onSelect(index)}
-        >
-          {item.q}
-        </button>
-      ))}
-    </div>
-  );
-}
-
-function AgentHint({ name }) {
-  const description = agentFleet.find((agent) => agent.job === name)?.mandate;
-
-  return (
-    <span className="agent-hint">
-      {name}
-      {description && (
-        <span className="agent-hint-trigger" tabIndex={0} aria-label={`What ${name} does`}>
-          <RiInformationLine className="agent-hint-icon" aria-hidden="true" />
-          <span className="agent-hint-tooltip" role="tooltip">{description}</span>
-        </span>
-      )}
-    </span>
-  );
-}
-
-const protectionRoles = [
-  { label: "Security Observatory", copy: "Watches controls", icon: RiEyeLine, tone: "truth" },
-  { label: "Incident Commander", copy: "Coordinates response", icon: RiFlowChart, tone: "control" },
-  { label: "Blue Team", copy: "Investigates", icon: RiSearchEyeLine, tone: "blue" },
-  { label: "Red Team", copy: "Reproduces safely", icon: RiSwordLine, tone: "red" },
-  { label: "Green Team", copy: "Prepares repairs", icon: RiToolsLine, tone: "green" },
-  { label: "Security Validator", copy: "Verifies fixes", icon: RiShieldCheckLine, tone: "validator" },
-  { label: "Human Approver", copy: "Authorizes production", icon: RiUserLine, tone: "human" },
-  { label: "Release Engineer", copy: "Deploys exact artifacts", icon: RiRocketLine, tone: "release" },
-  { label: "Security Truth", copy: "Evaluates evidence", icon: RiDatabase2Line, tone: "truth" },
-];
-
-function ringPoint(index, count, radius = 38) {
-  const angle = (-90 + index * (360 / count)) * (Math.PI / 180);
-  return {
-    x: 50 + radius * Math.cos(angle),
-    y: 50 + radius * Math.sin(angle),
-  };
-}
-
-const electronRingOrder = [
-  "Security Validator",
-  "Incident Commander",
-  "Blue Team",
-  "Red Team",
-  "Green Team",
-  "Release Engineer",
-  "Security Truth",
-];
-
-function AppGaitProtectionVisual() {
-  const electronRoles = electronRingOrder.map((label) =>
-    protectionRoles.find((role) => role.label === label)
-  );
-
-  return (
-    <div className="lumen-gait-wrap" aria-label="Your app wrapped by Gait security operations">
-      <div className="lumen-gait-core">
-        <div className="lumen-node">
-          <strong>Your App</strong>
-        </div>
-        <div className="agent-electron-orbits" aria-hidden="true">
-          <div className="agent-electron-square">
-          <div className="agent-electron-ring">
-            {electronRoles.map((role, index) => {
-              const Icon = role.icon;
-              const { x, y } = ringPoint(index, electronRoles.length);
-              return (
-                <div
-                  className="agent-electron-orbit"
-                  key={role.label}
-                  style={{ "--agent-x": `${x}%`, "--agent-y": `${y}%` }}
-                >
-                  <span className="agent-electron-drift">
-                    <span className={`agent-electron agent-electron--${role.tone}`}>
-                      <Icon />
-                    </span>
-                  </span>
-                </div>
-              );
-            })}
-          </div>
-          </div>
-        </div>
-        <div className="gait-orbit" aria-hidden="true">
-          <div className="gait-boundary-callout">
-            <RiShieldKeyholeLine />
-            <span>Gait</span>
-          </div>
-        </div>
-      </div>
-      <AgentFleetDiagram />
-      <p className="lumen-gait-synopsis">
-        Your app is the protected system. Gait surrounds it with observability, constrained security agents,
-        independent validation, and Human Approver-controlled deployment.
-      </p>
-    </div>
-  );
-}
-
-function TeamRosterRow({ agent, isActive, onSelect }) {
-  const Icon = agent.icon;
-  return (
-    <button
-      type="button"
-      role="tab"
-      aria-selected={isActive}
-      aria-label={`${agent.id} · ${agent.job}`}
-      className={`team-roster-row ${isActive ? "is-selected" : ""}`}
-      onClick={onSelect}
-    >
-      <span className="team-roster-icon">
-        <Icon aria-hidden="true" />
-      </span>
-      <span className="team-roster-text">
-        <span className="team-roster-job">{agent.job}</span>
-        <span className="team-roster-id">{agent.verb}</span>
-      </span>
-      {isActive ? (
-        <span className="team-roster-chip">ONE JOB</span>
-      ) : (
-        <span className={`team-roster-status team-roster-status--${agent.status}`}>{agent.status}</span>
-      )}
-    </button>
-  );
-}
-
-function TeamDetailPanel({ agent }) {
-  const Icon = agent.icon;
-  return (
-    <div className="team-detail">
-      <span className="team-detail-icon">
-        <Icon aria-hidden="true" />
-      </span>
-      <h3 className="team-detail-job">{agent.job}</h3>
-      <p className="team-detail-summary">{agent.summary}</p>
-      <p className="team-detail-limits">{agent.limits}</p>
-      <p className="team-detail-meta">
-        {agent.id} · output: {agent.artifact}
-      </p>
-    </div>
-  );
-}
-
-function TeamEvidenceCard({ agent, animationClass }) {
-  const { evidence } = agent;
-  return (
-    <div className={`team-evidence-card ${animationClass}`}>
-      <div className="team-evidence-head">
-        <span className="team-evidence-heading">{evidence.heading}</span>
-        <RiArrowRightUpLine className="team-evidence-expand" aria-hidden="true" />
-      </div>
-      {evidence.scopeLine && <p className="team-evidence-scope">{evidence.scopeLine}</p>}
-      {evidence.isAsk ? (
-        <div className="team-evidence-thread">
-          {evidence.thread.map((turn) => (
-            <div
-              className={`copilot-message ${turn.speaker === "You" ? "copilot-message--operator" : "copilot-message--gait"}`}
-              key={turn.speaker}
-            >
-              <p className="copilot-message-sender">{turn.speaker}</p>
-              <p>{turn.text}</p>
-            </div>
-          ))}
-        </div>
-      ) : (
-        <div className="team-evidence-lines">
-          {evidence.lines.map((line) => (
-            <p key={line}>{line}</p>
-          ))}
-        </div>
-      )}
-      <p className="team-evidence-footer">example case · the workflow Gait runs</p>
-    </div>
-  );
-}
-
-function TeamShowcase() {
-  const [activeIndex, setActiveIndex] = useState(0);
-  const [outgoing, setOutgoing] = useState(null);
-  const exitTimeoutRef = useRef(null);
-
-  useEffect(() => () => {
-    if (exitTimeoutRef.current) clearTimeout(exitTimeoutRef.current);
-  }, []);
-
-  function selectAgent(index) {
-    if (index === activeIndex) return;
-    setOutgoing(agentFleet[activeIndex]);
-    setActiveIndex(index);
-    if (exitTimeoutRef.current) clearTimeout(exitTimeoutRef.current);
-    exitTimeoutRef.current = setTimeout(() => setOutgoing(null), 320);
-  }
-
-  const active = agentFleet[activeIndex];
-
-  return (
-    <div className="team-console">
-      <div className="team-roster-list" role="tablist" aria-label="Agent roster">
-        {agentFleet.map((agent, index) => (
-          <TeamRosterRow
-            key={agent.id}
-            agent={agent}
-            isActive={index === activeIndex}
-            onSelect={() => selectAgent(index)}
-          />
-        ))}
-      </div>
-      <TeamDetailPanel agent={active} />
-      <div className="team-evidence-frame">
-        {outgoing && outgoing.id !== active.id && (
-          <TeamEvidenceCard key={`out-${outgoing.id}`} agent={outgoing} animationClass="team-evidence-exit" />
-        )}
-        <TeamEvidenceCard key={`in-${active.id}`} agent={active} animationClass="team-evidence-enter" />
-      </div>
-    </div>
-  );
-}
-
 function HomePage() {
-  const { logout, guestLogin, isLoggedIn, isLoading, message, user, setError } = useBasicAuthServices();
+  const { logout, isLoggedIn, message, user, setError } = useBasicAuthServices();
   const { validateSession } = useUserSessionServices();
-  const [activeQuestionIndex, setActiveQuestionIndex] = useState(0);
-  const questionRefs = useRef([]);
+  const [menuOpen, setMenuOpen] = useState(false);
 
   useEffect(() => {
     validateSession();
@@ -465,36 +154,14 @@ function HomePage() {
     };
   }, [setError]);
 
-  useEffect(() => {
-    if (typeof IntersectionObserver === "undefined") return undefined;
-
-    const observer = new IntersectionObserver(
-      (entries) => {
-        entries.forEach((entry) => {
-          if (entry.isIntersecting) {
-            const index = questionRefs.current.indexOf(entry.target);
-            if (index !== -1) setActiveQuestionIndex(index);
-          }
-        });
-      },
-      { rootMargin: "-45% 0px -45% 0px", threshold: 0 }
-    );
-
-    questionRefs.current.forEach((node) => node && observer.observe(node));
-    return () => observer.disconnect();
-  }, []);
-
-  function handleQuestionSelect(index) {
-    setActiveQuestionIndex(index);
-    questionRefs.current[index]?.scrollIntoView({ behavior: "smooth", block: "center" });
-  }
-
   const hasSecurityCapability = user
     ? Object.prototype.hasOwnProperty.call(user, "can_view_security_dashboard")
     : false;
   const canViewSecurity = hasSecurityCapability
     ? Boolean(user.can_view_security_dashboard)
     : Boolean(user?.is_staff);
+
+  const closeMenu = () => setMenuOpen(false);
 
   return (
     <div className="home-page product-home">
@@ -503,19 +170,37 @@ function HomePage() {
           <RiShieldKeyholeLine />
           <span>Gait</span>
         </a>
-        <nav className="site-nav product-nav" aria-label="Product navigation">
-          <a href="#fleet">Fleet</a>
-          <a href="#how-it-works">How It Works</a>
-          <Link to="/architecture">Full Architecture</Link>
-          <Link to="/developers">Developers</Link>
+        <button
+          type="button"
+          className="home-menu-toggle"
+          aria-expanded={menuOpen}
+          aria-controls="home-nav"
+          onClick={() => setMenuOpen((open) => !open)}
+        >
+          {menuOpen ? <RiCloseLine aria-hidden="true" /> : <RiMenuLine aria-hidden="true" />}
+          <span>Menu</span>
+        </button>
+        <nav
+          id="home-nav"
+          className={`site-nav product-nav home-nav ${menuOpen ? "is-open" : ""}`}
+          aria-label="Product navigation"
+          onClick={(event) => {
+            if (event.target.closest("a")) closeMenu();
+          }}
+        >
+          <a href="#how-it-works">How it works</a>
           <Link to="/docs">Docs</Link>
+          <Link to="/developers">Developers</Link>
           {!isLoggedIn && (
-            <Link to="/early-access" className="nav-cta secondary">Early Access</Link>
+            <Link to="/early-access" className="nav-cta secondary">Early access</Link>
           )}
           {isLoggedIn && user && (
             <span className="signed-in-chip" title={`Signed in as ${formatCurrentUser(user)}`}>
               {formatCurrentUser(user)}
             </span>
+          )}
+          {isLoggedIn && (
+            <Link to="/console" className="nav-cta secondary">Console</Link>
           )}
           {isLoggedIn && canViewSecurity && (
             <Link to="/security-command" className="nav-cta secondary">
@@ -546,199 +231,173 @@ function HomePage() {
         <section className="hero product-hero" id="product">
           <div className="hero-content product-hero-content">
             <div className="hero-copy">
-              <span className="eyebrow-badge">Now in early access</span>
-              <h1 className="display-serif">Your AI security team.</h1>
+              <h1 className="display-serif">See the security of every app you ship, in one private place.</h1>
               <p className="hero-subtitle">
-                Gait watches your application, investigates what it finds, and prepares a fix — backed by modern
-                authentication, JWT sessions, and MFA built in from day one. AI does the groundwork — you review
-                and approve.
-              </p>
-              <p className="trust-tagline">AI investigates. Evidence decides what's true. You approve anything that touches production.</p>
-              <p className="hero-secondary-tagline">Built for teams without a security hire.</p>
-              <p className="hero-supporting-copy">
-                Gait started as the internal security system protecting Lumen, a healthcare application built toward
-                full HIPAA compliance. We're now opening it to a small number of early teams who need real security
-                discipline but can't yet justify a security hire.
+                Your software reports its own security checks with gait-sdk. Gait keeps the history, opens a finding
+                when a check fails and closes it when a later check passes, per app and per environment, isolated to
+                your company.
               </p>
               {message && <p className="session-message">{message}</p>}
               <div className="hero-actions">
-                <Link to="/early-access" className="btn-pill btn-pill-primary">
-                  Join Early Access <RiArrowRightLine />
+                <Link to={docPath("quickstart")} className="btn-pill btn-pill-primary">
+                  Read the Quickstart <RiArrowRightLine />
                 </Link>
-                <a href="#how-it-works" className="btn-pill btn-pill-secondary">See How It Works</a>
-                {!isLoggedIn && (
-                  <button className="btn-pill btn-pill-outline" onClick={guestLogin} disabled={isLoading}>
-                    {isLoading ? "Signing in..." : "Explore the live demo"}
-                  </button>
+                <Link to="/early-access" className="btn-pill btn-pill-secondary">Request early access</Link>
+                {isLoggedIn && (
+                  <Link to="/console" className="btn-pill btn-pill-outline">Open console</Link>
                 )}
               </div>
-              <StatStrip />
             </div>
           </div>
         </section>
 
-        {/* 2. Security Fleet — the team, up front */}
-        <section className="section agents-section" id="fleet">
-          <p className="eyebrow">Your security team</p>
-          <h2 className="display-serif">Six agents and you. One job each.</h2>
-          <p className="section-lede">
-            No agent holds two jobs, and none can act outside its mandate. Step through an example case: a
-            refresh-token replay failure, from the first failing check to a verified fix.
-          </p>
-          <TeamShowcase />
-          <p className="section-note fleet-copilot-note">
-            Alongside the team, <strong>Security Copilot</strong> answers your questions in plain language. It
-            explains what the team found; it can't act on anything.
-          </p>
-        </section>
-
-        {/* 3. Proof it works — real deployment, then how it actually works */}
-        <section className="section protects-section" id="how-it-works">
-          <p className="eyebrow">How it protects</p>
-          <h2 className="display-serif">One security team, wrapped around your application.</h2>
-          <p className="section-lede">
-            Gait wraps every application it protects in the same layer: continuous observation, constrained
-            specialist agents, independent validation, and exactly one approval — yours.
-          </p>
-          <p className="section-note">
-            Gait also comes with its own authentication and MFA layer your app can run on — login, sessions, and
-            multi-factor authentication are part of what it protects, not a bolt-on product added later.
-          </p>
-          <AppGaitProtectionVisual />
-
-          <div className="workflow-subsection">
-            <p className="eyebrow">How it works</p>
-            <h3>Five questions. One team answering them.</h3>
-            <p className="section-lede">
-              You don't manage agents, read logs, or learn security vocabulary. Gait answers these in order, every time.
-            </p>
-            <WorkflowTabs questions={fiveQuestions} activeIndex={activeQuestionIndex} onSelect={handleQuestionSelect} />
-            <ol className="workflow-list">
-              {fiveQuestions.map((item, index) => (
-                <li
-                  key={item.q}
-                  ref={(node) => {
-                    questionRefs.current[index] = node;
-                  }}
-                  className={index === activeQuestionIndex ? "is-active" : undefined}
-                >
-                  <span className="workflow-number">{String(index + 1).padStart(2, "0")}</span>
-                  <div>
-                    <h4>{item.q}</h4>
-                    <p>{item.a}</p>
-                  </div>
+        {/* 2. How it works */}
+        <section className="section" id="how-it-works" aria-labelledby="how-it-works-title">
+          <p className="eyebrow">How it works</p>
+          <h2 id="how-it-works-title">Your software reports. Gait keeps score.</h2>
+          <div className="home-split">
+            <ol className="home-steps">
+              {HOW_IT_WORKS_STEPS.map((step, index) => (
+                <li key={step.title}>
+                  <span className="home-step-number" aria-hidden="true">{String(index + 1).padStart(2, "0")}</span>
+                  <p>
+                    <strong>{step.title}</strong> {step.body}
+                  </p>
                 </li>
               ))}
             </ol>
+            <Diagram source={BIG_PICTURE} description={BIG_PICTURE_DESCRIPTION} />
           </div>
-
-          <p className="section-note protects-scope-label">Gait protects, around your app:</p>
-          <div className="need-grid">
-            {lumenProtectionScope.map((item) => <span key={item}>{item}</span>)}
-          </div>
-
-          <div className="proof-callout">
-            <h4>Battle-Tested on a Real Healthcare Application.</h4>
-            <p className="section-note">
-              Before we offered Gait to anyone else, we used it to protect Lumen — a vascular ultrasound reporting
-              platform used by clinicians and technologists, built toward full HIPAA compliance and DICOM
-              interoperability. Real clinical workflows. Real stakes. This is the same system, not a demo.
-            </p>
-          </div>
-          <ProtectionMapDiagram />
-        </section>
-
-        {/* 4. Under the hood */}
-        <section className="section command-section" id="command-center">
-          <p className="eyebrow">Under the hood</p>
-          <h2>Real agents. Real validation. Every time.</h2>
-          <p className="section-lede">
-            For the technically curious: here's what's actually happening behind "Gait prepared a fix."
+          <p className="section-note home-note">
+            <strong>Self-reported vs Gait-verified.</strong> Checks your software reports about itself are labelled
+            self-reported. Checks Gait ran or confirmed itself are labelled Gait-verified. Both count, and the console
+            always shows which is which, so you know how much weight a result carries.
           </p>
-          <div className="repair-ready">
-            <div>
-              <p className="panel-label">Security Remediation Ready</p>
-              <h3>Refresh Replay Protection Failure</h3>
-            </div>
-            <div className="repair-grid">
-              <AgentHint name="Blue Team" /><strong>Root cause identified</strong>
-              <AgentHint name="Red Team" /><strong>Reproduced</strong>
-              <AgentHint name="Green Team" /><strong>Prepared</strong>
-              <AgentHint name="Security Validator" /><strong>VALID</strong>
-              <span>Tests</span><strong>473 / 473 passing</strong>
-              <span>Exact artifact</span><strong>abc123</strong>
-              <span>Risk</span><strong>LOW</strong>
-            </div>
-            <div className="repair-actions">
-              <button type="button">Review</button>
-              <button type="button">Approve</button>
-              <button type="button">Reject</button>
-            </div>
-            <p className="section-note">Demo workflow preview. Consequential actions remain backend-authorized and Human Approver-controlled.</p>
-          </div>
-        </section>
-
-        {/* Developers: gait-sdk */}
-        <section className="section developers-teaser" id="developers">
-          <p className="eyebrow">For developers</p>
-          <h2>Trust Gait's identities in your own Python API.</h2>
-          <p className="section-lede">
-            gait-sdk verifies Gait's signed tokens inside your Django REST Framework or FastAPI service, locally
-            and fail-closed. Gait authenticates, the SDK verifies, and your app keeps every authorization decision.
-          </p>
-          <div className="developers-teaser-install">
-            <code>pip install gait-sdk</code>
-          </div>
-          <Link to="/developers" className="btn-pill btn-pill-secondary">
-            <RiTerminalBoxLine /> Read the developer guide
+          <Link to={docPath("how-it-works")} className="home-text-link">
+            How it works, in the docs <RiArrowRightLine aria-hidden="true" />
           </Link>
         </section>
 
-        {/* Early access */}
-        <section className="section business-inquiries-section" id="early-access">
-          <div className="business-inquiries-card">
-            <p className="eyebrow">Early access</p>
-            <h2>We're Onboarding Early Teams by Hand.</h2>
-            <p className="section-lede">
-              Gait's multi-tenant support is still being built, so for now early access means talking to us
-              directly, not a self-serve signup. Tell us about your app and we'll figure out if it's a fit.
+        {/* 3. What's live, what's coming */}
+        <section className="section" id="status" aria-labelledby="status-title">
+          <p className="eyebrow">What you get</p>
+          <h2 id="status-title">What's live, what's coming.</h2>
+          <ul className="home-status-list" aria-label="What's live, what's coming">
+            {WHAT_YOU_GET.map((row) => (
+              <li key={row.feature} className="home-status-row" data-feature={row.feature}>
+                <div>
+                  <h3>{row.feature}</h3>
+                  <p>{row.description}</p>
+                </div>
+                <StatusCell features={row.features} />
+              </li>
+            ))}
+          </ul>
+          <p className="home-planned">AI investigation and fixes for your apps: planned.</p>
+          <p className="section-note home-muted">Status as of {statusAsOfLabel()}.</p>
+        </section>
+
+        {/* 4. Isolation and trust */}
+        <section className="section" id="isolation" aria-labelledby="isolation-title">
+          <p className="eyebrow">Isolation and trust</p>
+          <h2 id="isolation-title">Private by default. Read-only by design.</h2>
+          <div className="home-card-grid">
+            <div className="home-card">
+              <h3>Other companies can't see you.</h3>
+              <p>
+                Your people, applications and findings belong to your company alone. To anyone outside it, your
+                company doesn't exist: Gait answers 404, the same answer as for a company that doesn't exist.
+              </p>
+            </div>
+            <div className="home-card">
+              <h3>A connection key can only report checks.</h3>
+              <p>
+                It reports checks for its own application. It can't sign in, invite anyone or read anything.
+              </p>
+            </div>
+            <div className="home-card">
+              <h3>Gait never changes your code, servers or data.</h3>
+              <p>Gait is not a remote control for your software. It only records the checks your software reports.</p>
+            </div>
+          </div>
+          <Link to={docPath("isolation")} className="home-text-link">
+            Isolation and setup <RiArrowRightLine aria-hidden="true" />
+          </Link>
+        </section>
+
+        {/* 5. Developers */}
+        <section className="section" id="developers" aria-labelledby="developers-title">
+          <p className="eyebrow">For developers</p>
+          <h2 id="developers-title">Install gait-sdk. Report a check.</h2>
+          <div className="home-code">
+            <CodeBlock code={INSTALL} label="Install" />
+            <CodeBlock code={REPORT} label="Report a security check" />
+          </div>
+          <div className="home-card home-card--inline">
+            <h3>
+              Sign-in for your own product <StatusBadge feature="productSignIn" />
+            </h3>
+            <p>
+              gait-sdk can also verify Gait sign-in tokens inside your own API, so your product's users can sign in
+              with Gait accounts while your product keeps its own organizations and roles.
             </p>
-            <ul className="business-inquiries-list">
-              {earlyAccessAudience.map((item) => <li key={item}>{item}</li>)}
-            </ul>
-            <Link to="/early-access" className="btn-pill btn-pill-primary">Request Early Access</Link>
-            <p className="section-note early-access-footnote">
-              Also open to partnership, investment, and licensing conversations —{" "}
-              <Link to="/send-email">contact us directly</Link>.
-            </p>
+          </div>
+          <div className="hero-actions">
+            <Link to={docPath("connecting-your-software")} className="btn-pill btn-pill-secondary">
+              <RiBookOpenLine /> Connecting your software
+            </Link>
+            <Link to="/developers" className="btn-pill btn-pill-ghost">
+              <RiTerminalBoxLine /> Developer guide
+            </Link>
           </div>
         </section>
 
-        <section className="section final-cta">
+        {/* 6. How we protect Gait itself */}
+        <section className="section" id="gait-itself" aria-labelledby="gait-itself-title">
+          <p className="eyebrow">How we protect Gait itself</p>
+          <h2 id="gait-itself-title">Six AI agents and a person look after Gait's own platform.</h2>
+          <p className="section-lede">
+            Gait uses automated agents to investigate problems in its own platform, test them and prepare fixes.
+            They run on Gait's own platform, never on your software: they don't investigate, change or deploy it.
+            Automated deployment is off by default.
+          </p>
+          <AgentFleetDiagram />
+          <p className="section-note">
+            <strong>Security Copilot</strong> explains what the team found in plain language. It sits outside the
+            chain and can't act on anything.
+          </p>
+          <ul className="home-guarantees">
+            {GAIT_GUARANTEES.map((item) => (
+              <li key={item.title}>
+                <strong>{item.title}</strong> {item.body}
+              </li>
+            ))}
+          </ul>
+          <Link to={docPath("automated-security-response")} className="home-text-link">
+            Automated security response <RiArrowRightLine aria-hidden="true" />
+          </Link>
+        </section>
+
+        {/* 7. Origin */}
+        <section className="section home-origin" aria-label="Origin">
+          <p>Built first to secure Lumen, our healthcare reporting app.</p>
+        </section>
+
+        {/* 8. Closing call to action */}
+        <section className="section final-cta" aria-labelledby="final-cta-title">
           <RiShieldCheckLine />
-          <h2>A security team, without the security hire.</h2>
-          <p>
-            Gait gives you continuous investigation, safe reproduction, tested fixes, and full control over
-            anything that matters — without needing to learn what a SOC, SIEM, or CVE is.
+          <h2 id="final-cta-title">Connect your first app in about 15 minutes.</h2>
+          <p className="section-lede">
+            Create your company, register an application, get its connection key and send your first security check.
           </p>
           <div className="hero-actions">
-            <Link to="/architecture" className="btn-pill btn-pill-primary">Explore the Architecture</Link>
-            {canViewSecurity && isLoggedIn ? (
-              <Link to="/security-command" className="btn-pill btn-pill-secondary">Open Security Command</Link>
-            ) : (
-              <Link to="/early-access" className="btn-pill btn-pill-secondary"><RiLoginBoxLine /> Request Early Access</Link>
-            )}
-            <a
-              href="https://github.com/anthonynarine/AuthFlow"
-              target="_blank"
-              rel="noopener noreferrer"
-              className="btn-pill btn-pill-ghost"
-            >
-              <RiGitPullRequestLine /> Follow Development
-            </a>
+            <Link to={docPath("quickstart")} className="btn-pill btn-pill-primary">
+              Read the Quickstart <RiArrowRightLine />
+            </Link>
+            <Link to="/early-access" className="btn-pill btn-pill-secondary">Request early access</Link>
           </div>
-          <p className="capability-line">
-            Intelligence doesn't grant authority. Yours is the only approval that matters.
+          <p className="section-note">
+            Partnership or licensing questions? <Link to="/send-email">Contact us directly</Link>.
           </p>
         </section>
       </main>

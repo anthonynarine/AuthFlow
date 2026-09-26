@@ -108,6 +108,7 @@ export function ConsoleLayout() {
                 <div className="gc-user">
                     <Badge value={scope.membership.org_role} />
                     <span className="gc-user-email" title={user?.email}>{user?.email}</span>
+                    <Link to="/docs" className="gc-docs-link gc-focusable">Docs</Link>
                     <button type="button" className="gc-button gc-button--ghost" onClick={onSignOut}>
                         Sign out
                     </button>

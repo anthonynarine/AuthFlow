@@ -508,6 +508,7 @@ function HomePage() {
           <a href="#how-it-works">How It Works</a>
           <Link to="/architecture">Full Architecture</Link>
           <Link to="/developers">Developers</Link>
+          <Link to="/docs">Docs</Link>
           {!isLoggedIn && (
             <Link to="/early-access" className="nav-cta secondary">Early Access</Link>
           )}

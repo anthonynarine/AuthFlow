@@ -25,6 +25,8 @@ import { AppSetupPage } from "./components/workspace/AppSetupPage";
 import { ConsoleLayout } from "./console/layout/ConsoleLayout";
 import { ConsoleEntry } from "./console/pages/ConsoleEntry";
 import { SectionPlaceholder } from "./console/pages/SectionPlaceholder";
+import { DocsPage } from "./docs/DocsPage";
+import { DOCS_BASE, DOC_PAGES, docPath } from "./docs/manifest";
 import "./App.css"
 import { Footer } from "./components/footer/Footer";
 import BasicAuthProvider from "./context/auth/BasicAuthContext";
@@ -38,10 +40,13 @@ function App() {
   // The console is a full-height app shell; the marketing footer would sit on top of it.
   const { pathname } = useLocation();
   const isConsole = pathname === "/console" || pathname.startsWith("/console/");
+  // An overflow container here (it never scrolls itself; the page does) would
+  // stop the docs' sticky header and sidebar from sticking.
+  const isDocs = pathname === DOCS_BASE || pathname.startsWith(`${DOCS_BASE}/`);
   return (
     <>
     <div className="app-container">
-      <div className="routes-content" style={{ flex: 1, overflowY: 'auto' }}>
+      <div className="routes-content" style={{ flex: 1, overflowY: isDocs ? 'visible' : 'auto' }}>
       <ToastContainer />
       <RouteTitle />
           <BasicAuthProvider>
@@ -56,6 +61,8 @@ function App() {
                     <Route path="/forgot-password" element={<ForgotPassword />} />
                     <Route path="/send-email" element={<SendEmail />} />
                     <Route path="/early-access" element={<EarlyAccessPage />} />
+                    <Route path={DOCS_BASE} element={<Navigate to={docPath(DOC_PAGES[0].slug)} replace />} />
+                    <Route path={`${DOCS_BASE}/:slug`} element={<DocsPage />} />
                     <Route path="/security" element={<SecurityObservatoryPage />} />
                     <Route path="/security-command" element={<SecurityCommandPage />} />
                     <Route path="/security-observatory" element={<SecurityObservatoryPage />} />

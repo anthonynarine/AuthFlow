@@ -77,6 +77,15 @@
 .gc-env-pill.is-active { background: var(--color-accent-soft); color: var(--color-accent); }
 
 .gc-user { margin-left: auto; display: flex; align-items: center; gap: 10px; min-width: 0; }
+.gc-docs-link {
+  color: var(--color-text-muted);
+  font-size: 0.875rem;
+  text-decoration: none;
+  padding: 4px 6px;
+  border-radius: var(--radius-sm);
+}
+.gc-docs-link:hover { color: var(--color-text); }
+
 .gc-user-email {
   color: var(--color-text-muted);
   font-size: 0.875rem;

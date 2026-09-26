@@ -11,10 +11,10 @@ export default function GettingStarted() {
             </p>
 
             <Callout kind="availability" title="What works today">
-                Signing in, creating your company, managing applications and their connection keys, and reporting
-                security checks all work in the console now. The console screens for security findings, and for
-                team members and invites, are being built; the pages here describe how they work and say where a
-                screen isn't available yet.
+                Signing in, creating your company, managing applications and their connection keys, reporting
+                security checks, and reviewing and acting on findings all work in the console now. The console
+                screens for team members and invites are being built; the pages here describe how they work and say
+                where a screen isn't available yet.
             </Callout>
 
             <p>

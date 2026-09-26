@@ -100,3 +100,40 @@ export async function revokeCredential(organizationSlug, applicationId, credenti
         `${app(organizationSlug, applicationId)}/credentials/${encodeURIComponent(credentialId)}/revoke/`
     );
 }
+
+// ---- F3: findings ------------------------------------------------------------
+
+/**
+ * One page of findings: {count, page, page_size, results}. Filters are
+ * optional; an unknown value is a 400 {code: "INVALID_QUERY", field}.
+ */
+export async function fetchFindings(organizationSlug, { environment, status, severity, page, pageSize } = {}) {
+    const params = { environment, status, severity, page, page_size: pageSize };
+    Object.keys(params).forEach((key) => (params[key] === undefined || params[key] === "") && delete params[key]);
+    const { data } = await authAxios.get(`${org(organizationSlug)}/security/findings/`, { params });
+    return data;
+}
+
+/** One finding, with its `actions` history. */
+export async function fetchFinding(organizationSlug, findingId) {
+    const { data } = await authAxios.get(
+        `${org(organizationSlug)}/security/findings/${encodeURIComponent(findingId)}/`
+    );
+    return data;
+}
+
+export async function fetchEvidence(organizationSlug, evidenceId) {
+    const { data } = await authAxios.get(
+        `${org(organizationSlug)}/security/evidence/${encodeURIComponent(evidenceId)}/`
+    );
+    return data;
+}
+
+/** action: "acknowledge" | "accept-risk". Owners/Admins only; `note` is 10-2000 characters. Returns the updated finding. */
+export async function actOnFinding(organizationSlug, findingId, action, note) {
+    const { data } = await authAxios.post(
+        `${org(organizationSlug)}/security/findings/${encodeURIComponent(findingId)}/${action}/`,
+        { note }
+    );
+    return data;
+}

@@ -82,19 +82,19 @@ describe("What Gait is", () => {
             "Live",
             "Live",
             "Live",
-            "Pending Findings screen",
+            "Live",
             "Pending Members screen, email confirmation",
             "Early access",
         ]);
         expect(screen.getByText(/Status as of 26 September 2026/)).toBeInTheDocument();
     });
 
-    test("when a screen ships, its badge turns Live and the waiting note goes away", () => {
+    test("the status object drives the badge and the waiting note", () => {
         const original = FEATURE_STATUS.findingsScreen;
-        FEATURE_STATUS.findingsScreen = "live";
+        FEATURE_STATUS.findingsScreen = "pending";
         try {
             renderDoc("what-gait-is");
-            expect(statusCells(screen.getByRole("table", { name: "What you get" }), 2)[3]).toBe("Live");
+            expect(statusCells(screen.getByRole("table", { name: "What you get" }), 2)[3]).toBe("Pending Findings screen");
         } finally {
             FEATURE_STATUS.findingsScreen = original;
         }
@@ -107,10 +107,10 @@ describe("What Gait is", () => {
 });
 
 describe("How it works", () => {
-    test("renders the big picture and marks acting on findings as Pending", async () => {
+    test("renders the big picture and marks acting on findings as Live (F3)", async () => {
         renderDoc("how-it-works");
         expect(screen.getByText(/Your team \(Owner, Admin, Member\) signs in to the console/)).toBeInTheDocument();
-        expect(statusText(screen.getByText(/Your team acts\./).closest("li"))).toBe("Pending Findings screen");
+        expect(statusText(screen.getByText(/Your team acts\./).closest("li"))).toBe("Live");
         await settleDiagrams();
     });
 });
@@ -127,7 +127,7 @@ describe("Quickstart", () => {
             "Live",
             "Live",
             "Live",
-            "Pending Findings screen",
+            "Live",
         ]);
         expect(within(table).getAllByRole("link")[6]).toHaveAttribute(
             "href",

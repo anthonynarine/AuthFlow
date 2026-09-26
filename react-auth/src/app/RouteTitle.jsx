@@ -1,6 +1,7 @@
 import { useEffect } from "react";
 import { useLocation } from "react-router-dom";
 import { DOC_PAGES, docTitle } from "../docs/manifest";
+import { isCompanyConsolePath } from "../console/layout/consoleTitle";
 
 export const DEFAULT_TITLE = "Gait: Your AI security team";
 
@@ -39,6 +40,7 @@ export function RouteTitle() {
   const { pathname } = useLocation();
 
   useEffect(() => {
+    if (isCompanyConsolePath(pathname)) return; // the console layout titles these with the company's name
     document.title = titleForPath(pathname);
   }, [pathname]);
 

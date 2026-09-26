@@ -14,8 +14,8 @@ export const FEATURE_STATUS = {
     // Stage F4: the console's Members screen and invite-accept page.
     membersAndInviteAccept: "pending",
     // Stage F3: the console's Findings screen (watch, acknowledge, accept
-    // risk). The findings API is live, but without a screen it's pending.
-    findingsScreen: "pending",
+    // risk). Shipped with F3.
+    findingsScreen: "live",
     // Sign-in for your own product's users with Gait accounts (gait-sdk).
     productSignIn: "earlyAccess",
     // Everything else: accounts, companies, applications, keys, signals.

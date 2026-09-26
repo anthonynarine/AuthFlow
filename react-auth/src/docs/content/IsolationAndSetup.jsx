@@ -1,7 +1,7 @@
 import React from "react";
 import { DocLink, DocSection, DocTable, StatusBadge } from "../components/DocPrimitives";
 import { AccountPoolDiagram, ConsoleIsolationDiagram, FlowSteps } from "../components/IsolationDiagrams";
-import { statusAsOfLabel } from "../featureStatus";
+import { statusAsOfLabel, statusOf } from "../featureStatus";
 
 /** A journey's steps, each with its Live/Pending badge and an optional note. */
 function JourneySteps({ label, steps }) {
@@ -191,7 +191,11 @@ export default function IsolationAndSetup() {
                             </>,
                             "core",
                         ],
-                        ["Watch findings; acknowledge or accept risk with a note", "findingsScreen", FINDINGS_SCREEN_NOTE],
+                        [
+                            "Watch findings; acknowledge or accept risk with a note",
+                            "findingsScreen",
+                            statusOf("findingsScreen") === "pending" ? FINDINGS_SCREEN_NOTE : null,
+                        ],
                     ]}
                 />
                 <p>Your product's end users are <strong>not</strong> invited here.</p>
@@ -226,8 +230,15 @@ export default function IsolationAndSetup() {
                 </div>
                 <p>
                     Customer findings are kept apart from Gait's own platform findings. An accepted risk stays accepted
-                    if the check fails again. Reporting, findings and cases are <StatusBadge feature="core" />; acting
-                    on a finding in the console waits for the findings screen, as in journey 1.
+                    if the check fails again.{" "}
+                    {statusOf("findingsScreen") === "live" ? (
+                        <>All of this is <StatusBadge feature="core" />.</>
+                    ) : (
+                        <>
+                            Reporting, findings and cases are <StatusBadge feature="core" />; acting on a finding in the
+                            console waits for the findings screen, as in journey 1.
+                        </>
+                    )}
                 </p>
 
                 <H3 id="journey-3">3. A teammate joins your Gait company</H3>

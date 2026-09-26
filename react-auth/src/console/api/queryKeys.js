@@ -33,6 +33,11 @@ export const consoleKeys = {
         ...consoleKeys.application(organizationSlug, applicationId),
         "credentials",
     ],
+    // F3. The list is per environment and filter set; one finding or one
+    // piece of evidence is addressed by id.
+    findings: (organizationSlug, environment, filters) => ["console", organizationSlug, environment, "findings", filters],
+    finding: (organizationSlug, findingId) => ["console", organizationSlug, "all", "findings", findingId],
+    evidence: (organizationSlug, evidenceId) => ["console", organizationSlug, "all", "evidence", evidenceId],
 };
 
 /** True for a cached query that belongs to an organization other than `organizationSlug`. */

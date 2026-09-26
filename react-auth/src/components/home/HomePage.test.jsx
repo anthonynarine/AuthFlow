@@ -143,6 +143,9 @@ describe("HomePage product positioning", () => {
       (name) => expect(within(section).getAllByText(name).length).toBeGreaterThan(0)
     );
     expect(section).toHaveTextContent("A person approves every deployment.");
+    expect(section).toHaveTextContent("Everything is recorded. Each step leaves an audit trail.");
+    const guarantees = within(section).getByRole("list", { name: "Guarantees" });
+    expect(within(guarantees).getAllByRole("listitem")).toHaveLength(5);
     expect(section).toHaveTextContent("Security Copilot");
   });
 
@@ -162,6 +165,18 @@ describe("HomePage product positioning", () => {
 
     expect(screen.getByText("Built first to secure Lumen, our healthcare reporting app.")).toBeInTheDocument();
     expect(screen.getAllByText(/Lumen/)).toHaveLength(1);
+  });
+
+  test("the header brand uses the single-ink gate mark", () => {
+    renderHome({ isLoggedIn: false, user: null });
+
+    const brand = screen.getByRole("link", { name: "Gait home" });
+    const mark = within(brand).getByTestId("gate-mark");
+    expect(mark).toHaveAttribute("stroke", "currentColor");
+    expect(mark).toHaveAttribute("viewBox", "0 0 16 16");
+    ["M4.5 13.2V4.6", "M11.5 13.2V4.6", "M4.5 4.6h7"].forEach((d) =>
+      expect(mark).toContainHTML(`<path d="${d}"></path>`)
+    );
   });
 
   test("Docs and Developers are in the header, behind a menu button on phones", () => {

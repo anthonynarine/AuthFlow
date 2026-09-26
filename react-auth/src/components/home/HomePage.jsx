@@ -11,7 +11,6 @@ import {
   RiCloseLine,
   RiMenuLine,
   RiShieldCheckLine,
-  RiShieldKeyholeLine,
   RiTerminalBoxLine,
 } from "react-icons/ri";
 import { AgentFleetDiagram } from "./diagrams/AgentFleetDiagram";
@@ -110,7 +109,7 @@ const WHAT_YOU_GET = [
   },
 ];
 
-// AUTOMATED_SECURITY_RESPONSE.md, "The guarantees" (the first four).
+// AUTOMATED_SECURITY_RESPONSE.md, "The guarantees" (lines 31-41).
 const GAIT_GUARANTEES = [
   {
     title: "A person approves every deployment.",
@@ -128,7 +127,35 @@ const GAIT_GUARANTEES = [
     title: "\"Deployed\" doesn't mean \"fixed\".",
     body: "A problem only counts as resolved when fresh checks show it's healthy again.",
   },
+  {
+    title: "Everything is recorded.",
+    body: "Each step leaves an audit trail.",
+  },
 ];
+
+// The Gait gate mark (16px grid, from the chosen logo system): two posts and a
+// lintel, single ink. currentColor so it follows the surrounding text color.
+function GateMark() {
+  return (
+    <svg
+      className="gate-mark"
+      data-testid="gate-mark"
+      viewBox="0 0 16 16"
+      width="1em"
+      height="1em"
+      fill="none"
+      stroke="currentColor"
+      strokeWidth="1.7"
+      strokeLinecap="square"
+      aria-hidden="true"
+      focusable="false"
+    >
+      <path d="M4.5 13.2V4.6" />
+      <path d="M11.5 13.2V4.6" />
+      <path d="M4.5 4.6h7" />
+    </svg>
+  );
+}
 
 function formatCurrentUser(user) {
   if (!user) {
@@ -167,7 +194,7 @@ function HomePage() {
     <div className="home-page product-home">
       <header className="site-header product-header">
         <a className="brand" href="#product" aria-label="Gait home">
-          <RiShieldKeyholeLine />
+          <GateMark />
           <span>Gait</span>
         </a>
         <button
@@ -366,7 +393,7 @@ function HomePage() {
             <strong>Security Copilot</strong> explains what the team found in plain language. It sits outside the
             chain and can't act on anything.
           </p>
-          <ul className="home-guarantees">
+          <ul className="home-guarantees" aria-label="Guarantees">
             {GAIT_GUARANTEES.map((item) => (
               <li key={item.title}>
                 <strong>{item.title}</strong> {item.body}

@@ -24,7 +24,7 @@ function renderEntry() {
       <Routes>
         <Route path="/workspace" element={<WorkspaceEntry />} />
         <Route path="/workspace/onboarding" element={<div data-testid="onboarding">onboarding</div>} />
-        <Route path="/workspace/apps" element={<div data-testid="apps-home">apps-home</div>} />
+        <Route path="/console" element={<div data-testid="console-entry">console-entry</div>} />
       </Routes>
     </MemoryRouter>
   );
@@ -51,18 +51,18 @@ describe("WorkspaceEntry — PLATFORM vs tenant routing", () => {
     expect(screen.queryByTestId("founder-home-page")).not.toBeInTheDocument();
   });
 
-  test("non-staff with an existing Company is routed to the tenant Apps home, never PLATFORM data", () => {
+  test("non-staff with an existing Company is routed to the tenant console, never PLATFORM data", () => {
     mockUser = { is_staff: false };
     useOrganizations.mockReturnValue({
       organizations: [{ id: "1", name: "Acme", slug: "acme", org_role: "OWNER" }],
       isLoading: false,
     });
     renderEntry();
-    expect(screen.getByTestId("apps-home")).toBeInTheDocument();
+    expect(screen.getByTestId("console-entry")).toBeInTheDocument();
     expect(screen.queryByTestId("founder-home-page")).not.toBeInTheDocument();
   });
 
-  test("non-staff with multiple Companies is also routed to Apps (its own chooser handles which one)", () => {
+  test("non-staff with multiple Companies is also routed to the console (its org switcher handles which one)", () => {
     mockUser = { is_staff: false };
     useOrganizations.mockReturnValue({
       organizations: [
@@ -72,7 +72,7 @@ describe("WorkspaceEntry — PLATFORM vs tenant routing", () => {
       isLoading: false,
     });
     renderEntry();
-    expect(screen.getByTestId("apps-home")).toBeInTheDocument();
+    expect(screen.getByTestId("console-entry")).toBeInTheDocument();
   });
 
   test("organizations are never fetched for a staff user (they don't need onboarding forced on them)", () => {

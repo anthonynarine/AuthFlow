@@ -1,7 +1,7 @@
 import { useState, useCallback } from "react";
 import { useNavigate } from "react-router-dom";
-import { publicAxios } from "../interceptors/axios";
-import { getRefreshToken } from "../interceptors/tokenStorage";
+import { logoutSession, publicAxios, SESSION_TRANSPORT } from "../interceptors/axios";
+import { queryClient } from "../app/queryClient";
 
 export const useBasicAuth = () => {
     const [isLoading, setIsLoading] = useState(false);
@@ -17,7 +17,7 @@ export const useBasicAuth = () => {
         setIsLoading(true);
         setError(null);
         try {
-            await publicAxios.post("/login/", { email, password });
+            await publicAxios.post("/login/", { email, password, ...SESSION_TRANSPORT });
             setIsLoggedIn(true);
             setIs2FARequired(false);
             navigate("/workspace");
@@ -37,7 +37,7 @@ export const useBasicAuth = () => {
         setIsLoading(true);
         setError(null);
         try {
-            await publicAxios.post("/guest-login/");
+            await publicAxios.post("/guest-login/", { ...SESSION_TRANSPORT });
             setIsLoggedIn(true);
             setIs2FARequired(false);
             navigate("/workspace");
@@ -53,21 +53,17 @@ export const useBasicAuth = () => {
         setIsLoading(true);
         setMessage("");
         try {
-            const refreshToken = getRefreshToken();
-            await publicAxios.post(
-                "/logout/",
-                {},
-                refreshToken
-                    ? { headers: { Authorization: `Bearer ${refreshToken}` } }
-                    : undefined
-            );
-            // Cookies are removed in Axios instance
+            // Revokes the session server-side and clears the HttpOnly cookie.
+            await logoutSession();
             setUser(null);
             setMessage("You are logged out");
             setIsLoggedIn(false);
         } catch (error) {
             console.error("Logout error", error);
         } finally {
+            // Whatever happened server-side, nothing cached for this session
+            // (or any organization it could see) may survive locally.
+            queryClient.clear();
             setIsLoading(false);
         }
     }, []);

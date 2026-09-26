@@ -67,7 +67,7 @@ export function WorkspaceEntry() {
     return <Navigate to="/workspace/onboarding" replace />;
   }
 
-  return <Navigate to="/workspace/apps" replace />;
+  return <Navigate to="/console" replace />;
 }
 
 export default WorkspaceEntry;

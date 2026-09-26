@@ -19,6 +19,11 @@ import { authAxios } from "../interceptors/axios";
 export function useOrganizations(enabled = true) {
   const [organizations, setOrganizations] = useState([]);
   const [isLoading, setIsLoading] = useState(enabled);
+  // Whether a fetch has completed since the hook was last enabled. Without
+  // it, the first render after `enabled` flips true (e.g. once the session is
+  // restored) reports "not loading, zero organizations" before the fetch
+  // effect has even started -- and callers redirect to onboarding.
+  const [hasFetched, setHasFetched] = useState(false);
   const [error, setError] = useState(null);
   const [createError, setCreateError] = useState(null);
   const [isCreating, setIsCreating] = useState(false);
@@ -36,12 +41,14 @@ export function useOrganizations(enabled = true) {
       throw requestError;
     } finally {
       setIsLoading(false);
+      setHasFetched(true);
     }
   }, []);
 
   useEffect(() => {
     if (!enabled) {
       setIsLoading(false);
+      setHasFetched(false);
       return;
     }
     fetchOrganizations().catch(() => {});
@@ -67,7 +74,7 @@ export function useOrganizations(enabled = true) {
 
   return {
     organizations,
-    isLoading,
+    isLoading: isLoading || (enabled && !hasFetched),
     error,
     refetch: fetchOrganizations,
     createOrganization,

@@ -1,3 +1,8 @@
+/**
+ * Session transport (Gait console F0): access token in memory only, refresh
+ * token only in Gait's HttpOnly cookie. These tests drive the real
+ * interceptors against mocked axios instances.
+ */
 const cookieStore = {};
 
 function createMockAxiosInstance() {
@@ -21,15 +26,17 @@ function createMockAxiosInstance() {
     return instance;
 }
 
-function loadAxiosModule() {
+function loadAxiosModule({ withLocks = true } = {}) {
     jest.resetModules();
     Object.keys(cookieStore).forEach((key) => delete cookieStore[key]);
 
+    const sessionInstance = createMockAxiosInstance();
     const publicInstance = createMockAxiosInstance();
     const authInstance = createMockAxiosInstance();
 
     jest.doMock("axios", () => ({
         create: jest.fn()
+            .mockReturnValueOnce(sessionInstance)
             .mockReturnValueOnce(publicInstance)
             .mockReturnValueOnce(authInstance),
     }));
@@ -47,136 +54,155 @@ function loadAxiosModule() {
     const locks = {
         request: jest.fn((name, options, callback) => {
             const run = lockQueue.then(() => callback());
-            lockQueue = run.then(
-                () => undefined,
-                () => undefined
-            );
+            lockQueue = run.then(() => undefined, () => undefined);
             return run;
         }),
     };
-
     Object.defineProperty(global, "navigator", {
-        value: { locks },
+        value: withLocks ? { locks } : {},
         configurable: true,
         writable: true,
     });
 
     const module = require("./axios");
-    const Cookies = require("js-cookie");
-
-    return { ...module, publicInstance, authInstance, Cookies };
+    const tokenStorage = require("./tokenStorage");
+    return { ...module, ...tokenStorage, sessionInstance, publicInstance, authInstance, locks };
 }
 
-describe("Axios authentication rotation integration", () => {
-    test("login response stores access and refresh tokens", () => {
-        const { publicInstance, Cookies } = loadAxiosModule();
-        const responseHandler = publicInstance.interceptors.response.handlers[0].fulfilled;
+const runRequest = (instance, config) => instance.interceptors.request.handlers[0].fulfilled(config);
+const runResponse = (instance, response) => instance.interceptors.response.handlers[0].fulfilled(response);
+const runResponseError = (instance, error) => instance.interceptors.response.handlers[0].rejected(error);
 
-        responseHandler({
-            data: { access_token: "access-1", refresh_token: "refresh-1" },
+describe("Gait session transport", () => {
+    beforeEach(() => {
+        jest.spyOn(console, "error").mockImplementation(() => {});
+    });
+
+    afterEach(() => {
+        jest.restoreAllMocks();
+    });
+
+    test("every request carries X-Gait-Auth", async () => {
+        const { publicInstance, authInstance, sessionInstance, persistAuthTokens } = loadAxiosModule();
+        persistAuthTokens({ accessToken: "access-1" });
+
+        const publicConfig = await runRequest(publicInstance, { headers: {} });
+        const authConfig = await runRequest(authInstance, { headers: {} });
+        const sessionConfig = await runRequest(sessionInstance, { headers: {} });
+
+        expect(publicConfig.headers["X-Gait-Auth"]).toBe("1");
+        expect(authConfig.headers["X-Gait-Auth"]).toBe("1");
+        expect(sessionConfig.headers["X-Gait-Auth"]).toBe("1");
+        expect(authConfig.headers.Authorization).toBe("Bearer access-1");
+    });
+
+    test("login keeps the access token in memory only and never stores a refresh token", () => {
+        const { publicInstance, getAccessToken } = loadAxiosModule();
+
+        runResponse(publicInstance, {
+            data: { access_token: "access-1", refresh_token: "must-be-ignored" },
             headers: {},
             config: { url: "/login/" },
         });
 
-        expect(Cookies.set).toHaveBeenCalledWith(
-            "access_token",
-            "access-1",
-            expect.objectContaining({ expires: 1 / 96 })
-        );
-        expect(Cookies.set).toHaveBeenCalledWith(
-            "refresh_token",
-            "refresh-1",
-            expect.objectContaining({ expires: 7 })
-        );
+        expect(getAccessToken()).toBe("access-1");
+        expect(Object.keys(cookieStore)).not.toContain("access_token");
+        expect(Object.keys(cookieStore)).not.toContain("refresh_token");
+        expect(JSON.stringify(cookieStore)).not.toContain("must-be-ignored");
     });
 
-    test("successful refresh replaces both access and refresh tokens", async () => {
-        const { authInstance } = loadAxiosModule();
-        cookieStore.access_token = "expired-access";
-        cookieStore.refresh_token = "refresh-a1";
-        authInstance.post.mockResolvedValue({
-            status: 200,
-            data: { access_token: "access-2", refresh_token: "refresh-a2" },
-        });
-        const errorHandler = authInstance.interceptors.response.handlers[0].rejected;
+    test("first authenticated call after a reload restores the session from the cookie", async () => {
+        const { authInstance, sessionInstance, getAccessToken } = loadAxiosModule();
+        sessionInstance.post.mockResolvedValue({ data: { access_token: "restored" } });
 
-        await errorHandler({
-            response: { status: 401 },
-            config: { url: "/private/", headers: {} },
-        });
+        const config = await runRequest(authInstance, { headers: {} });
 
-        expect(cookieStore.access_token).toBe("access-2");
-        expect(cookieStore.refresh_token).toBe("refresh-a2");
-        expect(cookieStore.refresh_token).not.toBe("refresh-a1");
+        expect(sessionInstance.post).toHaveBeenCalledTimes(1);
+        expect(sessionInstance.post).toHaveBeenCalledWith("/auth/refresh/", {});
+        expect(getAccessToken()).toBe("restored");
+        expect(config.headers.Authorization).toBe("Bearer restored");
     });
 
-    test("multiple simultaneous 401 responses use one refresh request", async () => {
-        const { authInstance } = loadAxiosModule();
-        cookieStore.access_token = "expired-access";
-        cookieStore.refresh_token = "refresh-a1";
-        authInstance.post.mockResolvedValue({
-            status: 200,
-            data: { access_token: "access-2", refresh_token: "refresh-a2" },
-        });
-        const errorHandler = authInstance.interceptors.response.handlers[0].rejected;
+    test("no live session: the request goes out unauthenticated and is not refreshed twice", async () => {
+        const { authInstance, sessionInstance } = loadAxiosModule();
+        sessionInstance.post.mockRejectedValue({ response: { status: 401 } });
 
-        await Promise.all([
-            errorHandler({ response: { status: 401 }, config: { url: "/a/", headers: {} } }),
-            errorHandler({ response: { status: 401 }, config: { url: "/b/", headers: {} } }),
-            errorHandler({ response: { status: 401 }, config: { url: "/c/", headers: {} } }),
-        ]);
+        const config = await runRequest(authInstance, { headers: {} });
 
-        expect(authInstance.post).toHaveBeenCalledTimes(1);
-        expect(authInstance).toHaveBeenCalledTimes(3);
-        expect(cookieStore.refresh_token).toBe("refresh-a2");
+        expect(config.headers.Authorization).toBeUndefined();
+        expect(config._retry).toBe(true);
     });
 
-    test("refresh failure clears auth state", async () => {
-        const { authInstance, Cookies } = loadAxiosModule();
-        cookieStore.access_token = "expired-access";
-        cookieStore.refresh_token = "refresh-a1";
-        authInstance.post.mockRejectedValue({ response: { status: 403 } });
-        const errorHandler = authInstance.interceptors.response.handlers[0].rejected;
+    test("simultaneous 401s share one refresh and are each retried with the new token", async () => {
+        const { authInstance, sessionInstance, persistAuthTokens, locks } = loadAxiosModule();
+        persistAuthTokens({ accessToken: "expired" });
+        let resolveRefresh;
+        sessionInstance.post.mockReturnValue(new Promise((resolve) => { resolveRefresh = resolve; }));
 
-        await expect(errorHandler({
-            response: { status: 401 },
-            config: { url: "/private/", headers: {} },
-        })).rejects.toEqual({ response: { status: 403 } });
+        const first = runResponseError(authInstance, { response: { status: 401 }, config: { headers: {} } });
+        const second = runResponseError(authInstance, { response: { status: 401 }, config: { headers: {} } });
+        resolveRefresh({ data: { access_token: "fresh" } });
+        const [a, b] = await Promise.all([first, second]);
 
-        expect(Cookies.remove).toHaveBeenCalledWith("access_token");
-        expect(Cookies.remove).toHaveBeenCalledWith("refresh_token");
-        expect(cookieStore.access_token).toBeUndefined();
-        expect(cookieStore.refresh_token).toBeUndefined();
+        expect(sessionInstance.post).toHaveBeenCalledTimes(1);
+        expect(locks.request).toHaveBeenCalledTimes(1);
+        expect(a.config.headers.Authorization).toBe("Bearer fresh");
+        expect(b.config.headers.Authorization).toBe("Bearer fresh");
     });
 
-    test("refresh endpoint 401 does not recursively refresh", async () => {
-        const { authInstance } = loadAxiosModule();
-        const errorHandler = authInstance.interceptors.response.handlers[0].rejected;
-        const error = {
-            response: { status: 401 },
-            config: { url: "/token-refresh/", headers: {} },
-            message: "refresh failed",
-        };
+    test("refresh failure clears the token and announces the session ended", async () => {
+        const { authInstance, sessionInstance, persistAuthTokens, getAccessToken, SESSION_ENDED_EVENT } = loadAxiosModule();
+        persistAuthTokens({ accessToken: "expired" });
+        sessionInstance.post.mockRejectedValue({ response: { status: 401 } });
+        const listener = jest.fn();
+        window.addEventListener(SESSION_ENDED_EVENT, listener);
 
-        await expect(errorHandler(error)).rejects.toBe(error);
+        await expect(
+            runResponseError(authInstance, { response: { status: 401 }, config: { headers: {} } })
+        ).rejects.toBeTruthy();
 
-        expect(authInstance.post).not.toHaveBeenCalled();
+        expect(getAccessToken()).toBeNull();
+        expect(listener).toHaveBeenCalledTimes(1);
+        window.removeEventListener(SESSION_ENDED_EVENT, listener);
     });
 
-    test("logout response clears local authentication state", () => {
-        const { publicInstance, Cookies } = loadAxiosModule();
-        cookieStore.access_token = "access-1";
-        cookieStore.refresh_token = "refresh-1";
-        const responseHandler = publicInstance.interceptors.response.handlers[0].fulfilled;
+    test("requests marked skipAuthRefresh never trigger a refresh", async () => {
+        const { authInstance, sessionInstance } = loadAxiosModule();
 
-        responseHandler({
-            data: {},
-            headers: {},
-            config: { url: "/logout/" },
-        });
+        await expect(
+            runResponseError(authInstance, { response: { status: 401 }, config: { headers: {}, skipAuthRefresh: true } })
+        ).rejects.toBeTruthy();
+        expect(sessionInstance.post).not.toHaveBeenCalled();
+    });
 
-        expect(Cookies.remove).toHaveBeenCalledWith("access_token");
-        expect(Cookies.remove).toHaveBeenCalledWith("refresh_token");
+    test("logout revokes server-side and clears the token even if the request fails", async () => {
+        const { logoutSession, sessionInstance, persistAuthTokens, getAccessToken } = loadAxiosModule();
+        persistAuthTokens({ accessToken: "access-1" });
+        sessionInstance.post.mockRejectedValue(new Error("offline"));
+
+        await expect(logoutSession()).rejects.toThrow("offline");
+
+        expect(sessionInstance.post).toHaveBeenCalledWith("/auth/logout/", {});
+        expect(getAccessToken()).toBeNull();
+    });
+
+    test("without navigator.locks a tab still refreshes once", async () => {
+        const { refreshSession, sessionInstance } = loadAxiosModule({ withLocks: false });
+        sessionInstance.post.mockResolvedValue({ data: { access_token: "fresh" } });
+
+        const [a, b] = await Promise.all([refreshSession(), refreshSession()]);
+
+        expect(sessionInstance.post).toHaveBeenCalledTimes(1);
+        expect([a, b]).toEqual(["fresh", "fresh"]);
+    });
+
+    test("legacy JS-readable token cookies are purged", () => {
+        const { purgeLegacyTokenCookies } = loadAxiosModule();
+        cookieStore.access_token = "old";
+        cookieStore.refresh_token = "old";
+
+        purgeLegacyTokenCookies();
+
         expect(cookieStore.access_token).toBeUndefined();
         expect(cookieStore.refresh_token).toBeUndefined();
     });

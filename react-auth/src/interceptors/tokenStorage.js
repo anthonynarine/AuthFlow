@@ -1,50 +1,48 @@
+/**
+ * Access-token store (Gait console F0 -- secure session transport).
+ *
+ * The access token lives in JavaScript memory ONLY:
+ *   - never localStorage / sessionStorage / a JS-readable cookie
+ *   - lost on reload by design; the app re-obtains one from Gait's HttpOnly
+ *     refresh cookie (see refreshCoordinator.js)
+ *
+ * The refresh token is never visible to JavaScript at all: Gait sets it as
+ * an HttpOnly cookie scoped to its own /api/auth/ path, and only
+ * /api/auth/refresh/ and /api/auth/logout/ ever receive it.
+ */
 import Cookies from "js-cookie";
 
-const baseURL = process.env.REACT_APP_USE_PRODUCTION_API === "true"
-    ? process.env.REACT_APP_PRODUCTION_URL
-    : process.env.NODE_ENV === "development"
-        ? process.env.REACT_APP_DEV_URL
-        : process.env.REACT_APP_PRODUCTION_URL;
+let accessToken = null;
 
-const isProduction = baseURL?.includes("ant-django-auth-62cf01255868.herokuapp.com");
-
-const accessTokenCookieOptions = {
-    expires: 1 / 96,
-    secure: isProduction,
-    sameSite: isProduction ? "None" : "Lax",
-};
-
-const refreshTokenCookieOptions = {
-    expires: 7,
-    secure: isProduction,
-    sameSite: isProduction ? "None" : "Lax",
-};
-
+/** Current in-memory access token, or null when signed out / not yet restored. */
 export function getAccessToken() {
-    return Cookies.get("access_token");
+    return accessToken;
 }
 
-export function getRefreshToken() {
-    return Cookies.get("refresh_token");
-}
-
-export function persistAuthTokens({ accessToken, refreshToken }) {
-    if (!accessToken) {
-        return;
-    }
-
-    Cookies.set("access_token", accessToken, accessTokenCookieOptions);
-
-    if (refreshToken) {
-        Cookies.set("refresh_token", refreshToken, refreshTokenCookieOptions);
+/**
+ * Store a freshly issued access token. `refreshToken` is accepted only so
+ * old call sites stay harmless: it is ignored, because with cookie transport
+ * Gait never sends one to JavaScript.
+ */
+export function persistAuthTokens({ accessToken: token } = {}) {
+    if (token) {
+        accessToken = token;
     }
 }
 
+/** Forget the in-memory access token (logout / failed refresh). */
 export function clearAuthTokens() {
-    Cookies.remove("access_token");
-    Cookies.remove("refresh_token");
-    Cookies.remove("csrftoken");
-    Cookies.remove("sessionid");
+    accessToken = null;
 }
 
-export { accessTokenCookieOptions, refreshTokenCookieOptions, isProduction };
+/**
+ * One-time cleanup of the previous storage model, which kept access and
+ * refresh tokens in JS-readable cookies. Safe to call on every boot;
+ * nothing reads these cookies any more.
+ */
+export function purgeLegacyTokenCookies() {
+    for (const name of ["access_token", "refresh_token"]) {
+        Cookies.remove(name);
+        Cookies.remove(name, { path: "/" });
+    }
+}

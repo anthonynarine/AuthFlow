@@ -22,48 +22,102 @@
 
 export const DOCS_BASE = "/docs";
 
-export const DOC_PAGES = [
+// Sidebar groups, in reading order. Previous/next follows this order too.
+export const DOC_GROUPS = [
     {
-        slug: "people-and-applications",
-        title: "People and applications",
-        summary: "The one idea to get right first: people and applications are different kinds of identity.",
+        title: "Start here",
+        pages: [
+            {
+                slug: "what-gait-is",
+                title: "What Gait is",
+                summary: "What Gait does for your team, who it's for, and what it isn't.",
+            },
+            {
+                slug: "how-it-works",
+                title: "How it works",
+                summary: "The big picture in one diagram, step by step.",
+            },
+            {
+                slug: "quickstart",
+                title: "Quickstart",
+                summary: "From nothing to your first security check in about 15 minutes.",
+            },
+        ],
     },
     {
-        slug: "isolation",
-        title: "Isolation and setup",
-        summary: "How Gait keeps one customer apart from another, and the four journeys that make up a working setup.",
+        title: "Concepts",
+        pages: [
+            {
+                slug: "people-and-applications",
+                title: "People and applications",
+                summary: "The one idea to get right first: people and applications are different kinds of identity.",
+            },
+            {
+                slug: "isolation",
+                title: "Isolation and setup",
+                summary: "How Gait keeps one customer apart from another, and the four journeys that make up a working setup.",
+            },
+        ],
     },
     {
-        slug: "getting-started",
-        title: "Getting started",
-        summary: "Sign in, create your company, add an application and get its connection key.",
+        title: "Guides",
+        pages: [
+            {
+                slug: "getting-started",
+                title: "Getting started",
+                summary: "Sign in, create your company, add an application and get its connection key.",
+            },
+            {
+                slug: "connecting-your-software",
+                title: "Connecting your software",
+                summary: "Install the Gait SDK, configure it, and report your first security check.",
+            },
+            {
+                slug: "security-checks-and-findings",
+                title: "Security checks & findings",
+                summary: "What Gait does with what your application reports, and how to act on a finding.",
+            },
+            {
+                slug: "teams-roles-and-invites",
+                title: "Teams, roles & invites",
+                summary: "Who can do what in your company, and how people join it.",
+            },
+            {
+                slug: "applications-and-connection-keys",
+                title: "Applications & connection keys",
+                summary: "Environments, one-time keys, safe rotation, and suspending or retiring an application.",
+            },
+        ],
     },
     {
-        slug: "connecting-your-software",
-        title: "Connecting your software",
-        summary: "Install the Gait SDK, configure it, and report your first security check.",
+        title: "Reference",
+        pages: [
+            {
+                slug: "glossary",
+                title: "Glossary",
+                summary: "The terms used across Gait, each linked to the page that explains it.",
+            },
+            {
+                slug: "troubleshooting",
+                title: "Troubleshooting",
+                summary: "What an error means and what to do about it.",
+            },
+        ],
     },
     {
-        slug: "security-checks-and-findings",
-        title: "Security checks & findings",
-        summary: "What Gait does with what your application reports, and how to act on a finding.",
-    },
-    {
-        slug: "teams-roles-and-invites",
-        title: "Teams, roles & invites",
-        summary: "Who can do what in your company, and how people join it.",
-    },
-    {
-        slug: "applications-and-connection-keys",
-        title: "Applications & connection keys",
-        summary: "Environments, one-time keys, safe rotation, and suspending or retiring an application.",
-    },
-    {
-        slug: "troubleshooting",
-        title: "Troubleshooting",
-        summary: "What an error means and what to do about it.",
+        title: "Gait's platform",
+        pages: [
+            {
+                slug: "automated-security-response",
+                title: "Automated security response",
+                summary: "How Gait looks after its own platform, with people in charge of every change that matters.",
+            },
+        ],
     },
 ];
+
+// Every page, flat, in reading order, each tagged with its group.
+export const DOC_PAGES = DOC_GROUPS.flatMap((group) => group.pages.map((page) => ({ ...page, group: group.title })));
 
 export function docPath(slug) {
     return `${DOCS_BASE}/${slug}`;

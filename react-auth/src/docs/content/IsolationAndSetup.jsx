@@ -1,17 +1,7 @@
 import React from "react";
 import { DocLink, DocSection, DocTable, StatusBadge } from "../components/DocPrimitives";
 import { AccountPoolDiagram, ConsoleIsolationDiagram, FlowSteps } from "../components/IsolationDiagrams";
-import { STATUS_AS_OF } from "../featureStatus";
-
-function formatAsOf(isoDate) {
-    const [year, month, day] = isoDate.split("-").map(Number);
-    return new Date(Date.UTC(year, month - 1, day)).toLocaleDateString("en-GB", {
-        day: "numeric",
-        month: "long",
-        year: "numeric",
-        timeZone: "UTC",
-    });
-}
+import { statusAsOfLabel } from "../featureStatus";
 
 /** A journey's steps, each with its Live/Pending badge and an optional note. */
 function JourneySteps({ label, steps }) {
@@ -170,7 +160,7 @@ export default function IsolationAndSetup() {
 
             <DocSection id="the-four-journeys" title="The four journeys">
                 <p>
-                    Status as of {formatAsOf(STATUS_AS_OF)}. <StatusBadge status="live" /> means you can do it today;{" "}
+                    Status as of {statusAsOfLabel()}. <StatusBadge status="live" /> means you can do it today;{" "}
                     <StatusBadge status="pending" /> means it isn't available in the console yet, even if Gait's API
                     already supports it.
                 </p>

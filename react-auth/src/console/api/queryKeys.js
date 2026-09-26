@@ -21,6 +21,18 @@ export const consoleKeys = {
         "latest",
         controlKey,
     ],
+    // The application list covers every environment (the console filters it),
+    // so it's keyed "all"; everything about one application hangs off its id.
+    applications: (organizationSlug) => ["console", organizationSlug, "all", "applications"],
+    application: (organizationSlug, applicationId) => ["console", organizationSlug, "all", "applications", applicationId],
+    applicationActivity: (organizationSlug, applicationId) => [
+        ...consoleKeys.application(organizationSlug, applicationId),
+        "activity",
+    ],
+    credentials: (organizationSlug, applicationId) => [
+        ...consoleKeys.application(organizationSlug, applicationId),
+        "credentials",
+    ],
 };
 
 /** True for a cached query that belongs to an organization other than `organizationSlug`. */

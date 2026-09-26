@@ -1,5 +1,5 @@
 import React from "react";
-import { Callout, CodeBlock, DocLink, DocSection, DocTable } from "../components/DocPrimitives";
+import { CodeBlock, DocLink, DocSection, DocTable } from "../components/DocPrimitives";
 
 // Placeholder only. Never replace it with anything that looks like a real key.
 const ENV_EXAMPLE = `# .env for acme-api (production), kept out of source control
@@ -12,12 +12,6 @@ export default function ApplicationsAndConnectionKeys() {
                 An application is one piece of your software in one environment. Its connection keys are how it proves
                 to Gait who it is.
             </p>
-
-            <Callout kind="availability">
-                Adding an application and getting its first key work in the console today. The screens for listing
-                keys, issuing more, revoking them, and suspending, reactivating or retiring an application are being
-                built.
-            </Callout>
 
             <DocSection id="environments" title="Environments">
                 <p>

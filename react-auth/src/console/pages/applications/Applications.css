@@ -1,0 +1,48 @@
+/* F2 Applications & keys. Built on the console tokens and ui.css. */
+
+.gc-table-link { color: var(--color-text); font-weight: 600; text-decoration: none; }
+.gc-table-link:hover { color: var(--color-accent); text-decoration: underline; }
+.gc-code {
+  font-family: ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
+  font-size: 0.8rem;
+  padding: 1px 6px;
+  border-radius: 5px;
+  background: var(--color-surface-alt);
+  border: 1px solid var(--color-border);
+  color: var(--color-text); /* not Bootstrap's pink */
+  overflow-wrap: anywhere;
+}
+/* In tables, keep an identifier on one line; the table scrolls in its own frame. */
+.gc-table .gc-code { white-space: nowrap; overflow-wrap: normal; }
+.gc-cell-sub { display: block; font-size: 0.75rem; color: var(--color-text-muted); }
+.gc-button--small { padding: 4px 10px; font-size: 0.8rem; }
+
+.gc-back-link {
+  display: inline-block;
+  margin-bottom: 12px;
+  font-size: 0.875rem;
+  color: var(--color-text-muted);
+  text-decoration: none;
+}
+.gc-back-link:hover { color: var(--color-text); }
+.gc-page-note { margin-bottom: 16px; }
+
+.gc-app-grid { display: grid; grid-template-columns: minmax(0, 1fr) minmax(0, 1fr); gap: 16px; }
+.gc-app-wide { grid-column: 1 / -1; }
+.gc-card-text { margin: 0; font-size: 0.875rem; line-height: 1.5; color: var(--color-text); }
+.gc-card-text a { color: var(--color-accent); }
+
+.gc-meta { margin: 0; display: grid; gap: 8px; font-size: 0.875rem; }
+.gc-meta div { display: flex; justify-content: space-between; gap: 12px; }
+.gc-meta dt { color: var(--color-text-muted); }
+.gc-meta dd { margin: 0; text-align: right; }
+
+.gc-dialog-text { margin: 0; font-size: 0.9rem; line-height: 1.5; }
+.gc-secret { font-family: ui-monospace, SFMono-Regular, Menlo, Consolas, monospace; font-size: 0.85rem; }
+.gc-secret-actions { display: flex; flex-wrap: wrap; align-items: center; gap: 10px; font-size: 0.85rem; }
+.gc-checkbox { display: flex; align-items: center; gap: 8px; font-size: 0.9rem; cursor: pointer; }
+.gc-checkbox input { width: 16px; height: 16px; accent-color: var(--color-accent); }
+
+@media (max-width: 700px) {
+  .gc-app-grid { grid-template-columns: minmax(0, 1fr); }
+}

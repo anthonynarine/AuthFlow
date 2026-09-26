@@ -43,3 +43,60 @@ export async function fetchLatestEvidence(organizationSlug, environment, control
     });
     return data.results[0] || null;
 }
+
+// ---- F2: applications and connection keys ----------------------------------
+
+const app = (slug, applicationId) => `${org(slug)}/applications/${encodeURIComponent(applicationId)}`;
+
+/** Every application in the company (all environments); the console filters by environment. */
+export async function fetchApplications(organizationSlug) {
+    const { data } = await authAxios.get(`${org(organizationSlug)}/applications/`);
+    return data;
+}
+
+export async function createApplication(organizationSlug, { name, slug, environment }) {
+    const { data } = await authAxios.post(`${org(organizationSlug)}/applications/`, { name, slug, environment });
+    return data;
+}
+
+export async function fetchApplication(organizationSlug, applicationId) {
+    const { data } = await authAxios.get(`${app(organizationSlug, applicationId)}/`);
+    return data;
+}
+
+export async function renameApplication(organizationSlug, applicationId, name) {
+    const { data } = await authAxios.patch(`${app(organizationSlug, applicationId)}/`, { name });
+    return data;
+}
+
+/** action: "suspend" | "reactivate" | "retire" */
+export async function changeApplicationStatus(organizationSlug, applicationId, action) {
+    const { data } = await authAxios.post(`${app(organizationSlug, applicationId)}/${action}/`);
+    return data;
+}
+
+export async function fetchApplicationActivity(organizationSlug, applicationId) {
+    const { data } = await authAxios.get(`${app(organizationSlug, applicationId)}/activity/`);
+    return data;
+}
+
+/** Key metadata (never secrets). Owners and Admins only; Gait answers 403 to anyone else. */
+export async function fetchCredentials(organizationSlug, applicationId) {
+    const { data } = await authAxios.get(`${app(organizationSlug, applicationId)}/credentials/`);
+    return data;
+}
+
+/**
+ * Issues a key. The response is the only time `raw_secret` exists anywhere:
+ * callers must hand it straight to the one-time dialog and never cache it.
+ */
+export async function issueCredential(organizationSlug, applicationId, label) {
+    const { data } = await authAxios.post(`${app(organizationSlug, applicationId)}/credentials/`, { label });
+    return data;
+}
+
+export async function revokeCredential(organizationSlug, applicationId, credentialId) {
+    await authAxios.post(
+        `${app(organizationSlug, applicationId)}/credentials/${encodeURIComponent(credentialId)}/revoke/`
+    );
+}

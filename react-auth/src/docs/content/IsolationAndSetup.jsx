@@ -13,19 +13,24 @@ function formatAsOf(isoDate) {
     });
 }
 
-/** A journey's steps, each with its Live/Pending badge. */
+/** A journey's steps, each with its Live/Pending badge and an optional note. */
 function JourneySteps({ label, steps }) {
     return (
         <ol className="iso-steps" aria-label={label}>
-            {steps.map(([text, feature], index) => (
+            {steps.map(([text, feature, note], index) => (
                 <li key={index}>
-                    <span className="iso-step-text">{text}</span>
+                    <span className="iso-step-text">
+                        {text}
+                        {note && <span className="iso-step-note">{note}</span>}
+                    </span>
                     <StatusBadge feature={feature} />
                 </li>
             ))}
         </ol>
     );
 }
+
+const FINDINGS_SCREEN_NOTE = "Findings screen (F3). The findings API is available now.";
 
 function H3({ id, children }) {
     return (
@@ -165,8 +170,9 @@ export default function IsolationAndSetup() {
 
             <DocSection id="the-four-journeys" title="The four journeys">
                 <p>
-                    Status as of {formatAsOf(STATUS_AS_OF)}. <StatusBadge status="live" /> works in production today;{" "}
-                    <StatusBadge status="pending" /> is built or planned but not deployed.
+                    Status as of {formatAsOf(STATUS_AS_OF)}. <StatusBadge status="live" /> means you can do it today;{" "}
+                    <StatusBadge status="pending" /> means it isn't available in the console yet, even if Gait's API
+                    already supports it.
                 </p>
 
                 <H3 id="journey-1">1. You set up security observability for your product</H3>
@@ -195,7 +201,7 @@ export default function IsolationAndSetup() {
                             </>,
                             "core",
                         ],
-                        ["Watch findings; acknowledge or accept risk with a note", "core"],
+                        ["Watch findings; acknowledge or accept risk with a note", "findingsScreen", FINDINGS_SCREEN_NOTE],
                     ]}
                 />
                 <p>Your product's end users are <strong>not</strong> invited here.</p>
@@ -215,7 +221,10 @@ export default function IsolationAndSetup() {
                         <ol>
                             <li>A finding opens, for this app only.</li>
                             <li>A scheduled job opens a case.</li>
-                            <li>An Owner or Admin acknowledges it or accepts the risk.</li>
+                            <li>
+                                An Owner or Admin acknowledges it or accepts the risk.{" "}
+                                <StatusBadge feature="findingsScreen" />
+                            </li>
                         </ol>
                     </div>
                     <div className="iso-branch iso-branch--pass">
@@ -227,7 +236,8 @@ export default function IsolationAndSetup() {
                 </div>
                 <p>
                     Customer findings are kept apart from Gait's own platform findings. An accepted risk stays accepted
-                    if the check fails again. All of this is <StatusBadge feature="core" />.
+                    if the check fails again. Reporting, findings and cases are <StatusBadge feature="core" />; acting
+                    on a finding in the console waits for the findings screen, as in journey 1.
                 </p>
 
                 <H3 id="journey-3">3. A teammate joins your Gait company</H3>
@@ -236,20 +246,15 @@ export default function IsolationAndSetup() {
                     invitee signs in with the invited, verified email and chooses <strong>Join</strong>. Every step,
                     screen and rule: <DocLink to="teams-roles-and-invites">Teams, roles &amp; invites</DocLink>.
                 </p>
-                <ul className="iso-status-list" aria-label="Journey 3 status">
-                    <li>
-                        <span>Invites (create, revoke, accept) through Gait's API</span>
-                        <StatusBadge feature="inviteApi" />
-                    </li>
-                    <li>
-                        <span>Requiring a verified email to join</span>
-                        <StatusBadge feature="emailVerification" />
-                    </li>
-                    <li>
-                        <span>The console's Members screen and invite-accept page</span>
-                        <StatusBadge feature="membersAndInviteAccept" />
-                    </li>
-                </ul>
+                <JourneySteps
+                    label="Journey 3 steps"
+                    steps={[
+                        ["An Owner or Admin invites a teammate by email and role", "membersAndInviteAccept"],
+                        ["Gait emails a single-use link, valid for 7 days", "membersAndInviteAccept"],
+                        ["The invitee signs in with the invited, verified email", "emailVerification"],
+                        [<>The invitee chooses <strong>Join</strong></>, "membersAndInviteAccept"],
+                    ]}
+                />
 
                 <H3 id="journey-4">4. Your product's own users get in</H3>
                 <p>Everything here happens in your product. Gait only provides the login.</p>

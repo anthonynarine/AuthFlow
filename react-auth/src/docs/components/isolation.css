@@ -107,6 +107,7 @@
   font-variant-numeric: tabular-nums;
 }
 .iso-steps .iso-step-text { overflow-wrap: anywhere; }
+.iso-step-note { display: block; margin-top: 2px; font-size: 0.8rem; color: var(--color-text-muted); }
 
 .iso-branches {
   display: grid;
@@ -125,17 +126,6 @@
 .iso-branch--fail .iso-branch-title { color: var(--iso-wall); }
 .iso-branch--pass .iso-branch-title { color: var(--iso-ok); }
 .docs-article .iso-branch ol { margin: 0; padding-left: 1.2em; font-size: 0.9rem; }
-
-.docs-article .iso-status-list { list-style: none; padding: 0; margin: 0 0 16px; }
-.docs-article .iso-status-list li {
-  display: flex;
-  justify-content: space-between;
-  align-items: flex-start;
-  gap: 12px;
-  padding: 8px 0;
-  margin: 0;
-  border-bottom: 1px solid var(--color-border);
-}
 
 @media (max-width: 860px) {
   .doc-h3 { scroll-margin-top: 110px; } /* clear the sticky mobile contents bar, like .doc-h2 */

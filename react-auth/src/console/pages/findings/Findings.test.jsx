@@ -18,6 +18,7 @@ import {
     fetchPostureOverview,
 } from "../../api/consoleApi";
 
+jest.mock("../../../account/emailVerificationApi", () => ({ verifyEmailToken: jest.fn(), resendVerificationEmail: jest.fn() }));
 jest.mock("../../../context/auth/BasicAuthContext", () => ({
     useBasicAuthServices: () => ({ user: { email: "me@app-one.test" }, isLoggedIn: true, logout: jest.fn() }),
 }));

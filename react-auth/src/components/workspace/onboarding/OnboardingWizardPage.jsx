@@ -10,6 +10,7 @@ import { CompanyChooser } from "./CompanyChooser";
 import { AddAppStep } from "./AddAppStep";
 import { AppSetupFlow } from "./AppSetupFlow";
 import "../FounderWorkspace.css";
+import { EmailVerificationBanner } from "../../../account/EmailVerificationBanner";
 import "./Onboarding.css";
 
 /**
@@ -114,7 +115,10 @@ export function OnboardingWizardPage() {
   return (
     <div className="founder-workspace">
       <FounderNav />
-      <main className="founder-shell onboarding-shell">{content}</main>
+      <main className="founder-shell onboarding-shell">
+        <EmailVerificationBanner />
+        {content}
+      </main>
     </div>
   );
 }

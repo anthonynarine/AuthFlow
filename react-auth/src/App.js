@@ -30,6 +30,7 @@ import { ApplicationsPage } from "./console/pages/applications/ApplicationsPage"
 import { ApplicationDetailPage } from "./console/pages/applications/ApplicationDetailPage";
 import { FindingsPage } from "./console/pages/findings/FindingsPage";
 import { FindingDetailPage } from "./console/pages/findings/FindingDetailPage";
+import { VerifyEmailPage } from "./account/VerifyEmailPage";
 import { DocsPage } from "./docs/DocsPage";
 import { DOCS_BASE, DOC_PAGES, docPath } from "./docs/manifest";
 import "./App.css"
@@ -66,6 +67,7 @@ function App() {
                     <Route path="/forgot-password" element={<ForgotPassword />} />
                     <Route path="/send-email" element={<SendEmail />} />
                     <Route path="/early-access" element={<EarlyAccessPage />} />
+                    <Route path="/verify-email" element={<VerifyEmailPage />} />
                     <Route path={DOCS_BASE} element={<Navigate to={docPath(DOC_PAGES[0].slug)} replace />} />
                     <Route path={`${DOCS_BASE}/:slug`} element={<DocsPage />} />
                     <Route path="/security" element={<SecurityObservatoryPage />} />

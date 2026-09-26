@@ -6,9 +6,11 @@ import { OnboardingWizardPage } from "./OnboardingWizardPage";
 import { useOrganizations } from "../../../hooks/useOrganizations";
 import { useOrganizationApplications } from "../../../hooks/useOrganizationApplications";
 
+jest.mock("../../../account/emailVerificationApi", () => ({ verifyEmailToken: jest.fn(), resendVerificationEmail: jest.fn() }));
 jest.mock("../../../hooks/useOrganizations", () => ({ useOrganizations: jest.fn() }));
 jest.mock("../../../hooks/useOrganizationApplications", () => ({ useOrganizationApplications: jest.fn() }));
 jest.mock("../../../hooks/useValidateSessionOnMount", () => ({ useValidateSessionOnMount: jest.fn() }));
+jest.mock("../../../context/auth/UserSessionContext", () => ({ useUserSessionServices: () => ({ validateSession: jest.fn(() => Promise.resolve()) }) }));
 jest.mock("../../../context/auth/BasicAuthContext", () => ({
   useBasicAuthServices: () => ({ user: { is_staff: true, first_name: "Anthony" } }),
 }));

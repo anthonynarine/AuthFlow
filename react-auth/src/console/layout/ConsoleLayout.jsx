@@ -5,6 +5,7 @@ import { useUserSessionServices } from "../../context/auth/UserSessionContext";
 import { Badge, ErrorState, LoadingState } from "../components/ui/primitives";
 import { ENVIRONMENT_LABELS, ENVIRONMENTS, useConsoleScope } from "../hooks/useConsoleScope";
 import { consoleTitle } from "./consoleTitle";
+import { EmailVerificationBanner } from "../../account/EmailVerificationBanner";
 import "./ConsoleLayout.css";
 
 const NAV = [
@@ -135,6 +136,7 @@ export function ConsoleLayout() {
                     ))}
                 </nav>
                 <main className="gc-main">
+                    <EmailVerificationBanner />
                     <Outlet context={scope} />
                 </main>
             </div>

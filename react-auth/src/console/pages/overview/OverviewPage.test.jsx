@@ -16,6 +16,7 @@ import {
 
 let mockUser = { email: "owner@app-one.test" };
 
+jest.mock("../../../account/emailVerificationApi", () => ({ verifyEmailToken: jest.fn(), resendVerificationEmail: jest.fn() }));
 jest.mock("../../../context/auth/BasicAuthContext", () => ({
     useBasicAuthServices: () => ({ user: mockUser, isLoggedIn: Boolean(mockUser), logout: jest.fn() }),
 }));

@@ -13,6 +13,7 @@ let mockUser = null;
 const mockValidateSession = jest.fn(() => Promise.resolve());
 const mockLogout = jest.fn(() => Promise.resolve());
 
+jest.mock("../account/emailVerificationApi", () => ({ verifyEmailToken: jest.fn(), resendVerificationEmail: jest.fn() }));
 jest.mock("../context/auth/BasicAuthContext", () => ({
     useBasicAuthServices: () => ({ user: mockUser, isLoggedIn: Boolean(mockUser), logout: mockLogout }),
 }));

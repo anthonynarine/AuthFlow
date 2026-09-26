@@ -66,6 +66,7 @@ function GaitArchitecturePage() {
           <span>Gait</span>
         </Link>
         <nav className="site-nav product-nav" aria-label="Architecture page navigation">
+          <Link to="/docs">Docs</Link>
           <Link to="/" className="nav-cta secondary">
             <RiArrowGoBackLine /> Back to Gait
           </Link>

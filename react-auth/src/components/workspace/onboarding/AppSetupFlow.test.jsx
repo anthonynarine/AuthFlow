@@ -49,6 +49,15 @@ describe("AppSetupFlow — framework selection", () => {
     expect(screen.getByText(/There's no automatic middleware for this yet/)).toBeInTheDocument();
   });
 
+  test("links to the Connecting your software guide in a new tab, so the wizard keeps its place", () => {
+    render(<AppSetupFlow organizationSlug="acme" application={APPLICATION} onDone={jest.fn()} />);
+    chooseDjango();
+    const guide = screen.getByRole("link", { name: "Connecting your software" });
+    expect(guide).toHaveAttribute("href", "/docs/connecting-your-software");
+    expect(guide).toHaveAttribute("target", "_blank");
+    expect(guide).toHaveAttribute("rel", expect.stringContaining("noopener"));
+  });
+
   test("framework can be changed back and reselected — never persisted", () => {
     render(<AppSetupFlow organizationSlug="acme" application={APPLICATION} onDone={jest.fn()} />);
     chooseDjango();

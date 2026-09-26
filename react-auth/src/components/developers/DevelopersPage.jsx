@@ -187,6 +187,7 @@ export function DevelopersPage() {
         <nav className="site-nav product-nav" aria-label="Developers page navigation">
           <a href={REPO} target="_blank" rel="noopener noreferrer">GitHub</a>
           <a href={PYPI} target="_blank" rel="noopener noreferrer">PyPI</a>
+          <Link to="/docs">Docs</Link>
           <Link to="/" className="nav-cta secondary">
             <RiArrowGoBackLine /> Back to Gait
           </Link>

@@ -1,5 +1,6 @@
 import { useEffect } from "react";
 import { useLocation } from "react-router-dom";
+import { DOC_PAGES, docTitle } from "../docs/manifest";
 
 export const DEFAULT_TITLE = "Gait: Your AI security team";
 
@@ -10,6 +11,8 @@ const TITLES = [
   [/^\/architecture\/?$/, "Architecture · Gait"],
   [/^\/developers\/?$/, "gait-sdk for developers · Gait"],
   [/^\/early-access\/?$/, "Early access · Gait"],
+  ...DOC_PAGES.map((page) => [new RegExp(`^/docs/${page.slug}/?$`), docTitle(page)]),
+  [/^\/docs(\/|$)/, "Gait Docs"],
   [/^\/login\/?$/, "Log in · Gait"],
   [/^\/register\/?$/, "Create account · Gait"],
   [/^\/forgot-password\/?$/, "Forgot password · Gait"],

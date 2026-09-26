@@ -204,6 +204,7 @@ describe("HomePage product positioning and security navigation", () => {
 
     // But every path to it is present and points at the real route.
     expect(screen.getByRole("link", { name: "Full Architecture" })).toHaveAttribute("href", "/architecture");
+    expect(screen.getByRole("link", { name: "Docs" })).toHaveAttribute("href", "/docs");
     expect(screen.getByRole("link", { name: "Explore the Architecture" })).toHaveAttribute("href", "/architecture");
   });
 

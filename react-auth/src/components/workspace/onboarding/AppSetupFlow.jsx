@@ -60,6 +60,15 @@ function SetupInstructions({ frameworkKey, onChangeFramework, connectionKey, onG
         </div>
       )}
 
+      {/* New tab: navigating away here would lose the wizard's place. */}
+      <p className="onboarding-note">
+        Full guide:{" "}
+        <a href="/docs/connecting-your-software" target="_blank" rel="noopener noreferrer">
+          Connecting your software
+        </a>{" "}
+        (opens in a new tab)
+      </p>
+
       <ol className="onboarding-setup-steps">
         {steps.map((step) => (
           <li key={step.title} className="onboarding-setup-step">

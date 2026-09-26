@@ -90,6 +90,7 @@ describe("ConsoleLayout gating", () => {
         expect(await screen.findByRole("heading", { name: "Overview" })).toBeInTheDocument();
         expect(screen.getByDisplayValue("Acme Health")).toBeInTheDocument();
         expect(screen.getByText("Owner")).toBeInTheDocument();
+        expect(screen.getByRole("link", { name: "Docs" })).toHaveAttribute("href", "/docs");
         // defaults to the first environment that has data
         await waitFor(() =>
             expect(screen.getByRole("link", { name: "Members" })).toHaveAttribute("href", "/console/acme/members?env=staging")

@@ -1,4 +1,5 @@
 import React, { useState } from "react";
+import { ResendVerificationButton } from "../../../account/ResendVerificationButton";
 
 function slugify(value) {
   return value
@@ -83,7 +84,15 @@ export function CreateCompanyStep({ onCreate, isCreating, createError }) {
           <small>You can edit this — it's how your Company is identified in the URL.</small>
         </label>
 
-        {createError && <p className="onboarding-error">{describeError(createError)}</p>}
+        {createError?.response?.data?.code === "EMAIL_NOT_VERIFIED" ? (
+          // Gait E1: an unconfirmed address can't create a company yet.
+          <div className="onboarding-error" role="alert">
+            <p>{describeError(createError)} Open the link we emailed you, then try again.</p>
+            <ResendVerificationButton />
+          </div>
+        ) : createError ? (
+          <p className="onboarding-error">{describeError(createError)}</p>
+        ) : null}
 
         <button type="submit" className="fw-btn primary" disabled={isCreating || !name.trim() || !slug.trim()}>
           {isCreating ? "Creating…" : "Create Company"}

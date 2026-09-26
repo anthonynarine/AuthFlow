@@ -1,5 +1,5 @@
 import React from "react";
-import { Callout, DocLink, DocSection, DocTable } from "../components/DocPrimitives";
+import { DocLink, DocSection, DocTable } from "../components/DocPrimitives";
 import { Diagram } from "../components/Diagram";
 
 const FINDING_LIFECYCLE = `flowchart LR
@@ -22,11 +22,6 @@ export default function SecurityChecksAndFindings() {
                 What Gait does with the security checks your application reports, and how your team acts on what it
                 finds.
             </p>
-
-            <Callout kind="availability">
-                Findings are recorded and tracked today. The console screen for browsing controls, findings and
-                evidence, and for acknowledging a finding or accepting its risk, is being built.
-            </Callout>
 
             <DocSection id="from-report-to-finding" title="From report to finding">
                 <Diagram

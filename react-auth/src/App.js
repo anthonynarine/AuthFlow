@@ -25,6 +25,12 @@ import { AppSetupPage } from "./components/workspace/AppSetupPage";
 import { ConsoleLayout } from "./console/layout/ConsoleLayout";
 import { ConsoleEntry } from "./console/pages/ConsoleEntry";
 import { SectionPlaceholder } from "./console/pages/SectionPlaceholder";
+import { OverviewPage } from "./console/pages/overview/OverviewPage";
+import { ApplicationsPage } from "./console/pages/applications/ApplicationsPage";
+import { ApplicationDetailPage } from "./console/pages/applications/ApplicationDetailPage";
+import { FindingsPage } from "./console/pages/findings/FindingsPage";
+import { FindingDetailPage } from "./console/pages/findings/FindingDetailPage";
+import { VerifyEmailPage } from "./account/VerifyEmailPage";
 import { DocsPage } from "./docs/DocsPage";
 import { DOCS_BASE, DOC_PAGES, docPath } from "./docs/manifest";
 import "./App.css"
@@ -61,6 +67,7 @@ function App() {
                     <Route path="/forgot-password" element={<ForgotPassword />} />
                     <Route path="/send-email" element={<SendEmail />} />
                     <Route path="/early-access" element={<EarlyAccessPage />} />
+                    <Route path="/verify-email" element={<VerifyEmailPage />} />
                     <Route path={DOCS_BASE} element={<Navigate to={docPath(DOC_PAGES[0].slug)} replace />} />
                     <Route path={`${DOCS_BASE}/:slug`} element={<DocsPage />} />
                     <Route path="/security" element={<SecurityObservatoryPage />} />
@@ -78,9 +85,11 @@ function App() {
                     <Route path="/console" element={<ConsoleEntry />} />
                     <Route path="/console/:orgSlug" element={<ConsoleLayout />}>
                       <Route index element={<Navigate to="overview" replace />} />
-                      <Route path="overview" element={<SectionPlaceholder title="Overview" description="Security posture across your environments." />} />
-                      <Route path="applications" element={<SectionPlaceholder title="Applications" description="The software that reports to Gait, and its credentials." />} />
-                      <Route path="security" element={<SectionPlaceholder title="Security" description="Controls, findings and evidence for this environment." />} />
+                      <Route path="overview" element={<OverviewPage />} />
+                      <Route path="applications" element={<ApplicationsPage />} />
+                      <Route path="applications/:applicationId" element={<ApplicationDetailPage />} />
+                      <Route path="security" element={<FindingsPage />} />
+                      <Route path="security/findings/:findingId" element={<FindingDetailPage />} />
                       <Route path="members" element={<SectionPlaceholder title="Members" description="Who can see and manage this organization." />} />
                       <Route path="settings" element={<SectionPlaceholder title="Settings" description="Organization details." />} />
                     </Route>

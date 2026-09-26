@@ -1,0 +1,44 @@
+/* F3 Findings. Built on the console tokens, ui.css and Applications.css. */
+
+.gc-filters { display: flex; flex-wrap: wrap; align-items: flex-end; gap: 12px; margin-bottom: 16px; }
+.gc-filter { display: flex; flex-direction: column; gap: 6px; font-size: 0.875rem; min-width: 180px; }
+.gc-filter-clear { align-self: flex-end; }
+
+.gc-pager { display: flex; flex-wrap: wrap; align-items: center; justify-content: space-between; gap: 12px; margin-top: 12px; font-size: 0.875rem; }
+
+.gc-textarea { resize: vertical; min-height: 110px; line-height: 1.5; }
+
+.gc-accepted {
+  margin-bottom: 16px;
+  padding: 14px 16px;
+  border-radius: var(--radius-md);
+  border: 1px solid var(--diagram-truth-border);
+  background: var(--diagram-truth-bg);
+}
+.gc-accepted-title { margin: 0 0 6px; font-weight: 650; color: var(--diagram-truth); }
+.gc-accepted-text { margin: 0; font-size: 0.9rem; line-height: 1.5; color: var(--color-text); }
+.gc-accepted-note {
+  margin: 10px 0 0;
+  padding: 8px 12px;
+  border-left: 3px solid var(--diagram-truth-border);
+  color: var(--color-text);
+  font-size: 0.9rem;
+  white-space: pre-wrap;
+  overflow-wrap: anywhere;
+}
+
+.gc-finding-meta { margin-top: 12px; }
+
+.gc-history { list-style: none; margin: 0; padding: 0; }
+.gc-history-item { padding: 10px 0; border-top: 1px solid var(--color-border); }
+.gc-history-item:first-child { border-top: none; padding-top: 0; }
+.gc-history-head { margin: 0; display: flex; flex-wrap: wrap; align-items: center; gap: 6px; font-size: 0.875rem; color: var(--color-text); }
+.gc-history-note { margin: 6px 0 0; font-size: 0.875rem; line-height: 1.5; white-space: pre-wrap; overflow-wrap: anywhere; color: var(--color-text); }
+.gc-history-meta { margin: 4px 0 0; font-size: 0.8rem; }
+
+.gc-checks { list-style: none; margin: 8px 0 0; padding: 0; display: flex; flex-wrap: wrap; gap: 6px 12px; }
+.gc-checks li { display: inline-flex; align-items: center; gap: 6px; font-size: 0.8rem; }
+
+@media (max-width: 480px) {
+  .gc-filter { min-width: 0; flex: 1 1 140px; }
+}

@@ -1,6 +1,7 @@
 import { useEffect } from "react";
 import { useLocation } from "react-router-dom";
 import { DOC_PAGES, docTitle } from "../docs/manifest";
+import { isCompanyConsolePath } from "../console/layout/consoleTitle";
 
 export const DEFAULT_TITLE = "Gait: See the security of every app you ship";
 
@@ -11,6 +12,7 @@ const TITLES = [
   [/^\/architecture\/?$/, "Architecture · Gait"],
   [/^\/developers\/?$/, "gait-sdk for developers · Gait"],
   [/^\/early-access\/?$/, "Early access · Gait"],
+  [/^\/verify-email\/?$/, "Confirm your email · Gait"],
   ...DOC_PAGES.map((page) => [new RegExp(`^/docs/${page.slug}/?$`), docTitle(page)]),
   [/^\/docs(\/|$)/, "Gait Docs"],
   [/^\/login\/?$/, "Log in · Gait"],
@@ -39,6 +41,7 @@ export function RouteTitle() {
   const { pathname } = useLocation();
 
   useEffect(() => {
+    if (isCompanyConsolePath(pathname)) return; // the console layout titles these with the company's name
     document.title = titleForPath(pathname);
   }, [pathname]);
 

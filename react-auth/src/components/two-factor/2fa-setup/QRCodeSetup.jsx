@@ -4,7 +4,7 @@ import { useNavigate } from "react-router-dom";
 import OTPModal from "../../login/OTPModal";
 import "../../login/OTPModal.css";
 import { useBasicAuthServices } from "../../../context/auth/BasicAuthContext";
-import { authAxios } from "../../../interceptors/axios";
+import { authAxios, SESSION_TRANSPORT } from "../../../interceptors/axios";
 import { persistAuthTokens } from "../../../interceptors/tokenStorage";
 import { useStepUpDialog } from "../../../hooks/useStepUpDialog";
 import StepUpDialog from "../../step-up/StepUpDialog";
@@ -60,11 +60,14 @@ export const QRCodeSetup = () => {
     setTwoFactorError("");
 
     try {
-      const { data } = await authAxios.post("/verify-otp/", { otp: otpValue });
-      persistAuthTokens({
-        accessToken: data.access_token,
-        refreshToken: data.refresh_token,
-      });
+      // Gait E3: a cookie-session client. The new refresh token arrives only
+      // as the HttpOnly cookie (never in the body); the pre-2FA session is revoked.
+      const { data } = await authAxios.post(
+        "/verify-otp/",
+        { otp: otpValue, ...SESSION_TRANSPORT },
+        { withCredentials: true }
+      );
+      persistAuthTokens({ accessToken: data.access_token });
       setIsLoggedIn(true);
       setOtpModalOpen(false);
       setOtpValue("");

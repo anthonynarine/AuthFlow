@@ -1,6 +1,7 @@
 import React from "react";
 import { Callout, DocLink, DocSection, DocTable } from "../components/DocPrimitives";
 import { Diagram } from "../components/Diagram";
+import { statusOf } from "../featureStatus";
 
 const BIG_PICTURE = `flowchart TB
     classDef person fill:#1f3b36,stroke:#1abc9c,color:#e8eaed,stroke-width:2px
@@ -283,8 +284,9 @@ export default function PeopleAndApplications() {
                     </li>
                 </ol>
                 <Callout kind="availability">
-                    Email confirmation is rolling out, and the console screen for accepting an invite is still being
-                    built. See <DocLink to="teams-roles-and-invites#availability">what works today</DocLink>.
+                    {statusOf("emailVerification") === "live" ? "The" : "Email confirmation is rolling out, and the"}{" "}
+                    console screen for accepting an invite is still being built. See{" "}
+                    <DocLink to="teams-roles-and-invites#availability">what works today</DocLink>.
                 </Callout>
             </DocSection>
         </>

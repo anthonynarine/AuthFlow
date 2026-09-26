@@ -32,21 +32,22 @@ describe("AppSetupFlow — framework selection", () => {
   test("choosing Django shows Django-specific install instructions", () => {
     render(<AppSetupFlow organizationSlug="acme" application={APPLICATION} onDone={jest.fn()} />);
     chooseDjango();
-    expect(screen.getByText(/auth_integration\[django\]/)).toBeInTheDocument();
+    expect(screen.getByText('pip install "gait-sdk[django]==0.5.1"')).toBeInTheDocument();
   });
 
   test("choosing FastAPI shows FastAPI-specific install instructions", () => {
     render(<AppSetupFlow organizationSlug="acme" application={APPLICATION} onDone={jest.fn()} />);
     fireEvent.click(screen.getByRole("button", { name: "FastAPI" }));
-    expect(screen.getByText(/auth_integration\[fastapi\]/)).toBeInTheDocument();
+    expect(screen.getByText('pip install "gait-sdk[fastapi]==0.5.1"')).toBeInTheDocument();
   });
 
   test("SDK instructions reference the real, documented GAIT_APPLICATION_CREDENTIAL contract", () => {
     render(<AppSetupFlow organizationSlug="acme" application={APPLICATION} onDone={jest.fn()} />);
     chooseDjango();
     expect(document.body.textContent).toContain("GAIT_APPLICATION_CREDENTIAL");
-    expect(document.body.textContent).toContain("from auth_integration.application import verify_application");
-    expect(screen.getByText(/There's no automatic middleware for this yet/)).toBeInTheDocument();
+    expect(document.body.textContent).toContain("from gait_sdk.application import verify_application");
+    expect(document.body.textContent).toContain("from gait_sdk.security import APPLICATION_SELF_CHECK");
+    expect(screen.getByText(/There's no automatic middleware for this/)).toBeInTheDocument();
   });
 
   test("links to the Connecting your software guide in a new tab, so the wizard keeps its place", () => {
@@ -56,6 +57,14 @@ describe("AppSetupFlow — framework selection", () => {
     expect(guide).toHaveAttribute("href", "/docs/connecting-your-software");
     expect(guide).toHaveAttribute("target", "_blank");
     expect(guide).toHaveAttribute("rel", expect.stringContaining("noopener"));
+  });
+
+  test("points at the production API and the pinned SDK release, never the old commit or Heroku host", () => {
+    render(<AppSetupFlow organizationSlug="acme" application={APPLICATION} onDone={jest.fn()} />);
+    chooseDjango();
+    const text = document.body.textContent;
+    expect(text).toContain("GAIT_AUTH_URL=https://api.gaitobservatory.com/api");
+    expect(text).not.toMatch(/herokuapp|auth_integration|git\+https/);
   });
 
   test("framework can be changed back and reselected — never persisted", () => {

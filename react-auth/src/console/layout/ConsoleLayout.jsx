@@ -4,12 +4,14 @@ import { useBasicAuthServices } from "../../context/auth/BasicAuthContext";
 import { useUserSessionServices } from "../../context/auth/UserSessionContext";
 import { Badge, ErrorState, LoadingState } from "../components/ui/primitives";
 import { ENVIRONMENT_LABELS, ENVIRONMENTS, useConsoleScope } from "../hooks/useConsoleScope";
+import { consoleTitle } from "./consoleTitle";
+import { EmailVerificationBanner } from "../../account/EmailVerificationBanner";
 import "./ConsoleLayout.css";
 
 const NAV = [
     { to: "overview", label: "Overview" },
     { to: "applications", label: "Applications" },
-    { to: "security", label: "Security" },
+    { to: "security", label: "Findings" },
     { to: "members", label: "Members" },
     { to: "settings", label: "Settings" },
 ];
@@ -29,6 +31,12 @@ export function ConsoleLayout() {
     const location = useLocation();
     const navigate = useNavigate();
     const scope = useConsoleScope();
+
+    // "Findings · App One · Gait": the tab says where you are and in which company.
+    const companyName = scope.membership?.name;
+    useEffect(() => {
+        document.title = consoleTitle(location.pathname, companyName);
+    }, [location.pathname, companyName]);
 
     useEffect(() => {
         let active = true;
@@ -128,6 +136,7 @@ export function ConsoleLayout() {
                     ))}
                 </nav>
                 <main className="gc-main">
+                    <EmailVerificationBanner />
                     <Outlet context={scope} />
                 </main>
             </div>

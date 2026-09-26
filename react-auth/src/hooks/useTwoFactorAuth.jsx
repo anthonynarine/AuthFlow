@@ -66,16 +66,13 @@ export const useTwoFactorAuth = () => {
         // Choose the endpoint based on whether it's an initial setup or a regular login.
         const endpoint = isInitialSetup ? "/verify-otp/" : "/two-factor-login/";
         try {
-            // Two-factor LOGIN asks for the refresh token as an HttpOnly cookie;
-            // initial 2FA setup happens inside an existing session.
-            const body = isInitialSetup ? { otp } : { otp, ...SESSION_TRANSPORT };
+            // Both ask for the refresh token as an HttpOnly cookie (Gait E3 for
+            // setup); the body only ever carries the access token.
+            const body = { otp, ...SESSION_TRANSPORT };
             const client = isInitialSetup ? authAxios : publicAxios;
-            const { data, status } = await client.post(endpoint, body);
+            const { data, status } = await client.post(endpoint, body, { withCredentials: true });
             if (status === 200) {
-                persistAuthTokens({
-                    accessToken: data.access_token,
-                    refreshToken: data.refresh_token,
-                });
+                persistAuthTokens({ accessToken: data.access_token });
                 setIsLoggedIn(true);
                 navigate("/workspace");
 

@@ -44,13 +44,38 @@ describe("useTwoFactorAuth session transport", () => {
             await result.current.verify2FA("123456");
         });
 
-        expect(publicAxios.post).toHaveBeenCalledWith("/two-factor-login/", {
-            otp: "123456",
-            session_transport: "cookie",
-        });
+        expect(publicAxios.post).toHaveBeenCalledWith(
+            "/two-factor-login/",
+            { otp: "123456", session_transport: "cookie" },
+            { withCredentials: true }
+        );
         expect(authAxios.post).not.toHaveBeenCalled();
         expect(persistAuthTokens).toHaveBeenCalledWith(expect.objectContaining({ accessToken: "access-2fa" }));
         expect(mockSetIsLoggedIn).toHaveBeenCalledWith(true);
         expect(mockNavigate).toHaveBeenCalledWith("/workspace");
+    });
+
+    test("2FA setup (E3) uses the cookie session: no refresh token is read from the body", async () => {
+        authAxios.patch.mockResolvedValue({ data: { is_2fa_enabled: false, is_2fa_setup_in_progress: true } });
+        authAxios.post.mockResolvedValue({
+            status: 200,
+            data: { access_token: "access-setup", refresh_token: "must-not-be-used" },
+        });
+        const { result } = renderHook(() => useTwoFactorAuth());
+
+        await act(async () => {
+            await result.current.toggle2fa(true);
+        });
+        await act(async () => {
+            await result.current.verify2FA("654321");
+        });
+
+        expect(authAxios.post).toHaveBeenCalledWith(
+            "/verify-otp/",
+            { otp: "654321", session_transport: "cookie" },
+            { withCredentials: true }
+        );
+        expect(persistAuthTokens).toHaveBeenCalledWith({ accessToken: "access-setup" });
+        expect(JSON.stringify(persistAuthTokens.mock.calls)).not.toContain("must-not-be-used");
     });
 });

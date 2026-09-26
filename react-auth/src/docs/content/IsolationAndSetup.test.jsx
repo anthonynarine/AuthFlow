@@ -88,15 +88,15 @@ test("journey badges: Live only if a customer can do it in the console today", a
     renderIsolation();
     await settleDiagrams();
     const journey1 = screen.getByRole("list", { name: "Journey 1 steps" });
-    expect(badgesIn(journey1)).toEqual(["Live", "Pending", "Live", "Live", "Live", "Pending"]);
-    expect(within(journey1).getAllByRole("listitem")[5]).toHaveTextContent(
-        "Findings screen (F3). The findings API is available now."
-    );
+    expect(badgesIn(journey1)).toEqual(Array(6).fill("Live")); // E1 and F3 are live
+    // The findings screen shipped (F3), so its "API only" note is gone.
+    expect(within(journey1).getAllByRole("listitem")[5]).not.toHaveTextContent("Findings screen (F3)");
     expect(badgesIn(screen.getByRole("list", { name: "Journey 2 steps" }))).toEqual(["Live", "Live"]);
     expect(badgesIn(screen.getByRole("list", { name: "Journey 3 steps" }))).toEqual(Array(4).fill("Pending"));
     expect(screen.queryByText(/through Gait's API/)).toBeNull();
-    // Acting on a finding (journey 2's FAIL path) waits for the same screen.
-    expect(screen.getByText(/acknowledges it or accepts the risk/).querySelector(".doc-status")).toHaveTextContent("Pending");
+    // Acting on a finding (journey 2's FAIL path) is live with the same screen.
+    expect(screen.getByText(/acknowledges it or accepts the risk/).querySelector(".doc-status")).toHaveTextContent("Live");
+    expect(screen.getByText(/All of this is/)).toHaveTextContent("All of this is Live.");
     const journey4 = badgesIn(screen.getByRole("list", { name: "Journey 4 steps" }));
     expect(journey4).toHaveLength(7);
     expect(new Set(journey4)).toEqual(new Set(["Live"]));
@@ -105,17 +105,17 @@ test("journey badges: Live only if a customer can do it in the console today", a
 
 test("updating the status object is all it takes to flip a badge", async () => {
     const original = FEATURE_STATUS.emailVerification;
-    FEATURE_STATUS.emailVerification = "live";
+    FEATURE_STATUS.emailVerification = "pending";
     try {
         renderIsolation();
         await settleDiagrams();
         expect(badgesIn(screen.getByRole("list", { name: "Journey 1 steps" }))).toEqual([
             "Live",
-            "Live",
-            "Live",
-            "Live",
-            "Live",
             "Pending",
+            "Live",
+            "Live",
+            "Live",
+            "Live",
         ]);
         // The legend is fixed, not tied to a feature.
         expect(screen.getByText(/means you can do it today/)).toHaveTextContent("Pending means it isn't available");
@@ -134,4 +134,19 @@ test("the planned line has no link to internal material", async () => {
     const planned = screen.getByRole("region", { name: "Planned" });
     expect(planned).toHaveTextContent("Planned: sign-in hosted by Gait, and tokens tied to the app they were issued for.");
     expect(within(planned).queryByRole("link")).toBeNull();
+});
+
+test("while the findings screen is pending, journey 1 says the API is available and journey 2 says so too", async () => {
+    const original = FEATURE_STATUS.findingsScreen;
+    FEATURE_STATUS.findingsScreen = "pending";
+    try {
+        renderIsolation();
+        await settleDiagrams();
+        const journey1 = screen.getByRole("list", { name: "Journey 1 steps" });
+        expect(badgesIn(journey1)[5]).toBe("Pending");
+        expect(within(journey1).getAllByRole("listitem")[5]).toHaveTextContent("The findings API is available now.");
+        expect(screen.getByText(/waits for the findings screen/)).toBeInTheDocument();
+    } finally {
+        FEATURE_STATUS.findingsScreen = original;
+    }
 });

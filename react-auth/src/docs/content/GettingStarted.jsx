@@ -1,6 +1,7 @@
 import React from "react";
 import { Link } from "react-router-dom";
 import { Callout, DocLink, DocSection, DocTable } from "../components/DocPrimitives";
+import { statusOf } from "../featureStatus";
 
 export default function GettingStarted() {
     return (
@@ -11,10 +12,10 @@ export default function GettingStarted() {
             </p>
 
             <Callout kind="availability" title="What works today">
-                Signing in, creating your company, adding applications, getting a connection key and reporting
-                security checks all work in the console now. The console screens for managing keys, security
-                findings, and team members and invites are being built; the pages here describe how they work and
-                say where a screen isn't available yet.
+                Signing in, creating your company, managing applications and their connection keys, reporting
+                security checks, and reviewing and acting on findings all work in the console now. The console
+                screens for team members and invites are being built; the pages here describe how they work and say
+                where a screen isn't available yet.
             </Callout>
 
             <p>
@@ -72,11 +73,19 @@ export default function GettingStarted() {
                     keeps you signed in, and <strong>Sign out</strong> ends the session on Gait's side, not just in
                     your browser.
                 </p>
-                <Callout kind="availability">
-                    Email confirmation is rolling out. Once it's live, Gait emails you a link when you create an
-                    account, and you'll need to confirm your email address before you can create a company or accept
-                    an invite.
-                </Callout>
+                {statusOf("emailVerification") === "live" ? (
+                    <p>
+                        When you create an account, Gait emails you a link. Confirm your email address with it before
+                        you create a company or accept an invite; the link lasts 48 hours, and you can ask for a new
+                        one from the console.
+                    </p>
+                ) : (
+                    <Callout kind="availability">
+                        Email confirmation is rolling out. Once it's live, Gait emails you a link when you create an
+                        account, and you'll need to confirm your email address before you can create a company or
+                        accept an invite.
+                    </Callout>
+                )}
             </DocSection>
 
             <DocSection id="step-2-create-your-company" title="Step 2: Create your company">

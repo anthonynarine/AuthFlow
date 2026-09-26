@@ -1,6 +1,7 @@
 import React from "react";
 import { Callout, DocLink, DocSection, DocTable } from "../components/DocPrimitives";
 import { Diagram } from "../components/Diagram";
+import { statusOf } from "../featureStatus";
 
 const INVITE_FLOW = `sequenceDiagram
     autonumber
@@ -312,8 +313,9 @@ export default function TeamsRolesAndInvites() {
                 <Callout kind="availability">
                     <p>
                         The console's <strong>Members</strong> screen and the <strong>invite page</strong> are being
-                        built, and email confirmation is rolling out. Until they ship, there's no console screen for
-                        sending an invite, and an invite link can't be accepted in the console yet.
+                        built{statusOf("emailVerification") === "live" ? "" : ", and email confirmation is rolling out"}.
+                        Until they ship, there's no console screen for sending an invite, and an invite link can't be
+                        accepted in the console yet.
                     </p>
                     <p>
                         Roles, last-Owner protection and the membership history already apply today. See also{" "}

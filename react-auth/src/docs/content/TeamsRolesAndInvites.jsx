@@ -311,12 +311,19 @@ export default function TeamsRolesAndInvites() {
 
             <DocSection id="availability" title="What works today">
                 <Callout kind="availability">
-                    <p>
-                        The console's <strong>Members</strong> screen and the <strong>invite page</strong> are being
-                        built{statusOf("emailVerification") === "live" ? "" : ", and email confirmation is rolling out"}.
-                        Until they ship, there's no console screen for sending an invite, and an invite link can't be
-                        accepted in the console yet.
-                    </p>
+                    {statusOf("membersAndInviteAccept") === "live" ? (
+                        <p>
+                            Everything on this page works in the console today: the <strong>Members</strong> screen
+                            (invites, roles, removing and leaving, membership activity), company{" "}
+                            <strong>Settings</strong>, and the <strong>invite page</strong> that invite emails link to.
+                        </p>
+                    ) : (
+                        <p>
+                            The console's <strong>Members</strong> screen and the <strong>invite page</strong> are being
+                            built. Until they ship, there's no console screen for sending an invite, and an invite link
+                            can't be accepted in the console yet.
+                        </p>
+                    )}
                     <p>
                         Roles, last-Owner protection and the membership history already apply today. See also{" "}
                         <DocLink to="troubleshooting#joining-and-access">Troubleshooting</DocLink>.

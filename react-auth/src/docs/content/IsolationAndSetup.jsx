@@ -252,7 +252,7 @@ export default function IsolationAndSetup() {
                     steps={[
                         ["An Owner or Admin invites a teammate by email and role", "membersAndInviteAccept"],
                         ["Gait emails a single-use link, valid for 7 days", "membersAndInviteAccept"],
-                        // Needs a confirmed email (E1) AND the invite page (F4); it can't be done until both ship.
+                        // Needs a confirmed email (E1, Live) AND the invite page (F4); F4's key decides the badge.
                         ["The invitee signs in with the invited, verified email", "membersAndInviteAccept"],
                         [<>The invitee chooses <strong>Join</strong></>, "membersAndInviteAccept"],
                     ]}

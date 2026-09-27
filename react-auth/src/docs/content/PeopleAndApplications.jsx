@@ -284,9 +284,10 @@ export default function PeopleAndApplications() {
                     </li>
                 </ol>
                 <Callout kind="availability">
-                    {statusOf("emailVerification") === "live" ? "The" : "Email confirmation is rolling out, and the"}{" "}
-                    console screen for accepting an invite is still being built. See{" "}
-                    <DocLink to="teams-roles-and-invites#availability">what works today</DocLink>.
+                    {statusOf("membersAndInviteAccept") === "live"
+                        ? "Inviting teammates and accepting an invite both work in the console today."
+                        : "The console screen for accepting an invite is still being built."}{" "}
+                    See <DocLink to="teams-roles-and-invites#availability">what works today</DocLink>.
                 </Callout>
             </DocSection>
         </>

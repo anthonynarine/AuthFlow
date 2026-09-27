@@ -77,7 +77,10 @@ export function ConsoleLayout() {
     return (
         <div className="gc-shell">
             <header className="gc-topbar">
-                <Link to="/console" className="gc-brand gc-focusable" aria-label="Gait console home">
+                {/* The site home, not /console: /console redirects straight back to
+                    this company's overview, which left no way out of the console.
+                    The Overview nav item is the console's own home. */}
+                <Link to="/" className="gc-brand gc-focusable" aria-label="Gait home">
                     <span className="gc-brand-mark" aria-hidden="true">◆</span>
                     <span>Gait</span>
                 </Link>

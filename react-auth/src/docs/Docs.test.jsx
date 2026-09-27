@@ -50,6 +50,7 @@ function renderDocs(path) {
 
 // Let the (mocked) mermaid chunk load and every diagram settle.
 async function settleDiagrams() {
+    // eslint-disable-next-line testing-library/no-node-access -- diagram load state lives on an aria-hidden canvas
     await waitFor(() => expect(document.querySelector('[data-status="loading"]')).toBeNull());
 }
 
@@ -86,9 +87,9 @@ describe("docs pages", () => {
         const links = within(toc).getAllByRole("link");
         const sectionHeadings = screen.getAllByRole("heading", { level: 2 });
         expect(links).toHaveLength(sectionHeadings.length);
+        const headingIds = sectionHeadings.map((heading) => heading.id);
         links.forEach((link) => {
-            const id = link.getAttribute("href").slice(1);
-            expect(document.getElementById(id)).toHaveProperty("tagName", "H2");
+            expect(headingIds).toContain(link.getAttribute("href").slice(1));
         });
         await settleDiagrams();
     });
@@ -119,6 +120,7 @@ describe("docs pages", () => {
 
     test("the mobile contents menu opens, and closes after choosing a page", async () => {
         renderDocs("/docs/getting-started");
+        // eslint-disable-next-line testing-library/no-node-access -- the native <details> element's open state is what this test checks
         const menu = screen.getByText("Contents").closest("details");
         expect(menu).not.toHaveAttribute("open");
 
@@ -194,7 +196,7 @@ describe("diagrams", () => {
             screen.getByText(/Two people sign in to Gait and belong to the company acme/, { selector: "figcaption" })
         ).toBeInTheDocument();
         await settleDiagrams();
-        expect(document.querySelectorAll("[data-testid='mermaid-svg']").length).toBeGreaterThan(0);
+        expect(screen.getAllByTestId("mermaid-svg").length).toBeGreaterThan(0);
     });
 
     test("a diagram that can't render falls back to its description", async () => {

@@ -38,14 +38,14 @@ describe("useSecurityLearningIndex", () => {
   test("fetches the index only once across multiple hook instances", async () => {
     authAxios.get.mockResolvedValue({ data: [{ key: "access_token", title: "Access Token" }] });
 
-    const first = renderHook(() => useSecurityLearningIndex());
-    const second = renderHook(() => useSecurityLearningIndex());
+    const { result: first } = renderHook(() => useSecurityLearningIndex());
+    const { result: second } = renderHook(() => useSecurityLearningIndex());
 
-    await waitFor(() => expect(first.result.current.isLoading).toBe(false));
-    await waitFor(() => expect(second.result.current.isLoading).toBe(false));
+    await waitFor(() => expect(first.current.isLoading).toBe(false));
+    await waitFor(() => expect(second.current.isLoading).toBe(false));
 
     expect(authAxios.get).toHaveBeenCalledTimes(1);
-    expect(second.result.current.topics).toHaveLength(1);
+    expect(second.current.topics).toHaveLength(1);
   });
 
   test("does not throw on index failure and leaves the catalog empty with an error", async () => {

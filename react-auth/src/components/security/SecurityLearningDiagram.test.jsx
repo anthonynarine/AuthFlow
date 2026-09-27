@@ -99,6 +99,6 @@ describe("SecurityLearningDiagram", () => {
     );
     // Rendered as literal text, not parsed as an element.
     expect(screen.getByText("<img src=x onerror=alert(1)>")).toBeInTheDocument();
-    expect(document.querySelector("img")).not.toBeInTheDocument();
+    expect(screen.queryByRole("img", { hidden: true })).not.toBeInTheDocument();
   });
 });

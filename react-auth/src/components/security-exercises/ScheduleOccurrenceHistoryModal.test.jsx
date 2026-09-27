@@ -75,7 +75,9 @@ describe("ScheduleOccurrenceHistoryModal", () => {
       const { container } = render(
         <ScheduleOccurrenceHistoryModal schedule={SCHEDULE} onClose={jest.fn()} onViewRun={jest.fn()} />
       );
+      // eslint-disable-next-line testing-library/no-container, testing-library/no-node-access -- the status badge element is what this test checks
       await waitFor(() => expect(container.querySelector(".security-badge")).not.toBeNull());
+      // eslint-disable-next-line testing-library/no-container, testing-library/no-node-access -- the status badge element is what this test checks
       const badge = container.querySelector(".security-badge");
       expect(badge.textContent.toUpperCase()).toBe(status);
     }

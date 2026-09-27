@@ -1,6 +1,6 @@
 import React from "react";
 import "@testing-library/jest-dom";
-import { fireEvent, render, screen, waitFor } from "@testing-library/react";
+import { fireEvent, render, screen, waitFor, within } from "@testing-library/react";
 import { ApprovalCard } from "./ApprovalCard";
 import { authAxios } from "../../interceptors/axios";
 
@@ -83,7 +83,7 @@ describe("ApprovalCard — deploy approval", () => {
 
     render(<ApprovalCard caseId="case-1" approvalKind="deploy" />);
     fireEvent.click(await screen.findByRole("button", { name: "Approve deployment" }));
-    fireEvent.click(screen.getByRole("dialog").querySelector("button.primary"));
+    fireEvent.click(within(screen.getByRole("dialog")).getByRole("button", { name: "Approve deployment" }));
 
     await waitFor(() =>
       expect(authAxios.post).toHaveBeenCalledWith(
@@ -122,7 +122,7 @@ describe("ApprovalCard — deploy approval", () => {
 
     render(<ApprovalCard caseId="case-1" approvalKind="deploy" />);
     fireEvent.click(await screen.findByRole("button", { name: "Approve deployment" }));
-    fireEvent.click(screen.getByRole("dialog").querySelector("button.primary"));
+    fireEvent.click(within(screen.getByRole("dialog")).getByRole("button", { name: "Approve deployment" }));
 
     expect(await screen.findByText(/didn't start: PROVIDER_UNAVAILABLE/)).toBeInTheDocument();
     expect(screen.queryByText("Resolved ✓")).not.toBeInTheDocument();
@@ -134,7 +134,7 @@ describe("ApprovalCard — deploy approval", () => {
 
     render(<ApprovalCard caseId="case-1" approvalKind="deploy" />);
     fireEvent.click(await screen.findByRole("button", { name: "Approve deployment" }));
-    fireEvent.click(screen.getByRole("dialog").querySelector("button.primary"));
+    fireEvent.click(within(screen.getByRole("dialog")).getByRole("button", { name: "Approve deployment" }));
 
     expect(await screen.findByText("You don't have permission to decide this approval.")).toBeInTheDocument();
   });
@@ -151,7 +151,7 @@ describe("ApprovalCard — deploy approval", () => {
 
     render(<ApprovalCard caseId="case-1" approvalKind="deploy" />);
     fireEvent.click(await screen.findByRole("button", { name: "Approve deployment" }));
-    const confirmButton = screen.getByRole("dialog").querySelector("button.primary");
+    const confirmButton = within(screen.getByRole("dialog")).getByRole("button", { name: "Approve deployment" });
     fireEvent.click(confirmButton);
     fireEvent.click(confirmButton);
     fireEvent.click(confirmButton);
@@ -182,12 +182,13 @@ describe("ApprovalCard — DEPLOYMENT_APPROVAL_RECOVERY (stuck deploy)", () => {
 
   test("Restart approval revokes the stuck approval and requests a brand new one — never reusing the old token", async () => {
     authAxios.get.mockResolvedValueOnce({ data: [STUCK_APPROVAL] });
+    const requestBodies = [];
     authAxios.post.mockImplementation((url, body) => {
       if (url.endsWith("/revoke/")) {
         return Promise.resolve({ data: { ...STUCK_APPROVAL, status: "REVOKED" } });
       }
       if (url.endsWith("/request/")) {
-        expect(body).toEqual({ case_id: "case-1", target_environment: "production" });
+        requestBodies.push(body);
         return Promise.resolve({ data: { ...APPROVAL, id: "approval-2", status: "PENDING" } });
       }
       return Promise.reject(new Error(`unexpected url ${url}`));
@@ -206,6 +207,7 @@ describe("ApprovalCard — DEPLOYMENT_APPROVAL_RECOVERY (stuck deploy)", () => {
       "/security-agents/deployment-approvals/request/",
       { case_id: "case-1", target_environment: "production" }
     );
+    expect(requestBodies).toEqual([{ case_id: "case-1", target_environment: "production" }]);
     // Never calls execute/ with the old (now-invalid) approval id.
     expect(authAxios.post).not.toHaveBeenCalledWith(
       expect.stringContaining("approval-1/execute/"),

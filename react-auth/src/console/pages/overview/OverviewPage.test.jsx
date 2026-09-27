@@ -165,7 +165,8 @@ describe("F1 Overview", () => {
 
         expect(await screen.findByRole("heading", { name: "Production in detail" })).toBeInTheDocument();
         const severities = await screen.findByRole("list", { name: "Open findings by severity" });
-        expect(within(severities).getByText("Warning").closest("li")).toHaveTextContent("1");
+        const warningRow = within(severities).getAllByRole("listitem").find((item) => within(item).queryByText("Warning"));
+        expect(warningRow).toHaveTextContent("1");
         expect(screen.getByRole("link", { name: "See findings" })).toHaveAttribute(
             "href",
             "/console/app-one/security?env=production"
@@ -242,7 +243,8 @@ describe("company isolation in the cache", () => {
     });
 
     test("switching company drops everything cached for the previous one", async () => {
-        const client = renderOverview("/console/app-one/overview?env=production");
+        const client = new QueryClient({ defaultOptions: { queries: { retry: false } } });
+        renderOverview("/console/app-one/overview?env=production", client);
         await screen.findByRole("heading", { name: "Production in detail" });
         expect(client.getQueryData(consoleKeys.posture("app-one", "production"))).toBeDefined();
 

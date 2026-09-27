@@ -35,5 +35,6 @@ test("the umbrellas and sites sections exist at the anchors other pages link to"
     expect(screen.getByText(/Gait knows nothing about sites; the product enforces all of it/)).toBeInTheDocument();
     expect(screen.getByText(/Finished work from both sites is visible across the whole organization/)).toBeInTheDocument();
 
+    // eslint-disable-next-line testing-library/no-node-access -- diagram load state lives on an aria-hidden canvas
     await waitFor(() => expect(document.querySelector('[data-status="loading"]')).toBeNull());
 });

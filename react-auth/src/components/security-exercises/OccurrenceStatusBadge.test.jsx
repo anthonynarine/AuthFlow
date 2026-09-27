@@ -7,6 +7,7 @@ import { OCCURRENCE_STATUSES } from "./scheduleLabels";
 describe("OccurrenceStatusBadge", () => {
   test.each(OCCURRENCE_STATUSES)("renders a readable humanized text label for %s, not just a color", (status) => {
     const { container, unmount } = render(<OccurrenceStatusBadge status={status} />);
+    // eslint-disable-next-line testing-library/no-container, testing-library/no-node-access -- the badge's own element and tone class are what this test checks
     const badge = container.querySelector("span");
     expect(badge.textContent.length).toBeGreaterThan(0);
     expect(badge.textContent).not.toBe(status);
@@ -25,6 +26,7 @@ describe("OccurrenceStatusBadge", () => {
 
   test("badge markup uses occurrence-status- class prefix, distinct from exercise-status- (run result)", () => {
     const { container } = render(<OccurrenceStatusBadge status="DISPATCHED" />);
+    // eslint-disable-next-line testing-library/no-container, testing-library/no-node-access -- the badge's own element and tone class are what this test checks
     const badge = container.querySelector("span");
     expect(badge.className).toMatch(/occurrence-status-/);
     expect(badge.className).not.toMatch(/exercise-status-/);
@@ -33,6 +35,7 @@ describe("OccurrenceStatusBadge", () => {
   test("BLOCKED and ERROR render visually distinct tones", () => {
     const { container: blocked } = render(<OccurrenceStatusBadge status="BLOCKED" />);
     const { container: error } = render(<OccurrenceStatusBadge status="ERROR" />);
+    // eslint-disable-next-line testing-library/no-container, testing-library/no-node-access -- the badge's own element and tone class are what this test checks
     expect(blocked.querySelector("span").className).not.toBe(error.querySelector("span").className);
   });
 });

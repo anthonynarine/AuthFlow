@@ -130,6 +130,7 @@ describe("SecuritySageResponse citations / sources drawer", () => {
     render(<SecuritySageResponse response={sageResponse()} onAsk={jest.fn()} />);
     fireEvent.click(screen.getByRole("button", { name: "Sources (1)" }));
 
+    // eslint-disable-next-line testing-library/no-node-access -- the native <details> element's open state is what this test checks
     const details = screen.getByText("Technical details").closest("details");
     expect(details).not.toHaveAttribute("open");
     expect(screen.getByText("hash1")).toBeInTheDocument();

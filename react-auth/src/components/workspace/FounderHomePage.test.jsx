@@ -86,8 +86,8 @@ describe("FounderHomePage", () => {
 
     renderHome();
 
-    const needsYouHeading = screen.getByRole("heading", { name: "Needs you" });
-    const needsYouSection = needsYouHeading.closest("section");
+    expect(screen.getByRole("heading", { name: "Needs you" })).toBeInTheDocument();
+    const needsYouSection = screen.getByRole("region", { name: "Needs you" });
     expect(within(needsYouSection).getByText("Needs approval")).toBeInTheDocument();
     // The non-actionable issue must not appear under Needs You.
     expect(needsYouSection).not.toHaveTextContent("Just investigating");

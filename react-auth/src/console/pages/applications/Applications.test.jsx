@@ -316,6 +316,7 @@ describe("F2 connection keys", () => {
         expect(await within(dialog).findByText("Copied to clipboard.")).toBeInTheDocument();
 
         // A stray click outside doesn't lose it; Done needs an explicit "saved".
+        // eslint-disable-next-line testing-library/no-node-access -- the backdrop is deliberately not an accessible element
         fireEvent.mouseDown(document.querySelector(".gc-dialog-backdrop"));
         expect(screen.getByRole("dialog", { name: "Save this connection key now" })).toBeInTheDocument();
         const done = within(dialog).getByRole("button", { name: "Done" });

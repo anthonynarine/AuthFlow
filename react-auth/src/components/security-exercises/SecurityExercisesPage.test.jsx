@@ -130,6 +130,12 @@ function renderPage() {
   );
 }
 
+
+// The card (<article>) that shows this text.
+function cardWith(text) {
+  return screen.getAllByRole("article").find((card) => within(card).queryByText(text));
+}
+
 describe("SecurityExercisesPage catalog", () => {
   beforeEach(() => {
     authAxios.get.mockReset();
@@ -147,8 +153,8 @@ describe("SecurityExercisesPage catalog", () => {
     mockCatalogAndHistory({ catalog: [READY_PLAYBOOK] });
     renderPage();
 
-    const title = await screen.findByText("Refresh Token Replay");
-    const card = title.closest("article");
+    await screen.findByText("Refresh Token Replay");
+    const card = cardWith("Refresh Token Replay");
     expect(within(card).getByText("Authentication")).toBeInTheDocument();
     expect(within(card).getByText("Refresh Replay Protection")).toBeInTheDocument();
     expect(within(card).getByText("Test")).toBeInTheDocument();
@@ -165,8 +171,8 @@ describe("SecurityExercisesPage catalog", () => {
     const runButtons = screen.getAllByRole("button", { name: "Run Exercise" });
     expect(runButtons).toHaveLength(1);
 
-    const plannedCard = screen.getByText("Deployment Approval Replay").closest("article");
-    expect(plannedCard).not.toBeNull();
+    const plannedCard = cardWith("Deployment Approval Replay");
+    expect(plannedCard).toBeDefined();
     expect(within(plannedCard).queryByRole("button", { name: "Run Exercise" })).not.toBeInTheDocument();
   });
 

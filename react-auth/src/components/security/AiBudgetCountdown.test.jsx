@@ -58,6 +58,7 @@ describe("AiBudgetCountdown", () => {
 
     expect(screen.queryByText(/automatic AI investigations are paused/i)).not.toBeInTheDocument();
     expect(screen.queryByText(/new LLM calls are blocked/i)).not.toBeInTheDocument();
+    // eslint-disable-next-line testing-library/no-container, testing-library/no-node-access -- the elevated-styling class is what this test checks
     expect(container.querySelector(".ai-budget-panel--attention")).not.toBeInTheDocument();
   });
 
@@ -67,6 +68,7 @@ describe("AiBudgetCountdown", () => {
 
     expect(screen.getByText(/automatic AI investigations are paused/i)).toBeInTheDocument();
     expect(screen.queryByText(/90%/)).not.toBeInTheDocument();
+    // eslint-disable-next-line testing-library/no-container, testing-library/no-node-access -- the elevated-styling class is what this test checks
     expect(container.querySelector(".ai-budget-panel--attention")).toBeInTheDocument();
   });
 

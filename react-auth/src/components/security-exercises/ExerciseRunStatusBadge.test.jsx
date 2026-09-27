@@ -7,6 +7,7 @@ import { RUN_STATUSES } from "./securityExerciseLabels";
 describe("ExerciseRunStatusBadge", () => {
   test.each(RUN_STATUSES)("renders a readable humanized text label for %s, not just a color", (status) => {
     const { container, unmount } = render(<ExerciseRunStatusBadge status={status} />);
+    // eslint-disable-next-line testing-library/no-container, testing-library/no-node-access -- the badge's own element and tone class are what this test checks
     const badge = container.querySelector("span");
     expect(badge.textContent.length).toBeGreaterThan(0);
     expect(badge.textContent).not.toBe(status); // humanized, e.g. "Requested" not "REQUESTED"
@@ -26,6 +27,7 @@ describe("ExerciseRunStatusBadge", () => {
   test("PASSED and FAILED render visually distinct tones", () => {
     const { container: passed } = render(<ExerciseRunStatusBadge status="PASSED" />);
     const { container: failed } = render(<ExerciseRunStatusBadge status="FAILED" />);
+    // eslint-disable-next-line testing-library/no-container, testing-library/no-node-access -- the badge's own element and tone class are what this test checks
     expect(passed.querySelector("span").className).not.toBe(failed.querySelector("span").className);
   });
 });

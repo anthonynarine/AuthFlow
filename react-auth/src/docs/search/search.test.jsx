@@ -148,6 +148,7 @@ describe("search box", () => {
 
     test("choosing a result from the mobile menu closes the menu", async () => {
         renderDocs("/docs/what-gait-is");
+        // eslint-disable-next-line testing-library/no-node-access -- the native <details> element's open state is what this test checks
         const menu = screen.getByText("Contents").closest("details");
         menu.open = true;
         fireEvent(menu, new Event("toggle"));

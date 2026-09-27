@@ -155,6 +155,12 @@ beforeEach(() => {
   authAxios.patch.mockReset();
 });
 
+
+// The card (<article>) that shows this text.
+function cardWith(text) {
+  return screen.getAllByRole("article").find((card) => within(card).queryByText(text));
+}
+
 describe("Security Exercises tabs (regression -- adding Schedules must not break existing tabs)", () => {
   test("Playbooks (Catalog) still renders", async () => {
     mockAllGets({ catalog: [READY_PLAYBOOK] });
@@ -228,10 +234,10 @@ describe("Schedule list rendering", () => {
     renderPage();
     goToSchedules();
 
-    const title = await screen.findByText("Refresh Replay Daily");
-    const card = title.closest("article");
-    expect(within(card).getByText(/Refresh Token Replay/)).toBeInTheDocument();
-    expect(card.querySelector(".schedule-card-playbook").textContent).toMatch(/Daily/);
+    await screen.findByText("Refresh Replay Daily");
+    const card = cardWith("Refresh Replay Daily");
+    // The playbook line: "<playbook> · <cadence>".
+    expect(within(card).getByText(/Refresh Token Replay/)).toHaveTextContent(/Daily/);
     expect(within(card).getByText("Test")).toBeInTheDocument();
   });
 
@@ -239,32 +245,32 @@ describe("Schedule list rendering", () => {
     mockAllGets({ schedules: [makeSchedule({ enabled: true })] });
     renderPage();
     goToSchedules();
-    const title = await screen.findByText("Refresh Replay Daily");
-    expect(within(title.closest("article")).getByText("Enabled")).toBeInTheDocument();
+    await screen.findByText("Refresh Replay Daily");
+    expect(within(cardWith("Refresh Replay Daily")).getByText("Enabled")).toBeInTheDocument();
   });
 
   test("a disabled schedule renders DISABLED", async () => {
     mockAllGets({ schedules: [makeSchedule({ enabled: false })] });
     renderPage();
     goToSchedules();
-    const title = await screen.findByText("Refresh Replay Daily");
-    expect(within(title.closest("article")).getByText("Disabled")).toBeInTheDocument();
+    await screen.findByText("Refresh Replay Daily");
+    expect(within(cardWith("Refresh Replay Daily")).getByText("Disabled")).toBeInTheDocument();
   });
 
   test("last run information renders when present", async () => {
     mockAllGets({ schedules: [makeSchedule({ last_run_id: "run-1" })] });
     renderPage();
     goToSchedules();
-    const title = await screen.findByText("Refresh Replay Daily");
-    expect(within(title.closest("article")).getByText("View last run")).toBeInTheDocument();
+    await screen.findByText("Refresh Replay Daily");
+    expect(within(cardWith("Refresh Replay Daily")).getByText("View last run")).toBeInTheDocument();
   });
 
   test("a null last run renders safely, not as an error", async () => {
     mockAllGets({ schedules: [makeSchedule({ last_run_id: null })] });
     renderPage();
     goToSchedules();
-    const title = await screen.findByText("Refresh Replay Daily");
-    expect(within(title.closest("article")).getByText("No runs yet")).toBeInTheDocument();
+    await screen.findByText("Refresh Replay Daily");
+    expect(within(cardWith("Refresh Replay Daily")).getByText("No runs yet")).toBeInTheDocument();
     expect(screen.queryByRole("alert")).not.toBeInTheDocument();
   });
 

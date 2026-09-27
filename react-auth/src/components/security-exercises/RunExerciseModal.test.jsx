@@ -62,6 +62,7 @@ describe("RunExerciseModal", () => {
     expect(screen.getByRole("dialog")).toBeInTheDocument();
     const confirmButton = screen.getByRole("button", { name: "Confirm and Run" });
 
+    // eslint-disable-next-line testing-library/no-unnecessary-act -- both clicks must land before React re-renders (same-tick double submit)
     await act(async () => {
       fireEvent.click(confirmButton);
       fireEvent.click(confirmButton);
@@ -156,7 +157,7 @@ describe("RunExerciseModal", () => {
 
     fireEvent.click(screen.getByRole("button", { name: "Confirm and Run" }));
 
-    await waitFor(() => expect(screen.getByText(expectedText)).toBeInTheDocument());
+    expect(await screen.findByText(expectedText)).toBeInTheDocument();
     expect(screen.getByText(/not Security Truth/i)).toBeInTheDocument();
   });
 

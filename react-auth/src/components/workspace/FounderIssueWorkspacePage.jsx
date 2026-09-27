@@ -2,7 +2,6 @@ import React from "react";
 import { Link, useParams } from "react-router-dom";
 import { RiArrowGoBackLine } from "react-icons/ri";
 import { useFounderIssue } from "../../hooks/useFounderIssue";
-import { FounderNav } from "./FounderNav";
 import { SeverityPill } from "./FounderIssueCard";
 import { ApprovalCard } from "./ApprovalCard";
 import { SecurityErrorState } from "../security/SecurityErrorState";
@@ -89,7 +88,6 @@ export function FounderIssueWorkspacePage() {
   if (isForbidden) {
     return (
       <div className="founder-workspace">
-        <FounderNav />
         <main className="founder-shell">
           <SecurityErrorState error={{ response: { status: 403 } }} />
         </main>
@@ -100,7 +98,6 @@ export function FounderIssueWorkspacePage() {
   if (isLoading && !issue) {
     return (
       <div className="founder-workspace">
-        <FounderNav />
         <main className="founder-shell">
           <p className="founder-empty">Loading…</p>
         </main>
@@ -111,7 +108,6 @@ export function FounderIssueWorkspacePage() {
   if (error && !issue) {
     return (
       <div className="founder-workspace">
-        <FounderNav />
         <main className="founder-shell">
           <SecurityErrorState error={error} />
         </main>
@@ -128,7 +124,6 @@ export function FounderIssueWorkspacePage() {
 
   return (
     <div className="founder-workspace">
-      <FounderNav />
       <main className="founder-shell">
         <header className="founder-issue-header">
           <Link to="/workspace/issues" className="founder-back-link">

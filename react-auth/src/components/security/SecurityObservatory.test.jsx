@@ -223,15 +223,6 @@ describe("Security Observatory components", () => {
     expect(mockValidateSession).toHaveBeenCalled();
   });
 
-  test("page header links back to Security Command", () => {
-    render(
-      <MemoryRouter>
-        <SecurityObservatoryPage />
-      </MemoryRouter>
-    );
-
-    expect(screen.getByRole("link", { name: "Security Command" })).toHaveAttribute("href", "/security-command");
-  });
 
   test("current session summary renders email, status, auth method, and timing", () => {
     render(

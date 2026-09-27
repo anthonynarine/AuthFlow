@@ -1,6 +1,5 @@
 import React, { useCallback, useEffect, useState } from "react";
-import { Link } from "react-router-dom";
-import { RiArrowGoBackLine, RiRefreshLine, RiShieldKeyholeLine } from "react-icons/ri";
+import { RiRefreshLine, RiShieldKeyholeLine } from "react-icons/ri";
 import { useBasicAuthServices } from "../../context/auth/BasicAuthContext";
 import { useUserSessionServices } from "../../context/auth/UserSessionContext";
 import { useSecuritySummary } from "../../hooks/useSecuritySummary";
@@ -12,7 +11,6 @@ import { useSecurityPosture } from "../../hooks/useSecurityPosture";
 import { useAiBudgetStatus } from "../../hooks/useAiBudgetStatus";
 import { useSecurityHelp } from "../../hooks/useSecurityHelp";
 import { SecurityNav } from "./SecurityNav";
-import { SecurityPageSwitcher } from "./SecurityPageSwitcher";
 import { SecurityOperatorBadge } from "./SecurityOperatorBadge";
 import { SecurityInfoButton } from "./SecurityInfoButton";
 import { SecurityOverview } from "./SecurityOverview";
@@ -112,9 +110,6 @@ export function SecurityObservatoryPage() {
     return (
       <main className="security-page">
         <section className="security-shell">
-          <Link to="/" className="security-back-link">
-            <RiArrowGoBackLine /> Home
-          </Link>
           <SecurityErrorState error={{ response: { status: 403 } }} />
         </section>
       </main>
@@ -126,9 +121,6 @@ export function SecurityObservatoryPage() {
       <section className="security-shell">
         <header className="security-header">
           <div>
-            <Link to="/" className="security-back-link">
-              <RiArrowGoBackLine /> Home
-            </Link>
             <p className="security-kicker"><RiShieldKeyholeLine /> Gait Security</p>
             <h1>Security Observatory</h1>
             <p>Authentication, session, and security posture</p>
@@ -143,8 +135,6 @@ export function SecurityObservatoryPage() {
             </span>
           </div>
         </header>
-
-        <SecurityPageSwitcher current="observatory" user={user} />
 
         <SecurityNav activeSection={activeSection} onSelect={setActiveSection} />
 

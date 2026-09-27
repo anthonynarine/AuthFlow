@@ -1,12 +1,9 @@
 import React, { useState } from "react";
-import { Link } from "react-router-dom";
-import { RiArrowGoBackLine, RiShieldKeyholeLine } from "react-icons/ri";
-import { useBasicAuthServices } from "../../context/auth/BasicAuthContext";
+import { RiShieldKeyholeLine } from "react-icons/ri";
 import { useSecurityLearningIndex } from "../../hooks/useSecurityLearning";
 import { SecurityLoadingState } from "./SecurityLoadingState";
 import { SecurityErrorState } from "./SecurityErrorState";
 import { SecurityLearningDrawer } from "./SecurityLearningDrawer";
-import { SecurityPageSwitcher } from "./SecurityPageSwitcher";
 import "./SecurityObservatory.css";
 import "./SecurityLearning.css";
 
@@ -42,7 +39,6 @@ function groupByCategory(topics) {
  * renderer.
  */
 export function SecurityLearnPage() {
-  const { user } = useBasicAuthServices();
   const { topics, isLoading, error, retry } = useSecurityLearningIndex();
   const [openTopicKey, setOpenTopicKey] = useState(null);
   const grouped = groupByCategory(topics);
@@ -52,9 +48,6 @@ export function SecurityLearnPage() {
       <section className="security-shell">
         <header className="security-header">
           <div>
-            <Link to="/security" className="security-back-link">
-              <RiArrowGoBackLine /> Security Observatory
-            </Link>
             <p className="security-kicker">
               <RiShieldKeyholeLine /> Gait Security
             </p>
@@ -62,8 +55,6 @@ export function SecurityLearnPage() {
             <p>Canonical, deep-dive explanations of how Gait's security actually works.</p>
           </div>
         </header>
-
-        <SecurityPageSwitcher current="learn" user={user} />
 
         {isLoading && <SecurityLoadingState label="Loading learning catalog" />}
         {error && !isLoading && <SecurityErrorState error={error} onRetry={retry} />}

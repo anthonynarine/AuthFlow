@@ -187,30 +187,6 @@
   font-size: 0.78rem;
 }
 
-.security-page-switcher {
-  display: inline-flex;
-  flex-wrap: wrap;
-  gap: 0.3rem;
-  margin: 1.25rem 0;
-  padding: 0.35rem;
-  border: 1px solid var(--color-border);
-  border-radius: var(--radius-pill);
-  background: var(--color-surface-glass);
-}
-
-.security-page-switcher .security-tab {
-  border: none;
-  text-decoration: none;
-}
-
-.security-page-switcher .security-tab:hover {
-  background: var(--color-surface-glass-strong);
-}
-
-.security-page-switcher .security-tab.active {
-  box-shadow: var(--shadow-sm);
-}
-
 .security-nav {
   display: flex;
   flex-wrap: wrap;

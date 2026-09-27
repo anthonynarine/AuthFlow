@@ -1,6 +1,5 @@
 import React, { useMemo } from "react";
 import { useFounderIssues } from "../../hooks/useFounderIssues";
-import { FounderNav } from "./FounderNav";
 import { FounderIssueCard } from "./FounderIssueCard";
 import { SecurityErrorState } from "../security/SecurityErrorState";
 import "./FounderWorkspace.css";
@@ -24,7 +23,6 @@ export function FounderIssuesPage() {
 
   return (
     <div className="founder-workspace">
-      <FounderNav />
       <main className="founder-shell">
         <header className="founder-page-head">
           <h1 className="founder-greeting">Issues</h1>

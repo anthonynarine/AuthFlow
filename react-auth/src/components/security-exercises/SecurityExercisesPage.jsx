@@ -1,6 +1,5 @@
 import React, { useEffect, useState } from "react";
-import { Link } from "react-router-dom";
-import { RiArrowGoBackLine, RiShieldKeyholeLine } from "react-icons/ri";
+import { RiShieldKeyholeLine } from "react-icons/ri";
 import { useBasicAuthServices } from "../../context/auth/BasicAuthContext";
 import { useUserSessionServices } from "../../context/auth/UserSessionContext";
 import { usePlaybookCatalog } from "../../hooks/usePlaybookCatalog";
@@ -8,7 +7,6 @@ import { useExerciseRunHistory } from "../../hooks/useExerciseRunHistory";
 import { useScheduleList } from "../../hooks/useScheduleList";
 import { useScheduleMutations } from "../../hooks/useScheduleMutations";
 import { SecurityErrorState } from "../security/SecurityErrorState";
-import { SecurityPageSwitcher } from "../security/SecurityPageSwitcher";
 import { SecurityOperatorBadge } from "../security/SecurityOperatorBadge";
 import { ExerciseCatalogFilters } from "./ExerciseCatalogFilters";
 import { PlaybookCatalogList } from "./PlaybookCatalogList";
@@ -63,9 +61,6 @@ export function SecurityExercisesPage() {
     return (
       <main className="security-page">
         <section className="security-shell">
-          <Link to="/" className="security-back-link">
-            <RiArrowGoBackLine /> Home
-          </Link>
           <SecurityErrorState error={{ response: { status: 403 } }} />
         </section>
       </main>
@@ -123,9 +118,6 @@ export function SecurityExercisesPage() {
       <section className="security-shell">
         <header className="security-header">
           <div>
-            <Link to="/" className="security-back-link">
-              <RiArrowGoBackLine /> Home
-            </Link>
             <p className="security-kicker">
               <RiShieldKeyholeLine /> Gait Security
             </p>
@@ -136,8 +128,6 @@ export function SecurityExercisesPage() {
             <SecurityOperatorBadge user={user} statusLabel={!canRunExercises ? "View only" : null} />
           </div>
         </header>
-
-        <SecurityPageSwitcher current="exercises" user={user} />
 
         <nav className="security-nav" aria-label="Security Exercises sections">
           {SECTIONS.map((section) => {

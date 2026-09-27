@@ -2,7 +2,6 @@ import React, { useEffect, useMemo, useState } from "react";
 import { Link } from "react-router-dom";
 import { cachedGet } from "../../hooks/requestCache";
 import { useFounderIssues } from "../../hooks/useFounderIssues";
-import { FounderNav } from "./FounderNav";
 import { formatDateTime } from "../security/securityLabels";
 import "./FounderWorkspace.css";
 
@@ -68,7 +67,6 @@ export function SecurityTeamPage() {
 
   return (
     <div className="founder-workspace">
-      <FounderNav />
       <main className="founder-shell">
         <header className="founder-page-head">
           <h1 className="founder-greeting">Your Gait Security Team</h1>

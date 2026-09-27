@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from "react";
-import { Link, useLocation, useNavigate } from "react-router-dom";
-import { RiArrowGoBackLine, RiShieldKeyholeLine } from "react-icons/ri";
+import { useLocation, useNavigate } from "react-router-dom";
+import { RiShieldKeyholeLine } from "react-icons/ri";
 import { useBasicAuthServices } from "../../context/auth/BasicAuthContext";
 import { useUserSessionServices } from "../../context/auth/UserSessionContext";
 import { useSecurityPosture } from "../../hooks/useSecurityPosture";
@@ -13,7 +13,6 @@ import { useSecurityRecommendationActions } from "../../hooks/useSecurityRecomme
 import { useSecurityCaseInvestigationSummary } from "../../hooks/useSecurityCaseInvestigationSummary";
 import { useSecurityCaseDiagnosis } from "../../hooks/useSecurityCaseDiagnosis";
 import { PostureOverview } from "../security/PostureOverview";
-import { SecurityPageSwitcher } from "../security/SecurityPageSwitcher";
 import { SecurityErrorState } from "../security/SecurityErrorState";
 import { SecurityInfoButton } from "../security/SecurityInfoButton";
 import { SecurityOperatorBadge } from "../security/SecurityOperatorBadge";
@@ -108,9 +107,6 @@ export function SecurityCommandPage() {
     return (
       <main className="security-page">
         <section className="security-shell">
-          <Link to="/" className="security-back-link">
-            <RiArrowGoBackLine /> Home
-          </Link>
           <SecurityErrorState error={{ response: { status: 403 } }} />
         </section>
       </main>
@@ -122,9 +118,6 @@ export function SecurityCommandPage() {
       <section className="security-shell">
         <header className="security-header">
           <div>
-            <Link to="/" className="security-back-link">
-              <RiArrowGoBackLine /> Home
-            </Link>
             <p className="security-kicker"><RiShieldKeyholeLine /> Gait Security</p>
             <h1>Security Command</h1>
             <p>Operate Gait — current workflow, specialist status, and Copilot.</p>
@@ -133,8 +126,6 @@ export function SecurityCommandPage() {
             <SecurityOperatorBadge user={user} statusLabel="Read only" />
           </div>
         </header>
-
-        <SecurityPageSwitcher current="command" user={user} />
 
         <div className="command-center-grid">
           <section className="command-column command-column--posture" aria-labelledby="command-posture-heading">

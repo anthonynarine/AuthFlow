@@ -4,7 +4,6 @@ import { useBasicAuthServices } from "../../context/auth/BasicAuthContext";
 import { useUserSessionServices } from "../../context/auth/UserSessionContext";
 import { useSecurityPosture } from "../../hooks/useSecurityPosture";
 import { useFounderIssues } from "../../hooks/useFounderIssues";
-import { FounderNav } from "./FounderNav";
 import { FounderIssueCard } from "./FounderIssueCard";
 import { SecurityErrorState } from "../security/SecurityErrorState";
 import "./FounderWorkspace.css";
@@ -91,7 +90,6 @@ export function FounderHomePage() {
   if (forbidden) {
     return (
       <div className="founder-workspace">
-        <FounderNav />
         <main className="founder-shell">
           <SecurityErrorState error={{ response: { status: 403 } }} />
         </main>
@@ -101,7 +99,6 @@ export function FounderHomePage() {
 
   return (
     <div className="founder-workspace">
-      <FounderNav />
       <main className="founder-shell">
         <header className="founder-page-head">
           <h1 className="founder-greeting">

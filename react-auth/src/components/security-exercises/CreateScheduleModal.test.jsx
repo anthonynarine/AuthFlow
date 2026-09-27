@@ -128,7 +128,7 @@ describe("CreateScheduleModal", () => {
     expect(within(envSelect).queryByRole("option", { name: "Production" })).not.toBeInTheDocument();
   });
 
-  test("Test can be selected when the playbook allows it", async () => {
+  test("the Test environment can be selected when the playbook allows it", async () => {
     render(<CreateScheduleModal open playbooks={[READY_PLAYBOOK]} onClose={jest.fn()} onCreated={jest.fn()} />);
     fireEvent.change(screen.getByLabelText("Playbook"), {
       target: { value: `${READY_PLAYBOOK.key}:${READY_PLAYBOOK.version}` },

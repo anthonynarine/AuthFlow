@@ -24,6 +24,7 @@ test("mermaid loads on demand in strict mode, one render at a time", async () =>
     );
 
     expect(screen.getByText("A leads to B.", { selector: "figcaption" })).toBeInTheDocument();
+    // eslint-disable-next-line testing-library/no-node-access -- the rendered SVGs are what this test checks
     await waitFor(() => expect(document.querySelectorAll("svg")).toHaveLength(2));
 
     expect(initialize).toHaveBeenCalledTimes(1);
@@ -37,7 +38,9 @@ test("records the drawing's natural width so phones never stretch a small diagra
         .spyOn(mermaid, "render")
         .mockResolvedValue({ svg: '<svg viewBox="0 0 259.5 966" data-testid="narrow"></svg>' });
     render(<Diagram source="flowchart TB; A-->B" description="A narrow one." />);
+    // eslint-disable-next-line testing-library/no-node-access -- the diagram's SVG wrapper is what this test checks
     await waitFor(() => expect(document.querySelector(".doc-diagram-svg")).not.toBeNull());
+    // eslint-disable-next-line testing-library/no-node-access -- the diagram's SVG wrapper is what this test checks
     expect(document.querySelector(".doc-diagram-svg").style.getPropertyValue("--diagram-natural-width")).toBe("260px");
     spy.mockRestore();
 });

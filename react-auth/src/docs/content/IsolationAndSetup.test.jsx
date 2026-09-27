@@ -22,6 +22,7 @@ function renderIsolation() {
 
 // Let the (mocked) mermaid chunk load and both diagrams settle.
 async function settleDiagrams() {
+    // eslint-disable-next-line testing-library/no-node-access -- diagram load state lives on an aria-hidden canvas
     await waitFor(() => expect(document.querySelector('[data-status="loading"]')).toBeNull());
 }
 
@@ -95,7 +96,7 @@ test("journey badges: Live only if a customer can do it in the console today", a
     expect(badgesIn(screen.getByRole("list", { name: "Journey 3 steps" }))).toEqual(Array(4).fill("Live"));
     expect(screen.queryByText(/through Gait's API/)).toBeNull();
     // Acting on a finding (journey 2's FAIL path) is live with the same screen.
-    expect(screen.getByText(/acknowledges it or accepts the risk/).querySelector(".doc-status")).toHaveTextContent("Live");
+    expect(within(screen.getByText(/acknowledges it or accepts the risk/)).getByText("Live")).toBeInTheDocument();
     expect(screen.getByText(/All of this is/)).toHaveTextContent("All of this is Live.");
     const journey4 = badgesIn(screen.getByRole("list", { name: "Journey 4 steps" }));
     expect(journey4).toHaveLength(7);

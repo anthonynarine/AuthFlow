@@ -63,8 +63,9 @@ describe("ExerciseRunDetailModal", () => {
     await screen.findByText("Refresh Token Replay");
     expect(screen.getByText(/^22222222/)).toBeInTheDocument();
     // finding_id is null -- rendered as a placeholder, not fabricated.
-    const findingRow = screen.getByText("Finding").closest(".detail-row");
-    expect(findingRow).toHaveTextContent("—");
+    // Detail rows are <dt>/<dd> pairs: the Finding term's own definition.
+    const findingIndex = screen.getAllByRole("term").findIndex((term) => term.textContent === "Finding");
+    expect(screen.getAllByRole("definition")[findingIndex]).toHaveTextContent("—");
   });
 
   test("shows an active run as updating, and a terminal run without the updating indicator", async () => {

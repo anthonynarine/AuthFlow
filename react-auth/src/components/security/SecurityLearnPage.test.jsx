@@ -1,6 +1,6 @@
 import React from "react";
 import "@testing-library/jest-dom";
-import { render, screen, fireEvent, waitFor } from "@testing-library/react";
+import { render, screen, fireEvent } from "@testing-library/react";
 import { MemoryRouter } from "react-router-dom";
 import { SecurityLearnPage } from "./SecurityLearnPage";
 import { __resetSecurityLearningCacheForTests } from "../../hooks/useSecurityLearning";
@@ -84,9 +84,9 @@ describe("SecurityLearnPage", () => {
     renderPage();
     fireEvent.click(await screen.findByRole("button", { name: /Access Token/ }));
 
-    await waitFor(() =>
-      expect(screen.getByText("The short-lived JWT that proves who is currently authenticated.")).toBeInTheDocument()
-    );
+    expect(
+      await screen.findByText("The short-lived JWT that proves who is currently authenticated.")
+    ).toBeInTheDocument();
   });
 
   test("a catalog load failure does not crash the page and offers a retry", async () => {

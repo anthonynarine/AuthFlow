@@ -157,6 +157,7 @@ describe("FounderIssueWorkspacePage", () => {
 
   test("technical details stay behind a collapsed disclosure, not shown by default", () => {
     renderWorkspace({ issue: baseIssue() });
+    // eslint-disable-next-line testing-library/no-node-access -- the native <details> element's open state is what this test checks
     const details = screen.getByText("Technical details").closest("details");
     expect(details).not.toHaveAttribute("open");
     expect(screen.getByText("auth.refresh_token.replay")).toBeInTheDocument();

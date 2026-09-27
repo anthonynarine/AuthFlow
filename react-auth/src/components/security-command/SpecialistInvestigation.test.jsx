@@ -1,6 +1,6 @@
 import React from "react";
 import "@testing-library/jest-dom";
-import { render, screen } from "@testing-library/react";
+import { render, screen, within } from "@testing-library/react";
 import { MemoryRouter } from "react-router-dom";
 import fs from "fs";
 import path from "path";
@@ -155,11 +155,12 @@ describe("DiagnosisPanel", () => {
   });
 
   test("facts and hypotheses are visually distinct lists", () => {
-    const { container } = render(<DiagnosisPanel diagnosis={diagnosis} isLoading={false} />);
-    const factsList = container.querySelector(".diagnosis-panel-facts-list");
-    const hypothesesList = container.querySelector(".diagnosis-panel-hypotheses-list");
-    expect(factsList).toContainElement(screen.getByText("Refresh replay evidence exists."));
-    expect(hypothesesList).toContainElement(screen.getByText("Family revocation may not run on the replay path."));
+    render(<DiagnosisPanel diagnosis={diagnosis} isLoading={false} />);
+    const listWith = (text) => screen.getAllByRole("list").find((list) => within(list).queryByText(text));
+    const factsList = listWith("Refresh replay evidence exists.");
+    const hypothesesList = listWith("Family revocation may not run on the replay path.");
+    expect(factsList).toBeDefined();
+    expect(hypothesesList).toBeDefined();
     expect(factsList).not.toBe(hypothesesList);
   });
 

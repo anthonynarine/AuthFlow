@@ -125,17 +125,17 @@ describe("/verify-email", () => {
         jest.useFakeTimers();
         verifyEmailToken.mockRejectedValueOnce(rateLimited(3)).mockResolvedValueOnce({ email_verified: true, email: "me@example.test" });
         visitVerify(`#token=${TOKEN}`);
-        await act(async () => {});
+        await act(() => Promise.resolve());
         const retry = screen.getByRole("button", { name: "Try again in 3s" });
         expect(retry).toBeDisabled();
         await act(async () => {
             jest.advanceTimersByTime(3100);
         });
         fireEvent.click(screen.getByRole("button", { name: "Try again" }));
-        await act(async () => {});
+        await act(() => Promise.resolve());
         expect(screen.getByRole("heading", { name: "Email confirmed" })).toBeInTheDocument();
         expect(verifyEmailToken).toHaveBeenNthCalledWith(2, TOKEN);
-        await act(async () => {}); // fake timers: no macrotask flush here
+        await act(() => Promise.resolve()); // fake timers: no macrotask flush here
     });
 
     test("a second link opened in the same tab (fragment change, no reload) is stripped and verified too", async () => {
@@ -201,7 +201,7 @@ describe("unverified banner", () => {
         resendVerificationEmail.mockResolvedValue({ email_verified: false, sent: true });
         renderBanner();
         fireEvent.click(screen.getByRole("button", { name: "Resend link" }));
-        await act(async () => {});
+        await act(() => Promise.resolve());
         expect(screen.getByRole("button", { name: "Resend in 60s" })).toBeDisabled();
         await act(async () => {
             jest.advanceTimersByTime(60_500);

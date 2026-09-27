@@ -101,7 +101,9 @@ describe("SecurityControlsTable", () => {
 
     expect(screen.getByText("Unknown")).toBeInTheDocument();
     expect(screen.queryByText("Healthy")).not.toBeInTheDocument();
+    // eslint-disable-next-line testing-library/no-container, testing-library/no-node-access -- the status tone class is what this test checks
     expect(container.querySelector(".control-status-unknown")).toBeInTheDocument();
+    // eslint-disable-next-line testing-library/no-container, testing-library/no-node-access -- the status tone class is what this test checks
     expect(container.querySelector(".control-status-healthy")).not.toBeInTheDocument();
   });
 

@@ -120,7 +120,7 @@ describe("AppSetupFlow — Connection Key issuance", () => {
 
     // The secret shows exactly once, inside the dedicated secret box — not
     // duplicated into any link/anchor href (which would be a URL exposure).
-    const links = document.querySelectorAll("a[href]");
+    const links = screen.queryAllByRole("link", { hidden: true });
     links.forEach((link) => expect(link.getAttribute("href")).not.toContain(RAW_SECRET));
   });
 

@@ -40,14 +40,14 @@ describe("useSecurityHelp", () => {
   test("fetches the registry only once across multiple hook instances", async () => {
     authAxios.get.mockResolvedValue({ data: [{ key: "controls", title: "Controls", short_description: "x" }] });
 
-    const first = renderHook(() => useSecurityHelp());
-    const second = renderHook(() => useSecurityHelp());
+    const { result: first } = renderHook(() => useSecurityHelp());
+    const { result: second } = renderHook(() => useSecurityHelp());
 
-    await waitFor(() => expect(first.result.current.isLoading).toBe(false));
-    await waitFor(() => expect(second.result.current.isLoading).toBe(false));
+    await waitFor(() => expect(first.current.isLoading).toBe(false));
+    await waitFor(() => expect(second.current.isLoading).toBe(false));
 
     expect(authAxios.get).toHaveBeenCalledTimes(1);
-    expect(second.result.current.getTopic("controls")).toBeTruthy();
+    expect(second.current.getTopic("controls")).toBeTruthy();
   });
 
   test("does not throw on failure and leaves topic lookup returning null", async () => {

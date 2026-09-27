@@ -71,7 +71,7 @@ describe("AccountSecurityPanel", () => {
     fireEvent.change(screen.getByLabelText(/confirm new password/i), { target: { value: "new-secret-123" } });
     fireEvent.click(screen.getByRole("button", { name: /update password/i }));
 
-    await waitFor(() => expect(screen.getByText("Additional verification required")).toBeInTheDocument());
+    expect(await screen.findByText("Additional verification required")).toBeInTheDocument();
     expect(screen.getByRole("dialog")).toBeInTheDocument();
   });
 
@@ -143,7 +143,7 @@ describe("AccountSecurityPanel", () => {
     fireEvent.change(screen.getByLabelText(/authenticator code/i), { target: { value: "123456" } });
     fireEvent.click(screen.getByRole("button", { name: /disable 2fa/i }));
 
-    await waitFor(() => expect(screen.getByText("Additional verification required")).toBeInTheDocument());
+    expect(await screen.findByText("Additional verification required")).toBeInTheDocument();
     expect(screen.getByRole("dialog")).toBeInTheDocument();
   });
 });

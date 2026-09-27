@@ -21,6 +21,7 @@ function renderDoc(slug) {
 }
 
 async function settleDiagrams() {
+    // eslint-disable-next-line testing-library/no-node-access -- diagram load state lives on an aria-hidden canvas
     await waitFor(() => expect(document.querySelector('[data-status="loading"]')).toBeNull());
 }
 
@@ -110,7 +111,9 @@ describe("How it works", () => {
     test("renders the big picture and marks acting on findings as Live (F3)", async () => {
         renderDoc("how-it-works");
         expect(screen.getByText(/Your team \(Owner, Admin, Member\) signs in to the console/)).toBeInTheDocument();
-        expect(statusText(screen.getByText(/Your team acts\./).closest("li"))).toBe("Live");
+        // The innermost list item holding the text (items come in document order).
+        const teamActs = screen.getAllByRole("listitem").filter((item) => within(item).queryByText(/Your team acts\./));
+        expect(statusText(teamActs[teamActs.length - 1])).toBe("Live");
         await settleDiagrams();
     });
 });
@@ -137,9 +140,11 @@ describe("Quickstart", () => {
 
     test("shows exactly the same snippets as Connecting your software", () => {
         const { unmount } = renderDoc("quickstart");
+        // eslint-disable-next-line testing-library/no-node-access -- code blocks have no role; their exact text is what this test checks
         const quickstartCode = Array.from(document.querySelectorAll(".doc-code-pre")).map((pre) => pre.textContent);
         unmount();
         renderDoc("connecting-your-software");
+        // eslint-disable-next-line testing-library/no-node-access -- code blocks have no role; their exact text is what this test checks
         const connectingCode = Array.from(document.querySelectorAll(".doc-code-pre")).map((pre) => pre.textContent);
 
         expect(quickstartCode).toEqual([INSTALL, ENV_VARS, REPORT]);
@@ -165,15 +170,16 @@ describe("Glossary", () => {
     test.each(GLOSSARY.map(([term, , target]) => [term, target]))("%s links to a real page (and section): %s", async (term, target) => {
         const [slug, section] = target.split("#");
         expect(findDocPage(slug)).not.toBeNull();
-        if (section) {
-            renderDoc(slug);
-            expect(document.getElementById(section)).not.toBeNull();
-            await settleDiagrams();
-        }
+        if (!section) return;
+        renderDoc(slug);
+        // eslint-disable-next-line testing-library/no-node-access -- a link's #fragment targets an element id
+        expect(document.getElementById(section)).not.toBeNull();
+        await settleDiagrams();
     });
 
     test("each term links with the page's title", () => {
         renderDoc("glossary");
+        // eslint-disable-next-line testing-library/no-node-access -- glossary links target an element id
         const entry = document.getElementById("term-site-facility");
         expect(within(entry).getByRole("link", { name: "Teams, roles & invites" })).toHaveAttribute(
             "href",
@@ -201,8 +207,9 @@ describe("Automated security response", () => {
 
     test("has no status badges and no internal names", async () => {
         renderDoc("automated-security-response");
+        // eslint-disable-next-line testing-library/no-node-access -- no status badge element may exist on this page
         expect(document.querySelector(".doc-status")).toBeNull();
-        const text = document.querySelector(".docs-article").textContent.toLowerCase();
+        const text = screen.getByRole("article").textContent.toLowerCase();
         expect(INTERNAL_TERMS.filter((term) => text.includes(term))).toEqual([]);
         expect(screen.getByText(/They don't investigate, change or deploy your software\./)).toBeInTheDocument();
         await settleDiagrams();

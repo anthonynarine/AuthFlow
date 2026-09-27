@@ -69,7 +69,7 @@ beforeEach(() => {
 describe("ConsoleLayout gating", () => {
     test("signed-out visitors are sent to sign-in and no tenant data is requested", async () => {
         renderConsole("/console/acme/overview");
-        await waitFor(() => expect(screen.getByTestId("login")).toBeInTheDocument());
+        expect(await screen.findByTestId("login")).toBeInTheDocument();
         expect(fetchPostureOverview).not.toHaveBeenCalled();
     });
 
@@ -118,7 +118,7 @@ describe("ConsoleLayout gating", () => {
         expect(brand).toHaveAttribute("href", "/");
         fireEvent.click(brand);
 
-        await waitFor(() => expect(screen.getByTestId("home")).toBeInTheDocument());
+        expect(await screen.findByTestId("home")).toBeInTheDocument();
         expect(screen.getByTestId("location")).toHaveTextContent(/^\/$/);
     });
 
@@ -129,7 +129,7 @@ describe("ConsoleLayout gating", () => {
 
         fireEvent.click(await screen.findByRole("button", { name: "Sign out" }));
 
-        await waitFor(() => expect(screen.getByTestId("login")).toBeInTheDocument());
+        expect(await screen.findByTestId("login")).toBeInTheDocument();
         expect(mockLogout).toHaveBeenCalledTimes(1);
     });
 });
@@ -139,7 +139,7 @@ describe("ConsoleEntry", () => {
         mockUser = { email: "me@acme.test" };
         fetchMyOrganizations.mockResolvedValue([]);
         renderConsole("/console");
-        await waitFor(() => expect(screen.getByTestId("onboarding")).toBeInTheDocument());
+        expect(await screen.findByTestId("onboarding")).toBeInTheDocument();
     });
 
     test("returns to the last organization only while still a member", async () => {

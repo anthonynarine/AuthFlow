@@ -1,6 +1,6 @@
 import React from "react";
 import "@testing-library/jest-dom";
-import { act, fireEvent, render, screen } from "@testing-library/react";
+import { fireEvent, render, screen } from "@testing-library/react";
 import { MemoryRouter, Route, Routes, useLocation } from "react-router-dom";
 import { DevelopersPage } from "./DevelopersPage";
 
@@ -68,10 +68,8 @@ describe("DevelopersPage", () => {
     Object.assign(navigator, { clipboard: { writeText } });
     renderPage();
 
-    await act(async () => {
-      fireEvent.click(screen.getByRole("button", { name: "Copy install command" }));
-    });
+    fireEvent.click(screen.getByRole("button", { name: "Copy install command" }));
+    expect((await screen.findAllByText("Copied")).length).toBeGreaterThan(0);
     expect(writeText).toHaveBeenCalledWith("pip install gait-sdk");
-    expect(screen.getAllByText("Copied").length).toBeGreaterThan(0);
   });
 });

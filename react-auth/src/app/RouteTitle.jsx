@@ -13,6 +13,7 @@ const TITLES = [
   [/^\/developers\/?$/, "gait-sdk for developers · Gait"],
   [/^\/early-access\/?$/, "Early access · Gait"],
   [/^\/verify-email\/?$/, "Confirm your email · Gait"],
+  [/^\/console\/invites\/accept\/?$/, "Join a company · Gait"],
   ...DOC_PAGES.map((page) => [new RegExp(`^/docs/${page.slug}/?$`), docTitle(page)]),
   [/^\/docs(\/|$)/, "Gait Docs"],
   [/^\/login\/?$/, "Log in · Gait"],

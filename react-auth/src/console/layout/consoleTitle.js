@@ -12,8 +12,9 @@ const SECTIONS = [
     [/^\/console\/[^/]+\/settings\/?$/, "Settings"],
 ];
 
+// "invites" is a reserved company slug, so /console/invites/... is never a company page.
 export function isCompanyConsolePath(pathname) {
-    return /^\/console\/[^/]+(\/|$)/.test(pathname);
+    return /^\/console\/[^/]+(\/|$)/.test(pathname) && !/^\/console\/invites(\/|$)/.test(pathname);
 }
 
 export function consoleTitle(pathname, companyName) {

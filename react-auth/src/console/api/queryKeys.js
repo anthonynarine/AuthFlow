@@ -38,6 +38,10 @@ export const consoleKeys = {
     findings: (organizationSlug, environment, filters) => ["console", organizationSlug, environment, "findings", filters],
     finding: (organizationSlug, findingId) => ["console", organizationSlug, "all", "findings", findingId],
     evidence: (organizationSlug, evidenceId) => ["console", organizationSlug, "all", "evidence", evidenceId],
+    // F4. Membership and company settings don't depend on the environment.
+    members: (organizationSlug) => ["console", organizationSlug, "all", "members"],
+    memberActivity: (organizationSlug, page) => ["console", organizationSlug, "all", "member-activity", page],
+    organization: (organizationSlug) => ["console", organizationSlug, "all", "organization"],
 };
 
 /** True for a cached query that belongs to an organization other than `organizationSlug`. */

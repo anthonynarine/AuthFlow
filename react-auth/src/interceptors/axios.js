@@ -2,6 +2,7 @@ import axios from "axios";
 import Cookies from "js-cookie";
 import { refreshWithBrowserCoordination } from "./refreshCoordinator";
 import { clearAuthTokens, getAccessToken, persistAuthTokens } from "./tokenStorage";
+import { SESSION_ENDED_EVENT, broadcastSignedOut } from "./sessionEvents";
 
 /**
  * Gait HTTP clients (Gait console F0 -- secure session transport).
@@ -28,7 +29,7 @@ const baseURL = process.env.REACT_APP_USE_PRODUCTION_API === "true"
 const isSecureOrigin = typeof window !== "undefined" && window.location?.protocol === "https:";
 
 export const SESSION_TRANSPORT = { session_transport: "cookie" };
-export const SESSION_ENDED_EVENT = "gait:session-ended";
+export { SESSION_ENDED_EVENT };
 
 const logError = (error) => {
     console.error(`Error in request to ${error.config?.url}: ${error.message}`);
@@ -81,6 +82,7 @@ export async function logoutSession() {
         await sessionAxios.post("/auth/logout/", {});
     } finally {
         clearAuthTokens();
+        broadcastSignedOut();
     }
 }
 

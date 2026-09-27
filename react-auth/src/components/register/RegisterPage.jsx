@@ -1,15 +1,22 @@
 import React, { useState } from 'react';
-import { useNavigate } from 'react-router-dom';
+import { useLocation, useNavigate } from 'react-router-dom';
+import { INVITE_ACCEPT_PATH, safeReturnTo } from "../../auth/returnTo";
+import { getPendingInvite } from "../../console/invites/pendingInvite";
 import "./RegisterPage.css"
 import authAppImage from "../../assets/auth-app.jpg";
 import { RiArrowGoBackLine, RiEyeLine, RiEyeOffLine } from "react-icons/ri";
 import { publicAxios } from "../../interceptors/axios";
 
 export const RegisterPage = () => {
+    // Arriving from an invite: prefill the invited address (from memory,
+    // never the URL) and go back to the invite after signing in.
+    const location = useLocation();
+    const returnTo = safeReturnTo(location.state?.returnTo);
+    const invitedEmail = returnTo === INVITE_ACCEPT_PATH ? getPendingInvite()?.preview?.invited_email || "" : "";
     const [formFields, setFormFields] = useState({
         firstName: "",
         lastName: "",
-        email: "",
+        email: invitedEmail,
         password: "",
         confirmPassword: "",
     });
@@ -36,7 +43,7 @@ export const RegisterPage = () => {
                 password: formFields.password,
                 password_confirm: formFields.confirmPassword,
             });
-            navigate("/login");
+            navigate("/login", returnTo ? { state: { returnTo } } : undefined);
         } catch (error) {
             if (error.response && error.response.data.error){
                 // errors are keyed for request sent to RegisterAPIView

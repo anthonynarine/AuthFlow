@@ -154,8 +154,12 @@
 
 .forgot-password-link {
   display: flex;
-  justify-content: center;
+  flex-direction: column;
+  align-items: center;
+  gap: 0.5rem;
   margin-top: 1.25rem;
+  color: var(--color-text-muted);
+  font-size: 0.875rem;
 }
 
 .forgot-password-link a {

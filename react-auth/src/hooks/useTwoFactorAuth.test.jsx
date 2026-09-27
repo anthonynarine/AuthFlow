@@ -79,3 +79,31 @@ describe("useTwoFactorAuth session transport", () => {
         expect(JSON.stringify(persistAuthTokens.mock.calls)).not.toContain("must-not-be-used");
     });
 });
+
+const SCRIPT_URL = ["javascript", "alert(1)"].join(":");
+
+describe("useTwoFactorAuth returnTo", () => {
+    beforeEach(() => {
+        jest.clearAllMocks();
+        publicAxios.post.mockResolvedValue({ status: 200, data: { access_token: "access-2fa" } });
+    });
+
+    test("after the one-time code, an allowed returnTo is where they land", async () => {
+        const { result } = renderHook(() => useTwoFactorAuth());
+        await act(async () => {
+            await result.current.verify2FA("123456", { returnTo: "/console/invites/accept" });
+        });
+        expect(mockNavigate).toHaveBeenCalledWith("/console/invites/accept");
+    });
+
+    test.each(["//evil.com", "/\\evil.com", "https://evil.com", SCRIPT_URL])(
+        "an unsafe returnTo (%s) falls back to the workspace",
+        async (returnTo) => {
+            const { result } = renderHook(() => useTwoFactorAuth());
+            await act(async () => {
+                await result.current.verify2FA("123456", { returnTo });
+            });
+            expect(mockNavigate).toHaveBeenCalledWith("/workspace");
+        }
+    );
+});

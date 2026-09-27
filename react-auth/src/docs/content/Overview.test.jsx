@@ -83,7 +83,7 @@ describe("What Gait is", () => {
             "Live",
             "Live",
             "Live",
-            "Pending Members screen",
+            "Live",
             "Early access",
         ]);
         expect(screen.getByText(/Status as of 26 September 2026/)).toBeInTheDocument();

@@ -92,7 +92,7 @@ test("journey badges: Live only if a customer can do it in the console today", a
     // The findings screen shipped (F3), so its "API only" note is gone.
     expect(within(journey1).getAllByRole("listitem")[5]).not.toHaveTextContent("Findings screen (F3)");
     expect(badgesIn(screen.getByRole("list", { name: "Journey 2 steps" }))).toEqual(["Live", "Live"]);
-    expect(badgesIn(screen.getByRole("list", { name: "Journey 3 steps" }))).toEqual(Array(4).fill("Pending"));
+    expect(badgesIn(screen.getByRole("list", { name: "Journey 3 steps" }))).toEqual(Array(4).fill("Live"));
     expect(screen.queryByText(/through Gait's API/)).toBeNull();
     // Acting on a finding (journey 2's FAIL path) is live with the same screen.
     expect(screen.getByText(/acknowledges it or accepts the risk/).querySelector(".doc-status")).toHaveTextContent("Live");

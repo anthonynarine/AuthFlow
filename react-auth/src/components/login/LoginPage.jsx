@@ -1,11 +1,12 @@
 import "./Login.css";
 import authAppImage from "../../assets/auth-app.jpg";
-import { Link, useNavigate } from "react-router-dom";
+import { Link, useLocation, useNavigate } from "react-router-dom";
 import { RiArrowGoBackLine, RiMailLine, RiLockPasswordLine } from "react-icons/ri";
 import { useState, useEffect } from "react";
 import { RiEyeLine, RiEyeOffLine } from "react-icons/ri";
 import { useBasicAuthServices } from "../../context/auth/BasicAuthContext";
 import { useTwoFactorAuth } from "../../hooks/useTwoFactorAuth";
+import { safeReturnTo } from "../../auth/returnTo";
 import OTPModal from "./OTPModal";
 import "./OTPModal.css"
 
@@ -21,6 +22,12 @@ export const LoginPage = () => {
     const {  verify2FA, twoFactorError } = useTwoFactorAuth();
     const { login, is2FARequired, error, isLoading } = useBasicAuthServices();
     const navigate = useNavigate();
+    // Where to go after signing in (checked against an allowlist later):
+    // the invite page, or a console page that sent them here.
+    const location = useLocation();
+    const returnTo = location.state?.returnTo || location.state?.from;
+    // "Create account" keeps an allowed returnTo (e.g. back to an invite).
+    const safeReturn = safeReturnTo(returnTo);
 
     // Effect to check if 2FA is required and show OTP modal
     useEffect(() => {
@@ -33,12 +40,12 @@ export const LoginPage = () => {
     const handleSubmit = async (event) => {
         event.preventDefault();
         if (!is2FARequired) {
-            await login({ email, password })
+            await login({ email, password }, { returnTo })
         }
     };
 
     const handleOtpSubmit = async () => {
-        await verify2FA(otpValue);
+        await verify2FA(otpValue, { returnTo });
         setOtpModalOpen(false);
     }
 
@@ -113,6 +120,12 @@ export const LoginPage = () => {
                     </form>
                     <div className="forgot-password-link">
                         <Link to="/forgot-password/">Forgot password?</Link>
+                        <span>
+                            No account yet?{" "}
+                            <Link to="/register" state={safeReturn ? { returnTo: safeReturn } : undefined}>
+                                Create account
+                            </Link>
+                        </span>
                     </div>
                 </main>
             </div>

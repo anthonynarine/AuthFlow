@@ -12,7 +12,8 @@ export const FEATURE_STATUS = {
     // Stage E1: confirming your email address. Live with the E1-E3 release.
     emailVerification: "live",
     // Stage F4: the console's Members screen and invite-accept page.
-    membersAndInviteAccept: "pending",
+    // Shipped with F4.
+    membersAndInviteAccept: "live",
     // Stage F3: the console's Findings screen (watch, acknowledge, accept
     // risk). Shipped with F3.
     findingsScreen: "live",

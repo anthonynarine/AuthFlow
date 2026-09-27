@@ -6,6 +6,7 @@ import { useState, useEffect } from "react";
 import { RiEyeLine, RiEyeOffLine } from "react-icons/ri";
 import { useBasicAuthServices } from "../../context/auth/BasicAuthContext";
 import { useTwoFactorAuth } from "../../hooks/useTwoFactorAuth";
+import { safeReturnTo } from "../../auth/returnTo";
 import OTPModal from "./OTPModal";
 import "./OTPModal.css"
 
@@ -25,6 +26,8 @@ export const LoginPage = () => {
     // the invite page, or a console page that sent them here.
     const location = useLocation();
     const returnTo = location.state?.returnTo || location.state?.from;
+    // "Create account" keeps an allowed returnTo (e.g. back to an invite).
+    const safeReturn = safeReturnTo(returnTo);
 
     // Effect to check if 2FA is required and show OTP modal
     useEffect(() => {
@@ -117,6 +120,12 @@ export const LoginPage = () => {
                     </form>
                     <div className="forgot-password-link">
                         <Link to="/forgot-password/">Forgot password?</Link>
+                        <span>
+                            No account yet?{" "}
+                            <Link to="/register" state={safeReturn ? { returnTo: safeReturn } : undefined}>
+                                Create account
+                            </Link>
+                        </span>
                     </div>
                 </main>
             </div>

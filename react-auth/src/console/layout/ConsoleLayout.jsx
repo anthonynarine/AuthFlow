@@ -6,6 +6,7 @@ import { Badge, ErrorState, LoadingState } from "../components/ui/primitives";
 import { ENVIRONMENT_LABELS, ENVIRONMENTS, useConsoleScope } from "../hooks/useConsoleScope";
 import { consoleTitle } from "./consoleTitle";
 import { EmailVerificationBanner } from "../../account/EmailVerificationBanner";
+import { WelcomeNote } from "./WelcomeNote";
 import "./ConsoleLayout.css";
 
 const NAV = [
@@ -137,6 +138,7 @@ export function ConsoleLayout() {
                 </nav>
                 <main className="gc-main">
                     <EmailVerificationBanner />
+                    <WelcomeNote />
                     <Outlet context={scope} />
                 </main>
             </div>

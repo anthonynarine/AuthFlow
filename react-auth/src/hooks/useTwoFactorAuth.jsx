@@ -1,5 +1,6 @@
 import { useCallback, useState } from "react";
 import { useNavigate } from "react-router-dom";
+import { afterSignIn } from "../auth/returnTo";
 import { authAxios, publicAxios, SESSION_TRANSPORT } from "../interceptors/axios";
 import { persistAuthTokens } from "../interceptors/tokenStorage";
 import { useBasicAuthServices } from "../context/auth/BasicAuthContext";
@@ -59,7 +60,8 @@ export const useTwoFactorAuth = () => {
     }, []);
 
     // Function to verify two-factor authentication OTP
-    const verify2FA = useCallback(async (otp) => {
+    // returnTo survives the one-time-code step (two-factor login only).
+    const verify2FA = useCallback(async (otp, { returnTo } = {}) => {
         setIsLoading(true);
         setTwoFactorError(null);
 
@@ -74,7 +76,7 @@ export const useTwoFactorAuth = () => {
             if (status === 200) {
                 persistAuthTokens({ accessToken: data.access_token });
                 setIsLoggedIn(true);
-                navigate("/workspace");
+                navigate(isInitialSetup ? "/workspace" : afterSignIn(returnTo));
 
                 // Reset the initial state if it was part of the initial setup
                 if (isInitialSetup) {

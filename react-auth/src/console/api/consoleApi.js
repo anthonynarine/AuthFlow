@@ -1,4 +1,4 @@
-import { authAxios } from "../../interceptors/axios";
+import { authAxios, publicAxios } from "../../interceptors/axios";
 
 /**
  * Gait console API calls. Transport only: every call goes through
@@ -135,5 +135,71 @@ export async function actOnFinding(organizationSlug, findingId, action, note) {
         `${org(organizationSlug)}/security/findings/${encodeURIComponent(findingId)}/${action}/`,
         { note }
     );
+    return data;
+}
+
+// ---- F4: members, invites, activity, company settings --------------------------
+
+/** {your_role, members, invites}; `invites` (pending) only for Owners/Admins. */
+export async function fetchMembers(organizationSlug) {
+    const { data } = await authAxios.get(`${org(organizationSlug)}/members/`);
+    return data;
+}
+
+export async function changeMemberRole(organizationSlug, membershipId, orgRole) {
+    const { data } = await authAxios.patch(
+        `${org(organizationSlug)}/members/${encodeURIComponent(membershipId)}/`,
+        { org_role: orgRole }
+    );
+    return data;
+}
+
+/** Remove a member, or leave (your own membership). */
+export async function removeMember(organizationSlug, membershipId) {
+    await authAxios.delete(`${org(organizationSlug)}/members/${encodeURIComponent(membershipId)}/`);
+}
+
+/** The pending invite plus `email_sent`. The token is never returned. */
+export async function createInvite(organizationSlug, { email, orgRole }) {
+    const { data } = await authAxios.post(`${org(organizationSlug)}/members/invites/`, {
+        email,
+        org_role: orgRole,
+    });
+    return data;
+}
+
+export async function revokeInvite(organizationSlug, inviteId) {
+    await authAxios.post(`${org(organizationSlug)}/members/invites/${encodeURIComponent(inviteId)}/revoke/`);
+}
+
+/** Owners/Admins: {count, page, page_size, results}, newest first. */
+export async function fetchMemberActivity(organizationSlug, { page, pageSize } = {}) {
+    const { data } = await authAxios.get(`${org(organizationSlug)}/members/activity/`, {
+        params: { page, page_size: pageSize },
+    });
+    return data;
+}
+
+/** {id, name, slug, status, created_at, your_role}. */
+export async function fetchOrganization(organizationSlug) {
+    const { data } = await authAxios.get(`${org(organizationSlug)}/`);
+    return data;
+}
+
+/** Owners only; `name` is the only editable field. */
+export async function renameOrganization(organizationSlug, name) {
+    const { data } = await authAxios.patch(`${org(organizationSlug)}/`, { name });
+    return data;
+}
+
+/** No login needed: what an invite is for, only to the holder of a valid token. */
+export async function previewInvite(token) {
+    const { data } = await publicAxios.post("/organizations/invites/preview/", { token });
+    return data;
+}
+
+/** Signed in with the invited, confirmed email: {organization_slug, organization_name, org_role}. */
+export async function acceptInvite(token) {
+    const { data } = await authAxios.post("/organizations/invites/accept/", { token });
     return data;
 }

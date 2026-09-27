@@ -2,6 +2,8 @@ import { useState, useCallback } from "react";
 import { useNavigate } from "react-router-dom";
 import { logoutSession, publicAxios, SESSION_TRANSPORT } from "../interceptors/axios";
 import { queryClient } from "../app/queryClient";
+import { afterSignIn } from "../auth/returnTo";
+import { handleSignedOut, keepThroughNextSignOut } from "../console/invites/pendingInvite";
 
 export const useBasicAuth = () => {
     const [isLoading, setIsLoading] = useState(false);
@@ -13,14 +15,16 @@ export const useBasicAuth = () => {
     const [message, setMessage] = useState("");
     const navigate = useNavigate();
 
-    const login = useCallback(async ({ email, password }) => {
+    // `returnTo` (allowlisted by afterSignIn) brings someone back to where
+    // they were, e.g. the invite they were accepting.
+    const login = useCallback(async ({ email, password }, { returnTo } = {}) => {
         setIsLoading(true);
         setError(null);
         try {
             await publicAxios.post("/login/", { email, password, ...SESSION_TRANSPORT });
             setIsLoggedIn(true);
             setIs2FARequired(false);
-            navigate("/workspace");
+            navigate(afterSignIn(returnTo));
         } catch (error) {
             if (error.response?.status === 401 && error.response.data?.["2fa_required"]) {
                 setIs2FARequired(true);
@@ -49,9 +53,12 @@ export const useBasicAuth = () => {
         }
     }, [navigate]);
 
-    const logout = useCallback(async () => {
+    // keepInvite: "Switch account" on the invite page keeps the pending
+    // invite through this one sign-out; every other sign-out forgets it.
+    const logout = useCallback(async ({ keepInvite = false } = {}) => {
         setIsLoading(true);
         setMessage("");
+        if (keepInvite) keepThroughNextSignOut();
         try {
             // Revokes the session server-side and clears the HttpOnly cookie.
             await logoutSession();
@@ -64,6 +71,7 @@ export const useBasicAuth = () => {
             // Whatever happened server-side, nothing cached for this session
             // (or any organization it could see) may survive locally.
             queryClient.clear();
+            handleSignedOut();
             setIsLoading(false);
         }
     }, []);

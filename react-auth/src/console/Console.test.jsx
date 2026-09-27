@@ -39,6 +39,7 @@ function renderConsole(path) {
         <QueryClientProvider client={client}>
             <MemoryRouter initialEntries={[path]}>
                 <Routes>
+                    <Route path="/" element={<div data-testid="home">home</div>} />
                     <Route path="/login" element={<div data-testid="login">login</div>} />
                     <Route path="/workspace/onboarding" element={<div data-testid="onboarding">onboarding</div>} />
                     <Route path="/console" element={<ConsoleEntry />} />
@@ -106,6 +107,19 @@ describe("ConsoleLayout gating", () => {
         fireEvent.click(await screen.findByRole("button", { name: "Production" }));
 
         await waitFor(() => expect(screen.getByTestId("location")).toHaveTextContent("env=production"));
+    });
+
+    test("the Gait brand leaves the console for the site home", async () => {
+        mockUser = { email: "me@acme.test" };
+        fetchMyOrganizations.mockResolvedValue([ACME]);
+        renderConsole("/console/acme/overview");
+
+        const brand = await screen.findByRole("link", { name: "Gait home" });
+        expect(brand).toHaveAttribute("href", "/");
+        fireEvent.click(brand);
+
+        await waitFor(() => expect(screen.getByTestId("home")).toBeInTheDocument());
+        expect(screen.getByTestId("location")).toHaveTextContent(/^\/$/);
     });
 
     test("sign out revokes the session and returns to sign-in", async () => {

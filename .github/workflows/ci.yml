@@ -1,0 +1,79 @@
+# Automatic checks for AuthFlow (the app lives in react-auth/).
+# The same three checks the frontend lane runs by hand before every report.
+# Each is its own job, so a red PR shows which one broke. No secrets, no
+# network access to Gait: lint, tests and the build are all self-contained.
+name: CI
+
+on:
+  pull_request:
+    branches: [main]
+  push:
+    branches: [main]
+
+permissions:
+  contents: read
+
+# A newer push to the same PR cancels the older run. Runs on main are never
+# cancelled, so every commit that reaches production keeps its own result.
+concurrency:
+  group: ci-${{ github.ref }}
+  cancel-in-progress: ${{ github.event_name == 'pull_request' }}
+
+defaults:
+  run:
+    working-directory: react-auth
+
+jobs:
+  lint:
+    name: lint
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          persist-credentials: false
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: npm
+          cache-dependency-path: react-auth/package-lock.json
+      - run: npm ci --no-audit --no-fund
+      # ESLint over .js and .jsx, test files included; any problem fails.
+      - run: npm run lint
+
+  test:
+    name: test
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          persist-credentials: false
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: npm
+          cache-dependency-path: react-auth/package-lock.json
+      - run: npm ci --no-audit --no-fund
+      - run: npm test -- --watchAll=false
+        env:
+          CI: true
+
+  build:
+    name: build
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          persist-credentials: false
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: npm
+          cache-dependency-path: react-auth/package-lock.json
+      - run: npm ci --no-audit --no-fund
+      # CI=true turns build warnings into errors, as on Netlify.
+      - run: npm run build
+        env:
+          CI: true

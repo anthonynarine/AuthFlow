@@ -1,11 +1,5 @@
 /* Accept-invite page; builds on the account pages' gv-* card styles. */
 .gv-actions-row { display: flex; flex-wrap: wrap; gap: 10px; align-items: center; }
-.gv-button--ghost {
-  background: transparent;
-  color: var(--color-text);
-  border: 1px solid var(--color-border-strong);
-}
-.gv-button--ghost:hover { background: var(--color-surface-glass-strong); color: var(--color-text); }
 .gv-facts { margin: 0 0 18px; display: grid; gap: 10px; font-size: 0.9rem; }
 .gv-facts div { display: grid; grid-template-columns: 96px minmax(0, 1fr); gap: 10px; }
 .gv-facts dt { color: var(--color-text-muted); }

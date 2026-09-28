@@ -146,3 +146,20 @@
   .gc-env { order: 3; width: 100%; overflow-x: auto; }
   .gc-user-email { display: none; }
 }
+
+/* INV-UX: pending invitations to other workspaces. */
+.gc-invitations { display: inline-flex; align-items: center; gap: 8px; flex-shrink: 0; }
+.gc-invitations-count {
+  min-width: 20px;
+  padding: 0 6px;
+  border-radius: var(--radius-pill);
+  background: var(--color-accent);
+  color: #0b1512;
+  font-size: 0.75rem;
+  font-weight: 700;
+  line-height: 20px;
+  text-align: center;
+}
+@media (max-width: 640px) {
+  .gc-invitations-label { display: none; }
+}

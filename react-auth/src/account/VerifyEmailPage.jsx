@@ -5,6 +5,8 @@ import { useUserSessionServices } from "../context/auth/UserSessionContext";
 import { verifyEmailToken } from "./emailVerificationApi";
 import { ResendVerificationButton } from "./ResendVerificationButton";
 import { retryAfterSeconds, useRetryAfter } from "./useRetryAfter";
+import { PendingInvites } from "../console/invites/PendingInvites";
+import { useMyInvites } from "../console/invites/useMyInvites";
 import "./emailVerification.css";
 
 /** The token from "#token=...", or null. Never from the query string, which servers and logs see. */
@@ -12,6 +14,23 @@ export function readTokenFromHash(hash) {
     const params = new URLSearchParams((hash || "").replace(/^#/, ""));
     const token = params.get("token");
     return token && token.length <= 256 ? token : null;
+}
+
+/**
+ * INV-UX: once confirmed and signed in, the account's pending invites (Gait
+ * matches the confirmed email, so no invite link is needed in this tab).
+ */
+function InvitesAfterConfirming({ invites }) {
+    if (!invites.length) return null;
+    const one = invites.length === 1;
+    return (
+        <div className="gv-invites">
+            <p className="gv-text">
+                You've been invited to {one ? "a workspace" : `${invites.length} workspaces`}. Join now, or continue to Gait.
+            </p>
+            <PendingInvites invites={invites} label="Your invitations" />
+        </div>
+    );
 }
 
 /** Drop the fragment from the address bar and history entry without a navigation. */
@@ -34,6 +53,9 @@ export function VerifyEmailPage() {
     const [checkedSession, setCheckedSession] = useState(false);
     const started = useRef(false);
     const retry = useRetryAfter();
+    const confirmedNow = state.status === "confirmed" || (state.status === "invalid" && user?.email_verified === true);
+    const myInvites = useMyInvites({ enabled: Boolean(user) && confirmedNow });
+    const invited = Boolean(user) && confirmedNow && myInvites.invites.length > 0;
 
     const submit = async () => {
         setState({ status: "verifying" });
@@ -105,9 +127,10 @@ export function VerifyEmailPage() {
                 <h1 className="gv-title">Email confirmed</h1>
                 <p className="gv-text">
                     {state.email ? <><strong>{state.email}</strong> is confirmed. </> : null}
-                    You can now create a company or accept an invite.
+                    {invited ? null : "You can now create a company or accept an invite."}
                 </p>
-                <Link className="gv-button" to={user ? "/console" : "/login"}>
+                <InvitesAfterConfirming invites={invited ? myInvites.invites : []} />
+                <Link className={invited ? "gv-button gv-button--ghost" : "gv-button"} to={user ? "/console" : "/login"}>
                     {user ? "Continue" : "Sign in to continue"}
                 </Link>
             </>
@@ -129,7 +152,8 @@ export function VerifyEmailPage() {
             <>
                 <h1 className="gv-title">Your email is already confirmed</h1>
                 <p className="gv-text"><strong>{user.email}</strong> is confirmed, so this link isn't needed.</p>
-                <Link className="gv-button" to="/console">Continue</Link>
+                <InvitesAfterConfirming invites={invited ? myInvites.invites : []} />
+                <Link className={invited ? "gv-button gv-button--ghost" : "gv-button"} to="/console">Continue</Link>
             </>
         );
     } else {

@@ -7,6 +7,7 @@ import { ENVIRONMENT_LABELS, ENVIRONMENTS, useConsoleScope } from "../hooks/useC
 import { consoleTitle } from "./consoleTitle";
 import { EmailVerificationBanner } from "../../account/EmailVerificationBanner";
 import { WelcomeNote } from "./WelcomeNote";
+import { InvitationsButton } from "./InvitationsButton";
 import "./ConsoleLayout.css";
 
 const NAV = [
@@ -118,6 +119,7 @@ export function ConsoleLayout() {
                 </div>
 
                 <div className="gc-user">
+                    <InvitationsButton />
                     <Badge value={scope.membership.org_role} />
                     <span className="gc-user-email" title={user?.email}>{user?.email}</span>
                     <Link to="/docs" className="gc-docs-link gc-focusable">Docs</Link>

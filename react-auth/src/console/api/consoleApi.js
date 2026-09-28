@@ -37,13 +37,6 @@ export async function fetchControls(organizationSlug, environment) {
  * `trust` (SELF_REPORTED / GAIT_VERIFIED) is what the console shows as
  * the source of that control's result.
  */
-export async function fetchLatestEvidence(organizationSlug, environment, controlKey) {
-    const { data } = await authAxios.get(`${org(organizationSlug)}/security/evidence/`, {
-        params: { environment, control: controlKey, page_size: 1 },
-    });
-    return data.results[0] || null;
-}
-
 // ---- F2: applications and connection keys ----------------------------------
 
 const app = (slug, applicationId) => `${org(slug)}/applications/${encodeURIComponent(applicationId)}`;
@@ -201,5 +194,23 @@ export async function previewInvite(token) {
 /** Signed in with the invited, confirmed email: {organization_slug, organization_name, org_role}. */
 export async function acceptInvite(token) {
     const { data } = await authAxios.post("/organizations/invites/accept/", { token });
+    return data;
+}
+
+// ---- INV1: invites that follow the account, not the link --------------------
+
+/**
+ * Pending invites to the signed-in account's confirmed email (never a token).
+ * [{id, organization_name, organization_slug, org_role, invited_by_email, expires_at}].
+ * 403 EMAIL_NOT_VERIFIED until the email is confirmed.
+ */
+export async function fetchMyInvites() {
+    const { data } = await authAxios.get("/organizations/invites/mine/");
+    return data.invites;
+}
+
+/** Join through one of your own invites: {organization_slug, organization_name, org_role}. */
+export async function acceptInviteById(inviteId) {
+    const { data } = await authAxios.post(`/organizations/invites/${encodeURIComponent(inviteId)}/accept/`);
     return data;
 }

@@ -2,6 +2,12 @@ import { ROLE_LABELS } from "./memberRules";
 
 const role = (value) => ROLE_LABELS[value] || value;
 
+// INV1: how an invite was accepted. Older rows have none.
+const ACCEPTED_VIA = {
+    LINK: " using the invite link",
+    VERIFIED_EMAIL: " with their confirmed email",
+};
+
 /**
  * One membership activity row as a plain sentence. Gait records emails, not
  * names. A deleted actor is "a deleted account"; MEMBER_REMOVED where actor
@@ -16,7 +22,7 @@ export function activitySentence(row) {
         case "INVITE_REVOKED":
             return `${actor} revoked the invite for ${target}`;
         case "INVITE_ACCEPTED":
-            return `${target} joined as ${role(row.to_role)}`;
+            return `${target} joined as ${role(row.to_role)}${ACCEPTED_VIA[row.accepted_via] || ""}`;
         case "ROLE_CHANGED":
             return `${actor} changed ${target} from ${role(row.from_role)} to ${role(row.to_role)}`;
         case "MEMBER_REMOVED":

@@ -1,11 +1,14 @@
-import React, { useMemo } from "react";
+import React, { useMemo, useState } from "react";
 import { useNavigate, useSearchParams } from "react-router-dom";
 import { useOrganizations } from "../../../hooks/useOrganizations";
 import { useOrganizationApplications } from "../../../hooks/useOrganizationApplications";
 import { useValidateSessionOnMount } from "../../../hooks/useValidateSessionOnMount";
+import { useBasicAuthServices } from "../../../context/auth/BasicAuthContext";
+import { useMyInvites } from "../../../console/invites/useMyInvites";
 import { FounderNav } from "../FounderNav";
 import { SecurityErrorState } from "../../security/SecurityErrorState";
 import { CreateCompanyStep } from "./CreateCompanyStep";
+import { InvitesFirstStep } from "./InvitesFirstStep";
 import { CompanyChooser } from "./CompanyChooser";
 import { AddAppStep } from "./AddAppStep";
 import { AppSetupFlow } from "./AppSetupFlow";
@@ -19,6 +22,8 @@ import "./Onboarding.css";
  * /organizations/<slug>/applications/), never a locally-invented
  * "onboarding complete" flag that could drift from reality:
  *
+ *   0 Companies, invited      -> InvitesFirstStep (INV-UX), with
+ *                               CreateCompanyStep one click away
  *   0 Companies              -> CreateCompanyStep
  *   >1 Companies, none chosen -> CompanyChooser
  *   Company chosen, 0 Apps   -> AddAppStep
@@ -32,7 +37,13 @@ export function OnboardingWizardPage() {
   const navigate = useNavigate();
   const [searchParams, setSearchParams] = useSearchParams();
   useValidateSessionOnMount();
+  const { user } = useBasicAuthServices();
   const orgsState = useOrganizations(true);
+  const noWorkspaceYet = !orgsState.isLoading && !orgsState.error && orgsState.organizations.length === 0;
+  // Invites follow the confirmed email, so they're here whichever tab the
+  // confirmation link opened in.
+  const myInvites = useMyInvites({ enabled: Boolean(user) && noWorkspaceYet });
+  const [creatingInstead, setCreatingInstead] = useState(false);
 
   const selectedSlug = searchParams.get("org");
   const currentOrgSlug = useMemo(() => {
@@ -67,15 +78,29 @@ export function OnboardingWizardPage() {
     content = <p className="founder-empty">Loading…</p>;
   } else if (orgsState.error) {
     content = <SecurityErrorState error={orgsState.error} onRetry={orgsState.refetch} />;
+  } else if (orgsState.organizations.length === 0 && myInvites.waiting) {
+    content = <p className="founder-empty">Loading…</p>;
+  } else if (orgsState.organizations.length === 0 && myInvites.invites.length > 0 && !creatingInstead) {
+    content = <InvitesFirstStep invites={myInvites.invites} onCreateInstead={() => setCreatingInstead(true)} />;
   } else if (orgsState.organizations.length === 0 || searchParams.get("new") === "1") {
     // Either a brand-new founder with no Company yet, or one who
     // explicitly asked to create another one.
+    const invited = orgsState.organizations.length === 0 && myInvites.invites.length > 0;
     content = (
-      <CreateCompanyStep
-        onCreate={handleCreateCompany}
-        isCreating={orgsState.isCreating}
-        createError={orgsState.createError}
-      />
+      <>
+        {invited ? (
+          <p className="onboarding-back">
+            <button type="button" className="onboarding-link-button" onClick={() => setCreatingInstead(false)}>
+              ← Back to your invitations ({myInvites.invites.length})
+            </button>
+          </p>
+        ) : null}
+        <CreateCompanyStep
+          onCreate={handleCreateCompany}
+          isCreating={orgsState.isCreating}
+          createError={orgsState.createError}
+        />
+      </>
     );
   } else if (!currentOrgSlug || !currentOrg) {
     // No Company chosen yet, or the ?org= value doesn't match any real

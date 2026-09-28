@@ -1,8 +1,9 @@
 /*
- * App palette (stage 1) for everything outside the console, the docs and the
- * auth pages: the home/product pages, workspace pages, Security Command and
- * the Observatory, and shared components. Values are exactly what those pages
- * showed before; nothing here changes how they look.
+ * App palette for everything outside the console, the docs and the auth
+ * pages: the home/product pages, workspace pages, Security Command and the
+ * Observatory, and shared components. Stage 2 (monochrome): neutrals come
+ * from the --ds-* grays, white is the action colour, and hue is left only for
+ * status and a few categorical roles.
  *
  * Channels are "r, g, b" so a color can be used at any opacity and still come
  * from here: rgba(var(--rgb-accent), 0.12). A later stage can change a
@@ -12,48 +13,48 @@
   /* Neutrals */
   --rgb-white: 255, 255, 255;
   --rgb-black: 0, 0, 0;
-  --rgb-bg: 18, 18, 18;
-  --rgb-surface: 27, 33, 41;
-  --rgb-surface-alt: 35, 42, 52;
-  --rgb-muted: 154, 164, 175;
+  --rgb-bg: 10, 10, 10;
+  --rgb-surface: 17, 17, 17;
+  --rgb-surface-alt: 28, 28, 28;
+  --rgb-muted: 163, 163, 163;
 
   /* Deep panels and scrims */
-  --rgb-ink: 8, 10, 12;
-  --rgb-ink-blue: 10, 15, 21;
-  --rgb-panel: 17, 23, 31;
-  --rgb-panel-deep: 12, 17, 23;
+  --rgb-ink: 10, 10, 10;
+  --rgb-ink-blue: 10, 10, 10;
+  --rgb-panel: 17, 17, 17;
+  --rgb-panel-deep: 12, 12, 12;
 
   /* Hues */
-  --rgb-accent: 26, 188, 156;
-  --rgb-danger: 255, 107, 107;
-  --rgb-amber: 255, 193, 7;
-  --rgb-warn: 245, 184, 91;
-  --rgb-orange: 255, 139, 61;
-  --rgb-info: 56, 189, 248;
-  --rgb-sky: 79, 172, 254;
-  --rgb-periwinkle: 121, 189, 255;
-  --rgb-violet: 162, 155, 254;
+  --rgb-accent: 250, 250, 250;
+  --rgb-danger: 248, 113, 113;
+  --rgb-amber: 251, 191, 36;
+  --rgb-warn: 251, 191, 36;
+  --rgb-orange: 251, 146, 60;
+  --rgb-info: 147, 197, 253;
+  --rgb-sky: 147, 197, 253;
+  --rgb-periwinkle: 147, 197, 253;
+  --rgb-violet: 196, 181, 253;
 
   /* Solid roles */
-  --color-text-strong: #f5f7fa;
-  --color-on-accent: #07110f;
-  --color-on-accent-cool: #0d1117;
-  --color-panel-opaque: #0c1117;
-  --color-danger-text: #fecaca;
-  --color-danger-text-bright: #ff8b8b;
-  --color-caution: #f6c75a;
+  --color-text-strong: var(--ds-gray-50);
+  --color-on-accent: var(--ds-gray-950);
+  --color-on-accent-cool: var(--ds-gray-950);
+  --color-panel-opaque: var(--ds-gray-925);
+  --color-danger-text: var(--status-danger-text);
+  --color-danger-text-bright: var(--status-danger-text);
+  --color-caution: var(--status-warn);
 
   /* Toasts */
-  --color-toast-bg: #1c2833;
-  --color-toast-error: #dc3545;
+  --color-toast-bg: var(--ds-gray-850);
+  --color-toast-error: var(--status-danger);
 
   /* The /send-email tool keeps its own older look. */
-  --mail-bg: #1e1e1e;
-  --mail-text: #e0e0e0;
-  --mail-label: #d3d3d3;
-  --mail-accent: #30815e;
-  --mail-accent-hover: #14a365;
-  --mail-border: #333;
-  --mail-button-text: #ecf0f1;
-  --mail-link-hover: #2ecc71;
+  --mail-bg: var(--ds-gray-925);
+  --mail-text: var(--ds-gray-200);
+  --mail-label: var(--ds-gray-400);
+  --mail-accent: var(--ds-gray-50);
+  --mail-accent-hover: var(--ds-gray-200);
+  --mail-border: var(--ds-gray-800);
+  --mail-button-text: var(--ds-gray-950);
+  --mail-link-hover: var(--ds-gray-50);
 }

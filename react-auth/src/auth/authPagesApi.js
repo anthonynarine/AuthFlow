@@ -40,18 +40,32 @@ export async function resetPassword({ token, password, confirmPassword }) {
 export const INVALID_RESET_LINK = "This password reset link is invalid or has expired.";
 
 /**
+ * A message Gait sent as a list, a plain string, or a Python list turned into
+ * a string (str() of a Django ValidationError: "['Too short.', \"Can't be…\"]"),
+ * as plain sentences: never brackets or quotes on screen.
+ */
+export function readableMessages(value) {
+    if (Array.isArray(value)) return value.map(readableMessages).filter(Boolean).join(" ");
+    if (typeof value !== "string") return "";
+    const text = value.trim();
+    if (!/^\[.*\]$/s.test(text)) return text;
+    const items = text.match(/'((?:[^'\\]|\\.)*)'|"((?:[^"\\]|\\.)*)"/g);
+    return items ? items.map((item) => item.slice(1, -1).replace(/\\(['"\\])/g, "$1")).join(" ") : text;
+}
+
+/**
  * Gait's register errors come as {error: {field: "..." | [...]}} (or a plain
  * string); map them onto the form's fields, the rest to one general message.
  */
 export function fieldErrors(error, fieldMap, fallback) {
     const payload = error?.response?.data?.error ?? error?.response?.data;
     if (!error?.response) return { general: "We couldn't reach Gait. Check your connection and try again." };
-    if (typeof payload === "string") return { general: payload };
+    if (typeof payload === "string" || Array.isArray(payload)) return { general: readableMessages(payload) || fallback };
     if (payload && typeof payload === "object") {
         const result = {};
         const general = [];
         Object.entries(payload).forEach(([key, value]) => {
-            const text = [value].flat().filter(Boolean).join(" ");
+            const text = readableMessages([value].flat());
             if (!text) return;
             if (fieldMap[key]) result[fieldMap[key]] = text;
             else general.push(text);

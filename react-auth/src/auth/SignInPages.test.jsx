@@ -94,6 +94,18 @@ describe("create account", () => {
         expect(screen.getByText("This password is too common.")).toBeInTheDocument();
     });
 
+    test("Gait's stringified password rules show as sentences on the field, never ['…']", async () => {
+        publicAxios.post.mockRejectedValue({
+            response: { status: 400, data: { error: { password: "['This password is too common.', \"This password can't be entirely numeric.\"]" } } },
+        });
+        visit("/register", <RegisterPage />);
+        fill();
+        fireEvent.click(screen.getByRole("button", { name: "Create account" }));
+        expect(await screen.findByText("This password is too common. This password can't be entirely numeric.")).toBeInTheDocument();
+        expect(screen.getByLabelText("Password")).toHaveAttribute("aria-invalid", "true");
+        expect(screen.queryByText(/\[/)).not.toBeInTheDocument();
+    });
+
     test("mismatched passwords are caught before asking Gait", () => {
         visit("/register", <RegisterPage />);
         fill();

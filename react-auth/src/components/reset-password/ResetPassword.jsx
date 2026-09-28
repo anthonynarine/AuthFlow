@@ -1,21 +1,12 @@
 import React, { useEffect, useState } from "react";
 import { Link, useLocation, useNavigate, useParams } from "react-router-dom";
-import { fieldErrors, INVALID_RESET_LINK, resetPassword } from "../../auth/authPagesApi";
+import { fieldErrors, INVALID_RESET_LINK, readableMessages, resetPassword } from "../../auth/authPagesApi";
 import { readTokenFromHash } from "../../account/VerifyEmailPage";
 import { AuthHeading, AuthLayout } from "../../ds/AuthLayout";
 import { Alert, Button, PasswordField } from "../../ds/components";
 
 const PASSWORD_HINT = "At least 8 characters, not only numbers, and not a common password.";
 const FIELD_MAP = { password: "password", new_password: "password", password_confirm: "confirmPassword" };
-
-/**
- * Gait answers a weak password with Django's list, stringified:
- * "['This password is too short.', ...]". Show the sentences, not the brackets.
- */
-function passwordRules(message) {
-    const found = message.match(/'([^']+)'|"([^"]+)"/g);
-    return found ? found.map((item) => item.slice(1, -1)).join(" ") : message;
-}
 
 /**
  * Choose a new password (DS-AUTH). No toast and no timed redirect: success
@@ -75,7 +66,7 @@ export const ResetPassword = () => {
             } else if (status === 400 && typeof message === "string" && /match/i.test(message)) {
                 setErrors({ confirmPassword: "These don't match. Type the same password twice." });
             } else if (status === 400 && typeof message === "string") {
-                setErrors({ password: passwordRules(message) }); // Gait's password rules
+                setErrors({ password: readableMessages(message) }); // Gait's password rules
             } else if (status === 429) {
                 setErrors({ general: "Too many attempts. Wait a few minutes, then try again." });
             } else {

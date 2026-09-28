@@ -3,7 +3,7 @@ import { SequenceLesson } from "./SequenceLesson";
 
 /*
  * "How a person joins": the shared account spine (1-5), then an either/or
- * fork, start a company (A) or accept an invite (B). Same messages as the
+ * fork, start a workspace (A) or accept an invite (B). Same messages as the
  * old mermaid sequence diagram, one beat at a time.
  */
 
@@ -33,16 +33,16 @@ const BLOCKS = [
         branches: [
             {
                 id: "a",
-                label: "A · Start a new company",
+                label: "A · Start a new workspace",
                 tone: "person",
                 messages: [
-                    { n: 6, from: "person", to: "console", text: "Create company \"acme\"" },
+                    { n: 6, from: "person", to: "console", text: "Create workspace \"acme\"" },
                     { n: 7, from: "gait", to: "person", text: "You are its Owner" },
                 ],
             },
             {
                 id: "b",
-                label: "B · Invited to an existing company",
+                label: "B · Invited to an existing workspace",
                 tone: "invite",
                 messages: [
                     { n: 8, from: "person", to: "console", text: "Open the invite link, signed in as the invited email" },
@@ -76,25 +76,25 @@ const BEATS = [
     },
     {
         title: "Email confirmed",
-        body: "The person opens the link and the console tells Gait the email is confirmed. There is now an identity, but no membership: this account belongs to no company yet.",
+        body: "The person opens the link and the console tells Gait the email is confirmed. There is now an identity, but no membership: this account belongs to no workspace yet.",
         live: [4, 5],
         shown: range(1, 5),
     },
     {
-        title: "Fork A · Start a new company",
-        body: "The person creates a company, acme, and becomes its Owner. Owner is what you get for creating the company, not a promotion that comes later.",
+        title: "Fork A · Start a new workspace",
+        body: "The person creates a workspace, acme, and becomes its Owner. Owner is what you get for creating the workspace, not a promotion that comes later.",
         live: [6, 7],
         shown: range(1, 7),
     },
     {
-        title: "Fork B · Invited to an existing company",
-        body: "The person opens the invite link while signed in with the invited, confirmed email, and joins with the role they were invited as. Signed in as a different email, the invite doesn't work.",
+        title: "Fork B · Invited to an existing workspace",
+        body: "The person opens the invite link while signed in with the invited, confirmed email, and joins with the role they were invited as. Once that email is confirmed, the invite also shows up in Gait itself, so the link isn't the only way in. Signed in as a different email, the invite doesn't work.",
         live: [8, 9],
         shown: [...range(1, 5), 8, 9],
     },
     {
         title: "Recap",
-        body: "An account is not membership. Membership starts at step 6 (you create the company) or step 8 (you accept an invite), never before.",
+        body: "An account is not membership. Membership starts at step 6 (you create the workspace) or step 8 (you accept an invite), never before.",
         live: [],
         shown: range(1, 9),
     },
@@ -104,7 +104,7 @@ export function PersonJoinsLesson() {
     return (
         <SequenceLesson
             captionId="person-joins-caption"
-            caption="A person creates an account and confirms their email from a link Gait sends. Then either they create a new company, and become its Owner, or they open an invite link while signed in with the invited email address and join an existing company with the role they were invited as."
+            caption="A person creates an account and confirms their email from a link Gait sends. Then either they create a new workspace, and become its Owner, or they open an invite link while signed in with the invited email address and join an existing workspace with the role they were invited as."
             lanes={LANES}
             blocks={BLOCKS}
             beats={BEATS}

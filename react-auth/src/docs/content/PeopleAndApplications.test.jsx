@@ -49,9 +49,9 @@ describe("How a person joins", () => {
         expect(within(spine).getAllByText("Person → Gait console")).toHaveLength(2);
         expect(within(spine).getByText("Gait → Person")).toBeInTheDocument();
 
-        const newCompany = within(lesson).getByRole("list", { name: "A · Start a new company" });
+        const newCompany = within(lesson).getByRole("list", { name: "A · Start a new workspace" });
         expect(within(newCompany).getByText("You are its Owner")).toBeInTheDocument();
-        const invited = within(lesson).getByRole("list", { name: "B · Invited to an existing company" });
+        const invited = within(lesson).getByRole("list", { name: "B · Invited to an existing workspace" });
         expect(
             within(invited).getByText("Open the invite link, signed in as the invited email")
         ).toBeInTheDocument();
@@ -69,11 +69,11 @@ describe("How a person joins", () => {
         const live = () => within(lesson).getAllByRole("listitem").filter((item) => item.getAttribute("aria-current") === "step");
         expect(live().map((item) => within(item).getByText(/^\d$/).textContent)).toEqual(["1", "2"]);
 
-        fireEvent.click(within(lesson).getByRole("button", { name: "Step 5: Fork A · Start a new company" }));
+        fireEvent.click(within(lesson).getByRole("button", { name: "Step 5: Fork A · Start a new workspace" }));
         expect(live().map((item) => within(item).getByText(/^\d$/).textContent)).toEqual(["6", "7"]);
 
         fireEvent.click(next);
-        expect(within(lesson).getByText("Fork B · Invited to an existing company")).toBeInTheDocument();
+        expect(within(lesson).getByText("Fork B · Invited to an existing workspace")).toBeInTheDocument();
         expect(live().map((item) => within(item).getByText(/^\d$/).textContent)).toEqual(["8", "9"]);
 
         fireEvent.click(next);

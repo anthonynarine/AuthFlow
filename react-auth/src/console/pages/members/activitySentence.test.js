@@ -18,8 +18,8 @@ test.each([
     [row({ action: "INVITE_ACCEPTED", to_role: "OWNER", accepted_via: "VERIFIED_EMAIL" }), "sam@acme.test joined as Owner with their confirmed email"],
     [row({ action: "ROLE_CHANGED", from_role: "MEMBER", to_role: "OWNER" }), "ana@acme.test changed sam@acme.test from Member to Owner"],
     [row({ action: "MEMBER_REMOVED" }), "ana@acme.test removed sam@acme.test"],
-    [row({ action: "MEMBER_REMOVED", actor_email: "sam@acme.test" }), "sam@acme.test left the company"],
-    [row({ action: "ORGANIZATION_RENAMED", target_email: "", from_name: "Acme", to_name: "Acme Inc" }), 'ana@acme.test renamed the company from "Acme" to "Acme Inc"'],
+    [row({ action: "MEMBER_REMOVED", actor_email: "sam@acme.test" }), "sam@acme.test left the workspace"],
+    [row({ action: "ORGANIZATION_RENAMED", target_email: "", from_name: "Acme", to_name: "Acme Inc" }), 'ana@acme.test renamed the workspace from "Acme" to "Acme Inc"'],
     [row({ action: "INVITE_CREATED", actor_email: null, to_role: "MEMBER" }), "a deleted account invited sam@acme.test as Member"],
     [row({ action: "MEMBER_REMOVED", actor_email: null }), "a deleted account removed sam@acme.test"],
 ])("%#: %s", (input, expected) => {

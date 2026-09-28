@@ -20,7 +20,7 @@ const CLASS_DEFS = `    classDef one fill:#3a2016,stroke:#fb8a5c,color:#e8eaed,s
 export const CONSOLE_ISOLATION = `flowchart LR
 ${CLASS_DEFS}
 
-    subgraph C1["Company: app-one"]
+    subgraph C1["Workspace: app-one"]
         direction TB
         M1["Members<br/>owner@app-one · Owner<br/>sec@app-one · Admin"]:::one
         K1["Apps + keys<br/>app-one-api · local<br/>app-one-api · production"]:::keyed
@@ -28,7 +28,7 @@ ${CLASS_DEFS}
         M1 ~~~ K1 ~~~ F1
     end
     W1{{"404 both ways<br/>no shared rows"}}:::wall
-    subgraph C2["Company: app-two"]
+    subgraph C2["Workspace: app-two"]
         direction TB
         M2["Members<br/>owner@app-two · Owner<br/>ops@app-two · Member"]:::two
         K2["Apps + keys<br/>app-two-api · production"]:::keyed
@@ -55,12 +55,12 @@ ${CLASS_DEFS}
     POOL ~~~ W2
     POOL -- "who is this?" --> U2`;
 
-/** ① Two companies in the Gait console, with a wall between them. */
+/** ① Two workspaces in the Gait console, with a wall between them. */
 export function ConsoleIsolationDiagram() {
     return (
         <Diagram
             source={CONSOLE_ISOLATION}
-            description="Company app-one, on the left, holds its members (owner@app-one as Owner, sec@app-one as Admin), its apps and keys (app-one-api in local and in production) and its findings (app-one-api only). Company app-two, on the right, holds its own members (owner@app-two as Owner, ops@app-two as Member), apps and keys (app-two-api in production) and findings (app-two-api only). A wall between them reads: 404 both ways, no shared rows."
+            description="Workspace app-one, on the left, holds its members (owner@app-one as Owner, sec@app-one as Admin), its apps and keys (app-one-api in local and in production) and its findings (app-one-api only). Workspace app-two, on the right, holds its own members (owner@app-two as Owner, ops@app-two as Member), apps and keys (app-two-api in production) and findings (app-two-api only). A wall between them reads: 404 both ways, no shared rows."
         />
     );
 }

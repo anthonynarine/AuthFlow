@@ -120,7 +120,7 @@ describe("How it works", () => {
     test("every box and every path in the lesson map is labeled", () => {
         renderDoc("how-it-works");
         const lesson = screen.getByRole("figure");
-        for (const title of ["Your team", "Your software", "Your product's users", "Company: Acme"]) {
+        for (const title of ["Your team", "Your software", "Your product's users", "Workspace: Acme"]) {
             expect(within(lesson).getAllByText(title).length).toBeGreaterThan(0);
         }
         for (const label of [

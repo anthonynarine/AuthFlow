@@ -43,7 +43,7 @@ describe("AppsHomePage — the honest tenant founder home", () => {
     );
     useOrganizationApplications.mockReturnValue(apps([]));
     renderPage();
-    expect(screen.getByRole("heading", { name: "Which Company are you working on?" })).toBeInTheDocument();
+    expect(screen.getByRole("heading", { name: "Which workspace are you working in?" })).toBeInTheDocument();
   });
 
   test("no Apps yet offers Add your first App, never a fake Apps table", () => {
@@ -79,7 +79,7 @@ describe("AppsHomePage — the honest tenant founder home", () => {
     useOrganizations.mockReturnValue(orgs([{ id: "1", name: "Acme", slug: "acme", org_role: "OWNER" }]));
     useOrganizationApplications.mockReturnValue(apps([]));
     renderPage("/workspace/apps?org=not-a-real-company");
-    expect(screen.getByRole("heading", { name: "Which Company are you working on?" })).toBeInTheDocument();
+    expect(screen.getByRole("heading", { name: "Which workspace are you working in?" })).toBeInTheDocument();
   });
 
   test("zero Companies points back to onboarding, not a broken empty page", () => {

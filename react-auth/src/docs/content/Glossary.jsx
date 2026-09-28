@@ -10,16 +10,11 @@ export const GLOSSARY = [
         "security-checks-and-findings",
     ],
     ["Acknowledge", "Marking a finding as seen and being worked on.", "security-checks-and-findings"],
-    ["Admin", "A company role that can manage applications, keys and people, except Owners.", "teams-roles-and-invites"],
+    ["Admin", "A workspace role that can manage applications, keys and people, except Owners.", "teams-roles-and-invites"],
     [
         "Application",
         "One piece of your software in one environment, e.g. Acme API · production.",
         "applications-and-connection-keys",
-    ],
-    [
-        "Company",
-        "Your team's private space in Gait. Everything else belongs to exactly one company.",
-        "people-and-applications",
     ],
     [
         "Connection key",
@@ -49,7 +44,7 @@ export const GLOSSARY = [
     ],
     [
         "Gait account",
-        "A person's login. On its own it belongs to no company and sees nothing.",
+        "A person's login. On its own it belongs to no workspace and sees nothing.",
         "people-and-applications",
     ],
     [
@@ -60,22 +55,22 @@ export const GLOSSARY = [
     ["Gait-verified", "Evidence Gait produced or confirmed itself, as opposed to self-reported.", "how-it-works"],
     [
         "Invite",
-        "A single-use emailed link to join a company, valid for 7 days. Joining also needs a signed-in account with the invited, confirmed email.",
+        "An invitation to join a workspace, sent to one email address and valid for 7 days. Accept it from the emailed link, or in Gait once you're signed in with that address confirmed.",
         "teams-roles-and-invites",
     ],
     [
         "Isolation",
-        "The guarantee that one company can never see or affect another's people, applications or findings.",
+        "The guarantee that one workspace can never see or affect another's people, applications or findings.",
         "isolation",
     ],
     [
         "Member",
-        "A company role that can see the company's applications and findings but can't change them.",
+        "A workspace role that can see the workspace's applications and findings but can't change them.",
         "teams-roles-and-invites",
     ],
     [
         "Owner",
-        "The company role with full control, including other Owners. A company always has at least one.",
+        "The workspace role with full control, including other Owners. A workspace always has at least one.",
         "teams-roles-and-invites",
     ],
     ["Security check", "A test your application runs on itself and reports as PASS or FAIL.", "connecting-your-software"],
@@ -84,6 +79,11 @@ export const GLOSSARY = [
         "Site / facility",
         "A way your own product may split one customer organization into locations. It's your product's concept; Gait doesn't enforce it.",
         "teams-roles-and-invites#sites-inside-an-org",
+    ],
+    [
+        "Workspace",
+        "Your team's private space in Gait. Everything else belongs to exactly one workspace.",
+        "people-and-applications",
     ],
 ];
 

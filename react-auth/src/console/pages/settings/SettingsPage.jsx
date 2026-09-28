@@ -39,14 +39,14 @@ export function SettingsPage() {
         if (organization.data) setName(organization.data.name);
     }, [organization.data]);
 
-    const header = <PageHeader title="Settings" description="Your company's details." />;
+    const header = <PageHeader title="Settings" description="Your workspace's details." />;
     if (organization.isLoading) return <>{header}<LoadingState label="Loading settings…" /></>;
     if (organization.isError) return <>{header}<ErrorState error={organization.error} onRetry={organization.refetch} /></>;
 
     const data = organization.data;
     const isOwner = data.your_role === "OWNER";
     const trimmed = name.trim();
-    const problem = !trimmed ? "Give the company a name." : trimmed.length > NAME_MAX ? `Use ${NAME_MAX} characters or fewer.` : null;
+    const problem = !trimmed ? "Give the workspace a name." : trimmed.length > NAME_MAX ? `Use ${NAME_MAX} characters or fewer.` : null;
     const unchanged = trimmed === data.name;
 
     const onSubmit = async (event) => {
@@ -64,10 +64,10 @@ export function SettingsPage() {
     return (
         <>
             {header}
-            <Card title="Company">
+            <Card title="Workspace">
                 {isOwner ? (
                     <form onSubmit={onSubmit} noValidate className="gc-settings-form">
-                        <Field label="Company name" error={(!unchanged && problem) || apiFieldErrors(rename.error).name}>
+                        <Field label="Workspace name" error={(!unchanged && problem) || apiFieldErrors(rename.error).name}>
                             <input
                                 className="gc-input"
                                 value={name}
@@ -90,20 +90,20 @@ export function SettingsPage() {
                     </form>
                 ) : (
                     <dl className="gc-meta">
-                        <div><dt>Company name</dt><dd>{data.name}</dd></div>
+                        <div><dt>Workspace name</dt><dd>{data.name}</dd></div>
                     </dl>
                 )}
                 <dl className="gc-meta gc-settings-meta">
                     <div>
-                        <dt>URL slug</dt>
+                        <dt>Workspace URL</dt>
                         <dd><code className="gc-code">{data.slug}</code></dd>
                     </div>
                     <div><dt>Created</dt><dd>{formatDateTime(data.created_at)}</dd></div>
                     <div><dt>Your role</dt><dd>{ROLE_LABELS[data.your_role] || data.your_role}</dd></div>
                 </dl>
                 <p className="gc-muted gc-settings-note">
-                    The slug can't be changed: it's how your company is identified in links and by your software.
-                    {isOwner ? "" : " Only Owners can rename the company."}
+                    The workspace URL can't be changed later: it's how your workspace is identified in links and by your software.
+                    {isOwner ? "" : " Only Owners can rename the workspace."}
                 </p>
             </Card>
         </>

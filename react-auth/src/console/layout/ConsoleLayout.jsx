@@ -60,7 +60,7 @@ export function ConsoleLayout() {
         return <Navigate to="/login" replace state={{ from: location.pathname + location.search }} />;
     }
     if (scope.organizations.isLoading) {
-        return <FullPage><LoadingState label="Loading your organizations…" /></FullPage>;
+        return <FullPage><LoadingState label="Loading your workspaces…" /></FullPage>;
     }
     if (scope.organizations.isError) {
         return <FullPage><ErrorState error={scope.organizations.error} onRetry={scope.organizations.refetch} /></FullPage>;
@@ -88,7 +88,7 @@ export function ConsoleLayout() {
                 </Link>
 
                 <label className="gc-switcher">
-                    <span className="gc-visually-hidden">Organization</span>
+                    <span className="gc-visually-hidden">Switch workspace</span>
                     <select
                         value={scope.orgSlug}
                         onChange={(event) => navigate(`/console/${event.target.value}/overview`)}

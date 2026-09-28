@@ -130,7 +130,7 @@ describe("F2 application list", () => {
         fetchApplications.mockResolvedValue([LOCAL_API]);
         renderAt("/console/app-one/applications?env=production");
         expect(await screen.findByText("No applications in Production yet")).toBeInTheDocument();
-        expect(screen.getByText("Ask an Owner or Admin of this company to add one.")).toBeInTheDocument();
+        expect(screen.getByText("Ask an Owner or Admin of this workspace to add one.")).toBeInTheDocument();
         expect(screen.queryByRole("button", { name: "Add application" })).toBeNull();
     });
 
@@ -257,7 +257,7 @@ describe("F2 lifecycle actions", () => {
         renderAt("/console/app-one/applications/a1?env=production");
         fireEvent.click(await screen.findByRole("button", { name: "Suspend" }));
         fireEvent.click(within(screen.getByRole("dialog")).getByRole("button", { name: "Suspend" }));
-        expect(await screen.findByText("Your role in this organization can't do that.")).toBeInTheDocument();
+        expect(await screen.findByText("Your role in this workspace can't do that.")).toBeInTheDocument();
     });
 
     test("retire needs the slug typed, and says it's permanent", async () => {

@@ -210,7 +210,7 @@ export function AcceptInvitePage() {
             (organizations.data || []).some((row) => row.slug === preview.organization_slug);
 
         if (!user) {
-            title = `${company} invited you as ${role}`;
+            title = `${company} invited you to its workspace as ${role}`;
             body = (
                 <>
                     <p className="gv-text">
@@ -259,7 +259,7 @@ export function AcceptInvitePage() {
             body = (
                 <>
                     <dl className="gv-facts">
-                        <div><dt>Company</dt><dd>{company}</dd></div>
+                        <div><dt>Workspace</dt><dd>{company}</dd></div>
                         <div><dt>Your role</dt><dd>{role}: {ROLE_DESCRIPTIONS[preview.org_role]}</dd></div>
                         <div><dt>Invited by</dt><dd>{preview.invited_by_name || "a deleted account"}</dd></div>
                         <div><dt>Expires</dt><dd>{formatDateTime(preview.expires_at)}</dd></div>

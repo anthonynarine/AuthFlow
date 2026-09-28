@@ -25,7 +25,7 @@ const NODES = {
         title: "Your product's users",
         detail: "People who use your product, not your team",
     },
-    hub: { kicker: "Gait", title: "Company: Acme" },
+    hub: { kicker: "Gait", title: "Workspace: Acme" },
 };
 
 const HUB_ITEMS = ["applications", "keys", "findings"];
@@ -42,14 +42,14 @@ const ALL_PATHS = ["team", "software", "users"];
 const TOUR = [
     {
         title: "The whole map",
-        body: "Four boxes, three paths. Gait isn't a fourth actor next to the others: it's the company workspace where the other three meet.",
+        body: "Four boxes, three paths. Gait isn't a fourth actor next to the others: it's the workspace where the other three meet.",
         nodes: ALL_NODES,
         paths: ALL_PATHS,
         items: HUB_ITEMS,
     },
     {
         title: "Start with the hub",
-        body: "Your company in Gait (here, Acme) holds three things: the applications you register, their connection keys, and the findings their reports produce. Every path ends here.",
+        body: "Your workspace in Gait (here, Acme) holds three things: the applications you register, their connection keys, and the findings their reports produce. Every path ends here.",
         nodes: ["hub"],
         paths: [],
         items: ["applications", "keys"],
@@ -63,7 +63,7 @@ const TOUR = [
     },
     {
         title: "Path 2 · Your software reports",
-        body: "Acme API runs its own checks (for example \"debug mode is off\") and sends PASS or FAIL with the gait-sdk. The connection key it holds tells Gait which application, and so which company, the report belongs to. A FAIL opens a finding; a later PASS closes it.",
+        body: "Acme API runs its own checks (for example \"debug mode is off\") and sends PASS or FAIL with the gait-sdk. The connection key it holds tells Gait which application, and so which workspace, the report belongs to. A FAIL opens a finding; a later PASS closes it.",
         nodes: ["software", "hub"],
         paths: ["software"],
         items: HUB_ITEMS,
@@ -77,7 +77,7 @@ const TOUR = [
     },
     {
         title: "Recap",
-        body: "Team configures. Software reports. Users may authenticate. All of it lands in the same company workspace, and your team never talks to your software directly: they only meet inside Gait.",
+        body: "Team configures. Software reports. Users may authenticate. All of it lands in the same workspace, and your team never talks to your software directly: they only meet inside Gait.",
         nodes: ALL_NODES,
         paths: ALL_PATHS,
         items: HUB_ITEMS,
@@ -87,7 +87,7 @@ const TOUR = [
 const EXPLORE = {
     team: {
         title: "Your team",
-        body: "Signs in to the console. Owners and Admins add applications, issue and revoke connection keys, and act on findings. Members can see the company's applications, security and members.",
+        body: "Signs in to the console. Owners and Admins add applications, issue and revoke connection keys, and act on findings. Members can see the workspace's applications, security and members.",
         nodes: ["team", "hub"],
         paths: ["team"],
         items: HUB_ITEMS,
@@ -101,14 +101,14 @@ const EXPLORE = {
     },
     users: {
         title: "Your product's users",
-        body: "Optional, early access. They sign in to your product with a Gait account; your product decides what they can do. They aren't members of your Gait company.",
+        body: "Optional, early access. They sign in to your product with a Gait account; your product decides what they can do. They aren't members of your Gait workspace.",
         nodes: ["users", "software"],
         paths: ["users"],
         items: [],
     },
     hub: {
-        title: "Company: Acme",
-        body: "Your company workspace in Gait: applications (one per piece of software per environment), their connection keys, and findings. Other companies can't see any of it.",
+        title: "Workspace: Acme",
+        body: "Your workspace in Gait: applications (one per piece of software per environment), their connection keys, and findings. Other workspaces can't see any of it.",
         nodes: ["hub", "team", "software"],
         paths: ["team", "software"],
         items: HUB_ITEMS,
@@ -127,7 +127,7 @@ const ROLES = [
     {
         id: "owner",
         label: "Owner",
-        body: "Everything an Admin can do, plus inviting or making Owners and retiring applications. A company always keeps at least one Owner.",
+        body: "Everything an Admin can do, plus inviting or making Owners and retiring applications. A workspace always keeps at least one Owner.",
         nodes: ["team", "hub"],
         paths: ["team"],
         items: HUB_ITEMS,
@@ -143,7 +143,7 @@ const ROLES = [
     {
         id: "member",
         label: "Member",
-        body: "Sees the company's applications, security and members. Can't change them.",
+        body: "Sees the workspace's applications, security and members. Can't change them.",
         nodes: ["team", "hub"],
         paths: ["team"],
         items: HUB_ITEMS,
@@ -245,9 +245,9 @@ export function HowItWorksLesson() {
     return (
         <figure className="hiw" aria-labelledby="hiw-caption">
             <figcaption id="hiw-caption" className="doc-visually-hidden">
-                Your team (Owner, Admin, Member) signs in to the console and works in the company Acme inside Gait,
+                Your team (Owner, Admin, Member) signs in to the console and works in the workspace Acme inside Gait,
                 which holds applications, keys and findings. Your software, such as Acme API in production, uses the
-                gait-sdk and a connection key to report security checks to that company. Optionally, in early access,
+                gait-sdk and a connection key to report security checks to that workspace. Optionally, in early access,
                 your product's own users sign in with Gait, and your product decides what they can access.
             </figcaption>
 

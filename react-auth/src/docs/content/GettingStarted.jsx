@@ -8,11 +8,11 @@ export default function GettingStarted() {
         <>
             <p className="doc-lede">
                 Gait watches the security of your software and helps you fix what it finds. This guide sets up your
-                company in the Gait console and connects your first application.
+                workspace in the Gait console and connects your first application.
             </p>
 
             <Callout kind="availability" title="What works today">
-                Signing in, creating your company, inviting your team, managing applications and their connection
+                Signing in, creating your workspace, inviting your team, managing applications and their connection
                 keys, reporting security checks, and reviewing and acting on findings all work in the console now.
                 Where something isn't available yet, the page describing it says so.
             </Callout>
@@ -33,7 +33,7 @@ export default function GettingStarted() {
                     </thead>
                     <tbody>
                         <tr>
-                            <th scope="row">Company</th>
+                            <th scope="row">Workspace</th>
                             <td>
                                 Your team's private space in Gait. Everything else belongs to it, and nobody outside it
                                 can see any of it.
@@ -75,28 +75,28 @@ export default function GettingStarted() {
                 {statusOf("emailVerification") === "live" ? (
                     <p>
                         When you create an account, Gait emails you a link. Confirm your email address with it before
-                        you create a company or accept an invite; the link lasts 48 hours, and you can ask for a new
+                        you create a workspace or accept an invite; the link lasts 48 hours, and you can ask for a new
                         one from the console.
                     </p>
                 ) : (
                     <Callout kind="availability">
                         Email confirmation is rolling out. Once it's live, Gait emails you a link when you create an
-                        account, and you'll need to confirm your email address before you can create a company or
+                        account, and you'll need to confirm your email address before you can create a workspace or
                         accept an invite.
                     </Callout>
                 )}
             </DocSection>
 
-            <DocSection id="step-2-create-your-company" title="Step 2: Create your company">
-                <p>The first time you open the console, Gait asks you to create your company.</p>
+            <DocSection id="step-2-create-your-company" title="Step 2: Create your workspace">
+                <p>The first time you open the console, Gait asks you to create your workspace.</p>
                 <ul>
-                    <li><strong>Company name</strong>: what your team will see, e.g. <code>Acme</code>.</li>
+                    <li><strong>Workspace name</strong>: what your team will see, e.g. <code>Acme</code>.</li>
                     <li>
-                        <strong>Company URL slug</strong>: a short, lowercase identifier used in links, e.g.{" "}
+                        <strong>Workspace URL slug</strong>: a short, lowercase identifier used in links, e.g.{" "}
                         <code>acme</code>. <strong>Choose carefully: it can't be changed later.</strong>
                     </li>
                 </ul>
-                <p>You become the company's <strong>Owner</strong>.</p>
+                <p>You become the workspace's <strong>Owner</strong>.</p>
             </DocSection>
 
             <DocSection id="step-3-add-an-application" title="Step 3: Add an application">

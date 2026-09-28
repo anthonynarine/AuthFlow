@@ -10,8 +10,8 @@ import React from "react";
 export function CompanyChooser({ organizations, onChoose, onCreateNew }) {
   return (
     <div className="onboarding-step">
-      <p className="onboarding-eyebrow">Choose a Company</p>
-      <h1 className="onboarding-title">Which Company are you working on?</h1>
+      <p className="onboarding-eyebrow">Choose a workspace</p>
+      <h1 className="onboarding-title">Which workspace are you working in?</h1>
       <p className="onboarding-sub">You belong to more than one — pick one to continue.</p>
 
       <div className="onboarding-company-list">
@@ -30,7 +30,7 @@ export function CompanyChooser({ organizations, onChoose, onCreateNew }) {
 
       {onCreateNew && (
         <button type="button" className="fw-btn" onClick={onCreateNew}>
-          Create another Company
+          Create another workspace
         </button>
       )}
     </div>

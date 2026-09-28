@@ -6,8 +6,8 @@ import { statusAsOfLabel } from "../featureStatus";
 // [feature, what it does, status keys (a Pending item can wait on more than one screen)]
 const WHAT_YOU_GET = [
     [
-        "A private company space",
-        "Your team's own area in the Gait console. Your people, applications, keys and findings live there, and nobody outside your company can see any of it.",
+        "A private workspace",
+        "Your team's own area in the Gait console. Your people, applications, keys and findings live there, and nobody outside your workspace can see any of it.",
         ["core"],
     ],
     [
@@ -94,7 +94,7 @@ export default function WhatGaitIs() {
                 <ul>
                     <li><DocLink to="how-it-works">How it works</DocLink>: the big picture in one diagram.</li>
                     <li>
-                        <DocLink to="quickstart">Quickstart</DocLink>: company, application, key and first security check
+                        <DocLink to="quickstart">Quickstart</DocLink>: workspace, application, key and first security check
                         in about 15 minutes.
                     </li>
                     <li>

@@ -10,7 +10,7 @@ export const ROLE_LABELS = { OWNER: "Owner", ADMIN: "Admin", MEMBER: "Member" };
 export const ROLE_DESCRIPTIONS = {
     OWNER: "Full control, including other Owners and retiring applications.",
     ADMIN: "Manages applications, keys, findings and people, except Owners.",
-    MEMBER: "Sees the company's applications, findings and members, but can't change them.",
+    MEMBER: "Sees the workspace's applications, findings and members, but can't change them.",
 };
 
 const isManager = (role) => role === "OWNER" || role === "ADMIN";
@@ -55,7 +55,7 @@ export function canRevokeInvite(actorRole, invite) {
 }
 
 export const LAST_OWNER_HELP =
-    "A company always keeps at least one Owner. Make someone else an Owner first, then try again.";
+    "A workspace always keeps at least one Owner. Make someone else an Owner first, then try again.";
 
 export function memberName(member) {
     const name = [member.first_name, member.last_name].filter(Boolean).join(" ").trim();

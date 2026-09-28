@@ -31,17 +31,17 @@ export default function Troubleshooting() {
         <>
             <p className="doc-lede">What a message means and what to do about it.</p>
 
-            <DocSection id="signing-in-and-your-company" title="Signing in and your company">
+            <DocSection id="signing-in-and-your-company" title="Signing in and your workspace">
                 <Problems
-                    caption="Signing in and company problems"
+                    caption="Signing in and workspace problems"
                     rows={[
                         [
-                            "The console asks you to create a company",
-                            "Your account isn't in any company yet.",
+                            "The console asks you to create a workspace",
+                            "Your account isn't in any workspace yet.",
                             "Create one, or ask your team's Owner for an invite.",
                         ],
                         [
-                            "You can't create a company until you confirm your email",
+                            "You can't create a workspace until you confirm your email",
                             statusOf("emailVerification") === "live"
                                 ? "Your email address isn't confirmed yet."
                                 : "Your email address isn't confirmed yet (once email confirmation is live).",
@@ -62,12 +62,12 @@ export default function Troubleshooting() {
                     rows={[
                         [
                             "\"This doesn't exist, or you don't have access to it\"",
-                            "You're not a member of that company, or the link is wrong. Gait doesn't say which.",
-                            "Check the address with your company's Owner.",
+                            "You're not a member of that workspace, or the link is wrong. Gait doesn't say which.",
+                            "Check the address with your workspace's Owner.",
                         ],
                         [
                             "\"Your role can't do that\"",
-                            "Your role in this company doesn't allow the action.",
+                            "Your role in this workspace doesn't allow the action.",
                             <>
                                 Ask an Owner or Admin. See <DocLink to="teams-roles-and-invites#roles">Roles</DocLink>.
                             </>,
@@ -78,13 +78,18 @@ export default function Troubleshooting() {
                             "Ask for a new invite.",
                         ],
                         [
+                            "You confirmed your email and landed on \"Create your workspace\"",
+                            "Your invite follows your confirmed email, not the tab you opened the link in.",
+                            "Join it from the list above \"Create your workspace\", or from Invitations in the console. If none shows, the invite is for a different address.",
+                        ],
+                        [
                             "An invite says it's for a different email",
                             "You're signed in with another account.",
                             "Sign out and sign in with the invited email address.",
                         ],
                         [
                             "The last Owner can't leave",
-                            "A company always keeps at least one Owner.",
+                            "A workspace always keeps at least one Owner.",
                             "Make someone else an Owner first.",
                         ],
                     ]}

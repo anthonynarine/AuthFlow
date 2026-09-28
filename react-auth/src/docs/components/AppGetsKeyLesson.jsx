@@ -78,7 +78,7 @@ const BEATS = [
     },
     {
         title: "Every run or deploy",
-        body: "The backend reports a security check with the key. The key alone tells Gait which application, and so which company and environment, the result belongs to: acme / acme-api / production.",
+        body: "The backend reports a security check with the key. The key alone tells Gait which application, and so which workspace and environment, the result belongs to: acme / acme-api / production.",
         live: [5, 6],
         shown: range(1, 6),
     },
@@ -94,7 +94,7 @@ export function AppGetsKeyLesson() {
     return (
         <SequenceLesson
             captionId="app-gets-key-caption"
-            caption="An Owner or Admin adds an application with a name, slug and environment, then issues a connection key. Gait shows the key once and keeps only a fingerprint of it. The key goes into the backend's secret settings, and from then on the backend reports security checks with it, which Gait records for that company, application and environment."
+            caption="An Owner or Admin adds an application with a name, slug and environment, then issues a connection key. Gait shows the key once and keeps only a fingerprint of it. The key goes into the backend's secret settings, and from then on the backend reports security checks with it, which Gait records for that workspace, application and environment."
             lanes={LANES}
             blocks={BLOCKS}
             beats={BEATS}

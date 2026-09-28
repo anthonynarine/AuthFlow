@@ -99,7 +99,7 @@ export function ErrorState({ error, onRetry }) {
         status === 404
             ? "This doesn't exist, or you don't have access to it."
             : status === 403
-                ? "Your role in this organization can't do that."
+                ? "Your role in this workspace can't do that."
                 : error?.response?.data?.detail || "Something went wrong talking to Gait.";
     return (
         <div className="gc-state gc-state--error" role="alert">

@@ -40,6 +40,14 @@ export default function FaqPage() {
                             </>,
                         ],
                         [
+                            "How do we report a security problem?",
+                            <>
+                                Privately, never in public. For Gait itself, email the address on{" "}
+                                <DocLink to="report-a-vulnerability">Report a vulnerability</DocLink>; for gait-sdk, use
+                                the private channel listed there.
+                            </>,
+                        ],
+                        [
                             "Do Gait's automated agents work on our software?",
                             <>
                                 No. They look after Gait's own platform only. See{" "}

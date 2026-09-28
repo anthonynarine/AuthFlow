@@ -73,12 +73,21 @@ describe("What's live & changelog", () => {
 });
 
 describe("Report a vulnerability", () => {
-    test("while the Gait contact is unconfirmed, the page says so and shows no address", () => {
-        expect(SECURITY_CONTACT).toBeNull();
+    test("the Gait contact is exactly the confirmed address, as a mailto link", () => {
+        expect(SECURITY_CONTACT).toBe("security@gaitobservatory.com");
         renderDoc("report-a-vulnerability");
-        expect(screen.getByTestId("security-contact-pending")).toHaveTextContent("Not published yet");
-        expect(screen.queryByRole("link", { name: /@/ })).not.toBeInTheDocument();
-        expect(document.body.textContent).not.toMatch(/[\w.-]+@[\w-]+\.\w+/);
+        expect(screen.getByRole("link", { name: "security@gaitobservatory.com" })).toHaveAttribute(
+            "href",
+            "mailto:security@gaitobservatory.com"
+        );
+        expect(screen.queryByTestId("security-contact-pending")).not.toBeInTheDocument();
+        expect(screen.queryByText(/isn't published yet/)).not.toBeInTheDocument();
+        // It's the only address on the page.
+        const mailtos = screen
+            .getAllByRole("link")
+            .map((link) => link.getAttribute("href"))
+            .filter((href) => href.startsWith("mailto:"));
+        expect(mailtos).toEqual(["mailto:security@gaitobservatory.com"]);
         expect(screen.getByRole("link", { name: "gait-sdk security policy" })).toHaveAttribute(
             "href",
             "https://github.com/anthonynarine/gait-sdk/blob/main/docs/SECURITY.md"

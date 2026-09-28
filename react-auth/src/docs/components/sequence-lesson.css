@@ -6,15 +6,15 @@
  * varies); an arrow runs center to center across the lanes it joins.
  */
 .seq {
-  --seq-person: #1abc9c;
-  --seq-person-bg: rgba(26, 188, 156, 0.1);
-  --seq-console: #9aa4af;
-  --seq-console-bg: rgba(154, 164, 175, 0.08);
-  --seq-gait: #38bdf8;
-  --seq-gait-bg: rgba(56, 189, 248, 0.08);
-  --seq-software: #a78bfa;
-  --seq-software-bg: rgba(167, 139, 250, 0.1);
-  --seq-invite: #fb8a5c;
+  --seq-person: var(--gd-teal);
+  --seq-person-bg: var(--gd-teal-bg);
+  --seq-console: var(--gd-grey);
+  --seq-console-bg: var(--gd-grey-bg);
+  --seq-gait: var(--gd-cyan);
+  --seq-gait-bg: var(--gd-cyan-bg);
+  --seq-software: var(--gd-purple);
+  --seq-software-bg: var(--gd-purple-bg);
+  --seq-invite: var(--gd-orange);
   --seq-lifeline: var(--color-border-strong);
   --seq-number-col: 28px;
 

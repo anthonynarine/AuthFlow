@@ -4,21 +4,21 @@
  * used the same way everywhere on the page).
  */
 .docs-shell {
-  --iso-one: #fb8a5c;
-  --iso-one-bg: rgba(251, 138, 92, 0.1);
-  --iso-one-border: rgba(251, 138, 92, 0.45);
+  --iso-one: var(--gd-orange);
+  --iso-one-bg: var(--gd-orange-bg);
+  --iso-one-border: var(--gd-orange-border);
 
-  --iso-two: #7aa7ff;
-  --iso-two-bg: rgba(122, 167, 255, 0.1);
-  --iso-two-border: rgba(122, 167, 255, 0.45);
+  --iso-two: var(--gd-blue);
+  --iso-two-bg: var(--gd-blue-bg);
+  --iso-two-border: var(--gd-blue-border);
 
   --iso-wall: var(--color-danger);
   --iso-wall-bg: var(--color-danger-bg);
   --iso-wall-border: var(--color-danger-border);
 
-  --iso-ok: #34d399;
-  --iso-ok-bg: rgba(52, 211, 153, 0.08);
-  --iso-ok-border: rgba(52, 211, 153, 0.4);
+  --iso-ok: var(--gd-good);
+  --iso-ok-bg: var(--gd-good-bg-soft);
+  --iso-ok-border: var(--gd-good-border-strong);
 
   --iso-gait-bg: var(--color-surface-glass-strong);
   --iso-gait-border: var(--color-border-strong);

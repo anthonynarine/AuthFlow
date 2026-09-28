@@ -13,8 +13,8 @@ export const showSuccessToast = (message) => {
         transition: Zoom,
         closeButton: false, 
         style: {
-            background: "#1C2833", // Background color for the success toast
-            color: "#1ABC9C",      // Text color for the success toast
+            background: "var(--color-toast-bg)", // Background color for the success toast
+            color: "var(--color-accent)",      // Text color for the success toast
         }
     });
 };
@@ -31,8 +31,8 @@ export const showErrorToast = (errorMessage) => {
         transition: Bounce,
         closeButton: false, 
         style: {
-            background: "#1C2833", // Background color for the error toast
-            color: "#DC3545",      // Text color for the error toast
+            background: "var(--color-toast-bg)", // Background color for the error toast
+            color: "var(--color-toast-error)",      // Text color for the error toast
         }
     });
 };

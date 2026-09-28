@@ -10,9 +10,10 @@ import { useStepUpRetry } from "./useStepUpRetry";
 import { accountErrorMessage, confirmTwoFactorSetup, fetchTwoFactorQrCode, startTwoFactorSetup } from "./accountApi";
 
 /*
- * Recovery codes and the typed setup key arrive with the backend's AUTH-B
- * stage. Until then setup has three steps; the fourth (recovery codes) and the
- * "Can't scan?" key appear as soon as Gait's responses include them.
+ * Four steps: confirm it's you (starting setup reveals a new secret, so Gait
+ * wants a recent sign-in), scan the QR code or type the key, confirm a code,
+ * save the recovery codes. The key and the codes live only in this page's
+ * state and are gone when the person leaves it.
  */
 const recoveryCodesFrom = (data) => (Array.isArray(data?.recovery_codes) ? data.recovery_codes : null);
 const setupKeyFrom = (data) => (typeof data?.manual_key === "string" ? data.manual_key : null);
@@ -48,7 +49,8 @@ export function TwoStepSetupPage() {
         if (qrUrl) URL.revokeObjectURL(qrUrl);
     }, [qrUrl]);
 
-    const total = codes ? 4 : 3;
+    const total = 4;
+    const [keyCopied, setKeyCopied] = useState(false);
     const finish = () =>
         navigate("/account", { replace: true, state: { notice: "Two-step verification is on. You'll enter a code after your password from now on." } });
 
@@ -84,6 +86,9 @@ export function TwoStepSetupPage() {
             const result = await run(() => confirmTwoFactorSetup(otp), "turning on two-step verification");
             if (!result.ok) return;
             setUser((current) => ({ ...current, is_2fa_enabled: true, is_2fa_setup_in_progress: false }));
+            // The secret did its job: drop the key and the QR image now.
+            setSetupKey(null);
+            setQrUrl(null);
             const recovery = recoveryCodesFrom(result.value);
             if (recovery) {
                 setCodes(recovery);
@@ -172,7 +177,19 @@ export function TwoStepSetupPage() {
                 {setupKey ? (
                     <>
                         <p className="ds-hint" style={{ textAlign: "center" }}>Can't scan? Enter this key instead:</p>
-                        <div className="ds-key"><code>{setupKey}</code></div>
+                        <div className="ds-key" role="group" aria-label="Setup key"><code>{setupKey.match(/.{1,4}/g).join(" ")}</code></div>
+                        <div className="ds-row-actions" style={{ justifyContent: "center" }}>
+                            <Button
+                                kind="secondary"
+                                small
+                                onClick={() =>
+                                    navigator.clipboard?.writeText(setupKey).then(() => setKeyCopied(true), () => setKeyCopied(false))
+                                }
+                            >
+                                {keyCopied ? "Copied" : "Copy key"}
+                            </Button>
+                        </div>
+                        <p className="ds-visually-hidden" role="status" aria-live="polite">{keyCopied ? "Copied the setup key." : ""}</p>
                     </>
                 ) : null}
                 <div className="ds-actions">

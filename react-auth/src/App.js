@@ -5,7 +5,6 @@ import { RegisterPage } from "./components/register/RegisterPage";
 import { SendEmail } from "./components/mail/SendEmail";
 import { EarlyAccessPage } from "./components/early-access/EarlyAccessPage";
 import { ResetPassword } from "./components/reset-password/ResetPassword";
-import { QRCodeSetup } from "./components/two-factor/2fa-setup/QRCodeSetup";
 import { NotFound } from "./components/not-found/NotFound";
 import HomePage from "./components/home/HomePage";
 import GaitArchitecturePage from "./components/home/GaitArchitecturePage";
@@ -100,8 +99,11 @@ function App() {
                       <Route path="members" element={<MembersPage />} />
                       <Route path="settings" element={<SettingsPage />} />
                     </Route>
+                    {/* Current emails: /reset-password#token=… (AUTH-B). The path form is for links sent before it; remove once those have expired. */}
+                    <Route path="/reset-password" element={<ResetPassword />} />
                     <Route path="/reset-password/:uidb64/:token" element={<ResetPassword />} />
-                    <Route path="/setup-2fa" element={<QRCodeSetup />} />
+                    {/* Two-step setup moved to the Account page; old links and bookmarks land there. */}
+                    <Route path="/setup-2fa" element={<Navigate to="/account/two-step" replace />} />
                     <Route path="*" element={<NotFound />} />
                   </Routes>
                 </UserSessionProvider>

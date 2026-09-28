@@ -23,16 +23,21 @@ export async function requestPasswordReset(email) {
     return data;
 }
 
-/** uidb64/token come from today's link path; AUTH-B moves them to the #fragment. */
-export async function resetPassword({ uidb64, token, password, confirmPassword }) {
+/**
+ * The reset token goes only in the POST body (it arrives in the link's
+ * #fragment, which browsers never send to a server).
+ */
+export async function resetPassword({ token, password, confirmPassword }) {
     const { data } = await publicAxios.post("/reset-password/", {
-        uidb64,
         token,
         password,
         password_confirm: confirmPassword,
     });
     return data;
 }
+
+/** Gait's one answer for an unknown, used or expired reset link. */
+export const INVALID_RESET_LINK = "This password reset link is invalid or has expired.";
 
 /**
  * Gait's register errors come as {error: {field: "..." | [...]}} (or a plain

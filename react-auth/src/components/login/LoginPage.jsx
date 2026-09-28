@@ -5,12 +5,14 @@ import { useTwoFactorAuth } from "../../hooks/useTwoFactorAuth";
 import { INVITE_ACCEPT_PATH, safeReturnTo } from "../../auth/returnTo";
 import { getPendingInvite } from "../../console/invites/pendingInvite";
 import { AuthHeading, AuthLayout } from "../../ds/AuthLayout";
-import { Alert, Button, CodeField, PasswordField, TextField } from "../../ds/components";
+import { Alert, Button, PasswordField, TextField } from "../../ds/components";
+import { SecondFactorField, secondFactorReady } from "../../account/SecondFactorField";
 
 /**
  * Sign in (DS-AUTH). Step 1: email and password. If the account has two-step
  * verification, step 2 of the same card asks for the code (no modal); focus
- * moves to its heading. `returnTo` (allowlisted) survives both steps.
+ * moves to its heading. A recovery code works there too (lost phone).
+ * `returnTo` (allowlisted) survives both steps.
  */
 export const LoginPage = () => {
     const location = useLocation();
@@ -18,10 +20,12 @@ export const LoginPage = () => {
     const returnTo = location.state?.returnTo || location.state?.from;
     const safeReturn = safeReturnTo(returnTo);
     const { login, is2FARequired, cancelTwoFactor, error, isLoading } = useBasicAuthServices();
-    const { verify2FA, twoFactorError, isLoading: verifying } = useTwoFactorAuth();
+    const { verify2FA, twoFactorError, sessionExpired, isLoading: verifying } = useTwoFactorAuth();
     const [email, setEmail] = useState("");
     const [password, setPassword] = useState("");
     const [code, setCode] = useState("");
+    const [factor, setFactor] = useState("code"); // code | recovery
+    const [recoveryCode, setRecoveryCode] = useState("");
 
     // Arriving from an invite: say which address and workspace it's for.
     const invite = safeReturn === INVITE_ACCEPT_PATH ? getPendingInvite()?.preview : null;
@@ -32,11 +36,15 @@ export const LoginPage = () => {
         await login({ email, password }, { returnTo });
     };
 
+    const ready = secondFactorReady(factor, code, recoveryCode);
+
     const onVerify = async (event) => {
         event.preventDefault();
-        if (code.length !== 6) return;
-        await verify2FA(code, { returnTo });
+        if (!ready) return;
+        const recovery = factor === "recovery";
+        await verify2FA(recovery ? recoveryCode : code, { returnTo, recovery });
         setCode("");
+        setRecoveryCode("");
     };
 
     if (is2FARequired) {
@@ -45,13 +53,25 @@ export const LoginPage = () => {
                 <AuthHeading
                     eyebrow="Two-step verification"
                     title="Enter your code"
-                    lede={<>Open your authenticator app and enter the 6-digit code for <strong>Gait</strong>.</>}
+                    lede={
+                        factor === "recovery"
+                            ? "Enter one of the recovery codes you saved. It works once, then it's used up."
+                            : <>Open your authenticator app and enter the 6-digit code for <strong>Gait</strong>.</>
+                    }
                     focusOnMount
                 />
                 <form className="ds-form" onSubmit={onVerify} noValidate>
-                    <CodeField value={code} onChange={setCode} error={twoFactorError || undefined} />
+                    <SecondFactorField
+                        mode={factor}
+                        onModeChange={setFactor}
+                        code={code}
+                        onCodeChange={setCode}
+                        recoveryCode={recoveryCode}
+                        onRecoveryCodeChange={setRecoveryCode}
+                        error={twoFactorError || undefined}
+                    />
                     <div className="ds-actions">
-                        <Button type="submit" disabled={verifying || code.length !== 6}>
+                        <Button type="submit" disabled={verifying || !ready}>
                             {verifying ? "Checking…" : "Verify"}
                         </Button>
                         <button type="button" className="ds-link ds-link--quiet" onClick={cancelTwoFactor}>
@@ -73,6 +93,7 @@ export const LoginPage = () => {
                 </Alert>
             ) : null}
             {error ? <Alert kind="danger">{error}</Alert> : null}
+            {!error && sessionExpired ? <Alert kind="warning">That sign-in timed out. Enter your password again.</Alert> : null}
             <form className="ds-form" onSubmit={onSignIn} noValidate>
                 <TextField
                     label="Email"

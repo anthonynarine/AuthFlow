@@ -1,24 +1,50 @@
-import React, { useState } from "react";
-import { Link, useParams } from "react-router-dom";
-import { fieldErrors, resetPassword } from "../../auth/authPagesApi";
+import React, { useEffect, useState } from "react";
+import { Link, useLocation, useNavigate, useParams } from "react-router-dom";
+import { fieldErrors, INVALID_RESET_LINK, resetPassword } from "../../auth/authPagesApi";
 import { AuthHeading, AuthLayout } from "../../ds/AuthLayout";
 import { Alert, Button, PasswordField } from "../../ds/components";
 
 const PASSWORD_HINT = "At least 8 characters, not only numbers, and not a common password.";
 const FIELD_MAP = { password: "password", new_password: "password", password_confirm: "confirmPassword" };
 
+/** The token from "#token=…" (current emails), or "" when there isn't one. */
+function tokenFromHash(hash) {
+    return new URLSearchParams((hash || "").replace(/^#/, "")).get("token") || "";
+}
+
+/**
+ * Gait answers a weak password with Django's list, stringified:
+ * "['This password is too short.', ...]". Show the sentences, not the brackets.
+ */
+function passwordRules(message) {
+    const found = message.match(/'([^']+)'|"([^"]+)"/g);
+    return found ? found.map((item) => item.slice(1, -1)).join(" ") : message;
+}
+
 /**
  * Choose a new password (DS-AUTH). No toast and no timed redirect: success
- * and a dead link each get their own state. The link's uid/token still come
- * from the URL path; the backend's AUTH-B moves them to the #fragment.
+ * and a dead link each get their own state.
+ *
+ * Current emails link to /reset-password#token=…: the token is read once and
+ * the fragment is removed from the address bar straight away, so it isn't
+ * left in history or on screen. It only ever leaves in the POST body. Older
+ * emails (/reset-password/:uidb64/:token) still work until they expire.
  */
 export const ResetPassword = () => {
-    const { uidb64, token } = useParams();
+    const params = useParams();
+    const location = useLocation();
+    const navigate = useNavigate();
+    const [token] = useState(() => params.token || tokenFromHash(location.hash));
     const [password, setPassword] = useState("");
     const [confirmPassword, setConfirmPassword] = useState("");
     const [errors, setErrors] = useState({});
     const [busy, setBusy] = useState(false);
-    const [phase, setPhase] = useState("form"); // form | done | invalid
+    const [phase, setPhase] = useState(() => (token ? "form" : "invalid")); // form | done | invalid
+
+    useEffect(() => {
+        if (location.hash) navigate({ pathname: location.pathname, search: location.search }, { replace: true });
+        // eslint-disable-next-line react-hooks/exhaustive-deps
+    }, []);
 
     const onSubmit = async (event) => {
         event.preventDefault();
@@ -29,14 +55,22 @@ export const ResetPassword = () => {
         if (Object.keys(local).length) return;
         setBusy(true);
         try {
-            await resetPassword({ uidb64, token, password, confirmPassword });
+            await resetPassword({ token, password, confirmPassword });
             setPhase("done");
         } catch (failure) {
+            const status = failure?.response?.status;
+            const message = failure?.response?.data?.error;
             const mapped = fieldErrors(failure, FIELD_MAP, "");
-            if (mapped.password || mapped.confirmPassword) {
-                setErrors(mapped);
-            } else if (failure?.response && failure.response.status < 500) {
+            if (status === 404 || message === INVALID_RESET_LINK) {
                 setPhase("invalid"); // used, expired or replaced: Gait doesn't say which
+            } else if (mapped.password || mapped.confirmPassword) {
+                setErrors(mapped);
+            } else if (status === 400 && typeof message === "string" && /match/i.test(message)) {
+                setErrors({ confirmPassword: "These don't match. Type the same password twice." });
+            } else if (status === 400 && typeof message === "string") {
+                setErrors({ password: passwordRules(message) }); // Gait's password rules
+            } else if (status === 429) {
+                setErrors({ general: "Too many attempts. Wait a few minutes, then try again." });
             } else {
                 setErrors({ general: mapped.general || "Your password wasn't changed. Try again in a minute." });
             }

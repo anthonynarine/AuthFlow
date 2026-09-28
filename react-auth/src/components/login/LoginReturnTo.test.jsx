@@ -66,7 +66,7 @@ test("returnTo survives the two-factor step", async () => {
     // The code is step 2 of the same card now (no modal).
     fireEvent.change(await screen.findByLabelText("6-digit code"), { target: { value: "123456" } });
     fireEvent.click(screen.getByRole("button", { name: "Verify" }));
-    await waitFor(() => expect(mockVerify2FA).toHaveBeenCalledWith(expect.anything(), { returnTo: INVITE }));
+    await waitFor(() => expect(mockVerify2FA).toHaveBeenCalledWith("123456", { returnTo: INVITE, recovery: false }));
 });
 
 describe("Create account from the login page", () => {

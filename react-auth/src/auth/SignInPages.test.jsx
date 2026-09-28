@@ -10,6 +10,7 @@ import { WorkspaceChooserStep } from "../components/workspace/onboarding/Workspa
 import { publicAxios } from "../interceptors/axios";
 
 const mockCancelTwoFactor = jest.fn();
+const mockVerify2FA = jest.fn(() => Promise.resolve());
 let mockIs2FARequired = false;
 
 jest.mock("../interceptors/axios", () => ({ publicAxios: { post: jest.fn() } }));
@@ -23,14 +24,14 @@ jest.mock("../context/auth/BasicAuthContext", () => ({
     }),
 }));
 jest.mock("../hooks/useTwoFactorAuth", () => ({
-    useTwoFactorAuth: () => ({ verify2FA: () => Promise.resolve(), twoFactorError: null, isLoading: false }),
+    useTwoFactorAuth: () => ({ verify2FA: mockVerify2FA, twoFactorError: null, sessionExpired: false, isLoading: false }),
 }));
 
 const TEST_PASSWORD = "test-only-passphrase";
 
 function LocationProbe() {
     const location = useLocation();
-    return <div data-testid="location">{location.pathname}</div>;
+    return <div data-testid="location">{location.pathname + location.search + location.hash}</div>;
 }
 
 function visit(path, element, routePath = path) {
@@ -124,8 +125,10 @@ describe("forgot password", () => {
 });
 
 describe("reset password", () => {
-    const PATH = "/reset-password/MQ/test-only-reset-token";
-    const ROUTE = "/reset-password/:uidb64/:token";
+    const LINK = "/reset-password#token=test-only-reset-token";
+    const OLD_LINK = "/reset-password/MQ/test-only-reset-token";
+    const OLD_ROUTE = "/reset-password/:uidb64/:token";
+    const INVALID = "This password reset link is invalid or has expired.";
 
     function submit(password = TEST_PASSWORD, confirm = TEST_PASSWORD) {
         type("New password", password);
@@ -133,39 +136,67 @@ describe("reset password", () => {
         fireEvent.click(screen.getByRole("button", { name: "Save new password" }));
     }
 
-    test("success is its own state with a Sign in button, no timed redirect", async () => {
+    test("today's link: the token is read from #token=, taken out of the address bar, and sent only in the body", async () => {
         publicAxios.post.mockResolvedValue({ data: { message: "ok" } });
-        visit(PATH, <ResetPassword />, ROUTE);
+        visit(LINK, <ResetPassword />, "/reset-password");
+        await waitFor(() => expect(screen.getByTestId("location")).toHaveTextContent(/^\/reset-password$/));
         submit();
         expect(await screen.findByRole("heading", { name: "Sign in with your new password" })).toHaveFocus();
         expect(screen.getByRole("link", { name: "Sign in" })).toHaveAttribute("href", "/login");
-        expect(screen.getByTestId("location")).toHaveTextContent(PATH);
         expect(publicAxios.post).toHaveBeenCalledWith("/reset-password/", {
-            uidb64: "MQ",
             token: "test-only-reset-token",
             password: TEST_PASSWORD,
             password_confirm: TEST_PASSWORD,
         });
     });
 
-    test("a dead link says so and offers a new one", async () => {
-        publicAxios.post.mockRejectedValue({ response: { status: 400, data: { error: "Invalid token." } } });
-        visit(PATH, <ResetPassword />, ROUTE);
+    test("an older /reset-password/:uid/:token link still works", async () => {
+        publicAxios.post.mockResolvedValue({ data: { message: "ok" } });
+        visit(OLD_LINK, <ResetPassword />, OLD_ROUTE);
+        submit();
+        expect(await screen.findByRole("heading", { name: "Sign in with your new password" })).toBeInTheDocument();
+        expect(publicAxios.post).toHaveBeenCalledWith("/reset-password/", {
+            token: "test-only-reset-token",
+            password: TEST_PASSWORD,
+            password_confirm: TEST_PASSWORD,
+        });
+    });
+
+    test("a link without a token is a dead link straight away, and nothing is sent", () => {
+        visit("/reset-password", <ResetPassword />, "/reset-password");
+        expect(screen.getByRole("heading", { name: "This reset link can't be used" })).toBeInTheDocument();
+        expect(publicAxios.post).not.toHaveBeenCalled();
+    });
+
+    test("a used, unknown or expired link says so and offers a new one", async () => {
+        publicAxios.post.mockRejectedValue({ response: { status: 400, data: { error: INVALID } } });
+        visit(LINK, <ResetPassword />, "/reset-password");
         submit();
         expect(await screen.findByRole("heading", { name: "This reset link can't be used" })).toBeInTheDocument();
         expect(screen.getByRole("link", { name: "Send a new link" })).toHaveAttribute("href", "/forgot-password");
     });
 
-    test("a weak password is shown on its field, and the link stays usable", async () => {
+    test("Gait's password rules land on the field (not a dead link), and the link stays usable", async () => {
+        publicAxios.post.mockRejectedValue({
+            response: { status: 400, data: { error: "['This password is too short.', 'This password is too common.']" } },
+        });
+        visit(LINK, <ResetPassword />, "/reset-password");
+        submit("short", "short");
+        expect(await screen.findByText("This password is too short. This password is too common.")).toBeInTheDocument();
+        expect(screen.getByLabelText("New password")).toHaveAttribute("aria-invalid", "true");
+        expect(screen.queryByRole("heading", { name: "This reset link can't be used" })).not.toBeInTheDocument();
+    });
+
+    test("a field-shaped weak-password answer is shown on its field too", async () => {
         publicAxios.post.mockRejectedValue({ response: { status: 400, data: { error: { password: ["This password is too short."] } } } });
-        visit(PATH, <ResetPassword />, ROUTE);
+        visit(OLD_LINK, <ResetPassword />, OLD_ROUTE);
         submit("short", "short");
         expect(await screen.findByText("This password is too short.")).toBeInTheDocument();
         expect(screen.getByLabelText("New password")).toHaveAttribute("aria-invalid", "true");
     });
 
     test("mismatched passwords are caught before asking Gait", () => {
-        visit(PATH, <ResetPassword />, ROUTE);
+        visit(LINK, <ResetPassword />, "/reset-password");
         submit(TEST_PASSWORD, "different");
         expect(screen.getByText("These don't match. Type the same password twice.")).toBeInTheDocument();
         expect(publicAxios.post).not.toHaveBeenCalled();
@@ -184,6 +215,23 @@ describe("sign in", () => {
         expect(screen.getByRole("button", { name: "Verify" })).toBeDisabled();
         fireEvent.click(screen.getByRole("button", { name: "Use a different account" }));
         expect(mockCancelTwoFactor).toHaveBeenCalledTimes(1);
+    });
+
+    test("lost phone: the code step takes a recovery code instead, however it was written down", async () => {
+        mockIs2FARequired = true;
+        visit("/login", <LoginPage />);
+        fireEvent.click(screen.getByRole("button", { name: "Lost your phone? Use a recovery code" }));
+        const field = screen.getByLabelText("Recovery code");
+        expect(field).toHaveAttribute("autocomplete", "off");
+        const verify = screen.getByRole("button", { name: "Verify" });
+        type("Recovery code", "ABCDE-123");
+        expect(verify).toBeDisabled();
+        type("Recovery code", "abcde 12345");
+        expect(verify).toBeEnabled();
+        fireEvent.click(verify);
+        await waitFor(() => expect(mockVerify2FA).toHaveBeenCalledWith("abcde 12345", { returnTo: undefined, recovery: true }));
+        fireEvent.click(screen.getByRole("button", { name: "Use your authenticator app instead" }));
+        expect(screen.getByLabelText("6-digit code")).toHaveValue("");
     });
 
     test("Forgot password sits with the password field", () => {
@@ -215,7 +263,7 @@ test("onboarding's workspace chooser lists real memberships with their roles", (
 
 test("nothing on these pages puts a secret in storage", async () => {
     publicAxios.post.mockResolvedValue({ data: {} });
-    visit("/reset-password/MQ/test-only-reset-token", <ResetPassword />, "/reset-password/:uidb64/:token");
+    visit("/reset-password#token=test-only-reset-token", <ResetPassword />, "/reset-password");
     type("New password", TEST_PASSWORD);
     type("Confirm new password", TEST_PASSWORD);
     fireEvent.click(screen.getByRole("button", { name: "Save new password" }));

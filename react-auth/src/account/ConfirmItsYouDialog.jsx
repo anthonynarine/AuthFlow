@@ -1,23 +1,30 @@
 import React, { useEffect, useRef, useState } from "react";
 import { Dialog } from "../console/components/ui/Dialog";
-import { Alert, Button, CodeField, PasswordField } from "../ds/components";
+import { Alert, Button, PasswordField } from "../ds/components";
+import { SecondFactorField, secondFactorReady } from "./SecondFactorField";
 
 /**
  * "Confirm it's you": the step-up Gait asks for before a password change or a
- * two-step change. Asks for a code as well when Gait needs two-step strength.
+ * two-step change. Asks for a code as well when Gait needs two-step strength;
+ * a recovery code works there too, for someone who lost their phone.
  * Driven by useStepUpRetry().dialog.
  */
 export function ConfirmItsYouDialog({ state, confirm, cancel }) {
     const [password, setPassword] = useState("");
+    const [mode, setMode] = useState("code");
     const [otp, setOtp] = useState("");
+    const [recoveryCode, setRecoveryCode] = useState("");
     const passwordRef = useRef(null);
     const needsCode = state.requiredStrength === "mfa";
     const busy = state.status === "submitting";
+    const ready = Boolean(password) && (!needsCode || secondFactorReady(mode, otp, recoveryCode));
 
     useEffect(() => {
         if (!state.isOpen) {
             setPassword("");
             setOtp("");
+            setRecoveryCode("");
+            setMode("code");
         }
     }, [state.isOpen]);
 
@@ -25,9 +32,16 @@ export function ConfirmItsYouDialog({ state, confirm, cancel }) {
 
     const onSubmit = async (event) => {
         event.preventDefault();
-        if (!password || (needsCode && otp.length !== 6)) return;
-        const result = await confirm({ currentPassword: password, otp });
-        if (!result.ok) setOtp("");
+        if (!ready) return;
+        const result = await confirm({
+            currentPassword: password,
+            otp: mode === "code" ? otp : undefined,
+            recoveryCode: mode === "recovery" ? recoveryCode : undefined,
+        });
+        if (!result.ok) {
+            setOtp("");
+            setRecoveryCode("");
+        }
     };
 
     return (
@@ -52,9 +66,18 @@ export function ConfirmItsYouDialog({ state, confirm, cancel }) {
                     onChange={(event) => setPassword(event.target.value)}
                     inputRef={passwordRef}
                 />
-                {needsCode ? <CodeField value={otp} onChange={setOtp} /> : null}
+                {needsCode ? (
+                    <SecondFactorField
+                        mode={mode}
+                        onModeChange={setMode}
+                        code={otp}
+                        onCodeChange={setOtp}
+                        recoveryCode={recoveryCode}
+                        onRecoveryCodeChange={setRecoveryCode}
+                    />
+                ) : null}
                 <div className="ds-actions">
-                    <Button type="submit" disabled={busy || !password || (needsCode && otp.length !== 6)}>
+                    <Button type="submit" disabled={busy || !ready}>
                         {busy ? "Checking…" : "Confirm"}
                     </Button>
                     <Button kind="secondary" onClick={cancel} disabled={busy}>Cancel</Button>

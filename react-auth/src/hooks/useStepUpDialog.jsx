@@ -70,7 +70,8 @@ export function useStepUpDialog() {
     setState(initialState);
   }, []);
 
-  const submitStepUp = useCallback(async ({ currentPassword, otp }) => {
+  // A recovery code (AUTH-B) stands in for the authenticator code.
+  const submitStepUp = useCallback(async ({ currentPassword, otp, recoveryCode }) => {
     setState((current) => ({
       ...current,
       status: "submitting",
@@ -84,7 +85,11 @@ export function useStepUpDialog() {
       };
 
       if (state.requiredStrength === "mfa") {
-        payload.otp = otp;
+        if (recoveryCode) {
+          payload.recovery_code = recoveryCode.trim();
+        } else {
+          payload.otp = otp;
+        }
       }
 
       const { data } = await authAxios.post("/reauthenticate/", payload);

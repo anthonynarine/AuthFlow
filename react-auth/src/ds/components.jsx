@@ -80,6 +80,36 @@ export function CodeField({ label = "6-digit code", hint, error, value, onChange
     );
 }
 
+/**
+ * A single-use recovery code (xxxxx-xxxxx). Gait ignores case, spaces and
+ * hyphens, so the field takes it however it was written down.
+ */
+export function RecoveryCodeField({ label = "Recovery code", hint, error, value, onChange, inputRef, ...rest }) {
+    return (
+        <Field label={label} hint={hint} error={error}>
+            {(aria) => (
+                <input
+                    className="ds-input ds-code"
+                    ref={inputRef}
+                    autoComplete="off"
+                    autoCapitalize="none"
+                    autoCorrect="off"
+                    spellCheck={false}
+                    maxLength={24}
+                    placeholder="xxxxx-xxxxx"
+                    value={value}
+                    onChange={(event) => onChange(event.target.value)}
+                    {...aria}
+                    {...rest}
+                />
+            )}
+        </Field>
+    );
+}
+
+/** True once a recovery code has its 10 letters and digits (separators don't count). */
+export const isCompleteRecoveryCode = (value) => value.replace(/[\s-]/g, "").length === 10;
+
 const MARKS = { danger: "!", success: "✓", warning: "…", info: "i" };
 
 /**

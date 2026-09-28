@@ -60,7 +60,7 @@ export const FEATURE_INFO = {
     productSignIn: {
         name: "Sign-in for your own product",
         summary: "Your product's users sign in with Gait accounts, verified with the gait-sdk.",
-        doc: "product-organizations-and-invites",
+        doc: "add-gait-sign-in",
     },
 };
 

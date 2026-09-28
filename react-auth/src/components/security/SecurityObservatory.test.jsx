@@ -211,15 +211,18 @@ describe("Security Observatory components", () => {
     mockHelpTopics = {};
   });
 
-  test("page header renders the signed-in operator", () => {
+  test("page header has the signed-in operator's account menu (read only), with a way to Account", () => {
     render(
       <MemoryRouter>
         <SecurityObservatoryPage />
       </MemoryRouter>
     );
 
-    expect(screen.getByTitle("Signed in as Anthony Narine")).toBeInTheDocument();
-    expect(screen.getByText("Anthony Narine")).toBeInTheDocument();
+    const menuButton = screen.getByRole("button", { name: /^Your account/ });
+    expect(menuButton).toHaveTextContent("security@gaitobservatory.com");
+    expect(menuButton).toHaveTextContent("Read only");
+    fireEvent.click(menuButton);
+    expect(screen.getByRole("menuitem", { name: "Account" })).toHaveAttribute("href", "/account");
     expect(mockValidateSession).toHaveBeenCalled();
   });
 

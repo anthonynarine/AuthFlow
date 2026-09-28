@@ -9,7 +9,7 @@ import { useScheduleList } from "../../hooks/useScheduleList";
 import { useScheduleMutations } from "../../hooks/useScheduleMutations";
 import { SecurityErrorState } from "../security/SecurityErrorState";
 import { SecurityPageSwitcher } from "../security/SecurityPageSwitcher";
-import { SecurityOperatorBadge } from "../security/SecurityOperatorBadge";
+import { AccountMenu } from "../../account/AccountMenu";
 import { ExerciseCatalogFilters } from "./ExerciseCatalogFilters";
 import { PlaybookCatalogList } from "./PlaybookCatalogList";
 import { PlaybookDetailModal } from "./PlaybookDetailModal";
@@ -133,7 +133,7 @@ export function SecurityExercisesPage() {
             <p>Browse the approved adversarial verification catalog and run governed, bounded exercises.</p>
           </div>
           <div className="security-header-actions">
-            <SecurityOperatorBadge user={user} statusLabel={!canRunExercises ? "View only" : null} />
+            <AccountMenu status={!canRunExercises ? "View only" : null} />
           </div>
         </header>
 

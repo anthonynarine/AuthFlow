@@ -11,8 +11,9 @@ function initials(user) {
  * The person's menu in the top bar: Account (flagged while two-step
  * verification is off), Docs, Sign out. A menu button: Enter/Space/ArrowDown
  * open it, arrows move, Escape closes and returns focus, a click outside closes.
+ * `status` (e.g. "Read only" on the security pages) shows beside the email.
  */
-export function UserMenu({ user, onSignOut }) {
+export function UserMenu({ user, onSignOut, status }) {
     const [open, setOpen] = useState(false);
     const menuId = useId();
     const buttonRef = useRef(null);
@@ -80,6 +81,7 @@ export function UserMenu({ user, onSignOut }) {
             >
                 <span className="ds-avatar" aria-hidden="true">{initials(user)}</span>
                 <span className="ds-user-email">{user?.email}</span>
+                {status ? <span className="ds-user-status">{status}</span> : null}
                 {twoFactorOff ? <span className="ds-dot" aria-hidden="true" /> : null}
             </button>
             {open ? (
@@ -87,6 +89,7 @@ export function UserMenu({ user, onSignOut }) {
                     <div className="ds-menu-head" role="none">
                         {name ? <strong>{name}</strong> : null}
                         {user?.email}
+                        {status ? <span className="ds-menu-status">{status}</span> : null}
                     </div>
                     <Link role="menuitem" className="ds-menu-item" to="/account" onClick={() => close(false)}>
                         Account

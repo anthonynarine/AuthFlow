@@ -3,10 +3,11 @@ import { persistAuthTokens } from "../interceptors/tokenStorage";
 
 /*
  * The person's own account (the console Account page), against Gait's user
- * endpoints. Password change, 2FA setup, 2FA disable and new recovery codes
- * need a recent sign-in and answer 403 STEP_UP_REQUIRED otherwise (see
- * useStepUpRetry). Turning 2FA off and making new codes use up the step-up,
- * so the next sensitive change asks again.
+ * endpoints. Password change and 2FA setup need a recent sign-in and answer
+ * 403 STEP_UP_REQUIRED otherwise (see useStepUpRetry). Turning 2FA off and
+ * making new recovery codes are different (H6): they carry their own proof
+ * (password + code or recovery code) in the request, every time, and answer
+ * 403 PROOF_REQUIRED without it (see ProofDialog).
  */
 
 /** TanStack Query key for the recovery-code count (never the codes). */
@@ -41,7 +42,8 @@ export async function fetchTwoFactorQrCode() {
  * Confirms the first code. Cookie session (E3): Gait starts a fresh two-step
  * session, puts its refresh token only in the HttpOnly cookie, and returns the
  * new access token, which replaces the old one in memory, plus the ten
- * recovery codes, shown once.
+ * recovery codes, shown once, and sessions_revoked: every other session is
+ * signed out (H6).
  */
 export async function confirmTwoFactorSetup(otp) {
     const { data } = await authAxios.post("/verify-otp/", { otp, ...SESSION_TRANSPORT }, { withCredentials: true });
@@ -50,11 +52,11 @@ export async function confirmTwoFactorSetup(otp) {
 }
 
 /**
- * {is_2fa_setup_in_progress, sessions_revoked}. The proof is a fresh step-up
- * (password plus a code or a recovery code), so nothing else goes in the body.
+ * {is_2fa_setup_in_progress, sessions_revoked}. `proof` is {current_password,
+ * otp} or {current_password, recovery_code}, sent in this same request.
  */
-export async function disableTwoFactor() {
-    const { data } = await authAxios.patch("/user/toggle-2fa/", { is_2fa_enabled: false });
+export async function disableTwoFactor(proof) {
+    const { data } = await authAxios.patch("/user/toggle-2fa/", { is_2fa_enabled: false, ...proof });
     return data;
 }
 
@@ -64,9 +66,9 @@ export async function fetchRecoveryCodeStatus() {
     return data;
 }
 
-/** Ten new codes; every older one stops working. Needs a fresh step-up. */
-export async function regenerateRecoveryCodes() {
-    const { data } = await authAxios.post("/user/2fa/recovery-codes/", {});
+/** Ten new codes; every older one stops working. `proof` as for disableTwoFactor. */
+export async function regenerateRecoveryCodes(proof) {
+    const { data } = await authAxios.post("/user/2fa/recovery-codes/", { ...proof });
     return Array.isArray(data?.recovery_codes) ? data.recovery_codes : [];
 }
 

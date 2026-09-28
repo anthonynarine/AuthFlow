@@ -8,8 +8,9 @@ import "./how-it-works.css";
  * three paths as the old mermaid diagram, but shown one path at a time.
  * Every box, path and step carries its own label. One color per actor,
  * matching the rest of the docs:
- *   team #1abc9c (teal)   software #a78bfa (purple)
- *   users #fb8a5c (orange, dashed: optional)   Gait #38bdf8 (cyan)
+ *   team teal   software purple
+ *   users orange (dashed: optional)   Gait cyan
+ * (the --gd-* tokens in ../tokens.css)
  * Plain HTML/CSS, no mermaid, so it renders the same in search's static pass.
  */
 

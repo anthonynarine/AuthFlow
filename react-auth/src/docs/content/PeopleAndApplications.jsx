@@ -4,12 +4,13 @@ import { AppGetsKeyLesson } from "../components/AppGetsKeyLesson";
 import { Diagram } from "../components/Diagram";
 import { PersonJoinsLesson } from "../components/PersonJoinsLesson";
 import { statusOf } from "../featureStatus";
+import { DIAGRAM } from "../palette";
 
 const BIG_PICTURE = `flowchart TB
-    classDef person fill:#1f3b36,stroke:#1abc9c,color:#e8eaed,stroke-width:2px
-    classDef company fill:#1b2129,stroke:#38bdf8,color:#e8eaed,stroke-width:2px
-    classDef app fill:#2a2340,stroke:#a78bfa,color:#e8eaed,stroke-width:2px
-    classDef key fill:#3a2e1a,stroke:#f5b85b,color:#e8eaed,stroke-width:2px
+    classDef person fill:${DIAGRAM.fillGreen},stroke:${DIAGRAM.teal},color:${DIAGRAM.text},stroke-width:2px
+    classDef company fill:${DIAGRAM.surface},stroke:${DIAGRAM.cyan},color:${DIAGRAM.text},stroke-width:2px
+    classDef app fill:${DIAGRAM.fillPurple},stroke:${DIAGRAM.purple},color:${DIAGRAM.text},stroke-width:2px
+    classDef key fill:${DIAGRAM.fillAmber},stroke:${DIAGRAM.amber},color:${DIAGRAM.text},stroke-width:2px
 
     subgraph PEOPLE["People: sign in with a Gait account"]
         direction LR
@@ -38,8 +39,8 @@ const BIG_PICTURE = `flowchart TB
     E1 -. "reports security checks" .-> A1`;
 
 const PRODUCT_USERS = `flowchart LR
-    classDef gait fill:#1b2129,stroke:#38bdf8,color:#e8eaed,stroke-width:2px
-    classDef product fill:#232a34,stroke:#1abc9c,color:#e8eaed,stroke-width:2px
+    classDef gait fill:${DIAGRAM.surface},stroke:${DIAGRAM.cyan},color:${DIAGRAM.text},stroke-width:2px
+    classDef product fill:${DIAGRAM.surfaceAlt},stroke:${DIAGRAM.teal},color:${DIAGRAM.text},stroke-width:2px
 
     subgraph G["Gait: who you are"]
         ACC["Gait account<br/>jordan@example.org<br/>email confirmed"]:::gait
@@ -52,8 +53,8 @@ const PRODUCT_USERS = `flowchart LR
     CUST --> ROLE`;
 
 const BOUNDARIES = `flowchart LR
-    classDef ok fill:#1f3b36,stroke:#34d399,color:#e8eaed
-    classDef no fill:#3a1f24,stroke:#ff6b6b,color:#e8eaed
+    classDef ok fill:${DIAGRAM.fillGreen},stroke:${DIAGRAM.green},color:${DIAGRAM.text}
+    classDef no fill:${DIAGRAM.fillRed},stroke:${DIAGRAM.red},color:${DIAGRAM.text}
 
     K["Connection key"] --> Y1["Report checks for its own application"]:::ok
     K --x N1["Sign in"]:::no

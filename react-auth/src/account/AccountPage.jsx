@@ -9,6 +9,7 @@ import { ResendVerificationButton } from "./ResendVerificationButton";
 import { AccountLayout } from "./AccountLayout";
 import { ConfirmItsYouDialog } from "./ConfirmItsYouDialog";
 import { RecoveryCodes } from "./RecoveryCodes";
+import { ProofDialog } from "./ProofDialog";
 import { useStepUpRetry } from "./useStepUpRetry";
 import {
     accountErrorMessage,
@@ -133,26 +134,20 @@ function ChangePassword({ run, onChanged }) {
 }
 
 /**
- * Turning two-step off: a plain "are you sure" first. Gait then asks the
- * person to confirm it's them (password and a code, or a recovery code if the
- * phone is gone); that step-up is the proof, and it's used up.
+ * Turning two-step off asks for proof in the same step, every time (H6): the
+ * password and a code, or a recovery code if the phone is gone. Nothing is
+ * re-authenticated first; the proof goes in the turn-off request itself.
  */
-function TurnOffDialog({ onClose, onConfirm }) {
+function TurnOffDialog({ onClose, onDone }) {
     return (
-        <Dialog
-            variant="ds"
+        <ProofDialog
             title="Turn off two-step verification?"
-            description="Your account will only need a password, and your other devices will be signed out."
+            description="Your account will only need a password, and your other devices will be signed out. Confirm with your password and a code from your authenticator app."
+            confirmLabel="Turn off"
+            busyLabel="Turning off…"
+            onSubmit={async (proof) => onDone(await disableTwoFactor(proof))}
             onClose={onClose}
-        >
-            <p className="ds-hint">
-                Next you'll confirm it's you with your password and a code. Lost your phone? A recovery code works too.
-            </p>
-            <div className="ds-actions">
-                <Button onClick={onConfirm}>Turn off</Button>
-                <Button kind="secondary" onClick={onClose}>Keep it on</Button>
-            </div>
-        </Dialog>
+        />
     );
 }
 
@@ -168,25 +163,11 @@ function formatDate(value) {
  * three or fewer, and "Make new codes": ten new ones, shown once, every older
  * code dead. The new codes live only in this component until Finish.
  */
-function RecoveryCodesPanel({ run, email }) {
+function RecoveryCodesPanel({ email }) {
     const queryClient = useQueryClient();
     const status = useQuery({ queryKey: recoveryCodesKey, queryFn: fetchRecoveryCodeStatus });
     const [codes, setCodes] = useState(null);
-    const [error, setError] = useState("");
-    const [busy, setBusy] = useState(false);
-
-    const onMakeNew = async () => {
-        setBusy(true);
-        setError("");
-        try {
-            const result = await run(() => regenerateRecoveryCodes(), "making new recovery codes");
-            if (result.ok) setCodes(result.value);
-        } catch (failure) {
-            setError(accountErrorMessage(failure, "No new codes were made. Try again."));
-        } finally {
-            setBusy(false);
-        }
-    };
+    const [asking, setAsking] = useState(false);
 
     const onFinish = () => {
         setCodes(null);
@@ -229,12 +210,30 @@ function RecoveryCodesPanel({ run, email }) {
                     <strong>Running low.</strong> Make new codes before you run out. Making new ones replaces every old code.
                 </Alert>
             ) : null}
-            {error ? <Alert kind="danger">{error}</Alert> : null}
             <div className="ds-row-actions">
-                <Button kind={low ? "primary" : "secondary"} small onClick={onMakeNew} disabled={busy || status.isLoading}>
-                    {busy ? "Making codes…" : neverMade ? "Make recovery codes" : "Make new codes"}
+                <Button kind={low ? "primary" : "secondary"} small onClick={() => setAsking(true)} disabled={status.isLoading}>
+                    {neverMade ? "Make recovery codes" : "Make new codes"}
                 </Button>
             </div>
+            {asking ? (
+                // Proof in the same request, every time (H6), like turning two-step off.
+                <ProofDialog
+                    title={neverMade ? "Make recovery codes" : "Make new recovery codes?"}
+                    description={
+                        neverMade
+                            ? "Confirm with your password and a code from your authenticator app."
+                            : "Your current recovery codes stop working. Confirm with your password and a code from your authenticator app."
+                    }
+                    confirmLabel={neverMade ? "Make codes" : "Make new codes"}
+                    busyLabel="Making codes…"
+                    onSubmit={async (proof) => {
+                        const made = await regenerateRecoveryCodes(proof);
+                        setAsking(false);
+                        setCodes(made);
+                    }}
+                    onClose={() => setAsking(false)}
+                />
+            ) : null}
         </Panel>
     );
 }
@@ -284,21 +283,13 @@ export function AccountPage() {
     const { run, dialog } = useStepUpRetry();
     const [notice, setNotice] = useState(() => location.state?.notice || "");
     const [modal, setModal] = useState(null); // "turn-off" | "sign-out-all"
-    const [twoStepError, setTwoStepError] = useState("");
 
-    const turnOff = async () => {
+    const turnedOff = (data) => {
         setModal(null);
-        setTwoStepError("");
-        try {
-            const result = await run(() => disableTwoFactor(), "turning off two-step verification");
-            if (!result.ok) return;
-            setUser((current) => ({ ...current, is_2fa_enabled: false, is_2fa_setup_in_progress: false }));
-            queryClient.removeQueries({ queryKey: recoveryCodesKey });
-            setNotice(`Two-step verification is off.${devicesNote(result.value?.sessions_revoked)}`);
-            Promise.resolve(validateSession()).catch(() => {});
-        } catch (failure) {
-            setTwoStepError(accountErrorMessage(failure, "Two-step verification is still on. Try again."));
-        }
+        setUser((current) => ({ ...current, is_2fa_enabled: false, is_2fa_setup_in_progress: false }));
+        queryClient.removeQueries({ queryKey: recoveryCodesKey });
+        setNotice(`Two-step verification is off.${devicesNote(data?.sessions_revoked)}`);
+        Promise.resolve(validateSession()).catch(() => {});
     };
 
     // A notice passed from the setup flow shows once, then leaves history.
@@ -348,7 +339,6 @@ export function AccountPage() {
                         }
                         status={user.is_2fa_enabled ? <Badge kind="success">On</Badge> : <Badge kind="warning">Off</Badge>}
                     >
-                        {twoStepError ? <Alert kind="danger">{twoStepError}</Alert> : null}
                         <div className="ds-row-actions">
                             {user.is_2fa_enabled ? (
                                 <Button kind="secondary" small onClick={() => setModal("turn-off")}>Turn off</Button>
@@ -360,7 +350,7 @@ export function AccountPage() {
                         </div>
                     </Panel>
 
-                    {user.is_2fa_enabled ? <RecoveryCodesPanel run={run} email={user.email} /> : null}
+                    {user.is_2fa_enabled ? <RecoveryCodesPanel email={user.email} /> : null}
 
                     <Panel title="Password" text="Changing it signs out your other devices.">
                         <ChangePassword
@@ -381,7 +371,7 @@ export function AccountPage() {
             ) : null}
 
             {modal === "turn-off" ? (
-                <TurnOffDialog onClose={() => setModal(null)} onConfirm={turnOff} />
+                <TurnOffDialog onClose={() => setModal(null)} onDone={turnedOff} />
             ) : null}
             {modal === "sign-out-all" ? (
                 <SignOutEverywhereDialog

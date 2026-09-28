@@ -1,7 +1,7 @@
 import React from "react";
 import "@testing-library/jest-dom";
-import { render, screen } from "@testing-library/react";
-import { MemoryRouter } from "react-router-dom";
+import { fireEvent, render, screen } from "@testing-library/react";
+import { MemoryRouter, Route, Routes } from "react-router-dom";
 import { FounderNav } from "./FounderNav";
 
 const mockUseBasicAuthServices = jest.fn();
@@ -51,5 +51,45 @@ describe("FounderNav — PLATFORM/is_staff boundary", () => {
     renderNav();
     expect(screen.queryByRole("link", { name: /Advanced/ })).not.toBeInTheDocument();
     expect(screen.getByRole("link", { name: "Home" })).toHaveAttribute("href", "/workspace/apps");
+  });
+});
+
+describe("FounderNav — Account from the workspace nav", () => {
+  function renderWithRoutes() {
+    return render(
+      <MemoryRouter initialEntries={["/workspace"]}>
+        <Routes>
+          <Route path="/workspace" element={<FounderNav />} />
+          <Route path="/login" element={<p>Sign-in page</p>} />
+        </Routes>
+      </MemoryRouter>
+    );
+  }
+
+  test("staff (the operator home) can reach Account, flagged while two-step is off, and sign out", async () => {
+    const logout = jest.fn(() => Promise.resolve());
+    mockUseBasicAuthServices.mockReturnValue({
+      user: { is_staff: true, email: "operator@gait.test", is_2fa_enabled: false },
+      logout,
+    });
+    renderWithRoutes();
+
+    fireEvent.click(screen.getByRole("button", { name: "Your account, two-step verification is off" }));
+    const account = screen.getByRole("menuitem", { name: /Account/ });
+    expect(account).toHaveAttribute("href", "/account");
+    expect(account).toHaveTextContent("2FA off");
+
+    fireEvent.click(screen.getByRole("menuitem", { name: "Sign out" }));
+    expect(await screen.findByText("Sign-in page")).toBeInTheDocument();
+    expect(logout).toHaveBeenCalledTimes(1);
+  });
+
+  test("a tenant founder gets the same menu; no flag once two-step is on", () => {
+    mockUseBasicAuthServices.mockReturnValue({
+      user: { is_staff: false, email: "founder@acme.test", is_2fa_enabled: true },
+      logout: jest.fn(),
+    });
+    renderWithRoutes();
+    expect(screen.getByRole("button", { name: "Your account" })).toHaveTextContent("founder@acme.test");
   });
 });

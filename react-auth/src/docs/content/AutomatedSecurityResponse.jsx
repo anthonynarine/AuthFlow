@@ -1,14 +1,15 @@
 import React from "react";
 import { DocSection } from "../components/DocPrimitives";
 import { Diagram } from "../components/Diagram";
+import { DIAGRAM } from "../palette";
 
 // High level only, by decision: no agent names, tools, capabilities,
 // thresholds, models or internal endpoints, and no status badges.
 // Top to bottom: eight steps in one row would shrink to unreadable text.
 const RESPONSE_FLOW = `flowchart TB
-    classDef auto fill:#1b2129,stroke:#38bdf8,color:#e8eaed,stroke-width:2px
-    classDef human fill:#123029,stroke:#1abc9c,color:#e8eaed,stroke-width:2px
-    classDef gate fill:#3a2e1a,stroke:#f5b85b,color:#e8eaed,stroke-width:2px
+    classDef auto fill:${DIAGRAM.surface},stroke:${DIAGRAM.cyan},color:${DIAGRAM.text},stroke-width:2px
+    classDef human fill:${DIAGRAM.fillTeal},stroke:${DIAGRAM.teal},color:${DIAGRAM.text},stroke-width:2px
+    classDef gate fill:${DIAGRAM.fillAmber},stroke:${DIAGRAM.amber},color:${DIAGRAM.text},stroke-width:2px
 
     O["Observe<br/>a check fails"]:::auto --> I["Investigate<br/>what changed and why"]:::auto
     I --> T["Test<br/>try to reproduce it safely"]:::auto

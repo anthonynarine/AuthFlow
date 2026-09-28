@@ -7,9 +7,35 @@ import { RiArrowLeftLine, RiShieldKeyholeLine } from "react-icons/ri";
 import { publicAxios } from "../../interceptors/axios";
 import { StatusBadge } from "../../docs/components/DocPrimitives";
 import { docPath } from "../../docs/manifest";
+import { CONTACT_LIMITS, blankFields, contactErrorMessage } from "../mail/contactForm";
 
 const TEAM_SIZE_OPTIONS = ["Just me", "2–5 people", "6–15 people", "16+ people"];
 const STAGE_OPTIONS = ["Idea", "Building", "Launched", "Scaling"];
+
+// Per-field caps, so the one message this page builds (buildEmailContent) always
+// fits the server's content limit (5,000 characters), even with every field full.
+// The test builds the longest possible message to prove it.
+export const FIELD_LIMITS = {
+  name: 100,
+  reply_to: CONTACT_LIMITS.reply_to,
+  company: 120,
+  building: 1800,
+  concern: 1800,
+  repoUrl: 300,
+};
+
+const REQUIRED = ["name", "reply_to", "company", "building", "concern"];
+
+const FIELD_LABELS = {
+  name: "Your name",
+  reply_to: "Work email",
+  company: "Company or product name",
+  building: "What are you building?",
+  concern: "Your biggest security worry",
+};
+
+// The server's field names, for its "too long" errors.
+const SERVER_LABELS = { reply_to: "Work email", subject: "Company or product name", content: "Your message" };
 
 const initialForm = {
   name: "",
@@ -23,31 +49,44 @@ const initialForm = {
   urgent: false,
 };
 
-function buildEmailContent(form) {
+export function buildEmailContent(form) {
   return [
     "New early access request",
     "",
-    `Name: ${form.name}`,
-    `Email: ${form.reply_to}`,
-    `Company / product: ${form.company}`,
+    `Name: ${form.name.trim()}`,
+    `Email: ${form.reply_to.trim()}`,
+    `Company / product: ${form.company.trim()}`,
     `Team size: ${form.teamSize}`,
     `Stage: ${form.stage}`,
     "",
     "What they're building:",
-    form.building,
+    form.building.trim(),
     "",
     "Biggest security worry right now:",
-    form.concern,
+    form.concern.trim(),
     "",
     `GitHub repo: ${form.repoUrl.trim() || "Not provided"}`,
     `Urgent: ${form.urgent ? "Yes — flagged as urgent" : "No"}`,
   ].join("\n");
 }
 
+export function buildSubject(form) {
+  return `Early Access Request — ${form.company.trim()}`;
+}
+
+function FieldError({ name, message }) {
+  return message ? (
+    <span className="early-access-field-error" id={`early-access-${name}-error`}>
+      {message}
+    </span>
+  ) : null;
+}
+
 export function EarlyAccessPage() {
   const [form, setForm] = useState(initialForm);
   const [status, setStatus] = useState("idle"); // idle | submitting | success | error
   const [errorMessage, setErrorMessage] = useState("");
+  const [fieldErrors, setFieldErrors] = useState({});
   const successHeading = useRef(null);
 
   // The form is replaced by the confirmation; move focus there so keyboard and
@@ -62,25 +101,40 @@ export function EarlyAccessPage() {
       ...prev,
       [name]: type === "checkbox" ? checked : value,
     }));
+    if (fieldErrors[name]) setFieldErrors((prev) => ({ ...prev, [name]: undefined }));
   };
+
+  // aria wiring for a field that may carry an error message below it.
+  const errorProps = (name) =>
+    fieldErrors[name]
+      ? { "aria-invalid": true, "aria-describedby": `early-access-${name}-error` }
+      : {};
 
   const handleSubmit = async (event) => {
     event.preventDefault();
-    setStatus("submitting");
     setErrorMessage("");
+
+    // The browser's "required" check lets a field of only spaces through; this doesn't.
+    const blank = blankFields(form, REQUIRED);
+    if (blank.length) {
+      setFieldErrors(Object.fromEntries(blank.map((name) => [name, `${FIELD_LABELS[name]} can't be empty.`])));
+      setStatus("idle");
+      event.target.elements.namedItem(blank[0])?.focus();
+      return;
+    }
+    setFieldErrors({});
+    setStatus("submitting");
 
     try {
       await publicAxios.post("/mail/send-email/", {
         reply_to: form.reply_to.trim(),
-        subject: `Early Access Request — ${form.company.trim()}`,
+        subject: buildSubject(form),
         content: buildEmailContent(form),
       });
       setStatus("success");
     } catch (error) {
       setStatus("error");
-      setErrorMessage(
-        error?.response?.data?.error || "Something went wrong sending your request. Please try again."
-      );
+      setErrorMessage(contactErrorMessage(error, SERVER_LABELS));
     }
   };
 
@@ -118,39 +172,57 @@ export function EarlyAccessPage() {
             </div>
           ) : (
             <form className="early-access-card early-access-form" onSubmit={handleSubmit}>
+              <p className="early-access-note">
+                Fields marked <span aria-hidden="true">*</span> are required.
+              </p>
               <div className="early-access-grid">
-                <label className="early-access-field">
-                  <span>Your name</span>
-                  <input
-                    type="text"
-                    name="name"
-                    value={form.name}
-                    onChange={handleChange}
-                    required
-                  />
-                </label>
-                <label className="early-access-field">
-                  <span>Work email</span>
-                  <input
-                    type="email"
-                    name="reply_to"
-                    value={form.reply_to}
-                    onChange={handleChange}
-                    required
-                  />
-                </label>
+                <div className="early-access-field-group">
+                  <label className="early-access-field">
+                    <span className="early-access-label is-required">Your name</span>
+                    <input
+                      type="text"
+                      name="name"
+                      value={form.name}
+                      onChange={handleChange}
+                      maxLength={FIELD_LIMITS.name}
+                      {...errorProps("name")}
+                      required
+                    />
+                  </label>
+                  <FieldError name="name" message={fieldErrors.name} />
+                </div>
+                <div className="early-access-field-group">
+                  <label className="early-access-field">
+                    <span className="early-access-label is-required">Work email</span>
+                    <input
+                      type="email"
+                      name="reply_to"
+                      value={form.reply_to}
+                      onChange={handleChange}
+                      maxLength={FIELD_LIMITS.reply_to}
+                      {...errorProps("reply_to")}
+                      required
+                    />
+                  </label>
+                  <FieldError name="reply_to" message={fieldErrors.reply_to} />
+                </div>
               </div>
 
-              <label className="early-access-field">
-                <span>Company or product name</span>
-                <input
-                  type="text"
-                  name="company"
-                  value={form.company}
-                  onChange={handleChange}
-                  required
-                />
-              </label>
+              <div className="early-access-field-group">
+                <label className="early-access-field">
+                  <span className="early-access-label is-required">Company or product name</span>
+                  <input
+                    type="text"
+                    name="company"
+                    value={form.company}
+                    onChange={handleChange}
+                    maxLength={FIELD_LIMITS.company}
+                    {...errorProps("company")}
+                    required
+                  />
+                </label>
+                <FieldError name="company" message={fieldErrors.company} />
+              </div>
 
               <div className="early-access-grid">
                 <label className="early-access-field">
@@ -171,28 +243,38 @@ export function EarlyAccessPage() {
                 </label>
               </div>
 
-              <label className="early-access-field">
-                <span>What are you building?</span>
-                <input
-                  type="text"
-                  name="building"
-                  placeholder="e.g. a B2B billing API, a mobile app backend..."
-                  value={form.building}
-                  onChange={handleChange}
-                  required
-                />
-              </label>
+              <div className="early-access-field-group">
+                <label className="early-access-field">
+                  <span className="early-access-label is-required">What are you building?</span>
+                  <input
+                    type="text"
+                    name="building"
+                    placeholder="e.g. a B2B billing API, a mobile app backend..."
+                    value={form.building}
+                    onChange={handleChange}
+                    maxLength={FIELD_LIMITS.building}
+                    {...errorProps("building")}
+                    required
+                  />
+                </label>
+                <FieldError name="building" message={fieldErrors.building} />
+              </div>
 
-              <label className="early-access-field">
-                <span>What's your biggest security worry right now?</span>
-                <textarea
-                  name="concern"
-                  placeholder="No wrong answer here — even “I honestly don't know” is useful."
-                  value={form.concern}
-                  onChange={handleChange}
-                  required
-                />
-              </label>
+              <div className="early-access-field-group">
+                <label className="early-access-field">
+                  <span className="early-access-label is-required">What's your biggest security worry right now?</span>
+                  <textarea
+                    name="concern"
+                    placeholder="No wrong answer here — even “I honestly don't know” is useful."
+                    value={form.concern}
+                    onChange={handleChange}
+                    maxLength={FIELD_LIMITS.concern}
+                    {...errorProps("concern")}
+                    required
+                  />
+                </label>
+                <FieldError name="concern" message={fieldErrors.concern} />
+              </div>
 
               <label className="early-access-field">
                 <span>GitHub repo (optional)</span>
@@ -200,6 +282,7 @@ export function EarlyAccessPage() {
                   type="text"
                   name="repoUrl"
                   placeholder="https://github.com/your-org/your-app"
+                  maxLength={FIELD_LIMITS.repoUrl}
                   value={form.repoUrl}
                   onChange={handleChange}
                 />

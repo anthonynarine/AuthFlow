@@ -1,5 +1,7 @@
 import React, { useState } from "react";
 import { useApplicationCredential } from "../../../hooks/useApplicationCredential";
+import { AuthHeading } from "../../../ds/AuthLayout";
+import { Alert, Button } from "../../../ds/components";
 import { FRAMEWORKS, buildSetupSteps } from "./sdkInstructions";
 
 function describeError(error) {
@@ -14,23 +16,26 @@ function describeError(error) {
 
 function FrameworkPicker({ frameworkKey, onChoose, stepLabel }) {
   return (
-    <div className="onboarding-step">
-      <p className="onboarding-eyebrow">{stepLabel}</p>
-      <h1 className="onboarding-title">What is this App built with?</h1>
-      <p className="onboarding-sub">This only decides which setup instructions to show you — Gait doesn't store it.</p>
-      <div className="onboarding-framework-grid">
+    <>
+      <AuthHeading
+        eyebrow={stepLabel}
+        title="What is this App built with?"
+        lede="This only decides which setup instructions to show you — Gait doesn't store it."
+      />
+      <div className="ds-choices" role="group" aria-label="Framework">
         {FRAMEWORKS.map((framework) => (
           <button
             key={framework.key}
             type="button"
-            className={`onboarding-framework-card${frameworkKey === framework.key ? " is-selected" : ""}`}
+            className="ds-choice"
+            aria-pressed={frameworkKey === framework.key}
             onClick={() => onChoose(framework.key)}
           >
             {framework.label}
           </button>
         ))}
       </div>
-    </div>
+    </>
   );
 }
 
@@ -38,48 +43,52 @@ function SetupInstructions({ frameworkKey, onChangeFramework, connectionKey, onG
   const steps = buildSetupSteps({ frameworkKey, connectionKey });
 
   return (
-    <div className="onboarding-step">
-      <p className="onboarding-eyebrow">{stepLabel}</p>
-      <div className="onboarding-title-row">
-        <h1 className="onboarding-title">Set up the Gait SDK</h1>
-        <button type="button" className="onboarding-link-button" onClick={onChangeFramework}>
+    <>
+      <div className="ds-head-row">
+        <AuthHeading eyebrow={stepLabel} title="Set up the Gait SDK" focusOnMount />
+        <button type="button" className="ds-link ds-link--quiet" onClick={onChangeFramework}>
           Change framework
         </button>
       </div>
 
       {!connectionKey && (
-        <div className="onboarding-callout">
-          <p>
-            You'll need a Connection Key for step 2 below. It's shown exactly once — if you've already generated and
-            saved one for this App, you don't need another.
-          </p>
-          <button type="button" className="fw-btn primary" onClick={onGenerateKey} disabled={isIssuing}>
-            {isIssuing ? "Generating…" : "Generate Connection Key"}
-          </button>
-          {keyError && <p className="onboarding-error">{describeError(keyError)}</p>}
+        <div className="ds-alert">
+          <span className="ds-alert-mark" aria-hidden="true">i</span>
+          <div className="ds-form">
+            <p className="ds-text">
+              You'll need a Connection Key for step 2 below. It's shown exactly once — if you've already generated and
+              saved one for this App, you don't need another.
+            </p>
+            <div className="ds-row-actions">
+              <Button small onClick={onGenerateKey} disabled={isIssuing}>
+                {isIssuing ? "Generating…" : "Generate Connection Key"}
+              </Button>
+            </div>
+            {keyError && <p className="ds-error" role="alert">{describeError(keyError)}</p>}
+          </div>
         </div>
       )}
 
       {/* New tab: navigating away here would lose the wizard's place. */}
-      <p className="onboarding-note">
+      <p className="ds-hint">
         Full guide:{" "}
-        <a href="/docs/connecting-your-software" target="_blank" rel="noopener noreferrer">
+        <a className="ds-link ds-link--quiet" href="/docs/connecting-your-software" target="_blank" rel="noopener noreferrer">
           Connecting your software
         </a>{" "}
         (opens in a new tab)
       </p>
 
-      <ol className="onboarding-setup-steps">
+      <ol className="ds-steps-list">
         {steps.map((step) => (
-          <li key={step.title} className="onboarding-setup-step">
-            <h3>{step.title}</h3>
+          <li key={step.title}>
+            <h2>{step.title}</h2>
             <p>{step.body}</p>
-            {step.code && <pre className="onboarding-code">{step.code}</pre>}
-            {step.note && <p className="onboarding-note">{step.note}</p>}
+            {step.code && <pre className="ds-code-block">{step.code}</pre>}
+            {step.note && <p className="ds-hint">{step.note}</p>}
           </li>
         ))}
       </ol>
-    </div>
+    </>
   );
 }
 
@@ -100,40 +109,41 @@ function ConnectionKeyScreen({ credential, onAcknowledge }) {
   };
 
   return (
-    <div className="onboarding-step">
-      <p className="onboarding-eyebrow">Connection Key</p>
-      <h1 className="onboarding-title">Save this key now.</h1>
-      <p className="onboarding-sub">Gait will not show it again.</p>
+    <>
+      <AuthHeading eyebrow="Connection Key" title="Save this key now." lede="Gait will not show it again." focusOnMount />
 
-      <div className="onboarding-secret-box" role="group" aria-label="Connection Key">
+      <div className="ds-secret" role="group" aria-label="Connection Key">
         <code>{credential.rawSecret}</code>
       </div>
 
-      <div className="onboarding-secret-actions">
-        <button type="button" className="fw-btn" onClick={handleCopy}>
+      <div className="ds-row-actions">
+        <Button kind="secondary" small onClick={handleCopy}>
           {copyState === "copied" ? "Copied" : "Copy key"}
-        </button>
+        </Button>
       </div>
+      <p className="ds-visually-hidden" role="status" aria-live="polite">{copyState === "copied" ? "Copied the key." : ""}</p>
 
-      <p className="onboarding-secret-warning">
+      <Alert kind="warning">
         This is a backend secret. Never put it in frontend code, a browser, a build-time <code>.env</code> file, or
         source control — set it as a server-side environment variable only.
-      </p>
+      </Alert>
 
-      <label className="onboarding-checkbox">
+      <label className="ds-check">
         <input type="checkbox" checked={acknowledged} onChange={(event) => setAcknowledged(event.target.checked)} />
         <span>I saved my Connection Key</span>
       </label>
 
-      <button type="button" className="fw-btn primary" disabled={!acknowledged} onClick={onAcknowledge}>
-        Continue
-      </button>
-    </div>
+      <div className="ds-actions">
+        <Button disabled={!acknowledged} onClick={onAcknowledge}>
+          Continue
+        </Button>
+      </div>
+    </>
   );
 }
 
 /**
- * UI2 Steps 3–4, combined and reused by both the onboarding wizard and the
+ * Setup steps 3–4, combined and reused by both the onboarding wizard and the
  * standalone /workspace/apps/:id/setup route: framework choice (UI-only,
  * never sent to the backend) -> SDK install instructions -> Connection Key
  * issuance and one-time display.

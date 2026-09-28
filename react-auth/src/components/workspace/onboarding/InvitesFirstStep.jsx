@@ -1,5 +1,6 @@
 import React from "react";
 import { PendingInvites } from "../../../console/invites/PendingInvites";
+import { AuthHeading } from "../../../ds/AuthLayout";
 
 /**
  * INV-UX: someone with no workspace yet who has been invited. Joining is the
@@ -8,21 +9,18 @@ import { PendingInvites } from "../../../console/invites/PendingInvites";
 export function InvitesFirstStep({ invites, onCreateInstead }) {
   const one = invites.length === 1;
   return (
-    <div className="onboarding-step">
-      <p className="onboarding-eyebrow">{one ? "You have an invitation" : `You have ${invites.length} invitations`}</p>
-      <h1 className="onboarding-title">Join your team's workspace</h1>
-      <p className="onboarding-sub">
-        {one ? "A workspace on Gait invited" : "Workspaces on Gait invited"} your confirmed email address. Join to see
-        its applications and findings.
-      </p>
-      <PendingInvites invites={invites} label="Your invitations" />
-      <div className="onboarding-secondary">
-        <p>Setting up something new instead?</p>
-        <button type="button" className="onboarding-link-button" onClick={onCreateInstead}>
-          Create your own workspace
-        </button>
-      </div>
-    </div>
+    <>
+      <AuthHeading
+        eyebrow={one ? "You have an invitation" : `You have ${invites.length} invitations`}
+        title="Join your team's workspace"
+        lede={`${one ? "A workspace on Gait invited" : "Workspaces on Gait invited"} your confirmed email address. Join to see its applications and findings.`}
+      />
+      <PendingInvites invites={invites} label="Your invitations" variant="ds" />
+      <div className="ds-divider">Setting up something new?</div>
+      <button type="button" className="ds-btn ds-btn--secondary" onClick={onCreateInstead}>
+        Create your own workspace
+      </button>
+    </>
   );
 }
 

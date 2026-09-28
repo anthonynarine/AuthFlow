@@ -1,74 +1,79 @@
-import "../login/Login.css";
-import { useNavigate } from "react-router-dom";
-import { RiArrowGoBackLine } from "react-icons/ri";
-import { useState } from "react";
-import { useBasicAuthServices } from "../../context/auth/BasicAuthContext";
-import { ToastContainer, toast } from 'react-toastify';
-import 'react-toastify/dist/ReactToastify.css';
-import "./ForgotPassword.css"
+import React, { useState } from "react";
+import { Link } from "react-router-dom";
+import { requestPasswordReset } from "../../auth/authPagesApi";
+import { AuthHeading, AuthLayout } from "../../ds/AuthLayout";
+import { Alert, Button, TextField } from "../../ds/components";
 
-
+/**
+ * Forgot password (DS-AUTH). The answer stays on screen (no toast) and reads
+ * the same whether or not the address has an account.
+ */
 export const ForgotPassword = () => {
+    const [email, setEmail] = useState("");
+    const [error, setError] = useState("");
+    const [busy, setBusy] = useState(false);
+    const [sentTo, setSentTo] = useState(null);
 
-    const [email , setEmail] = useState('')
-    const { forgotPassword } =useBasicAuthServices()
-    const navigate = useNavigate();
-
-    const handleSubmit = async (event) => {
+    const onSubmit = async (event) => {
         event.preventDefault();
+        if (!email.trim()) {
+            setError("Enter the email address for your account.");
+            return;
+        }
+        setBusy(true);
+        setError("");
         try {
-            await forgotPassword(email);
-            toast.success('Check your email for the password reset link.', {
-                position: "top-center",
-                autoClose: 5000,
-                hideProgressBar: false,
-                closeOnClick: true,
-                pauseOnHover: true,
-                draggable: true,
-            });
-        } catch (error) {
-            toast.error('Failed to send password reset email.', {
-                position: "top-center",
-                autoClose: 5000,
-                hideProgressBar: false,
-                closeOnClick: true,
-                pauseOnHover: true,
-                draggable: true,
-            });
+            await requestPasswordReset(email.trim());
+            setSentTo(email.trim());
+        } catch (failure) {
+            setError(
+                failure?.response?.status === 429
+                    ? "Too many requests. Wait a few minutes, then try again."
+                    : "We couldn't send that just now. Check your connection and try again in a minute."
+            );
+        } finally {
+            setBusy(false);
         }
     };
 
-    const navigateHome = () => {
-        navigate("/");
-    };
+    if (sentTo) {
+        return (
+            <AuthLayout>
+                <AuthHeading
+                    eyebrow="Gait account"
+                    title="Check your email"
+                    lede={<>If <strong>{sentTo}</strong> has a Gait account, a reset link is on its way. It works once.</>}
+                    focusOnMount
+                />
+                <Link className="ds-btn ds-btn--secondary" to="/login">Back to sign in</Link>
+            </AuthLayout>
+        );
+    }
 
     return (
-        <div className="login-container">
-            <button onClick={navigateHome} style={{ position: 'absolute', top: 0, left: 0, margin: '20px', background: 'none', color: "#D3D3D3", border: 'none', cursor: 'pointer' }}
-                    title="Go back to homepage">
-                <RiArrowGoBackLine size="1.5em" />
-            </button>
-            <main className="form-signin w-100 m-auto">
-                <form onSubmit={handleSubmit}>
-                    <div className="logo-container">
-                            {/* moved image to public folder so it does not need to be imported */}
-                        <img src="/auth-app.jpg" alt="Auth App" className="login-logo" />
-                    </div>
-                    <div className="password-reset-heading">
-                        <h1 className="h3 mb-4 fw-normal">Forgot Password?</h1>
-                        <p className="reset-instructions">Enter your email below to reset your password.</p>
-                    </div>
-                    {/* Email Input */}
-                    <div className="form-floating mb-3">
-                        <input value={email} type="email" className="form-control" id="floatingEmail" placeholder="name@example.com" name="email"
-                            onChange={event => setEmail(event.target.value)}
-                        />
-                        <label htmlFor="floatingEmail">Email address</label>
-                    </div>
-                    <button className="btn btn-signin w-100" type="submit">Submit</button>
-                </form>
-                <ToastContainer />
-            </main>
-        </div>
+        <AuthLayout>
+            <AuthHeading
+                eyebrow="Gait account"
+                title="Reset your password"
+                lede="Enter your account's email. If it matches an account, we'll send a link to choose a new password."
+            />
+            {error ? <Alert kind="danger">{error}</Alert> : null}
+            <form className="ds-form" onSubmit={onSubmit} noValidate>
+                <TextField
+                    label="Email"
+                    type="email"
+                    autoComplete="email"
+                    placeholder="you@example.com"
+                    value={email}
+                    onChange={(event) => setEmail(event.target.value)}
+                />
+                <div className="ds-actions">
+                    <Button type="submit" disabled={busy}>{busy ? "Sending…" : "Send reset link"}</Button>
+                    <Link className="ds-link ds-link--quiet" to="/login">Back to sign in</Link>
+                </div>
+            </form>
+        </AuthLayout>
     );
 };
+
+export default ForgotPassword;

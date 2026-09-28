@@ -9,9 +9,10 @@ import { authAxios } from "../interceptors/axios";
  *
  * Verified read-only against applications/{views,serializers}.py on the
  * ONB2 backend branch: the response contains the raw secret exactly once,
- * server-side only the hash is ever kept. There is deliberately no GET/
- * list endpoint for credentials (BACKEND_UI_CONTRACT_GAP: CREDENTIAL_LIST)
- * -- this hook never tries to retrieve a previously-issued key.
+ * server-side only the hash is ever kept. GET on the same path lists the
+ * App's keys (label, dates, status; never a secret -- the console's
+ * Applications page uses it via consoleApi), so no request can ever return a
+ * previously-issued key, and this hook never tries to.
  *
  * SECRET SAFETY: `raw_secret` lives only in this hook's React state, for
  * as long as the component tree holding it stays mounted. Nothing here

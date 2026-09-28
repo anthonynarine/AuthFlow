@@ -92,7 +92,10 @@ describe("ConsoleLayout gating", () => {
         expect(await screen.findByRole("heading", { name: "Overview" })).toBeInTheDocument();
         expect(screen.getByDisplayValue("Acme Health")).toBeInTheDocument();
         expect(screen.getByText("Owner")).toBeInTheDocument();
-        expect(screen.getByRole("link", { name: "Docs" })).toHaveAttribute("href", "/docs");
+        // Docs, Account and Sign out live in the user menu.
+        fireEvent.click(screen.getByRole("button", { name: /^Your account/ }));
+        expect(screen.getByRole("menuitem", { name: "Docs" })).toHaveAttribute("href", "/docs");
+        expect(screen.getByRole("menuitem", { name: /^Account/ })).toHaveAttribute("href", "/account");
         // defaults to the first environment that has data
         await waitFor(() =>
             expect(screen.getByRole("link", { name: "Members" })).toHaveAttribute("href", "/console/acme/members?env=staging")
@@ -127,7 +130,8 @@ describe("ConsoleLayout gating", () => {
         fetchMyOrganizations.mockResolvedValue([ACME]);
         renderConsole("/console/acme/overview");
 
-        fireEvent.click(await screen.findByRole("button", { name: "Sign out" }));
+        fireEvent.click(await screen.findByRole("button", { name: /^Your account/ }));
+        fireEvent.click(screen.getByRole("menuitem", { name: "Sign out" }));
 
         expect(await screen.findByTestId("login")).toBeInTheDocument();
         expect(mockLogout).toHaveBeenCalledTimes(1);

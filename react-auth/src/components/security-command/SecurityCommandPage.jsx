@@ -16,7 +16,7 @@ import { PostureOverview } from "../security/PostureOverview";
 import { SecurityPageSwitcher } from "../security/SecurityPageSwitcher";
 import { SecurityErrorState } from "../security/SecurityErrorState";
 import { SecurityInfoButton } from "../security/SecurityInfoButton";
-import { SecurityOperatorBadge } from "../security/SecurityOperatorBadge";
+import { AccountMenu } from "../../account/AccountMenu";
 import { canRunSecurityExercises } from "../security-exercises/securityExerciseLabels";
 import { ActiveCasesPanel } from "./ActiveCasesPanel";
 import { CaseHeader } from "./CaseHeader";
@@ -130,7 +130,7 @@ export function SecurityCommandPage() {
             <p>Operate Gait — current workflow, specialist status, and Copilot.</p>
           </div>
           <div className="security-header-actions">
-            <SecurityOperatorBadge user={user} statusLabel="Read only" />
+            <AccountMenu status="Read only" />
           </div>
         </header>
 

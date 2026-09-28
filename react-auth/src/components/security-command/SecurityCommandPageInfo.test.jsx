@@ -280,4 +280,17 @@ describe("Security Command page info controls", () => {
     expect(screen.queryByRole("button", { name: "Explain Security Posture" })).not.toBeInTheDocument();
     expect(screen.queryByRole("button", { name: "Explain Active Cases" })).not.toBeInTheDocument();
   });
+
+  test("the header's account menu (read only) reaches Account", async () => {
+    render(
+      <MemoryRouter>
+        <SecurityCommandPage />
+      </MemoryRouter>
+    );
+    const menuButton = await screen.findByRole("button", { name: /^Your account/ });
+    expect(menuButton).toHaveTextContent("security@example.test");
+    expect(menuButton).toHaveTextContent("Read only");
+    fireEvent.click(menuButton);
+    expect(screen.getByRole("menuitem", { name: /Account/ })).toHaveAttribute("href", "/account");
+  });
 });

@@ -21,6 +21,7 @@ import { CodeBlock, StatusBadge } from "../../docs/components/DocPrimitives";
 import { statusAsOfLabel } from "../../docs/featureStatus";
 import { docPath } from "../../docs/manifest";
 import { INSTALL, REPORT } from "../../docs/content/snippets";
+import { AccountMenu } from "../../account/AccountMenu";
 
 /*
  * Every customer-facing claim on this page comes from the public docs in the
@@ -134,17 +135,8 @@ const GAIT_GUARANTEES = [
   },
 ];
 
-function formatCurrentUser(user) {
-  if (!user) {
-    return "";
-  }
-
-  const name = [user.first_name, user.last_name].filter(Boolean).join(" ");
-  return name || user.email || user.username || "Signed-in user";
-}
-
 function HomePage() {
-  const { logout, isLoggedIn, message, user, setError } = useBasicAuthServices();
+  const { isLoggedIn, message, user, setError } = useBasicAuthServices();
   const { validateSession } = useUserSessionServices();
   const [menuOpen, setMenuOpen] = useState(false);
 
@@ -197,11 +189,6 @@ function HomePage() {
           {!isLoggedIn && (
             <Link to="/early-access" className="nav-cta secondary">Early access</Link>
           )}
-          {isLoggedIn && user && (
-            <span className="signed-in-chip" title={`Signed in as ${formatCurrentUser(user)}`}>
-              {formatCurrentUser(user)}
-            </span>
-          )}
           {isLoggedIn && (
             <Link to="/console" className="nav-cta secondary">Console</Link>
           )}
@@ -221,11 +208,9 @@ function HomePage() {
               Staff only
             </button>
           )}
-          {isLoggedIn ? (
-            <button type="button" className="nav-cta" onClick={logout}>Logout</button>
-          ) : (
-            <Link to="/login" className="nav-cta">Login</Link>
-          )}
+          {/* Signed in: the same account menu as the console (Account, with the
+              "2FA off" flag; Docs; Sign out, which leaves you on this page). */}
+          {isLoggedIn ? <AccountMenu afterSignOut={null} /> : <Link to="/login" className="nav-cta">Login</Link>}
         </nav>
       </header>
 

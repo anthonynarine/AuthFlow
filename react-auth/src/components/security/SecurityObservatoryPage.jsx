@@ -13,7 +13,7 @@ import { useAiBudgetStatus } from "../../hooks/useAiBudgetStatus";
 import { useSecurityHelp } from "../../hooks/useSecurityHelp";
 import { SecurityNav } from "./SecurityNav";
 import { SecurityPageSwitcher } from "./SecurityPageSwitcher";
-import { SecurityOperatorBadge } from "./SecurityOperatorBadge";
+import { AccountMenu } from "../../account/AccountMenu";
 import { SecurityInfoButton } from "./SecurityInfoButton";
 import { SecurityOverview } from "./SecurityOverview";
 import { PostureOverview } from "./PostureOverview";
@@ -134,7 +134,7 @@ export function SecurityObservatoryPage() {
             <p>Authentication, session, and security posture</p>
           </div>
           <div className="security-header-actions">
-            <SecurityOperatorBadge user={user} statusLabel="Read only" />
+            <AccountMenu status="Read only" />
             <button type="button" className="security-button primary" onClick={refreshAll}>
               <RiRefreshLine /> Refresh
             </button>

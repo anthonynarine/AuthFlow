@@ -149,6 +149,16 @@ describe("SecurityExercisesPage catalog", () => {
     };
   });
 
+  test("the header has the account menu, with Account one click away", async () => {
+    mockCatalogAndHistory({ catalog: [READY_PLAYBOOK] });
+    renderPage();
+    await screen.findByText("Refresh Token Replay");
+    const menuButton = screen.getByRole("button", { name: /^Your account/ });
+    expect(menuButton).toHaveTextContent("admin@example.test");
+    fireEvent.click(menuButton);
+    expect(screen.getByRole("menuitem", { name: /Account/ })).toHaveAttribute("href", "/account");
+  });
+
   test("loads the catalog and renders category, control, and environment info", async () => {
     mockCatalogAndHistory({ catalog: [READY_PLAYBOOK] });
     renderPage();

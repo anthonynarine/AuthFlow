@@ -58,10 +58,17 @@ describe("Two-step verification guide", () => {
     test("doesn't promise more than today's behaviour", () => {
         renderDoc("two-step-verification");
         const text = document.body.textContent;
-        // Confirm-it's-you only asks when your sign-in isn't recent (until backend H6), and
-        // there's no staff recovery service or encrypted-secret claim to make.
-        expect(text).toMatch(/if you haven't signed in recently/);
-        expect(text).not.toMatch(/always asks|encrypt|within \d+ (hours?|days?)/i);
+        // H6: turning it off and making new codes always ask for the password and a code;
+        // other changes only when your sign-in isn't recent. Turning it on signs out other
+        // devices. No staff recovery service or encrypted-secret claim to make.
+        const confirm = section("\"Confirm it's you\"");
+        expect(confirm).toHaveTextContent(
+            /making new recovery codes always ask for your password and a code from your app \(or a recovery code\), every time/
+        );
+        expect(confirm).toHaveTextContent(/if you haven't signed in recently/);
+        expect(section("Turn it off")).toHaveTextContent(/confirm with your password and a code/);
+        expect(section("Turn it on")).toHaveTextContent(/signs you out on your other devices/);
+        expect(text).not.toMatch(/encrypt|within \d+ (hours?|days?)/i);
     });
 });
 

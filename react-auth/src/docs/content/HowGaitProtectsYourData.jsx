@@ -82,8 +82,8 @@ export default function HowGaitProtectsYourData() {
                         one.
                     </li>
                     <li>
-                        Resetting your password signs you out everywhere. Changing your password, or turning off
-                        two-step verification, signs out your other devices.
+                        Resetting your password signs you out everywhere. Changing your password, or turning
+                        two-step verification on or off, signs out your other devices.
                     </li>
                 </ul>
             </DocSection>

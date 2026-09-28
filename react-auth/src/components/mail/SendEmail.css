@@ -135,3 +135,19 @@
     margin-bottom: 2rem; /* Adjust margin for smaller screens */
   }
 }
+
+.form-hint,
+.form-status,
+.form-error {
+  margin: 0;
+  font-size: 0.85rem;
+}
+
+.form-hint,
+.form-status {
+  color: var(--color-text-muted);
+}
+
+.form-error {
+  color: var(--color-danger);
+}

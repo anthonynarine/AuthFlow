@@ -158,3 +158,20 @@
 .early-access-form-section .section-lede a {
   color: var(--color-accent);
 }
+
+/* Required fields: a visual asterisk only; the input's "required" attribute tells assistive tech. */
+.early-access-label.is-required::after {
+  content: " *";
+  color: var(--color-text-muted);
+}
+
+.early-access-field-error {
+  color: var(--color-danger);
+  font-size: 0.85rem;
+}
+
+.early-access-field-group {
+  display: flex;
+  flex-direction: column;
+  gap: 0.35rem;
+}

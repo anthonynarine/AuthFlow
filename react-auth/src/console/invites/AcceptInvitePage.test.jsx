@@ -240,7 +240,7 @@ describe("signed in", () => {
         mockUser = { email: "b@example.test", email_verified: false };
         resendVerificationEmail.mockResolvedValue({ sent: true });
         visit(`#token=${TOKEN}`);
-        expect(await screen.findByRole("heading", { name: "Confirm your email first" })).toBeInTheDocument();
+        expect(await screen.findByRole("heading", { name: "Confirm your email to join" })).toBeInTheDocument();
         fireEvent.click(screen.getByRole("button", { name: "Resend link" }));
         await waitFor(() => expect(resendVerificationEmail).toHaveBeenCalled());
         mockValidateSession.mockClear();
@@ -282,7 +282,7 @@ describe("signed in", () => {
     });
 
     test.each([
-        ["EMAIL_NOT_VERIFIED", { status: 403, data: { code: "EMAIL_NOT_VERIFIED", detail: "x" } }, "Confirm your email first"],
+        ["EMAIL_NOT_VERIFIED", { status: 403, data: { code: "EMAIL_NOT_VERIFIED", detail: "x" } }, "Confirm your email to join"],
         ["ALREADY_MEMBER", { status: 409, data: { code: "ALREADY_MEMBER", detail: "x" } }, "You're already in App One"],
         ["INVITE_INVALID", { status: 404, data: { code: "INVITE_INVALID", detail: "x" } }, "This invite can't be used"],
     ])("Gait refusing the join with %s", async (_, response, heading) => {
@@ -351,7 +351,7 @@ describe("joined elsewhere by confirmed email (INV1)", () => {
     test("\"I've confirmed my email, continue\" rechecks workspaces, so a join in the other tab shows as already in", async () => {
         mockUser = { email: "b@example.test", email_verified: false };
         visit(`#token=${TOKEN}`);
-        await screen.findByRole("heading", { name: "Confirm your email first" });
+        await screen.findByRole("heading", { name: "Confirm your email to join" });
         mockUser = { email: "b@example.test", email_verified: true };
         fetchMyOrganizations.mockResolvedValue([APP_ONE_MEMBERSHIP]);
         fireEvent.click(screen.getByRole("button", { name: "I've confirmed my email, continue" }));

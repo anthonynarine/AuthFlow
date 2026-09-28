@@ -52,7 +52,8 @@ afterEach(() => {
 
 test("the password step carries returnTo from the invite page", async () => {
     visitLogin({ returnTo: INVITE });
-    fireEvent.change(screen.getByLabelText("Email address"), { target: { value: "b@example.test" } });
+    fireEvent.change(screen.getByLabelText("Email"), { target: { value: "b@example.test" } });
+    fireEvent.change(screen.getByLabelText("Password"), { target: { value: "test-only-password" } });
     fireEvent.click(screen.getByRole("button", { name: SIGN_IN }));
     await waitFor(() =>
         expect(mockLogin).toHaveBeenCalledWith(expect.objectContaining({ email: "b@example.test" }), { returnTo: INVITE })
@@ -62,7 +63,9 @@ test("the password step carries returnTo from the invite page", async () => {
 test("returnTo survives the two-factor step", async () => {
     mockIs2FARequired = true;
     visitLogin({ returnTo: INVITE });
-    fireEvent.click(await screen.findByRole("button", { name: "Confirm" }));
+    // The code is step 2 of the same card now (no modal).
+    fireEvent.change(await screen.findByLabelText("6-digit code"), { target: { value: "123456" } });
+    fireEvent.click(screen.getByRole("button", { name: "Verify" }));
     await waitFor(() => expect(mockVerify2FA).toHaveBeenCalledWith(expect.anything(), { returnTo: INVITE }));
 });
 
@@ -71,14 +74,14 @@ describe("Create account from the login page", () => {
         setPendingToken("test-only-invite-token");
         setPendingPreview({ organization_name: "App One", organization_slug: "app-one", org_role: "ADMIN", invited_email: "b@example.test", expires_at: inDays(6) });
         visitLogin({ returnTo: INVITE });
-        fireEvent.click(screen.getByRole("link", { name: "Create account" }));
+        fireEvent.click(screen.getByRole("link", { name: "Create an account" }));
         expect(screen.getByTestId("state")).toHaveTextContent(JSON.stringify({ returnTo: INVITE }));
         expect(screen.getByDisplayValue("b@example.test")).toBeInTheDocument();
     });
 
     test("a console page that sent them to sign in is carried too, without prefilling anything", () => {
         visitLogin({ from: "/console/app-one/members" });
-        fireEvent.click(screen.getByRole("link", { name: "Create account" }));
+        fireEvent.click(screen.getByRole("link", { name: "Create an account" }));
         expect(screen.getByTestId("state")).toHaveTextContent(JSON.stringify({ returnTo: "/console/app-one/members" }));
         expect(screen.queryByDisplayValue("b@example.test")).not.toBeInTheDocument();
     });
@@ -87,19 +90,19 @@ describe("Create account from the login page", () => {
         "an unsafe returnTo (%s) is dropped",
         (returnTo) => {
             visitLogin({ returnTo });
-            fireEvent.click(screen.getByRole("link", { name: "Create account" }));
+            fireEvent.click(screen.getByRole("link", { name: "Create an account" }));
             expect(screen.getByTestId("state")).toHaveTextContent("null");
         }
     );
 
     test("with no returnTo it's a plain link to Register", () => {
         visitLogin(undefined);
-        expect(screen.getByRole("link", { name: "Create account" })).toHaveAttribute("href", "/register");
+        expect(screen.getByRole("link", { name: "Create an account" })).toHaveAttribute("href", "/register");
     });
 
     test("with no invite in memory, Register doesn't prefill even when returning to the invite page", () => {
         visitLogin({ returnTo: INVITE });
-        fireEvent.click(screen.getByRole("link", { name: "Create account" }));
+        fireEvent.click(screen.getByRole("link", { name: "Create an account" }));
         expect(screen.getByTestId("state")).toHaveTextContent(JSON.stringify({ returnTo: INVITE }));
         expect(screen.getByLabelText("Email")).toHaveValue("");
     });

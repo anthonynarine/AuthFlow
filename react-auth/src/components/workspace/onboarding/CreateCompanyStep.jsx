@@ -1,5 +1,7 @@
 import React, { useState } from "react";
 import { ResendVerificationButton } from "../../../account/ResendVerificationButton";
+import { AuthHeading } from "../../../ds/AuthLayout";
+import { Alert, Button, Field, StepIndicator, TextField } from "../../../ds/components";
 
 function slugify(value) {
   return value
@@ -25,11 +27,17 @@ function describeError(error) {
   return "Something went wrong creating your workspace. Please try again.";
 }
 
+/** A field-keyed error from Gait ({slug: ["..."]}), if there is one. */
+function fieldError(error, key) {
+  const value = error?.response?.data?.[key];
+  return Array.isArray(value) && value.length ? String(value[0]) : null;
+}
+
 /**
- * UI2 Step 1 — Create your Company (Organization). Sends only
- * { name, slug } — nothing about role, membership, or organization
- * status is ever a field on this form, matching the backend's own
- * deliberately narrow CreateOrganizationSerializer.
+ * Onboarding step 1 — create a workspace (DS-AUTH). Sends only
+ * { name, slug } — nothing about role, membership, or organization status is
+ * ever a field on this form, matching the backend's own deliberately narrow
+ * CreateOrganizationSerializer.
  */
 export function CreateCompanyStep({ onCreate, isCreating, createError }) {
   const [name, setName] = useState("");
@@ -59,46 +67,51 @@ export function CreateCompanyStep({ onCreate, isCreating, createError }) {
     });
   };
 
+  const nameError = fieldError(createError, "name");
+  const slugError = fieldError(createError, "slug");
+  const unconfirmed = createError?.response?.data?.code === "EMAIL_NOT_VERIFIED";
+
   return (
-    <div className="onboarding-step">
-      <p className="onboarding-eyebrow">Step 1 of 4</p>
-      <h1 className="onboarding-title">Create your workspace</h1>
-      <p className="onboarding-sub">A workspace holds your team, your applications and their security findings.</p>
-
-      <form className="onboarding-form" onSubmit={handleSubmit}>
-        <label className="onboarding-field">
-          <span>Workspace name</span>
-          <input type="text" value={name} onChange={handleNameChange} placeholder="Acme Inc." required autoFocus />
-        </label>
-
-        <label className="onboarding-field">
-          <span>Workspace URL</span>
-          <input
-            type="text"
-            value={slug}
-            onChange={handleSlugChange}
-            placeholder="acme-inc"
-            pattern="[a-z0-9-]+"
-            required
-          />
-          <small>It's how your workspace is identified in links. You can edit it now; it can't be changed later.</small>
-        </label>
-
-        {createError?.response?.data?.code === "EMAIL_NOT_VERIFIED" ? (
-          // Gait E1: an unconfirmed address can't create a company yet.
-          <div className="onboarding-error" role="alert">
-            <p>{describeError(createError)} Open the link we emailed you, then try again.</p>
-            <ResendVerificationButton />
-          </div>
-        ) : createError ? (
-          <p className="onboarding-error">{describeError(createError)}</p>
-        ) : null}
-
-        <button type="submit" className="fw-btn primary" disabled={isCreating || !name.trim() || !slug.trim()}>
-          {isCreating ? "Creating…" : "Create workspace"}
-        </button>
+    <>
+      <StepIndicator step={1} of={4} label="Workspace" />
+      <AuthHeading title="Create your workspace" lede="A workspace holds your team, your applications and their security findings." />
+      {unconfirmed ? (
+        // Gait E1: an unconfirmed address can't create a workspace yet.
+        <>
+          <Alert kind="warning" announce>{describeError(createError)} Open the link we emailed you, then try again.</Alert>
+          <ResendVerificationButton className="ds-btn ds-btn--secondary" />
+        </>
+      ) : createError && !nameError && !slugError ? (
+        <Alert kind="danger">{describeError(createError)}</Alert>
+      ) : null}
+      <form className="ds-form" onSubmit={handleSubmit} noValidate>
+        <TextField
+          label="Workspace name"
+          value={name}
+          onChange={handleNameChange}
+          placeholder="Acme Inc."
+          autoComplete="organization"
+          error={nameError}
+        />
+        <Field
+          label="Workspace URL"
+          hint="It's how your workspace is identified in links. You can edit it now; it can't be changed later."
+          error={slugError}
+        >
+          {(aria) => (
+            <div className="ds-prefix-wrap">
+              <span className="ds-prefix" aria-hidden="true">/console/</span>
+              <input className="ds-input" value={slug} onChange={handleSlugChange} placeholder="acme-inc" autoComplete="off" {...aria} />
+            </div>
+          )}
+        </Field>
+        <div className="ds-actions">
+          <Button type="submit" disabled={isCreating || !name.trim() || !slug.trim()}>
+            {isCreating ? "Creating…" : "Create workspace"}
+          </Button>
+        </div>
       </form>
-    </div>
+    </>
   );
 }
 

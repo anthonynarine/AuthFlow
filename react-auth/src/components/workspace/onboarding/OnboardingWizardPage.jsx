@@ -9,7 +9,10 @@ import { FounderNav } from "../FounderNav";
 import { SecurityErrorState } from "../../security/SecurityErrorState";
 import { CreateCompanyStep } from "./CreateCompanyStep";
 import { InvitesFirstStep } from "./InvitesFirstStep";
-import { CompanyChooser } from "./CompanyChooser";
+import { WorkspaceChooserStep } from "./WorkspaceChooserStep";
+import { AuthLayout } from "../../../ds/AuthLayout";
+import { Alert, StatusLine } from "../../../ds/components";
+import { ResendVerificationButton } from "../../../account/ResendVerificationButton";
 import { AddAppStep } from "./AddAppStep";
 import { AppSetupFlow } from "./AppSetupFlow";
 import "../FounderWorkspace.css";
@@ -72,28 +75,29 @@ export function OnboardingWizardPage() {
     navigate(`/workspace/apps?org=${currentOrgSlug}`, { replace: true });
   };
 
+  // The workspace steps use the DS-AUTH card; the app steps keep today's shell
+  // until they're redesigned.
+  let workspaceStep = null;
   let content;
 
   if (orgsState.isLoading && orgsState.organizations.length === 0) {
-    content = <p className="founder-empty">Loading…</p>;
+    workspaceStep = <StatusLine>Loading…</StatusLine>;
   } else if (orgsState.error) {
     content = <SecurityErrorState error={orgsState.error} onRetry={orgsState.refetch} />;
   } else if (orgsState.organizations.length === 0 && myInvites.waiting) {
-    content = <p className="founder-empty">Loading…</p>;
+    workspaceStep = <StatusLine>Loading…</StatusLine>;
   } else if (orgsState.organizations.length === 0 && myInvites.invites.length > 0 && !creatingInstead) {
-    content = <InvitesFirstStep invites={myInvites.invites} onCreateInstead={() => setCreatingInstead(true)} />;
+    workspaceStep = <InvitesFirstStep invites={myInvites.invites} onCreateInstead={() => setCreatingInstead(true)} />;
   } else if (orgsState.organizations.length === 0 || searchParams.get("new") === "1") {
-    // Either a brand-new founder with no Company yet, or one who
+    // Either a brand-new founder with no workspace yet, or one who
     // explicitly asked to create another one.
     const invited = orgsState.organizations.length === 0 && myInvites.invites.length > 0;
-    content = (
+    workspaceStep = (
       <>
         {invited ? (
-          <p className="onboarding-back">
-            <button type="button" className="onboarding-link-button" onClick={() => setCreatingInstead(false)}>
-              ← Back to your invitations ({myInvites.invites.length})
-            </button>
-          </p>
+          <button type="button" className="ds-link ds-link--quiet" style={{ alignSelf: "flex-start" }} onClick={() => setCreatingInstead(false)}>
+            ← Back to your invitations ({myInvites.invites.length})
+          </button>
         ) : null}
         <CreateCompanyStep
           onCreate={handleCreateCompany}
@@ -103,11 +107,11 @@ export function OnboardingWizardPage() {
       </>
     );
   } else if (!currentOrgSlug || !currentOrg) {
-    // No Company chosen yet, or the ?org= value doesn't match any real
-    // membership — never invent a Company GET /organizations/ didn't
+    // No workspace chosen yet, or the ?org= value doesn't match any real
+    // membership — never invent a workspace GET /organizations/ didn't
     // actually return.
-    content = (
-      <CompanyChooser
+    workspaceStep = (
+      <WorkspaceChooserStep
         organizations={orgsState.organizations}
         onChoose={chooseCompany}
         onCreateNew={() => setSearchParams({ new: "1" })}
@@ -134,6 +138,23 @@ export function OnboardingWizardPage() {
         onDone={handleSetupDone}
         stepLabel="Step 3 of 4"
       />
+    );
+  }
+
+  if (workspaceStep) {
+    return (
+      <AuthLayout wide backTo="/workspace" backLabel="Back">
+        {user && user.email_verified === false ? (
+          <>
+            <Alert kind="warning">
+              <strong>Confirm {user.email}.</strong> You'll need it to create a workspace or join one. Use the link we
+              emailed you, or send a new one.
+            </Alert>
+            <ResendVerificationButton className="ds-btn ds-btn--secondary ds-btn--small" />
+          </>
+        ) : null}
+        {workspaceStep}
+      </AuthLayout>
     );
   }
 

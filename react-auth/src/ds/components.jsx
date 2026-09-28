@@ -82,10 +82,13 @@ export function CodeField({ label = "6-digit code", hint, error, value, onChange
 
 const MARKS = { danger: "!", success: "✓", warning: "…", info: "i" };
 
-/** Text plus a mark, never color alone. Errors are alerts; the rest are plain notes. */
-export function Alert({ kind = "info", children }) {
+/**
+ * Text plus a mark, never color alone. Errors are alerts; the rest are plain
+ * notes unless `announce` (e.g. a warning that answers a form submit).
+ */
+export function Alert({ kind = "info", announce = false, children }) {
     return (
-        <div className={`ds-alert${kind === "info" ? "" : ` ds-alert--${kind}`}`} role={kind === "danger" ? "alert" : undefined}>
+        <div className={`ds-alert${kind === "info" ? "" : ` ds-alert--${kind}`}`} role={kind === "danger" || announce ? "alert" : undefined}>
             <span className="ds-alert-mark" aria-hidden="true">{MARKS[kind]}</span>
             <p>{children}</p>
         </div>

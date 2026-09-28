@@ -37,6 +37,12 @@ export const useBasicAuth = () => {
         }
     }, [navigate]);
 
+    // "Use a different account" from the sign-in code step: back to step 1.
+    const cancelTwoFactor = useCallback(() => {
+        setIs2FARequired(false);
+        setError(null);
+    }, []);
+
     const guestLogin = useCallback(async () => {
         setIsLoading(true);
         setError(null);
@@ -123,6 +129,7 @@ export const useBasicAuth = () => {
         isLoggedIn,
         setIsLoggedIn,
         is2FARequired,
+        cancelTwoFactor,
         emailFor2FA,
         setEmailFor2FA,
         error,

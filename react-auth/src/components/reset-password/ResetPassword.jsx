@@ -1,89 +1,100 @@
-import "../login/Login.css";
-import authAppImage from "../../assets/auth-app.jpg";
-import { useNavigate, useParams } from "react-router-dom";
-import { RiArrowGoBackLine, RiLockPasswordLine } from "react-icons/ri";
-import { useState } from "react";
-import { useBasicAuthServices } from "../../context/auth/BasicAuthContext"
-import { ToastContainer } from 'react-toastify';
-import 'react-toastify/dist/ReactToastify.css';
-import { showSuccessToast, showErrorToast } from "../../utils/toastUtils/ToastUtils";
+import React, { useState } from "react";
+import { Link, useParams } from "react-router-dom";
+import { fieldErrors, resetPassword } from "../../auth/authPagesApi";
+import { AuthHeading, AuthLayout } from "../../ds/AuthLayout";
+import { Alert, Button, PasswordField } from "../../ds/components";
 
+const PASSWORD_HINT = "At least 8 characters, not only numbers, and not a common password.";
+const FIELD_MAP = { password: "password", new_password: "password", password_confirm: "confirmPassword" };
+
+/**
+ * Choose a new password (DS-AUTH). No toast and no timed redirect: success
+ * and a dead link each get their own state. The link's uid/token still come
+ * from the URL path; the backend's AUTH-B moves them to the #fragment.
+ */
 export const ResetPassword = () => {
-    const [password, setPassword] = useState('');
-    const [confirmPassword, setConfirmPassword] = useState('');
-    const [validationError, setValidationError] = useState("");
-    const navigate = useNavigate();
     const { uidb64, token } = useParams();
-    const { resetPassword } = useBasicAuthServices(); // Assume markAsSubmitted's logic is handled within resetPassword
+    const [password, setPassword] = useState("");
+    const [confirmPassword, setConfirmPassword] = useState("");
+    const [errors, setErrors] = useState({});
+    const [busy, setBusy] = useState(false);
+    const [phase, setPhase] = useState("form"); // form | done | invalid
 
-
-    const handleSubmit = async (event) => {
+    const onSubmit = async (event) => {
         event.preventDefault();
-
-        if (password !== confirmPassword) {
-            setValidationError("Passwords don't match.");
-            return;
-        }
+        const local = {};
+        if (!password) local.password = "Choose a new password.";
+        else if (password !== confirmPassword) local.confirmPassword = "These don't match. Type the same password twice.";
+        setErrors(local);
+        if (Object.keys(local).length) return;
+        setBusy(true);
         try {
-            await resetPassword({ password, confirmPassword, uidb64, token });
-            showSuccessToast('Password reset successful!');
-            setTimeout(() => navigate("/login"), 2000); // Redirect after showing success message
-        } catch (error) {
-            showErrorToast("Failed to reset password. Please try again.");
+            await resetPassword({ uidb64, token, password, confirmPassword });
+            setPhase("done");
+        } catch (failure) {
+            const mapped = fieldErrors(failure, FIELD_MAP, "");
+            if (mapped.password || mapped.confirmPassword) {
+                setErrors(mapped);
+            } else if (failure?.response && failure.response.status < 500) {
+                setPhase("invalid"); // used, expired or replaced: Gait doesn't say which
+            } else {
+                setErrors({ general: mapped.general || "Your password wasn't changed. Try again in a minute." });
+            }
+        } finally {
+            setBusy(false);
         }
     };
 
+    if (phase === "done") {
+        return (
+            <AuthLayout>
+                <Alert kind="success"><strong>Password changed.</strong> Use it the next time you sign in.</Alert>
+                <AuthHeading title="Sign in with your new password" focusOnMount />
+                <Link className="ds-btn ds-btn--primary" to="/login">Sign in</Link>
+            </AuthLayout>
+        );
+    }
+
+    if (phase === "invalid") {
+        return (
+            <AuthLayout>
+                <AuthHeading
+                    eyebrow="Gait account"
+                    title="This reset link can't be used"
+                    lede="It may have expired, been used already, or been replaced by a newer one."
+                    focusOnMount
+                />
+                <Link className="ds-btn ds-btn--primary" to="/forgot-password">Send a new link</Link>
+            </AuthLayout>
+        );
+    }
+
     return (
-        <div className="login-page">
-            <div className="login-container">
-                <button onClick={() => navigate("/")} className="back-button" title="Go back to homepage">
-                    <RiArrowGoBackLine size="1.25em" />
-                </button>
-                <main className="form-signin">
-                    <div className="logo-container">
-                        <img src={authAppImage} alt="Auth App" className="login-logo" />
-                    </div>
-                    <h1 className="login-title">Reset Password</h1>
-                    <p className="login-subtitle">Choose a new password for your account</p>
-                    {validationError && <div className="alert alert-danger">{validationError}</div>}
-                    <form onSubmit={handleSubmit}>
-                        <div className="field">
-                            <label htmlFor="newPassword">New Password</label>
-                            <div className="input-wrap">
-                                <RiLockPasswordLine className="field-icon" aria-hidden="true" />
-                                <input
-                                    type="password"
-                                    value={password}
-                                    className="text-input"
-                                    id="newPassword"
-                                    autoComplete="new-password"
-                                    onChange={e => setPassword(e.target.value)}
-                                    required
-                                />
-                            </div>
-                        </div>
-                        <div className="field">
-                            <label htmlFor="confirmPassword">Confirm Password</label>
-                            <div className="input-wrap">
-                                <RiLockPasswordLine className="field-icon" aria-hidden="true" />
-                                <input
-                                    type="password"
-                                    value={confirmPassword}
-                                    className="text-input"
-                                    id="confirmPassword"
-                                    autoComplete="new-password"
-                                    onChange={e => setConfirmPassword(e.target.value)}
-                                    required
-                                />
-                            </div>
-                        </div>
-                        <button className="btn-signin" type="submit">Submit</button>
-                    </form>
-                </main>
-            </div>
-            <ToastContainer />
-        </div>
+        <AuthLayout>
+            <AuthHeading eyebrow="Gait account" title="Choose a new password" />
+            {errors.general ? <Alert kind="danger">{errors.general}</Alert> : null}
+            <form className="ds-form" onSubmit={onSubmit} noValidate>
+                <PasswordField
+                    label="New password"
+                    autoComplete="new-password"
+                    value={password}
+                    onChange={(event) => setPassword(event.target.value)}
+                    error={errors.password}
+                    hint={PASSWORD_HINT}
+                />
+                <PasswordField
+                    label="Confirm new password"
+                    autoComplete="new-password"
+                    value={confirmPassword}
+                    onChange={(event) => setConfirmPassword(event.target.value)}
+                    error={errors.confirmPassword}
+                />
+                <div className="ds-actions">
+                    <Button type="submit" disabled={busy}>{busy ? "Saving…" : "Save new password"}</Button>
+                </div>
+            </form>
+        </AuthLayout>
     );
 };
 
-
+export default ResetPassword;

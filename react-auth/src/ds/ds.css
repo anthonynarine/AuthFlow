@@ -49,6 +49,32 @@
   gap: 18px;
 }
 .ds-main--narrow { max-width: 480px; }
+/* Signed-out pages: one 400px card (520px for onboarding), a little lower on the page. */
+.ds-main--auth { max-width: 432px; padding-top: 48px; align-items: stretch; }
+.ds-main--auth-wide { max-width: 552px; }
+.ds-foot { margin: 0; text-align: center; color: var(--ds-text-subtle); font-size: 13px; }
+.ds-divider { display: flex; align-items: center; gap: 12px; color: var(--ds-text-subtle); font-size: 13px; }
+.ds-divider::before, .ds-divider::after { content: ""; flex: 1; border-top: 1px solid var(--ds-line); }
+.ds-field-action { display: flex; justify-content: flex-end; margin-top: -8px; }
+.ds-row { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
+.ds-prefix-wrap { display: flex; }
+.ds-prefix {
+  display: flex;
+  align-items: center;
+  padding: 0 10px;
+  border: 1px solid var(--ds-line-control);
+  border-right: 0;
+  border-radius: var(--ds-radius-control) 0 0 var(--ds-radius-control);
+  background: var(--ds-gray-850);
+  color: var(--ds-text-subtle);
+  font-size: 14px;
+  white-space: nowrap;
+}
+.ds-prefix-wrap .ds-input { border-top-left-radius: 0; border-bottom-left-radius: 0; }
+.ds-facts { margin: 0; display: grid; gap: 10px; font-size: 14px; }
+.ds-facts div { display: grid; grid-template-columns: 96px minmax(0, 1fr); gap: 12px; }
+.ds-facts dt { padding-top: 3px; color: var(--ds-text-subtle); font-size: 11px; font-weight: 600; letter-spacing: 0.16em; text-transform: uppercase; }
+.ds-facts dd { margin: 0; overflow-wrap: anywhere; }
 
 /* ---- Card, headings, text ---------------------------------------------- */
 .ds-card {
@@ -287,6 +313,19 @@
 .ds-codes li { display: flex; gap: 8px; font: 500 15px/1.4 var(--ds-font-mono); letter-spacing: 0.04em; counter-increment: code; }
 .ds-codes li::before { content: counter(code) "."; min-width: 1.6em; color: var(--ds-text-subtle); font-size: 12px; line-height: 21px; text-align: right; }
 
+/* ---- Pending invites (PendingInvites variant="ds") ------------------------ */
+.ds-invites { list-style: none; margin: 0; padding: 0; display: flex; flex-direction: column; gap: 10px; }
+.ds-invite { border: 1px solid var(--ds-line); border-radius: var(--ds-radius-control); background: var(--ds-bg); padding: 14px; }
+.ds-invite-row { display: flex; align-items: center; justify-content: space-between; gap: 12px; flex-wrap: wrap; }
+.ds-invite-text { margin: 0; min-width: 0; overflow-wrap: anywhere; }
+.ds-invite-text strong { font-weight: 600; }
+.ds-invite-meta { display: block; margin-top: 2px; color: var(--ds-text-subtle); font-size: 13px; }
+.ds-invite-confirm { margin-top: 14px; padding-top: 14px; border-top: 1px solid var(--ds-line); display: flex; flex-direction: column; gap: 12px; }
+.ds-invite-confirm-title { margin: 0; font-weight: 600; }
+.ds-invite-confirm-title:focus { outline: none; }
+.ds-invite-confirm-title:focus-visible { outline: 2px solid var(--ds-focus); outline-offset: 3px; }
+.ds-error a { color: inherit; font-weight: 600; }
+
 /* ---- Account page panels ------------------------------------------------- */
 .ds-panel {
   background: var(--ds-surface);
@@ -410,4 +449,7 @@
   .ds-user-email { display: none; }
   .ds-user-button { padding-right: 8px; }
   .ds-top-link--wide { display: none; }
+  .ds-main--auth { padding-top: 20px; }
+  .ds-row { grid-template-columns: 1fr; }
+  .ds-facts div { grid-template-columns: 1fr; gap: 2px; }
 }

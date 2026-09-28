@@ -18,7 +18,7 @@ const TITLES = [
   [/^\/console\/invites\/accept\/?$/, "Join a workspace · Gait"],
   ...DOC_PAGES.map((page) => [new RegExp(`^/docs/${page.slug}/?$`), docTitle(page)]),
   [/^\/docs(\/|$)/, "Gait Docs"],
-  [/^\/login\/?$/, "Log in · Gait"],
+  [/^\/login\/?$/, "Sign in · Gait"],
   [/^\/register\/?$/, "Create account · Gait"],
   [/^\/forgot-password\/?$/, "Forgot password · Gait"],
   [/^\/reset-password\//, "Reset password · Gait"],

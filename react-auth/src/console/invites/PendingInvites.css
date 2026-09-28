@@ -1,3 +1,5 @@
+@import "../tokens.css";
+
 /* INV-UX pending invites: used on onboarding, the email-confirmed page and in
    the console, so it only leans on the shared tokens in index.css. */
 
@@ -44,7 +46,7 @@
   appearance: none;
   border: 1px solid var(--color-accent);
   background: var(--color-accent);
-  color: #0b1512;
+  color: var(--gc-on-accent-strong);
   font-weight: 600;
   font-size: 0.9rem;
   border-radius: var(--radius-sm);

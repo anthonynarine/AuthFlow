@@ -33,10 +33,8 @@
   --rgb-yellow: 250, 204, 21;
   --rgb-orange: 255, 139, 61;
   --rgb-info: 56, 189, 248;
-  --rgb-blue: 96, 165, 250;
   --rgb-sky: 79, 172, 254;
   --rgb-periwinkle: 121, 189, 255;
-  --rgb-ai: 167, 139, 250;
   --rgb-violet: 162, 155, 254;
 
   /* Solid roles */
@@ -47,10 +45,8 @@
   --color-on-accent-deep: #081318;
   --color-on-accent-cool: #0d1117;
   --color-panel-opaque: #0c1117;
-  --color-success-text: #a7f3d0;
   --color-danger-text: #fecaca;
   --color-danger-text-bright: #ff8b8b;
-  --color-info-text: #bfdbfe;
   --color-caution: #f6c75a;
   --color-caution-text: #fde68a;
 

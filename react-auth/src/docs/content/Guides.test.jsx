@@ -37,6 +37,7 @@ test("each guide sits next to the page it builds on", () => {
     const guides = DOC_GROUPS.find((group) => group.title === "Guides").pages.map((page) => page.slug);
     expect(guides).toEqual([
         "getting-started",
+        "two-step-verification",
         "local-to-production",
         "security-checks-and-findings",
         "handle-a-finding",

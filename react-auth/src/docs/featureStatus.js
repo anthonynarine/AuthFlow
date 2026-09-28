@@ -17,6 +17,9 @@ export const FEATURE_STATUS = {
     // Stage F3: the console's Findings screen (watch, acknowledge, accept
     // risk). Shipped with F3.
     findingsScreen: "live",
+    // Two-step verification (authenticator codes) and recovery codes, from the
+    // Account page. Shipped with the AUTH-B release on 2026-09-28.
+    twoStepVerification: "live",
     // Sign-in for your own product's users with Gait accounts (gait-sdk).
     productSignIn: "earlyAccess",
     // Everything else: accounts, workspaces, applications, keys, signals.
@@ -48,6 +51,11 @@ export const FEATURE_INFO = {
         name: "Findings screen",
         summary: "See findings per environment, acknowledge them or accept the risk with a note.",
         doc: "handle-a-finding",
+    },
+    twoStepVerification: {
+        name: "Two-step verification and recovery codes",
+        summary: "A code from an authenticator app after your password, with 10 one-time recovery codes.",
+        doc: "two-step-verification",
     },
     productSignIn: {
         name: "Sign-in for your own product",

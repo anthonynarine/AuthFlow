@@ -65,7 +65,12 @@ export default function GettingStarted() {
 
             <DocSection id="step-1-sign-in" title="Step 1: Sign in">
                 <p>
-                    <Link to="/login">Sign in</Link>, or <Link to="/register">create an account</Link>.
+                    <Link to="/login">Sign in</Link>, or <Link to="/register">create an account</Link>. A password
+                    needs at least 8 characters, not only numbers, and not a common password.
+                </p>
+                <p>
+                    Then turn on <DocLink to="two-step-verification">two-step verification</DocLink> from your{" "}
+                    <strong>Account</strong> page, so a stolen password isn't enough to get in.
                 </p>
                 <p>
                     Your browser never holds a long-lived login token that a script could read. Reloading the page

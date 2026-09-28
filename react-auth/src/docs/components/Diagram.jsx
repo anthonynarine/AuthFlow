@@ -1,4 +1,5 @@
 import React, { useEffect, useState } from "react";
+import { DIAGRAM } from "../palette";
 
 /*
  * Mermaid is large, so it is loaded on demand (its own chunk) the first time a
@@ -10,39 +11,40 @@ let mermaidPromise = null;
 let renderQueue = Promise.resolve();
 let diagramCounter = 0;
 
-// Mermaid can't read CSS custom properties; these mirror the tokens in src/index.css.
+// Mermaid can't read CSS custom properties and derives shades from hex, so its
+// colours come from ../palette.js (the docs' diagram palette), not tokens.css.
 const THEME_VARIABLES = {
     darkMode: true,
-    background: "#1b2129",
-    primaryColor: "#232a34",
-    primaryTextColor: "#e8eaed",
-    primaryBorderColor: "#1abc9c",
-    secondaryColor: "#232a34",
-    tertiaryColor: "#1b2129",
-    lineColor: "#9aa4af",
-    textColor: "#e8eaed",
-    mainBkg: "#232a34",
-    nodeBorder: "#1abc9c",
-    clusterBkg: "#161b22",
-    clusterBorder: "rgba(255, 255, 255, 0.16)",
-    titleColor: "#e8eaed",
-    edgeLabelBackground: "#1b2129",
-    actorBkg: "#232a34",
-    actorBorder: "#1abc9c",
-    actorTextColor: "#e8eaed",
-    actorLineColor: "#9aa4af",
-    signalColor: "#e8eaed",
-    signalTextColor: "#e8eaed",
-    labelBoxBkgColor: "#232a34",
-    labelBoxBorderColor: "#38bdf8",
-    labelTextColor: "#e8eaed",
-    loopTextColor: "#e8eaed",
-    noteBkgColor: "#2a2340",
-    noteBorderColor: "#a78bfa",
-    noteTextColor: "#e8eaed",
-    activationBkgColor: "#1f3b36",
-    activationBorderColor: "#1abc9c",
-    sequenceNumberColor: "#121212",
+    background: DIAGRAM.surface,
+    primaryColor: DIAGRAM.surfaceAlt,
+    primaryTextColor: DIAGRAM.text,
+    primaryBorderColor: DIAGRAM.teal,
+    secondaryColor: DIAGRAM.surfaceAlt,
+    tertiaryColor: DIAGRAM.surface,
+    lineColor: DIAGRAM.line,
+    textColor: DIAGRAM.text,
+    mainBkg: DIAGRAM.surfaceAlt,
+    nodeBorder: DIAGRAM.teal,
+    clusterBkg: DIAGRAM.surfaceDeep,
+    clusterBorder: DIAGRAM.borderStrong,
+    titleColor: DIAGRAM.text,
+    edgeLabelBackground: DIAGRAM.surface,
+    actorBkg: DIAGRAM.surfaceAlt,
+    actorBorder: DIAGRAM.teal,
+    actorTextColor: DIAGRAM.text,
+    actorLineColor: DIAGRAM.line,
+    signalColor: DIAGRAM.text,
+    signalTextColor: DIAGRAM.text,
+    labelBoxBkgColor: DIAGRAM.surfaceAlt,
+    labelBoxBorderColor: DIAGRAM.cyan,
+    labelTextColor: DIAGRAM.text,
+    loopTextColor: DIAGRAM.text,
+    noteBkgColor: DIAGRAM.fillPurple,
+    noteBorderColor: DIAGRAM.purple,
+    noteTextColor: DIAGRAM.text,
+    activationBkgColor: DIAGRAM.fillGreen,
+    activationBorderColor: DIAGRAM.teal,
+    sequenceNumberColor: DIAGRAM.page,
     fontFamily: "-apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif",
     fontSize: "14px",
 };

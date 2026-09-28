@@ -3,6 +3,7 @@ import "./Home.css";
 import "./diagrams/homeDiagrams.css";
 import "../../docs/docs.css";
 import { Link } from "react-router-dom";
+import { GateMark } from "../../brand/GateMark";
 import { useBasicAuthServices } from "../../context/auth/BasicAuthContext";
 import { useUserSessionServices } from "../../context/auth/UserSessionContext";
 import {
@@ -132,30 +133,6 @@ const GAIT_GUARANTEES = [
     body: "Each step leaves an audit trail.",
   },
 ];
-
-// The Gait gate mark (16px grid, from the chosen logo system): two posts and a
-// lintel, single ink. currentColor so it follows the surrounding text color.
-function GateMark() {
-  return (
-    <svg
-      className="gate-mark"
-      data-testid="gate-mark"
-      viewBox="0 0 16 16"
-      width="1em"
-      height="1em"
-      fill="none"
-      stroke="currentColor"
-      strokeWidth="1.7"
-      strokeLinecap="square"
-      aria-hidden="true"
-      focusable="false"
-    >
-      <path d="M4.5 13.2V4.6" />
-      <path d="M11.5 13.2V4.6" />
-      <path d="M4.5 4.6h7" />
-    </svg>
-  );
-}
 
 function formatCurrentUser(user) {
   if (!user) {

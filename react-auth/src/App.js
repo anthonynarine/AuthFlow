@@ -31,6 +31,8 @@ import { FindingsPage } from "./console/pages/findings/FindingsPage";
 import { FindingDetailPage } from "./console/pages/findings/FindingDetailPage";
 import { VerifyEmailPage } from "./account/VerifyEmailPage";
 import { AcceptInvitePage } from "./console/invites/AcceptInvitePage";
+import { AccountPage } from "./account/AccountPage";
+import { TwoStepSetupPage } from "./account/TwoStepSetupPage";
 import { MembersPage } from "./console/pages/members/MembersPage";
 import { SettingsPage } from "./console/pages/settings/SettingsPage";
 import { DocsPage } from "./docs/DocsPage";
@@ -70,6 +72,8 @@ function App() {
                     <Route path="/send-email" element={<SendEmail />} />
                     <Route path="/early-access" element={<EarlyAccessPage />} />
                     <Route path="/verify-email" element={<VerifyEmailPage />} />
+                    <Route path="/account" element={<AccountPage />} />
+                    <Route path="/account/two-step" element={<TwoStepSetupPage />} />
                     <Route path={DOCS_BASE} element={<Navigate to={docPath(DOC_PAGES[0].slug)} replace />} />
                     <Route path={`${DOCS_BASE}/:slug`} element={<DocsPage />} />
                     <Route path="/security" element={<SecurityObservatoryPage />} />

@@ -1,0 +1,413 @@
+/*
+ * DS-AUTH components (approved proposal, 2026-09-28). Only --ds-* tokens from
+ * index.css; nothing here touches pages that aren't redesigned yet.
+ */
+
+/* ---- Page frame --------------------------------------------------------- */
+.ds-page {
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+  background: var(--ds-bg);
+  color: var(--ds-text);
+  font: 15px/1.55 var(--ds-font-body);
+}
+.ds-page *:focus-visible {
+  outline: 2px solid var(--ds-focus);
+  outline-offset: 3px;
+}
+.ds-top {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 14px 20px;
+  border-bottom: 1px solid var(--ds-line);
+  position: relative;
+}
+.ds-brand {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  font: 500 19px/1 var(--ds-font-display);
+  letter-spacing: -0.01em;
+  color: var(--ds-text);
+  text-decoration: none;
+}
+.ds-brand:hover { color: var(--ds-text); }
+.ds-brand .ds-gate-mark { width: 1.15em; height: 1.15em; flex: none; }
+.ds-top-link { color: var(--ds-text-muted); font-size: 14px; text-decoration: none; }
+.ds-top-link:hover { color: var(--ds-text); text-decoration: underline; text-underline-offset: 3px; }
+.ds-top-end { margin-left: auto; display: flex; align-items: center; gap: 14px; }
+.ds-main {
+  flex: 1;
+  width: 100%;
+  max-width: 720px;
+  margin: 0 auto;
+  padding: 32px 16px 56px;
+  display: flex;
+  flex-direction: column;
+  gap: 18px;
+}
+.ds-main--narrow { max-width: 480px; }
+
+/* ---- Card, headings, text ---------------------------------------------- */
+.ds-card {
+  background: var(--ds-surface);
+  border: 1px solid var(--ds-line);
+  border-radius: var(--ds-radius-card);
+  padding: 32px;
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+}
+.ds-head { display: flex; flex-direction: column; gap: 8px; }
+.ds-eyebrow {
+  margin: 0;
+  font-size: 11px;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: var(--ds-label-tracking);
+  color: var(--ds-text-muted);
+}
+.ds-title {
+  margin: 0;
+  font: 500 28px/1.15 var(--ds-font-display);
+  letter-spacing: -0.015em;
+  color: var(--ds-text);
+  text-wrap: balance;
+}
+.ds-title:focus { outline: none; }
+.ds-title:focus-visible { outline: 2px solid var(--ds-focus); outline-offset: 4px; }
+.ds-lede { margin: 0; color: var(--ds-text-muted); }
+.ds-lede strong, .ds-text strong { color: var(--ds-text); font-weight: 600; }
+.ds-text { margin: 0; }
+.ds-list { margin: 0; padding-left: 18px; display: grid; gap: 4px; color: var(--ds-text-muted); }
+
+/* ---- Fields ------------------------------------------------------------- */
+.ds-form { display: flex; flex-direction: column; gap: 16px; }
+.ds-field { display: flex; flex-direction: column; gap: 6px; }
+.ds-label { font-size: 13px; font-weight: 600; color: var(--ds-text); }
+.ds-input-wrap { position: relative; display: flex; }
+.ds-input {
+  width: 100%;
+  min-height: var(--ds-control-height);
+  background: var(--ds-field);
+  border: 1px solid var(--ds-line-control);
+  border-radius: var(--ds-radius-control);
+  color: var(--ds-text);
+  font: 16px/1.3 var(--ds-font-body);
+  padding: 10px 12px;
+}
+.ds-input::placeholder { color: var(--ds-text-subtle); }
+.ds-page .ds-input:focus-visible,
+.ds-dialog .ds-input:focus-visible { border-color: var(--ds-focus); outline: 2px solid var(--ds-focus); outline-offset: 2px; }
+.ds-input[aria-invalid="true"] { border-color: var(--ds-danger); }
+.ds-input--with-reveal { padding-right: 72px; }
+.ds-code {
+  font: 500 24px/1 var(--ds-font-mono);
+  letter-spacing: 0.45em;
+  text-align: center;
+  padding-left: 0.45em;
+}
+.ds-reveal {
+  position: absolute;
+  right: 6px;
+  top: 50%;
+  transform: translateY(-50%);
+  min-height: 32px;
+  padding: 0 8px;
+  background: none;
+  border: 0;
+  border-radius: 6px;
+  color: var(--ds-text-muted);
+  font: 600 12px var(--ds-font-body);
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  cursor: pointer;
+}
+.ds-reveal:hover { color: var(--ds-text); }
+.ds-hint { margin: 0; font-size: 13px; color: var(--ds-text-subtle); }
+.ds-error { margin: 0; font-size: 13px; color: var(--ds-danger); display: flex; gap: 6px; align-items: baseline; }
+.ds-error::before {
+  content: "!";
+  flex: none;
+  width: 14px;
+  height: 14px;
+  border: 1.5px solid currentColor;
+  border-radius: 50%;
+  font-size: 10px;
+  font-weight: 700;
+  line-height: 11px;
+  text-align: center;
+  transform: translateY(1px);
+}
+.ds-check { display: flex; gap: 10px; align-items: flex-start; font-size: 14px; cursor: pointer; }
+.ds-check input { width: 18px; height: 18px; margin: 1px 0 0; accent-color: var(--ds-gray-50); flex: none; }
+
+/* ---- Buttons and links -------------------------------------------------- */
+.ds-actions { display: flex; flex-direction: column; gap: 10px; }
+.ds-row-actions { display: flex; flex-wrap: wrap; gap: 10px; }
+.ds-btn {
+  appearance: none;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  min-height: var(--ds-control-height);
+  padding: 0 18px;
+  border: 1px solid transparent;
+  border-radius: var(--ds-radius-control);
+  font: 600 15px/1 var(--ds-font-body);
+  text-decoration: none;
+  cursor: pointer;
+}
+.ds-btn--primary { background: var(--ds-primary); color: var(--ds-on-primary); }
+.ds-btn--primary:hover:not(:disabled) { background: var(--ds-primary-hover); color: var(--ds-on-primary); }
+.ds-btn--secondary { background: transparent; color: var(--ds-text); border-color: var(--ds-gray-600); }
+.ds-btn--secondary:hover:not(:disabled) { background: var(--ds-gray-850); color: var(--ds-text); }
+.ds-btn--small { min-height: 36px; padding: 0 14px; font-size: 14px; }
+.ds-btn:disabled { background: var(--ds-gray-800); color: var(--ds-gray-500); border-color: transparent; cursor: not-allowed; }
+.ds-link {
+  background: none;
+  border: 0;
+  padding: 0;
+  color: var(--ds-text);
+  font: inherit;
+  font-size: 14px;
+  text-decoration: underline;
+  text-decoration-color: var(--ds-gray-500);
+  text-underline-offset: 3px;
+  cursor: pointer;
+  align-self: center;
+}
+.ds-link:hover { color: var(--ds-text); text-decoration-color: var(--ds-text); }
+.ds-link--quiet { color: var(--ds-text-muted); font-size: 13px; }
+
+/* ---- Alerts, badges, status -------------------------------------------- */
+.ds-alert {
+  display: flex;
+  gap: 10px;
+  padding: 12px 14px;
+  border: 1px solid var(--ds-line);
+  border-radius: var(--ds-radius-control);
+  background: var(--ds-gray-900);
+  color: var(--ds-text);
+  font-size: 14px;
+  line-height: 1.5;
+}
+.ds-alert p { margin: 0; }
+.ds-alert strong { font-weight: 600; }
+.ds-alert-mark {
+  flex: none;
+  width: 18px;
+  height: 18px;
+  margin-top: 1px;
+  border: 1.5px solid currentColor;
+  border-radius: 50%;
+  font-size: 11px;
+  font-weight: 700;
+  line-height: 15px;
+  text-align: center;
+}
+.ds-alert--danger { background: var(--ds-danger-bg); border-color: var(--ds-danger-line); color: var(--ds-danger-text); }
+.ds-alert--success { background: var(--ds-success-bg); border-color: var(--ds-success-line); color: var(--ds-success-text); }
+.ds-alert--warning { background: var(--ds-warning-bg); border-color: var(--ds-warning-line); color: var(--ds-warning-text); }
+.ds-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 3px 10px;
+  border: 1px solid var(--ds-gray-600);
+  border-radius: 999px;
+  color: var(--ds-text-muted);
+  font-size: 12px;
+  font-weight: 600;
+  white-space: nowrap;
+}
+.ds-badge::before { content: ""; width: 7px; height: 7px; border-radius: 50%; background: currentColor; }
+.ds-badge--success { color: var(--ds-success-text); border-color: var(--ds-success-line); background: var(--ds-success-bg); }
+.ds-badge--warning { color: var(--ds-warning-text); border-color: var(--ds-warning-line); background: var(--ds-warning-bg); }
+.ds-status { display: flex; align-items: center; gap: 10px; color: var(--ds-text-muted); }
+.ds-spinner {
+  width: 16px;
+  height: 16px;
+  border: 2px solid var(--ds-gray-600);
+  border-top-color: var(--ds-gray-50);
+  border-radius: 50%;
+  animation: ds-spin 0.9s linear infinite;
+}
+@keyframes ds-spin { to { transform: rotate(360deg); } }
+@media (prefers-reduced-motion: reduce) {
+  .ds-spinner { animation: none; border-top-color: var(--ds-gray-600); }
+}
+.ds-visually-hidden {
+  position: absolute !important;
+  width: 1px;
+  height: 1px;
+  padding: 0;
+  margin: -1px;
+  overflow: hidden;
+  clip: rect(0, 0, 0, 0);
+  white-space: nowrap;
+  border: 0;
+}
+
+/* ---- Steps ----------------------------------------------------------------- */
+.ds-steps { display: flex; flex-direction: column; gap: 8px; }
+.ds-steps-bar { display: grid; grid-auto-flow: column; grid-auto-columns: 1fr; gap: 6px; }
+.ds-steps-bar span { height: 3px; border-radius: 2px; background: var(--ds-gray-800); }
+.ds-steps-bar span.is-done { background: var(--ds-gray-50); }
+
+/* ---- Two-step setup pieces ---------------------------------------------- */
+.ds-qr { align-self: center; padding: 10px; background: #fafafa; border-radius: 8px; line-height: 0; }
+.ds-qr img { width: 168px; height: 168px; image-rendering: pixelated; }
+.ds-key {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 10px;
+  padding: 10px 12px;
+  border: 1px solid var(--ds-gray-600);
+  border-radius: var(--ds-radius-control);
+  background: var(--ds-bg);
+}
+.ds-key code { font: 500 15px/1.3 var(--ds-font-mono); letter-spacing: 0.08em; color: var(--ds-text); overflow-wrap: anywhere; }
+.ds-codes {
+  list-style: none;
+  margin: 0;
+  padding: 14px;
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 8px 16px;
+  border: 1px solid var(--ds-gray-600);
+  border-radius: var(--ds-radius-control);
+  background: var(--ds-bg);
+  counter-reset: code;
+}
+.ds-codes li { display: flex; gap: 8px; font: 500 15px/1.4 var(--ds-font-mono); letter-spacing: 0.04em; counter-increment: code; }
+.ds-codes li::before { content: counter(code) "."; min-width: 1.6em; color: var(--ds-text-subtle); font-size: 12px; line-height: 21px; text-align: right; }
+
+/* ---- Account page panels ------------------------------------------------- */
+.ds-panel {
+  background: var(--ds-surface);
+  border: 1px solid var(--ds-line);
+  border-radius: var(--ds-radius-card);
+  padding: 22px 24px;
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+}
+.ds-panel-head { display: flex; justify-content: space-between; align-items: flex-start; gap: 12px; flex-wrap: wrap; }
+.ds-panel-title { margin: 0; font: 500 20px/1.2 var(--ds-font-display); color: var(--ds-text); }
+.ds-panel-text { margin: 4px 0 0; max-width: 56ch; color: var(--ds-text-muted); font-size: 14px; }
+.ds-panel-text strong { color: var(--ds-text); font-weight: 600; }
+
+/* ---- User menu (console top bar and account page) ----------------------- */
+.ds-user { position: relative; }
+.ds-user-button {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  max-width: 280px;
+  padding: 4px 12px 4px 4px;
+  background: var(--ds-surface);
+  border: 1px solid var(--ds-gray-600);
+  border-radius: 999px;
+  color: var(--ds-text);
+  font: 13px/1 var(--ds-font-body);
+  cursor: pointer;
+}
+.ds-user-button:hover { border-color: var(--ds-gray-400); }
+.ds-user-button:focus-visible { outline: 2px solid var(--ds-focus); outline-offset: 3px; }
+.ds-avatar {
+  width: 26px;
+  height: 26px;
+  flex: none;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 50%;
+  background: var(--ds-gray-800);
+  font-size: 11px;
+  font-weight: 600;
+}
+.ds-user-email { overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.ds-dot { width: 8px; height: 8px; flex: none; border-radius: 50%; background: var(--ds-warning); }
+.ds-menu {
+  position: absolute;
+  right: 0;
+  top: calc(100% + 8px);
+  z-index: 50;
+  width: 240px;
+  padding: 6px;
+  display: flex;
+  flex-direction: column;
+  background: var(--ds-surface);
+  border: 1px solid var(--ds-gray-600);
+  border-radius: var(--ds-radius-card);
+  font: 14px/1.4 var(--ds-font-body);
+}
+.ds-menu-head { padding: 8px 10px 10px; margin-bottom: 4px; border-bottom: 1px solid var(--ds-line); color: var(--ds-text-muted); font-size: 13px; overflow-wrap: anywhere; }
+.ds-menu-head strong { display: block; color: var(--ds-text); font-weight: 600; }
+.ds-menu-item {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 8px;
+  width: 100%;
+  padding: 9px 10px;
+  background: none;
+  border: 0;
+  border-radius: 6px;
+  color: var(--ds-text);
+  font: inherit;
+  text-align: left;
+  text-decoration: none;
+  cursor: pointer;
+}
+.ds-menu-item:hover, .ds-menu-item:focus-visible { background: var(--ds-gray-850); color: var(--ds-text); outline: none; }
+.ds-menu-item:focus-visible { box-shadow: inset 0 0 0 2px var(--ds-focus); }
+.ds-menu-note { color: var(--ds-warning-text); font-size: 12px; }
+
+/* ---- Dialog (Dialog variant="ds") ---------------------------------------- */
+.ds-dialog-backdrop {
+  position: fixed;
+  inset: 0;
+  z-index: 1000;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 16px;
+  background: rgba(0, 0, 0, 0.72);
+}
+.ds-dialog {
+  width: 100%;
+  max-width: 420px;
+  max-height: calc(100vh - 32px);
+  overflow-y: auto;
+  padding: 24px;
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+  background: var(--ds-surface);
+  border: 1px solid var(--ds-gray-600);
+  border-radius: var(--ds-radius-card);
+  color: var(--ds-text);
+  font: 15px/1.55 var(--ds-font-body);
+}
+.ds-dialog:focus { outline: none; }
+.ds-dialog-title { margin: 0; font: 500 24px/1.2 var(--ds-font-display); color: var(--ds-text); }
+.ds-dialog-body { display: flex; flex-direction: column; gap: 14px; }
+.ds-dialog *:focus-visible { outline: 2px solid var(--ds-focus); outline-offset: 3px; }
+
+/* ---- Phones ---------------------------------------------------------------- */
+@media (max-width: 560px) {
+  .ds-top { padding: 12px 14px; }
+  .ds-card { padding: 24px 20px; border-radius: 10px; }
+  .ds-title { font-size: 25px; }
+  .ds-main { padding: 20px 12px 40px; }
+  .ds-panel { padding: 18px 16px; }
+  .ds-user-email { display: none; }
+  .ds-user-button { padding-right: 8px; }
+  .ds-top-link--wide { display: none; }
+}

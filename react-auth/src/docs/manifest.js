@@ -120,6 +120,21 @@ export const DOC_GROUPS = [
         ],
     },
     {
+        title: "Security & trust",
+        pages: [
+            {
+                slug: "how-gait-protects-your-data",
+                title: "How Gait protects your data",
+                summary: "Workspace isolation, secrets Gait doesn't keep, your console session, and limits on repeated attempts.",
+            },
+            {
+                slug: "report-a-vulnerability",
+                title: "Report a vulnerability",
+                summary: "How to tell us privately about a security problem in Gait or gait-sdk.",
+            },
+        ],
+    },
+    {
         title: "Reference",
         pages: [
             {
@@ -131,6 +146,21 @@ export const DOC_GROUPS = [
                 slug: "troubleshooting",
                 title: "Troubleshooting",
                 summary: "What an error means and what to do about it.",
+            },
+        ],
+    },
+    {
+        title: "Help",
+        pages: [
+            {
+                slug: "faq",
+                title: "FAQ",
+                summary: "Short answers to common questions, each linked to the page that explains it.",
+            },
+            {
+                slug: "whats-live",
+                title: "What's live & changelog",
+                summary: "What you can use today, and what has changed recently.",
             },
         ],
     },

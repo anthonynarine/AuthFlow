@@ -12,6 +12,10 @@ import ApplicationsAndConnectionKeys from "./ApplicationsAndConnectionKeys";
 import Glossary from "./Glossary";
 import Troubleshooting from "./Troubleshooting";
 import AutomatedSecurityResponse from "./AutomatedSecurityResponse";
+import FaqPage from "./Faq";
+import HowGaitProtectsYourData from "./HowGaitProtectsYourData";
+import ReportAVulnerability from "./ReportAVulnerability";
+import WhatsLive from "./WhatsLive";
 import HandleAFinding from "./HandleAFinding";
 import LocalToProduction from "./LocalToProduction";
 import ProductOrganizationsAndInvites from "./ProductOrganizationsAndInvites";
@@ -33,6 +37,10 @@ export const DOC_CONTENT = {
     glossary: Glossary,
     troubleshooting: Troubleshooting,
     "automated-security-response": AutomatedSecurityResponse,
+    faq: FaqPage,
+    "how-gait-protects-your-data": HowGaitProtectsYourData,
+    "report-a-vulnerability": ReportAVulnerability,
+    "whats-live": WhatsLive,
     "handle-a-finding": HandleAFinding,
     "local-to-production": LocalToProduction,
     "product-organizations-and-invites": ProductOrganizationsAndInvites,

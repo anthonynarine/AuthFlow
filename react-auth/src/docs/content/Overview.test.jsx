@@ -62,7 +62,9 @@ describe("navigation groups", () => {
             "Concepts",
             "Guides",
             "For developers",
+            "Security & trust",
             "Reference",
+            "Help",
             "Gait's platform",
         ]);
         expect(DOC_PAGES.map((page) => page.slug).slice(0, 5)).toEqual([

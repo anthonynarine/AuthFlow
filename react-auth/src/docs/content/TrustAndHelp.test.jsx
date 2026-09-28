@@ -1,0 +1,105 @@
+import "@testing-library/jest-dom";
+import React from "react";
+import { render, screen, within } from "@testing-library/react";
+import { MemoryRouter, Route, Routes } from "react-router-dom";
+import { DocsPage } from "../DocsPage";
+import { DOC_GROUPS, findDocPage } from "../manifest";
+import { FEATURE_INFO, FEATURE_STATUS, STATUS_LABELS } from "../featureStatus";
+import { CHANGELOG } from "../changelog";
+import { SECURITY_CONTACT } from "./ReportAVulnerability";
+
+function renderDoc(slug) {
+    return render(
+        <MemoryRouter initialEntries={[`/docs/${slug}`]}>
+            <Routes>
+                <Route path="/docs/:slug" element={<DocsPage />} />
+            </Routes>
+        </MemoryRouter>
+    );
+}
+
+beforeEach(() => {
+    Element.prototype.scrollIntoView = jest.fn();
+});
+
+afterEach(() => {
+    delete Element.prototype.scrollIntoView;
+});
+
+test("Security & trust and Help groups hold the new pages", () => {
+    const slugsOf = (title) => DOC_GROUPS.find((group) => group.title === title).pages.map((page) => page.slug);
+    expect(slugsOf("Security & trust")).toEqual(["how-gait-protects-your-data", "report-a-vulnerability"]);
+    expect(slugsOf("Help")).toEqual(["faq", "whats-live"]);
+});
+
+describe("What's live & changelog", () => {
+    test("every status key has a description, and every description has a status", () => {
+        expect(Object.keys(FEATURE_INFO).sort()).toEqual(Object.keys(FEATURE_STATUS).sort());
+        for (const info of Object.values(FEATURE_INFO)) {
+            expect(findDocPage(info.doc.split("#")[0])).not.toBeNull();
+        }
+    });
+
+    test("the status table is read from featureStatus.js, so flipping a key flips the page", () => {
+        const original = FEATURE_STATUS.productSignIn;
+        try {
+            FEATURE_STATUS.productSignIn = "live";
+            renderDoc("whats-live");
+            const table = screen.getByRole("table", { name: "What's live" });
+            const row = within(table).getByRole("row", { name: new RegExp(FEATURE_INFO.productSignIn.name) });
+            expect(row).toHaveTextContent(STATUS_LABELS.live);
+            expect(within(table).getAllByRole("row")).toHaveLength(Object.keys(FEATURE_STATUS).length + 1);
+        } finally {
+            FEATURE_STATUS.productSignIn = original;
+        }
+    });
+
+    test("changelog entries are newest first, use real status keys and link to real pages", () => {
+        const dates = CHANGELOG.map((entry) => entry.date);
+        expect([...dates].sort().reverse()).toEqual(dates);
+        CHANGELOG.flatMap((entry) => entry.features).forEach((key) => expect(FEATURE_STATUS).toHaveProperty(key));
+        CHANGELOG.filter((entry) => entry.doc).forEach((entry) =>
+            expect(findDocPage(entry.doc.split("#")[0])).not.toBeNull()
+        );
+        renderDoc("whats-live");
+        expect(within(screen.getByRole("table", { name: "Changelog" })).getAllByRole("row")).toHaveLength(
+            CHANGELOG.length + 1
+        );
+    });
+});
+
+describe("Report a vulnerability", () => {
+    test("while the Gait contact is unconfirmed, the page says so and shows no address", () => {
+        expect(SECURITY_CONTACT).toBeNull();
+        renderDoc("report-a-vulnerability");
+        expect(screen.getByTestId("security-contact-pending")).toHaveTextContent("Not published yet");
+        expect(screen.queryByRole("link", { name: /@/ })).not.toBeInTheDocument();
+        expect(document.body.textContent).not.toMatch(/[\w.-]+@[\w-]+\.\w+/);
+        expect(screen.getByRole("link", { name: "gait-sdk security policy" })).toHaveAttribute(
+            "href",
+            "https://github.com/anthonynarine/gait-sdk/blob/main/docs/SECURITY.md"
+        );
+    });
+});
+
+describe("How Gait protects your data", () => {
+    test("claims only what's true today", () => {
+        renderDoc("how-gait-protects-your-data");
+        const text = document.body.textContent;
+        // Not every secret is hashed, there's no HSTS claim, and there's no
+        // console "sign out everywhere"; see the D-TRUST report before adding any.
+        expect(text).not.toMatch(/every (secret|token)|all (secrets|tokens)|HSTS|sign out everywhere/i);
+        expect(text).not.toMatch(/\b\d+\s*(minutes?|hours?|days?|attempts?)\b/i);
+        expect(text).toMatch(/signs you out everywhere/);
+    });
+});
+
+describe("FAQ", () => {
+    test("every answer links to the page that explains it", () => {
+        renderDoc("faq");
+        // eslint-disable-next-line testing-library/no-node-access -- each dd's own link is what's checked
+        const answers = Array.from(document.querySelectorAll(".docs-article dd"));
+        expect(answers.length).toBeGreaterThan(10);
+        answers.forEach((answer) => expect(within(answer).getAllByRole("link").length).toBeGreaterThan(0));
+    });
+});

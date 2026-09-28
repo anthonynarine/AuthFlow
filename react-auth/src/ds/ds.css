@@ -135,6 +135,12 @@
   text-align: center;
   padding-left: 0.45em;
 }
+/* A recovery code (xxxxx-xxxxx): same mono face, spacing that fits eleven characters at 360px. */
+.ds-recovery-code {
+  font: 500 18px/1 var(--ds-font-mono);
+  letter-spacing: 0.08em;
+  text-align: center;
+}
 .ds-reveal {
   position: absolute;
   right: 6px;
@@ -303,14 +309,15 @@
   margin: 0;
   padding: 14px;
   display: grid;
-  grid-template-columns: repeat(2, minmax(0, 1fr));
+  /* Two columns when whole codes fit side by side, else one: a code never breaks. */
+  grid-template-columns: repeat(auto-fill, minmax(min(100%, 17ch), 1fr));
   gap: 8px 16px;
   border: 1px solid var(--ds-gray-600);
   border-radius: var(--ds-radius-control);
   background: var(--ds-bg);
   counter-reset: code;
 }
-.ds-codes li { display: flex; gap: 8px; font: 500 15px/1.4 var(--ds-font-mono); letter-spacing: 0.04em; counter-increment: code; }
+.ds-codes li { display: flex; gap: 8px; white-space: nowrap; font: 500 15px/1.4 var(--ds-font-mono); letter-spacing: 0.04em; counter-increment: code; }
 .ds-codes li::before { content: counter(code) "."; min-width: 1.6em; color: var(--ds-text-subtle); font-size: 12px; line-height: 21px; text-align: right; }
 
 /* ---- Pending invites (PendingInvites variant="ds") ------------------------ */

@@ -89,7 +89,7 @@ export function RecoveryCodeField({ label = "Recovery code", hint, error, value,
         <Field label={label} hint={hint} error={error}>
             {(aria) => (
                 <input
-                    className="ds-input ds-code"
+                    className="ds-input ds-recovery-code"
                     ref={inputRef}
                     autoComplete="off"
                     autoCapitalize="none"

@@ -45,7 +45,7 @@ const BLOCKS = [
                 label: "B · Invited to an existing workspace",
                 tone: "invite",
                 messages: [
-                    { n: 8, from: "person", to: "console", text: "Open the invite link, signed in as the invited email" },
+                    { n: 8, from: "person", to: "console", text: "Open the invite link, signed in as the invited email, and choose Join" },
                     { n: 9, from: "gait", to: "person", text: "You are a Member, Admin or Owner, as invited" },
                 ],
             },
@@ -82,19 +82,19 @@ const BEATS = [
     },
     {
         title: "Fork A · Start a new workspace",
-        body: "The person creates a workspace, acme, and becomes its Owner. Owner is what you get for creating the workspace, not a promotion that comes later.",
+        body: "The person creates a workspace, acme, and becomes its Owner straight away. No invite is needed to start your own workspace.",
         live: [6, 7],
         shown: range(1, 7),
     },
     {
         title: "Fork B · Invited to an existing workspace",
-        body: "The person opens the invite link while signed in with the invited, confirmed email, and joins with the role they were invited as. Once that email is confirmed, the invite also shows up in Gait itself, so the link isn't the only way in. Signed in as a different email, the invite doesn't work.",
+        body: "The person opens the invite link while signed in with the invited, confirmed email, sees which workspace invited them and as what role, and chooses Join. Opening the link alone never joins anyone. Once that email is confirmed, the invite also shows up in Gait itself, so the link isn't the only way in. Signed in as a different email, the invite doesn't work.",
         live: [8, 9],
         shown: [...range(1, 5), 8, 9],
     },
     {
         title: "Recap",
-        body: "An account is not membership. Membership starts at step 6 (you create the workspace) or step 8 (you accept an invite), never before.",
+        body: "An account is not membership. Membership starts at step 7 (Gait makes you Owner of the workspace you created) or step 9 (Gait adds you with the role you were invited as), never before.",
         live: [],
         shown: range(1, 9),
     },

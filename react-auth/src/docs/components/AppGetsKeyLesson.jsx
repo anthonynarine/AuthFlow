@@ -3,8 +3,8 @@ import { SequenceLesson } from "./SequenceLesson";
 
 /*
  * "How an application gets its key": two scenes. A person sets things up
- * once in the console (1-4), then the backend reports on its own, every run
- * or deploy (5-6). Same messages as the old mermaid sequence diagram.
+ * once in the console (1-4), then the backend reports on its own, whenever
+ * it runs its checks (5-6). Same messages as the old mermaid sequence diagram.
  */
 
 const LANES = [
@@ -28,7 +28,7 @@ const BLOCKS = [
     },
     {
         kind: "frame",
-        label: "Loop · every run or deploy",
+        label: "Loop · whenever your backend runs its checks",
         branches: [
             {
                 id: "loop",
@@ -48,7 +48,7 @@ const range = (from, to) => Array.from({ length: to - from + 1 }, (_, i) => from
 const BEATS = [
     {
         title: "Four lanes, two scenes",
-        body: "First a person sets things up once, in the console. After that your backend talks to Gait on its own, on every run or deploy, with no person involved.",
+        body: "First a person sets things up once, in the console. After that your backend talks to Gait on its own, whenever it runs its checks, with no person involved.",
         live: [],
         shown: [],
     },
@@ -77,7 +77,7 @@ const BEATS = [
         shown: range(1, 4),
     },
     {
-        title: "Every run or deploy",
+        title: "Whenever your backend runs its checks",
         body: "The backend reports a security check with the key. The key alone tells Gait which application, and so which workspace and environment, the result belongs to: acme / acme-api / production.",
         live: [5, 6],
         shown: range(1, 6),

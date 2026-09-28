@@ -51,8 +51,14 @@ export function TwoStepSetupPage() {
 
     const total = 4;
     const [keyCopied, setKeyCopied] = useState(false);
+    // Turning two-step on signs out every other session (H6): say so.
+    const [signedOutElsewhere, setSignedOutElsewhere] = useState(0);
+    const elsewhere = signedOutElsewhere > 0 ? " You've been signed out on other devices." : "";
     const finish = () =>
-        navigate("/account", { replace: true, state: { notice: "Two-step verification is on. You'll enter a code after your password from now on." } });
+        navigate("/account", {
+            replace: true,
+            state: { notice: `Two-step verification is on. You'll enter a code after your password from now on.${elsewhere}` },
+        });
 
     const onConfirmPassword = async (event) => {
         event.preventDefault();
@@ -89,6 +95,7 @@ export function TwoStepSetupPage() {
             // The secret did its job: drop the key and the QR image now.
             setSetupKey(null);
             setQrUrl(null);
+            setSignedOutElsewhere(Number(result.value?.sessions_revoked) || 0);
             const recovery = recoveryCodesFrom(result.value);
             if (recovery) {
                 setCodes(recovery);
@@ -229,7 +236,7 @@ export function TwoStepSetupPage() {
         body = (
             <>
                 <Alert kind="success">
-                    <strong>Two-step verification is on.</strong> You'll enter a code after your password from now on.
+                    <strong>Two-step verification is on.</strong> You'll enter a code after your password from now on.{elsewhere}
                 </Alert>
                 <div className="ds-head">
                     <Heading>You're protected</Heading>

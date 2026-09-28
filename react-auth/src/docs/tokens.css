@@ -10,23 +10,23 @@
  */
 :root {
   /* Categorical colours: one per actor or role, used the same way on every page. */
-  --gd-teal: #1abc9c;
+  --gd-teal: #fafafa;
   --gd-teal-bg: rgba(255, 255, 255, 0.06);
-  --gd-purple: #a78bfa;
+  --gd-purple: #b8aee0;
   --gd-purple-bg: var(--diagram-ai-bg);
-  --gd-orange: #fb8a5c;
+  --gd-orange: #d6b98c;
   --gd-orange-bg: var(--diagram-human-bg);
   --gd-orange-border: var(--diagram-human-border);
-  --gd-cyan: #38bdf8;
+  --gd-cyan: #a7c7d9;
   --gd-cyan-bg: var(--diagram-truth-bg);
-  --gd-blue: #7aa7ff;
+  --gd-blue: #a7c7d9;
   --gd-blue-bg: var(--diagram-truth-bg);
   --gd-blue-border: var(--diagram-truth-border);
-  --gd-grey: #9aa4af;
+  --gd-grey: #a3a3a3;
   --gd-grey-bg: rgba(255, 255, 255, 0.04);
 
   /* Status roles: badges, callouts and the isolation page's allowed / refused steps. */
-  --gd-good: #34d399;
+  --gd-good: #4ade80;
   --gd-good-bg: var(--status-good-bg);
   --gd-good-border: var(--status-good-line);
   --gd-good-bg-soft: rgba(74, 222, 128, 0.06);

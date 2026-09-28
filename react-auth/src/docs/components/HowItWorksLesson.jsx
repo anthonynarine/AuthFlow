@@ -1,4 +1,5 @@
 import React, { useState } from "react";
+import { LessonCoach, LessonNav } from "./LessonParts";
 import "./how-it-works.css";
 
 /*
@@ -250,7 +251,7 @@ export function HowItWorksLesson() {
                 your product's own users sign in with Gait, and your product decides what they can access.
             </figcaption>
 
-            <div className="hiw-chrome hiw-modes" role="group" aria-label="Lesson mode">
+            <div className="lesson-chrome hiw-modes" role="group" aria-label="Lesson mode">
                 {MODES.map((entry) => (
                     <button
                         key={entry.id}
@@ -265,7 +266,7 @@ export function HowItWorksLesson() {
             </div>
 
             {mode === "role" && (
-                <div className="hiw-chrome hiw-roles" role="group" aria-label="Role">
+                <div className="lesson-chrome hiw-roles" role="group" aria-label="Role">
                     {ROLES.map((entry) => (
                         <button
                             key={entry.id}
@@ -281,7 +282,7 @@ export function HowItWorksLesson() {
             )}
 
             <div className="hiw-map">
-                <ul className="hiw-chrome hiw-legend" aria-label="Legend">
+                <ul className="lesson-chrome hiw-legend" aria-label="Legend">
                     <li className="hiw-legend-item hiw-legend-item--team">Team</li>
                     <li className="hiw-legend-item hiw-legend-item--software">Software</li>
                     <li className="hiw-legend-item hiw-legend-item--users">Users (dashed: optional)</li>
@@ -310,35 +311,9 @@ export function HowItWorksLesson() {
                 </div>
             </div>
 
-            <div className="hiw-coach" aria-live="polite">
-                <p className="hiw-chrome hiw-eyebrow">{eyebrow}</p>
-                <p className="hiw-coach-title">{view.title}</p>
-                <p className="hiw-coach-body">{view.body}</p>
-            </div>
+            <LessonCoach eyebrow={eyebrow} title={view.title} body={view.body} />
 
-            {mode === "tour" && (
-                <div className="hiw-chrome hiw-nav">
-                    <button type="button" onClick={() => setStep((s) => s - 1)} disabled={step === 0}>
-                        Back
-                    </button>
-                    <ol className="hiw-dots" aria-label="Tour steps">
-                        {TOUR.map((entry, index) => (
-                            <li key={entry.title}>
-                                <button
-                                    type="button"
-                                    className="hiw-dot"
-                                    aria-label={`Step ${index + 1}: ${entry.title}`}
-                                    aria-current={index === step ? "step" : undefined}
-                                    onClick={() => setStep(index)}
-                                />
-                            </li>
-                        ))}
-                    </ol>
-                    <button type="button" onClick={() => setStep((s) => s + 1)} disabled={step === TOUR.length - 1}>
-                        Next
-                    </button>
-                </div>
-            )}
+            {mode === "tour" && <LessonNav steps={TOUR} step={step} onStep={setStep} />}
         </figure>
     );
 }

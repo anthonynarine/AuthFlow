@@ -16,7 +16,7 @@ const SNIPPET_RADIUS = 70;
 
 // Parts of a rendered page that aren't prose.
 const NOT_PROSE =
-    ".doc-diagram-canvas, .doc-code-head, [role='status'], .doc-visually-hidden, .doc-status, .doc-status-note, .hiw-chrome";
+    ".doc-diagram-canvas, .doc-code-head, [role='status'], .doc-visually-hidden, .doc-status, .doc-status-note, .lesson-chrome";
 // Block elements whose text would otherwise run together ("it.Revoke").
 const BLOCKS = "p, li, td, th, dt, dd, h2, h3, h4, figcaption, pre, .iso-step-note";
 

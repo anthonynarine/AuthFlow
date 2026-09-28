@@ -1,6 +1,7 @@
 import React from "react";
 import { Callout, DocLink, DocSection, DocTable } from "../components/DocPrimitives";
 import { Diagram } from "../components/Diagram";
+import { PersonJoinsLesson } from "../components/PersonJoinsLesson";
 import { statusOf } from "../featureStatus";
 
 const BIG_PICTURE = `flowchart TB
@@ -34,25 +35,6 @@ const BIG_PICTURE = `flowchart TB
     A1 -- "connection key" --> E1
     A2 -- "connection key" --> E2
     E1 -. "reports security checks" .-> A1`;
-
-const PERSON_JOINS = `sequenceDiagram
-    autonumber
-    actor P as Person
-    participant C as Gait console
-    participant G as Gait
-
-    P->>C: Create an account (email + password)
-    C->>G: Create account
-    G-->>P: Email: "Confirm your email address"
-    P->>C: Open the link
-    C->>G: Email confirmed
-    alt Starting a new company
-        P->>C: Create company "acme"
-        G-->>P: You are its Owner
-    else Invited to an existing company
-        P->>C: Open the invite link, signed in as the invited email
-        G-->>P: You are a Member, Admin or Owner
-    end`;
 
 const APP_GETS_KEY = `sequenceDiagram
     autonumber
@@ -188,10 +170,7 @@ export default function PeopleAndApplications() {
             </DocSection>
 
             <DocSection id="how-a-person-joins" title="How a person joins">
-                <Diagram
-                    source={PERSON_JOINS}
-                    description="A person creates an account and confirms their email from a link Gait sends. Then either they create a new company, and become its Owner, or they open an invite link while signed in with the invited email address and join an existing company with the role they were invited as."
-                />
+                <PersonJoinsLesson />
                 <p>
                     Details, including what each invite screen means, are in{" "}
                     <DocLink to="teams-roles-and-invites">Teams, roles &amp; invites</DocLink>.

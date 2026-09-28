@@ -33,10 +33,10 @@ import { AccountMenu } from "../../account/AccountMenu";
 // The same drawing as the "How it works" docs page (HOW_IT_WORKS.md, "The big
 // picture"), top to bottom so it stays readable in a narrow column.
 const BIG_PICTURE = `flowchart TB
-    classDef people fill:#123029,stroke:#1abc9c,color:#e8eaed,stroke-width:2px
-    classDef gait fill:#1b2129,stroke:#38bdf8,color:#e8eaed,stroke-width:2px
-    classDef soft fill:#2a2340,stroke:#a78bfa,color:#e8eaed,stroke-width:2px
-    classDef users fill:#3a2016,stroke:#fb8a5c,color:#e8eaed,stroke-width:2px
+    classDef people fill:#1c1c1c,stroke:#fafafa,color:#e5e5e5,stroke-width:2px
+    classDef gait fill:#162029,stroke:#a7c7d9,color:#e5e5e5,stroke-width:2px
+    classDef soft fill:#1d1b26,stroke:#b8aee0,color:#e5e5e5,stroke-width:2px
+    classDef users fill:#231e17,stroke:#d6b98c,color:#e5e5e5,stroke-width:2px
 
     TEAM["Your team<br/>Owner · Admin · Member"]:::people
     subgraph GAIT["Gait"]

@@ -567,11 +567,17 @@
   text-transform: uppercase;
 }
 
-.severity-info,
-.outcome-success,
 .session-active {
   background: rgba(var(--rgb-accent), 0.12);
   border-color: rgba(var(--rgb-accent), 0.35);
+}
+.severity-info {
+  background: rgba(var(--rgb-info), 0.12);
+  border-color: rgba(var(--rgb-info), 0.35);
+}
+.outcome-success {
+  background: rgba(var(--rgb-good), 0.12);
+  border-color: rgba(var(--rgb-good), 0.35);
 }
 
 .severity-warning {
@@ -601,8 +607,8 @@
 .control-status-healthy,
 .evidence-result-pass,
 .finding-status-resolved {
-  background: rgba(var(--rgb-accent), 0.12);
-  border-color: rgba(var(--rgb-accent), 0.35);
+  background: rgba(var(--rgb-good), 0.12);
+  border-color: rgba(var(--rgb-good), 0.35);
 }
 
 .control-status-needs_attention,
@@ -769,7 +775,7 @@ button.posture-attention-card:hover {
 }
 
 .posture-attention-card--success strong {
-  color: var(--color-accent);
+  color: var(--status-good);
 }
 
 .posture-details {

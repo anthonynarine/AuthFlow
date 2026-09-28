@@ -1,6 +1,6 @@
 .founder-workspace {
-  --fw-good: var(--color-accent);
-  --fw-good-bg: var(--color-accent-soft);
+  --fw-good: var(--status-good);
+  --fw-good-bg: var(--status-good-bg);
   --fw-warn: rgb(var(--rgb-warn));
   --fw-warn-bg: rgba(var(--rgb-warn), 0.12);
   --fw-danger: var(--color-danger);

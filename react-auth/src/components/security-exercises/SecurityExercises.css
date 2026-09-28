@@ -71,8 +71,8 @@
 
 .playbook-status-success,
 .exercise-status-success {
-  background: var(--color-accent-soft);
-  border-color: var(--color-accent);
+  background: var(--status-good-bg);
+  border-color: var(--status-good);
 }
 
 .playbook-status-neutral,
@@ -255,8 +255,8 @@
 
 /* Enabled/Disabled uses its own class prefix -- never PASSED/FAILED/HEALTHY tones. */
 .schedule-state-success {
-  background: var(--color-accent-soft);
-  border-color: var(--color-accent);
+  background: var(--status-good-bg);
+  border-color: var(--status-good);
 }
 
 .schedule-state-neutral {

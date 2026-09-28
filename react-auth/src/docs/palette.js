@@ -6,36 +6,39 @@
  */
 export const DIAGRAM = {
     // Text and lines.
-    text: "#e8eaed",
-    textOnRed: "#ffd6d6",
-    line: "#9aa4af",
-    muted: "#5b6572",
+    text: "#e5e5e5",
+    textOnRed: "#fecaca",
+    line: "#a3a3a3",
+    muted: "#525252",
     borderStrong: "rgba(255, 255, 255, 0.16)",
 
     // Surfaces.
-    page: "#121212",
-    surface: "#1b2129",
-    surfaceAlt: "#232a34",
-    surfaceDeep: "#161b22",
+    page: "#0a0a0a",
+    surface: "#111111",
+    surfaceAlt: "#1c1c1c",
+    surfaceDeep: "#0f0f0f",
 
-    // Categorical strokes (same as tokens.css --gd-*).
-    teal: "#1abc9c",
-    purple: "#a78bfa",
-    orange: "#fb8a5c",
-    cyan: "#38bdf8",
-    blue: "#7aa7ff",
-    green: "#34d399",
-    amber: "#f5b85b",
-    red: "#ff6b6b",
+    // Categorical strokes (same as tokens.css --gd-*). Stage 2 (monochrome):
+    // teal is white, purple lavender, orange and amber sand (human-held
+    // things: people's decisions, keys; never the status warning amber),
+    // cyan and blue mist. Green and red stay the status colours.
+    teal: "#fafafa",
+    purple: "#b8aee0",
+    orange: "#d6b98c",
+    cyan: "#a7c7d9",
+    blue: "#a7c7d9",
+    green: "#4ade80",
+    amber: "#d6b98c",
+    red: "#f87171",
 
     // Dark fills behind each stroke.
-    fillTeal: "#123029",
-    fillGreen: "#1f3b36",
-    fillPurple: "#2a2340",
-    fillOrange: "#3a2016",
-    fillBlue: "#172440",
-    fillAmber: "#3a2e1a",
-    fillRed: "#3a1f24",
+    fillTeal: "#1c1c1c",
+    fillGreen: "#0f2417",
+    fillPurple: "#1d1b26",
+    fillOrange: "#231e17",
+    fillBlue: "#162029",
+    fillAmber: "#231e17",
+    fillRed: "#2a1215",
 };
 
 /** The CSS token each shared diagram colour must match. */

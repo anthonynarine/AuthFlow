@@ -1,7 +1,7 @@
 /*
- * Docs palette (stage 1). Every colour the docs use is named here, so a later
- * stage can change the docs' look in one place. Values are exactly what the
- * docs showed before; nothing here changes how they look.
+ * Docs palette. Every colour the docs use is named here. Stage 2
+ * (monochrome): categorical roles use the muted diagram set (sand, lavender,
+ * white, mist, grays) and status points at the shared --status-* set.
  *
  * The docs only (src/docs/**): the console has src/console/tokens.css, the
  * sign-in pages src/ds. Mermaid diagrams can't read CSS custom properties and
@@ -10,35 +10,35 @@
  */
 :root {
   /* Categorical colours: one per actor or role, used the same way on every page. */
-  --gd-teal: #1abc9c;
-  --gd-teal-bg: rgba(26, 188, 156, 0.1);
-  --gd-purple: #a78bfa;
-  --gd-purple-bg: rgba(167, 139, 250, 0.1);
-  --gd-orange: #fb8a5c;
-  --gd-orange-bg: rgba(251, 138, 92, 0.1);
-  --gd-orange-border: rgba(251, 138, 92, 0.45);
-  --gd-cyan: #38bdf8;
-  --gd-cyan-bg: rgba(56, 189, 248, 0.08);
-  --gd-blue: #7aa7ff;
-  --gd-blue-bg: rgba(122, 167, 255, 0.1);
-  --gd-blue-border: rgba(122, 167, 255, 0.45);
-  --gd-grey: #9aa4af;
-  --gd-grey-bg: rgba(154, 164, 175, 0.08);
+  --gd-teal: #fafafa;
+  --gd-teal-bg: rgba(255, 255, 255, 0.06);
+  --gd-purple: #b8aee0;
+  --gd-purple-bg: var(--diagram-ai-bg);
+  --gd-orange: #d6b98c;
+  --gd-orange-bg: var(--diagram-human-bg);
+  --gd-orange-border: var(--diagram-human-border);
+  --gd-cyan: #a7c7d9;
+  --gd-cyan-bg: var(--diagram-truth-bg);
+  --gd-blue: #a7c7d9;
+  --gd-blue-bg: var(--diagram-truth-bg);
+  --gd-blue-border: var(--diagram-truth-border);
+  --gd-grey: #a3a3a3;
+  --gd-grey-bg: rgba(255, 255, 255, 0.04);
 
   /* Status roles: badges, callouts and the isolation page's allowed / refused steps. */
-  --gd-good: #34d399;
-  --gd-good-bg: rgba(52, 211, 153, 0.12);
-  --gd-good-border: rgba(52, 211, 153, 0.35);
-  --gd-good-bg-soft: rgba(52, 211, 153, 0.08);
-  --gd-good-border-strong: rgba(52, 211, 153, 0.4);
-  --gd-warn: var(--diagram-human);
-  --gd-warn-bg: var(--diagram-human-bg);
-  --gd-warn-border: var(--diagram-human-border);
-  --gd-info: var(--diagram-truth);
-  --gd-info-bg: var(--diagram-truth-bg);
-  --gd-info-border: var(--diagram-truth-border);
+  --gd-good: #4ade80;
+  --gd-good-bg: var(--status-good-bg);
+  --gd-good-border: var(--status-good-line);
+  --gd-good-bg-soft: rgba(74, 222, 128, 0.06);
+  --gd-good-border-strong: var(--status-good-line);
+  --gd-warn: var(--status-warn);
+  --gd-warn-bg: var(--status-warn-bg);
+  --gd-warn-border: var(--status-warn-line);
+  --gd-info: var(--status-info);
+  --gd-info-bg: var(--status-info-bg);
+  --gd-info-border: var(--status-info-line);
 
   /* Chrome. */
-  --gd-header-bg: rgba(18, 18, 18, 0.92);
-  --gd-code-bg: #0d1117;
+  --gd-header-bg: rgba(10, 10, 10, 0.92);
+  --gd-code-bg: var(--ds-gray-925);
 }

@@ -84,12 +84,12 @@ export function useStepUpDialog() {
         current_password: currentPassword,
       };
 
-      if (state.requiredStrength === "mfa") {
-        if (recoveryCode) {
-          payload.recovery_code = recoveryCode.trim();
-        } else {
-          payload.otp = otp;
-        }
+      // Gait wants a second factor for an "mfa" step-up, and for any step-up
+      // on an account with two-step on; send whichever one was entered.
+      if (recoveryCode) {
+        payload.recovery_code = recoveryCode.trim();
+      } else if (otp || state.requiredStrength === "mfa") {
+        payload.otp = otp;
       }
 
       const { data } = await authAxios.post("/reauthenticate/", payload);

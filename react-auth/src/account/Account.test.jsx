@@ -192,6 +192,34 @@ describe("/account", () => {
         expect(authAxios.post.mock.calls.filter(([url]) => url === "/change-password/")).toHaveLength(2);
     });
 
+    test("change password with two-step on: confirming it's you asks for a code too, even for a password-strength step-up", async () => {
+        mockUser = { ...mockUser, is_2fa_enabled: true };
+        mockRecoveryStatus();
+        let changes = 0;
+        authAxios.post.mockImplementation((url) => {
+            if (url === "/change-password/") {
+                changes += 1;
+                return changes === 1 ? Promise.reject(STEP_UP) : Promise.resolve({ data: { sessions_revoked: 0 } });
+            }
+            if (url === "/reauthenticate/") return Promise.resolve({ data: {} });
+            return Promise.reject(new Error(url));
+        });
+        renderAt("/account");
+        fireEvent.click(await screen.findByRole("button", { name: "Change password" }));
+        fireEvent.change(screen.getByLabelText("Current password"), { target: { value: TEST_PASSWORD } });
+        fireEvent.change(screen.getByLabelText("New password"), { target: { value: "a-new-test-passphrase" } });
+        fireEvent.change(screen.getByLabelText("Confirm new password"), { target: { value: "a-new-test-passphrase" } });
+        fireEvent.click(screen.getByRole("button", { name: "Save new password" }));
+
+        const dialog = await screen.findByRole("dialog", { name: "Confirm it's you" });
+        fireEvent.change(within(dialog).getByLabelText("Current password"), { target: { value: TEST_PASSWORD } });
+        expect(within(dialog).getByRole("button", { name: "Confirm" })).toBeDisabled();
+        fireEvent.change(within(dialog).getByLabelText("6-digit code"), { target: { value: "135790" } });
+        fireEvent.click(within(dialog).getByRole("button", { name: "Confirm" }));
+        await waitFor(() => expect(screen.getByRole("status")).toHaveTextContent("Password changed."));
+        expect(authAxios.post).toHaveBeenCalledWith("/reauthenticate/", { current_password: TEST_PASSWORD, otp: "135790" });
+    });
+
     test("change password: Gait's field errors land on their fields", async () => {
         authAxios.post.mockRejectedValue({ response: { status: 400, data: { error: { current_password: ["That's not your current password."] } } } });
         renderAt("/account");

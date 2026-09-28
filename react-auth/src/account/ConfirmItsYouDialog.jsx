@@ -1,12 +1,14 @@
 import React, { useEffect, useRef, useState } from "react";
 import { Dialog } from "../console/components/ui/Dialog";
+import { useBasicAuthServices } from "../context/auth/BasicAuthContext";
 import { Alert, Button, PasswordField } from "../ds/components";
 import { SecondFactorField, secondFactorReady } from "./SecondFactorField";
 
 /**
  * "Confirm it's you": the step-up Gait asks for before a password change or a
- * two-step change. Asks for a code as well when Gait needs two-step strength;
- * a recovery code works there too, for someone who lost their phone.
+ * two-step change. Asks for a code as well when Gait needs two-step strength
+ * or the account has two-step on (Gait's /reauthenticate/ then always wants
+ * one); a recovery code works there too, for someone who lost their phone.
  * Driven by useStepUpRetry().dialog.
  */
 export function ConfirmItsYouDialog({ state, confirm, cancel }) {
@@ -15,7 +17,8 @@ export function ConfirmItsYouDialog({ state, confirm, cancel }) {
     const [otp, setOtp] = useState("");
     const [recoveryCode, setRecoveryCode] = useState("");
     const passwordRef = useRef(null);
-    const needsCode = state.requiredStrength === "mfa";
+    const { user } = useBasicAuthServices();
+    const needsCode = state.requiredStrength === "mfa" || Boolean(user?.is_2fa_enabled);
     const busy = state.status === "submitting";
     const ready = Boolean(password) && (!needsCode || secondFactorReady(mode, otp, recoveryCode));
 

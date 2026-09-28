@@ -2,7 +2,8 @@ import React from "react";
 import "@testing-library/jest-dom";
 import { fireEvent, render, screen, waitFor } from "@testing-library/react";
 import { MemoryRouter } from "react-router-dom";
-import { EarlyAccessPage } from "./EarlyAccessPage";
+import { EarlyAccessPage, FIELD_LIMITS, buildEmailContent, buildSubject } from "./EarlyAccessPage";
+import { CONTACT_LIMITS } from "../mail/contactForm";
 import { publicAxios } from "../../interceptors/axios";
 
 jest.mock("../../interceptors/axios", () => ({
@@ -97,5 +98,67 @@ describe("EarlyAccessPage", () => {
     expect(await screen.findByRole("alert")).toHaveTextContent("Mail server unavailable");
     // The form is still there with the founder's answers intact, nothing was lost.
     expect(screen.getByLabelText("Your name")).toHaveValue("Jamie Rivera");
+  });
+
+  test("even with every field full, the message fits the server's limits", () => {
+    const longest = (n) => "x".repeat(n);
+    const form = {
+      name: longest(FIELD_LIMITS.name),
+      reply_to: `${longest(FIELD_LIMITS.reply_to - 12)}@example.com`,
+      company: longest(FIELD_LIMITS.company),
+      teamSize: "16+ people",
+      stage: "Launched",
+      building: longest(FIELD_LIMITS.building),
+      concern: longest(FIELD_LIMITS.concern),
+      repoUrl: longest(FIELD_LIMITS.repoUrl),
+      urgent: true,
+    };
+    expect(buildEmailContent(form).length).toBeLessThanOrEqual(CONTACT_LIMITS.content);
+    expect(buildSubject(form).length).toBeLessThanOrEqual(CONTACT_LIMITS.subject);
+    expect(form.reply_to.length).toBeLessThanOrEqual(CONTACT_LIMITS.reply_to);
+  });
+
+  test("each free-text field is capped", () => {
+    renderPage();
+    expect(screen.getByLabelText("Your name")).toHaveAttribute("maxLength", String(FIELD_LIMITS.name));
+    expect(screen.getByLabelText("What's your biggest security worry right now?")).toHaveAttribute(
+      "maxLength",
+      String(FIELD_LIMITS.concern)
+    );
+    expect(screen.getByLabelText("GitHub repo (optional)")).toHaveAttribute("maxLength", String(FIELD_LIMITS.repoUrl));
+  });
+
+  test("a required field of only spaces is flagged on the field and nothing is sent", () => {
+    renderPage();
+    fillRequiredFields();
+    fireEvent.change(screen.getByLabelText("Company or product name"), { target: { value: "   " } });
+    fireEvent.click(screen.getByRole("button", { name: "Request Early Access" }));
+
+    const company = screen.getByLabelText("Company or product name");
+    expect(company).toHaveAttribute("aria-invalid", "true");
+    expect(company).toHaveAccessibleDescription("Company or product name can't be empty.");
+    expect(company).toHaveFocus();
+    expect(publicAxios.post).not.toHaveBeenCalled();
+  });
+
+  test("a server field error is shown in plain words", async () => {
+    publicAxios.post.mockRejectedValueOnce({
+      response: {
+        status: 400,
+        data: { error: "content must be at most 5000 characters", field: "content", max_length: 5000 },
+      },
+    });
+    renderPage();
+    fillRequiredFields();
+    fireEvent.click(screen.getByRole("button", { name: "Request Early Access" }));
+    expect(await screen.findByRole("alert")).toHaveTextContent("Your message is too long: keep it to 5000 characters.");
+  });
+
+  test("team size and stage share a row; the free-text fields don't", () => {
+    renderPage();
+    // eslint-disable-next-line testing-library/no-node-access -- the grid row a field sits in is what's under test
+    const row = screen.getByLabelText("Team size").closest(".early-access-grid");
+    expect(row).toContainElement(screen.getByLabelText("Stage"));
+    expect(row).not.toContainElement(screen.getByLabelText("What are you building?"));
   });
 });

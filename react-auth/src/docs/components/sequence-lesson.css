@@ -1,0 +1,175 @@
+/*
+ * Step-through sequence lessons (SequenceLesson.jsx). One color per tone,
+ * shared with the other docs lessons: person teal, console neutral, Gait
+ * cyan, software purple, invite orange. Each message row is a track with
+ * a lifeline at every lane's center (set inline, since the lane count
+ * varies); an arrow runs center to center across the lanes it joins.
+ */
+.seq {
+  --seq-person: #1abc9c;
+  --seq-person-bg: rgba(26, 188, 156, 0.1);
+  --seq-console: #9aa4af;
+  --seq-console-bg: rgba(154, 164, 175, 0.08);
+  --seq-gait: #38bdf8;
+  --seq-gait-bg: rgba(56, 189, 248, 0.08);
+  --seq-software: #a78bfa;
+  --seq-software-bg: rgba(167, 139, 250, 0.1);
+  --seq-invite: #fb8a5c;
+  --seq-lifeline: var(--color-border-strong);
+  --seq-number-col: 28px;
+
+  margin: 0 0 24px;
+  padding: 16px;
+  border: 1px solid var(--color-border-strong);
+  border-radius: var(--radius-md);
+  background: var(--color-surface);
+}
+
+/* Row skeleton shared by the lane heads and every message */
+.seq-lanes,
+.docs-article .seq-message {
+  display: grid;
+  grid-template-columns: var(--seq-number-col) minmax(0, 1fr);
+  column-gap: 8px;
+  align-items: center;
+}
+.seq-track { display: grid; }
+
+/* Lane heads */
+.seq-lanes { margin: 0 0 4px; }
+.docs-article .seq-lane-heads { margin: 0; padding: 0; list-style: none; }
+.docs-article .seq-lane {
+  margin: 0 4px;
+  padding: 8px 4px;
+  border: 1.5px solid;
+  border-radius: var(--radius-sm);
+  text-align: center;
+  font-size: 0.85rem;
+  font-weight: 650;
+  transition: opacity var(--transition-base);
+}
+.seq-lane--person { border-color: var(--seq-person); background: var(--seq-person-bg); color: var(--seq-person); }
+.seq-lane--console { border-color: var(--seq-console); background: var(--seq-console-bg); color: var(--color-text); }
+.seq-lane--gait { border-color: var(--seq-gait); background: var(--seq-gait-bg); color: var(--seq-gait); }
+.seq-lane--software { border-color: var(--seq-software); background: var(--seq-software-bg); color: var(--seq-software); }
+.seq-lane.is-dim { opacity: 0.3; }
+
+/* Messages */
+.docs-article .seq-messages { margin: 0; padding: 0; list-style: none; }
+.docs-article .seq-message {
+  margin: 0;
+  padding: 0;
+  transition: opacity var(--transition-base);
+}
+.seq-tone--person { --seq-tone: var(--seq-person); }
+.seq-tone--console { --seq-tone: var(--seq-console); }
+.seq-tone--gait { --seq-tone: var(--seq-gait); }
+.seq-tone--software { --seq-tone: var(--seq-software); }
+.seq-tone--invite { --seq-tone: var(--seq-invite); }
+.seq-message.is-dim { opacity: 0.35; }
+
+.seq-number {
+  width: 24px;
+  height: 24px;
+  border-radius: 50%;
+  display: grid;
+  place-items: center;
+  font-size: 0.75rem;
+  font-weight: 700;
+  font-variant-numeric: tabular-nums;
+  color: var(--color-text-muted);
+  border: 1px solid var(--color-border-strong);
+}
+.seq-lanes .seq-number { border: 0; }
+.seq-message.is-live .seq-number { color: var(--seq-tone); border-color: var(--seq-tone); box-shadow: 0 0 0 3px var(--color-border); }
+
+/* lifelines: background-image and -position are set inline per lane count */
+.seq-track--lines {
+  min-height: 60px;
+  padding: 4px 0;
+  background-size: 1px 100%;
+  background-repeat: no-repeat;
+}
+.seq-span {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 2px;
+  padding: 4px 0;
+  text-align: center;
+}
+.seq-route,
+.seq-text {
+  max-width: 100%;
+  padding: 0 6px;
+  border-radius: 4px;
+  background: var(--color-surface);
+  overflow-wrap: anywhere;
+}
+.seq-route {
+  font-size: 0.66rem;
+  font-weight: 700;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  color: var(--seq-tone);
+}
+.seq-text { font-size: 0.85rem; line-height: 1.35; color: var(--color-text); }
+.seq-message.is-live .seq-text { font-weight: 600; }
+
+/* Arrow from one lane's center to the other's */
+.seq-arrow {
+  position: relative;
+  align-self: stretch;
+  height: 0;
+  margin: 4px calc(100% / (2 * var(--seq-span)));
+  border-top: 2px solid var(--seq-tone);
+}
+.seq-arrow.is-dashed { border-top-style: dashed; }
+.seq-arrow::after {
+  content: "";
+  position: absolute;
+  top: -6px;
+  border: 5px solid transparent;
+}
+.seq-arrow--right::after { right: -2px; border-left: 8px solid var(--seq-tone); border-right: 0; }
+.seq-arrow--left::after { left: -2px; border-right: 8px solid var(--seq-tone); border-left: 0; }
+
+/* The either/or fork */
+/* No side padding, so a frame's lifelines stay under the lane heads. */
+.seq-frame {
+  margin: 8px -1px 12px;
+  padding: 10px 0 4px;
+  border: 1px dashed var(--color-border-strong);
+  border-radius: var(--radius-sm);
+}
+.docs-article .seq-frame-label,
+.docs-article .seq-branch-label {
+  margin: 0 0 4px;
+  padding: 0 10px;
+  font-size: 0.7rem;
+  font-weight: 700;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: var(--color-text-muted);
+}
+.docs-article .seq-branch-label { margin-top: 6px; }
+.seq-branch .seq-branch-label { color: var(--seq-tone); }
+.docs-article .seq-separator {
+  margin: 6px 0 0;
+  text-align: center;
+  font-size: 0.75rem;
+  font-style: italic;
+  color: var(--color-text-muted);
+}
+
+@media (max-width: 480px) {
+  .seq { padding: 12px; --seq-number-col: 24px; }
+  .seq-text { font-size: 0.8rem; }
+  .docs-article .seq-lane { margin: 0 2px; padding: 6px 2px; font-size: 0.72rem; overflow-wrap: anywhere; }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .seq-lane,
+  .docs-article .seq-message { transition: none; }
+}

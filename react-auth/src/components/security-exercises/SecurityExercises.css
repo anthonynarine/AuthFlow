@@ -88,8 +88,8 @@
 }
 
 .exercise-status-attention {
-  background: rgba(255, 193, 7, 0.12);
-  border-color: rgba(255, 193, 7, 0.4);
+  background: rgba(var(--rgb-amber), 0.12);
+  border-color: rgba(var(--rgb-amber), 0.4);
 }
 
 .security-checkbox-field {
@@ -273,8 +273,8 @@
 }
 
 .occurrence-status-attention {
-  background: rgba(255, 193, 7, 0.12);
-  border-color: rgba(255, 193, 7, 0.4);
+  background: rgba(var(--rgb-amber), 0.12);
+  border-color: rgba(var(--rgb-amber), 0.4);
 }
 
 .occurrence-status-danger {

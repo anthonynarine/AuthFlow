@@ -127,7 +127,7 @@ export function VerifyEmailPage() {
                 <h1 className="gv-title">Email confirmed</h1>
                 <p className="gv-text">
                     {state.email ? <><strong>{state.email}</strong> is confirmed. </> : null}
-                    {invited ? null : "You can now create a company or accept an invite."}
+                    {invited ? null : "You can now create a workspace or accept an invite."}
                 </p>
                 <InvitesAfterConfirming invites={invited ? myInvites.invites : []} />
                 <Link className={invited ? "gv-button gv-button--ghost" : "gv-button"} to={user ? "/console" : "/login"}>

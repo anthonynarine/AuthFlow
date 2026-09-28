@@ -31,7 +31,7 @@ function describeError(error) {
     return String(firstFieldError[0]);
   }
   if (error?.response?.status === 403) {
-    return "You don't have permission to add an App to this Company.";
+    return "You don't have permission to add an App to this workspace.";
   }
   return "Something went wrong adding your App. Please try again.";
 }

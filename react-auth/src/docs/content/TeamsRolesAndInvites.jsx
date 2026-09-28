@@ -27,7 +27,7 @@ const TWO_UMBRELLAS = `flowchart LR
     classDef no fill:#3a1f24,stroke:#ff6b6b,color:#ffd6d6,stroke-width:2px,stroke-dasharray:6 4
 
     A["Gait account<br/>(anyone can register)<br/>= member of nothing"]:::acct
-    A --> W1["creates a company<br/>→ its Owner"]:::way --> G["① Gait company<br/>e.g. app-one<br/>the security team"]:::gait
+    A --> W1["creates a workspace<br/>→ its Owner"]:::way --> G["① Gait workspace<br/>e.g. app-one<br/>the security team"]:::gait
     A --> W2["Gait invite from an Owner/Admin<br/>+ verified email"]:::way --> G
     A --> W3["creates an org in the product<br/>→ its Owner"]:::way --> P["② Inside the product<br/>e.g. App One's customer org<br/>its end users"]:::prod
     A --> W4["the product's own invite<br/>from that org's Owner/Admin"]:::way --> P
@@ -65,7 +65,7 @@ export default function TeamsRolesAndInvites() {
     return (
         <>
             <p className="doc-lede">
-                Who can do what in your company, and how someone joins it. Every person has one role per company:
+                Who can do what in your workspace, and how someone joins it. Every person has one role per workspace:
                 Owner, Admin or Member.
             </p>
 
@@ -78,14 +78,14 @@ export default function TeamsRolesAndInvites() {
                 </p>
                 <Diagram
                     source={TWO_UMBRELLAS}
-                    description="A Gait account, which anyone can register, is a member of nothing. It gets under umbrella one, a Gait company such as app-one (the security team), by creating the company and becoming its Owner, or through a Gait invite from an Owner or Admin plus a verified email. It gets under umbrella two, an organization inside the product such as App One's customer org (its end users), by creating that org in the product and becoming its Owner, or through the product's own invite from that org's Owner or Admin. A connection key can't invite and never makes anyone a member."
+                    description="A Gait account, which anyone can register, is a member of nothing. It gets under umbrella one, a Gait workspace such as app-one (the security team), by creating the workspace and becoming its Owner, or through a Gait invite from an Owner or Admin plus a verified email. It gets under umbrella two, an organization inside the product such as App One's customer org (its end users), by creating that org in the product and becoming its Owner, or through the product's own invite from that org's Owner or Admin. A connection key can't invite and never makes anyone a member."
                 />
                 <p>
-                    <strong>① The Gait company (the security team).</strong> The person who creates it becomes Owner,
-                    no invite needed. Everyone else needs an invite from an Owner or Admin, and accepting takes the
-                    emailed link, being signed in, and a verified email that matches (see{" "}
+                    <strong>① The Gait workspace (the security team).</strong> The person who creates it becomes Owner,
+                    no invite needed. Everyone else needs an invite from an Owner or Admin, and accepting takes being
+                    signed in with a confirmed email that matches the invite (see{" "}
                     <a href="#joining-needs-proof">Joining needs proof</a>). Registering a Gait account puts you in no
-                    company; an account sees nothing until an invite is accepted.
+                    workspace; an account sees nothing until an invite is accepted.
                 </p>
                 <p>
                     <strong>② Inside the product (its end users).</strong> Gait isn't involved; the product sets its
@@ -102,7 +102,7 @@ export default function TeamsRolesAndInvites() {
                     </li>
                     <li>
                         <strong>Joining one umbrella doesn't put you in the other.</strong> A product invite doesn't add
-                        someone to the Gait company, and a Gait company teammate gets no access to the product's
+                        someone to the Gait workspace, and a Gait workspace teammate gets no access to the product's
                         customer data.
                     </li>
                 </ul>
@@ -161,7 +161,7 @@ export default function TeamsRolesAndInvites() {
                     </thead>
                     <tbody>
                         <tr>
-                            <th scope="row">See the company's applications, security and members</th>
+                            <th scope="row">See the workspace's applications, security and members</th>
                             <td><Yes /></td><td><Yes /></td><td><Yes /></td>
                         </tr>
                         <tr>
@@ -197,13 +197,13 @@ export default function TeamsRolesAndInvites() {
                             <td><Yes /></td><td><No /></td><td><No /></td>
                         </tr>
                         <tr>
-                            <th scope="row">Leave the company</th>
+                            <th scope="row">Leave the workspace</th>
                             <td>Yes, unless the last Owner</td><td><Yes /></td><td><Yes /></td>
                         </tr>
                     </tbody>
                 </DocTable>
                 <p>
-                    A company always keeps at least one Owner. The last Owner can't leave or step down until someone
+                    A workspace always keeps at least one Owner. The last Owner can't leave or step down until someone
                     else has been made an Owner.
                 </p>
             </DocSection>
@@ -211,7 +211,7 @@ export default function TeamsRolesAndInvites() {
             <DocSection id="inviting-your-team" title="Inviting your team">
                 <Diagram
                     source={INVITE_FLOW}
-                    description="An Owner or Admin invites a teammate by email and picks a role. Gait emails the teammate a one-time link that expires in 7 days. The teammate opens it, sees which company invited them and as what role, signs in with the invited email address, and chooses Join."
+                    description="An Owner or Admin invites a teammate by email and picks a role. Gait emails the teammate a one-time link that expires in 7 days. The teammate opens it, sees which workspace invited them and as what role, signs in with the invited email address, and chooses Join."
                 />
                 <ol>
                     <li>An Owner or Admin invites a teammate by email and picks their role.</li>
@@ -225,20 +225,22 @@ export default function TeamsRolesAndInvites() {
                     </li>
                 </ol>
                 <p>
-                    There's one pending invite per company and email address. To resend, revoke the invite and send a
+                    There's one pending invite per workspace and email address. To resend, revoke the invite and send a
                     new one; the old link stops working.
                 </p>
             </DocSection>
 
             <DocSection id="joining-needs-proof" title="Joining needs proof">
-                <p>Joining a company needs three things together:</p>
+                <p>Joining a workspace needs two things together:</p>
                 <ol>
-                    <li>the invite link,</li>
                     <li>being signed in, and</li>
                     <li>a confirmed email address that matches the invite.</li>
                 </ol>
                 <p>
-                    Any one alone is useless. A forwarded link gets nothing, and neither does an account someone else
+                    You can join from the invite link, or without it: pending invites appear right after you confirm
+                    your email, on the confirmation page, above "Create your workspace" if you don't have one yet, and
+                    under <strong>Invitations</strong> in the console if you do. Confirming the email is what proves
+                    the inbox is yours, so a forwarded link gets nothing, and neither does an account someone else
                     created with your email address.
                 </p>
                 <ul>
@@ -298,14 +300,14 @@ export default function TeamsRolesAndInvites() {
             <DocSection id="your-data-stays-yours" title="Your data stays yours">
                 <ul>
                     <li>
-                        Everything in your company (applications, keys, findings, evidence, members) is visible only to
-                        your company's members.
+                        Everything in your workspace (applications, keys, findings, evidence, members) is visible only to
+                        your workspace's members.
                     </li>
                     <li>
-                        Links to another company's pages don't work for you, even if you guess the address. You'll see
+                        Links to another workspace's pages don't work for you, even if you guess the address. You'll see
                         "This doesn't exist, or you don't have access to it".
                     </li>
-                    <li>The console always shows which company you're in and your role there.</li>
+                    <li>The console always shows which workspace you're in and your role there.</li>
                 </ul>
             </DocSection>
 
@@ -314,7 +316,7 @@ export default function TeamsRolesAndInvites() {
                     {statusOf("membersAndInviteAccept") === "live" ? (
                         <p>
                             Everything on this page works in the console today: the <strong>Members</strong> screen
-                            (invites, roles, removing and leaving, membership activity), company{" "}
+                            (invites, roles, removing and leaving, membership activity), workspace{" "}
                             <strong>Settings</strong>, and the <strong>invite page</strong> that invite emails link to.
                         </p>
                     ) : (

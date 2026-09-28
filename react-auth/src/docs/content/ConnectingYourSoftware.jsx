@@ -55,7 +55,7 @@ export default function ConnectingYourSoftware() {
                         secrets, hostnames or personal data.
                     </li>
                     <li>
-                        A report can never choose your company, application or environment. Gait takes all of those
+                        A report can never choose your workspace, application or environment. Gait takes all of those
                         from the connection key alone.
                     </li>
                 </ul>

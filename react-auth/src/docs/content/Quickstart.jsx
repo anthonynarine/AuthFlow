@@ -10,7 +10,7 @@ const STEPS = [
     [<><strong>Confirm your email</strong> from the link Gait sends</>, ["emailVerification"], "getting-started", "Getting started"],
     [
         <>
-            <strong>Create your company</strong>: a name and a short slug such as <code>acme</code>. The slug can't be
+            <strong>Create your workspace</strong>: a name and a short slug such as <code>acme</code>. The slug can't be
             changed later. You become its Owner.
         </>,
         ["core"],

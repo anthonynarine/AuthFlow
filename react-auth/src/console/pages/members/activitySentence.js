@@ -27,10 +27,10 @@ export function activitySentence(row) {
             return `${actor} changed ${target} from ${role(row.from_role)} to ${role(row.to_role)}`;
         case "MEMBER_REMOVED":
             return row.actor_email && row.actor_email === target
-                ? `${target} left the company`
+                ? `${target} left the workspace`
                 : `${actor} removed ${target}`;
         case "ORGANIZATION_RENAMED":
-            return `${actor} renamed the company from "${row.from_name}" to "${row.to_name}"`;
+            return `${actor} renamed the workspace from "${row.from_name}" to "${row.to_name}"`;
         default:
             return `${actor}: ${String(row.action || "").toLowerCase().replace(/_/g, " ")}`;
     }

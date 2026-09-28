@@ -41,7 +41,7 @@ const KEY_DECIDES_COMPANY = [
             </>
         ),
     },
-    { from: "Gait", text: "The key leads to app-two-api (production), which belongs to company app-two." },
+    { from: "Gait", text: "The key leads to app-two-api (production), which belongs to workspace app-two." },
     { from: "Gait", to: "Findings", text: "Recorded under app-two / app-two-api.", outcome: "ok" },
 ];
 
@@ -58,7 +58,7 @@ const WRONG_DOOR = [
         text: <code>GET /api/organizations/app-two/security/findings/</code>,
     },
     { from: "Gait", text: "app-two exists, but there's no membership row for sec@app-one." },
-    { from: "Gait", to: "sec@app-one", text: "404, exactly like a company that doesn't exist.", outcome: "denied" },
+    { from: "Gait", to: "sec@app-one", text: "404, exactly like a workspace that doesn't exist.", outcome: "denied" },
 ];
 
 export default function IsolationAndSetup() {
@@ -76,12 +76,12 @@ export default function IsolationAndSetup() {
             </p>
 
             <DocSection id="isolation-at-a-glance" title="Isolation at a glance">
-                <H3 id="the-gait-console">① The Gait console: walled off per company, enforced by Gait</H3>
+                <H3 id="the-gait-console">① The Gait console: walled off per workspace, enforced by Gait</H3>
                 <ConsoleIsolationDiagram />
                 <p>
-                    Every member, application, key and finding belongs to exactly one company. Console URLs are{" "}
-                    <code>/api/organizations/&lt;company&gt;/…</code>; Gait loads that company, then requires your
-                    membership row in it. No row means <strong>404</strong>, the same answer as a company that doesn't
+                    Every member, application, key and finding belongs to exactly one workspace. Console URLs are{" "}
+                    <code>/api/organizations/&lt;workspace&gt;/…</code>; Gait loads that workspace, then requires your
+                    membership row in it. No row means <strong>404</strong>, the same answer as a workspace that doesn't
                     exist, so names can't be probed.
                 </p>
 
@@ -95,8 +95,8 @@ export default function IsolationAndSetup() {
                 </p>
             </DocSection>
 
-            <DocSection id="what-ties-each-thing-to-one-company" title="What ties each thing to one company">
-                <DocTable caption="What ties each thing to one company">
+            <DocSection id="what-ties-each-thing-to-one-company" title="What ties each thing to one workspace">
+                <DocTable caption="What ties each thing to one workspace">
                     <thead>
                         <tr>
                             <th scope="col">Thing</th>
@@ -107,43 +107,44 @@ export default function IsolationAndSetup() {
                         <tr>
                             <th scope="row">Team members</th>
                             <td>
-                                A membership row: (company, person, role). Owner of <code>app-one</code> means nothing
+                                A membership row: (workspace, person, role). Owner of <code>app-one</code> means nothing
                                 in <code>app-two</code>.
                             </td>
                         </tr>
                         <tr>
                             <th scope="row">Console pages and API</th>
                             <td>
-                                The company comes from the URL, and your membership row in it is required before
+                                The workspace comes from the URL, and your membership row in it is required before
                                 anything runs. Not a member: 404.
                             </td>
                         </tr>
                         <tr>
                             <th scope="row">Applications and keys</th>
                             <td>
-                                Each app belongs to one company; each key belongs to one app. Gait stores only a hash
+                                Each app belongs to one workspace; each key belongs to one app. Gait stores only a hash
                                 of the key.
                             </td>
                         </tr>
                         <tr>
                             <th scope="row">Signals and findings</th>
                             <td>
-                                The company comes <strong>from the key</strong> and nothing else in the request. App
+                                The workspace comes <strong>from the key</strong> and nothing else in the request. App
                                 Two's key can only ever write App Two findings.
                             </td>
                         </tr>
                         <tr>
                             <th scope="row">Invites</th>
                             <td>
-                                Tied to one company, and need the emailed token plus a signed-in account whose verified
-                                email matches.
+                                Tied to one workspace and one email address. Accepting needs a signed-in account whose
+                                confirmed email matches, through the emailed link or from the invites Gait shows that
+                                account.
                             </td>
                         </tr>
                     </tbody>
                 </DocTable>
             </DocSection>
 
-            <DocSection id="a-key-decides-the-company" title="A key decides the company">
+            <DocSection id="a-key-decides-the-company" title="A key decides the workspace">
                 <FlowSteps
                     label="App Two's backend reports a signal"
                     steps={KEY_DECIDES_COMPANY}
@@ -176,7 +177,7 @@ export default function IsolationAndSetup() {
                     steps={[
                         ["Register a Gait account", "core"],
                         ["Confirm your email", "emailVerification"],
-                        [<>Create the company (<code>app-one</code>); you become its Owner</>, "core"],
+                        [<>Create the workspace (<code>app-one</code>); you become its Owner</>, "core"],
                         [
                             <>
                                 Add one application per environment (<code>app-one-api</code> · <code>local</code>,{" "}
@@ -241,10 +242,11 @@ export default function IsolationAndSetup() {
                     )}
                 </p>
 
-                <H3 id="journey-3">3. A teammate joins your Gait company</H3>
+                <H3 id="journey-3">3. A teammate joins your Gait workspace</H3>
                 <p>
                     An Owner or Admin invites by email and role, Gait emails a single-use link (valid 7 days), and the
-                    invitee signs in with the invited, verified email and chooses <strong>Join</strong>. Every step,
+                    invitee signs in with the invited, confirmed email and chooses <strong>Join</strong>, from the link or
+                    from the invites Gait shows once that email is confirmed. Every step,
                     screen and rule: <DocLink to="teams-roles-and-invites">Teams, roles &amp; invites</DocLink>.
                 </p>
                 <JourneySteps

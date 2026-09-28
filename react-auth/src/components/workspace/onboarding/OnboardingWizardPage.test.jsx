@@ -75,11 +75,11 @@ function renderWizard(initialPath = "/workspace/onboarding", options = {}) {
 describe("OnboardingWizardPage — Company step", () => {
   beforeEach(() => jest.clearAllMocks());
 
-  test("zero Companies shows Create your Company", () => {
+  test("zero Companies shows Create your workspace", () => {
     useOrganizations.mockReturnValue(orgs([]));
     useOrganizationApplications.mockReturnValue(apps([]));
     renderWizard();
-    expect(screen.getByRole("heading", { name: "Create your Company" })).toBeInTheDocument();
+    expect(screen.getByRole("heading", { name: "Create your workspace" })).toBeInTheDocument();
   });
 
   test("multiple Companies with none chosen shows the chooser, not a create form", () => {
@@ -91,10 +91,10 @@ describe("OnboardingWizardPage — Company step", () => {
     );
     useOrganizationApplications.mockReturnValue(apps([]));
     renderWizard();
-    expect(screen.getByRole("heading", { name: "Which Company are you working on?" })).toBeInTheDocument();
+    expect(screen.getByRole("heading", { name: "Which workspace are you working in?" })).toBeInTheDocument();
     expect(screen.getByText("Acme")).toBeInTheDocument();
     expect(screen.getByText("Beta")).toBeInTheDocument();
-    expect(screen.queryByRole("heading", { name: "Create your Company" })).not.toBeInTheDocument();
+    expect(screen.queryByRole("heading", { name: "Create your workspace" })).not.toBeInTheDocument();
   });
 
   test("exactly one Company skips company creation and goes straight to the App step", () => {
@@ -103,7 +103,7 @@ describe("OnboardingWizardPage — Company step", () => {
     );
     useOrganizationApplications.mockReturnValue(apps([]));
     renderWizard();
-    expect(screen.queryByRole("heading", { name: "Create your Company" })).not.toBeInTheDocument();
+    expect(screen.queryByRole("heading", { name: "Create your workspace" })).not.toBeInTheDocument();
     expect(screen.getByRole("heading", { name: "Add your first App" })).toBeInTheDocument();
   });
 
@@ -120,8 +120,8 @@ describe("OnboardingWizardPage — Company step", () => {
     useOrganizationApplications.mockReturnValue(apps([]));
     renderWizard();
 
-    fireEvent.change(screen.getByLabelText("Company name"), { target: { value: "Acme Inc" } });
-    fireEvent.click(screen.getByRole("button", { name: "Create Company" }));
+    fireEvent.change(screen.getByLabelText("Workspace name"), { target: { value: "Acme Inc" } });
+    fireEvent.click(screen.getByRole("button", { name: "Create workspace" }));
 
     expect(createOrganization).toHaveBeenCalledTimes(1);
     const payload = createOrganization.mock.calls[0][0];
@@ -140,10 +140,10 @@ describe("OnboardingWizardPage — Company step", () => {
     useOrganizationApplications.mockReturnValue(apps([]));
     renderWizard();
 
-    fireEvent.change(screen.getByLabelText("Company name"), { target: { value: "Acme Inc" } });
+    fireEvent.change(screen.getByLabelText("Workspace name"), { target: { value: "Acme Inc" } });
     expect(screen.getByText("An organization with this slug already exists.")).toBeInTheDocument();
     // Entered data is never cleared on error.
-    expect(screen.getByLabelText("Company name")).toHaveValue("Acme Inc");
+    expect(screen.getByLabelText("Workspace name")).toHaveValue("Acme Inc");
   });
 });
 
@@ -207,7 +207,7 @@ describe("OnboardingWizardPage — App setup step", () => {
     );
     renderWizard();
 
-    expect(screen.queryByRole("heading", { name: "Create your Company" })).not.toBeInTheDocument();
+    expect(screen.queryByRole("heading", { name: "Create your workspace" })).not.toBeInTheDocument();
     expect(screen.queryByRole("heading", { name: "Add your first App" })).not.toBeInTheDocument();
     expect(screen.getByTestId("app-setup-flow")).toHaveTextContent("app-setup-flow:Acme API");
   });
@@ -234,10 +234,10 @@ describe("OnboardingWizardPage — invited, no workspace yet (INV-UX)", () => {
     renderWizard(undefined, { invites: [INVITE] });
     expect(screen.getByRole("heading", { name: "Join your team's workspace" })).toBeInTheDocument();
     expect(screen.getByRole("list", { name: "Your invitations" })).toHaveTextContent("Lumen invited you to its workspace as Admin");
-    expect(screen.queryByRole("heading", { name: "Create your Company" })).not.toBeInTheDocument();
+    expect(screen.queryByRole("heading", { name: "Create your workspace" })).not.toBeInTheDocument();
 
     fireEvent.click(screen.getByRole("button", { name: "Create your own workspace" }));
-    expect(screen.getByRole("heading", { name: "Create your Company" })).toBeInTheDocument();
+    expect(screen.getByRole("heading", { name: "Create your workspace" })).toBeInTheDocument();
     fireEvent.click(screen.getByRole("button", { name: "← Back to your invitations (1)" }));
     expect(screen.getByRole("heading", { name: "Join your team's workspace" })).toBeInTheDocument();
   });
@@ -255,13 +255,13 @@ describe("OnboardingWizardPage — invited, no workspace yet (INV-UX)", () => {
     fetchMyInvites.mockReturnValue(new Promise(() => {}));
     renderWizard(undefined, { invites: undefined });
     expect(screen.getByText("Loading…")).toBeInTheDocument();
-    expect(screen.queryByRole("heading", { name: "Create your Company" })).not.toBeInTheDocument();
+    expect(screen.queryByRole("heading", { name: "Create your workspace" })).not.toBeInTheDocument();
   });
 
   test("an unconfirmed email (403) means no invites to show yet: the create step as before", async () => {
     fetchMyInvites.mockRejectedValue({ response: { status: 403, data: { code: "EMAIL_NOT_VERIFIED" } } });
     renderWizard(undefined, { invites: undefined });
-    expect(await screen.findByRole("heading", { name: "Create your Company" })).toBeInTheDocument();
+    expect(await screen.findByRole("heading", { name: "Create your workspace" })).toBeInTheDocument();
     expect(screen.queryByRole("list", { name: "Your invitations" })).not.toBeInTheDocument();
   });
 

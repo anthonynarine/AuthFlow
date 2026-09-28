@@ -13,7 +13,7 @@ export default function HowItWorks() {
             <DocSection id="step-by-step" title="Step by step">
                 <ol>
                     <li>
-                        <strong>Your team signs in</strong> to the Gait console and works inside your company. Each
+                        <strong>Your team signs in</strong> to the Gait console and works inside your workspace. Each
                         person has a role: Owner, Admin or Member.
                     </li>
                     <li>
@@ -24,7 +24,7 @@ export default function HowItWorks() {
                     <li>
                         <strong>Your software reports security checks.</strong> It runs its own checks (for example
                         "debug mode is off") and sends PASS or FAIL to Gait with the gait-sdk. The connection key tells
-                        Gait which application, and so which company, the report belongs to. Nothing in the report can
+                        Gait which application, and so which workspace, the report belongs to. Nothing in the report can
                         point it anywhere else.
                     </li>
                     <li>
@@ -42,8 +42,8 @@ export default function HowItWorks() {
             <DocSection id="two-things-always-hold" title="Two things always hold">
                 <ul>
                     <li>
-                        <strong>Your company is private.</strong> Other companies can't see your people, applications or
-                        findings; to them your company doesn't exist. See{" "}
+                        <strong>Your workspace is private.</strong> Other workspaces can't see your people, applications or
+                        findings; to them your workspace doesn't exist. See{" "}
                         <DocLink to="isolation">Isolation and setup</DocLink>.
                     </li>
                     <li>

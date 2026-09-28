@@ -293,7 +293,7 @@ describe("INV-UX: invites on the confirmed page", () => {
         mockUser = { email: "new@example.test", email_verified: true };
         verifyEmailToken.mockResolvedValue({ email_verified: true, email: "new@example.test" });
         visitVerify(`#token=${TOKEN}`);
-        expect(await screen.findByText(/You can now create a company or accept an invite\./)).toBeInTheDocument();
+        expect(await screen.findByText(/You can now create a workspace or accept an invite\./)).toBeInTheDocument();
         await waitFor(() => expect(fetchMyInvites).toHaveBeenCalled());
         expect(screen.queryByRole("list", { name: "Your invitations" })).not.toBeInTheDocument();
         expect(screen.getByRole("link", { name: "Continue" })).not.toHaveClass("gv-button--ghost");

@@ -14,7 +14,7 @@ export function EmailVerificationBanner() {
     return (
         <div className="gv-banner" role="region" aria-label="Confirm your email">
             <p className="gv-banner-text">
-                <strong>Confirm {user.email}.</strong> We sent you a link. You'll need it to create a company or join
+                <strong>Confirm {user.email}.</strong> We sent you a link. You'll need it to create a workspace or join
                 one.
             </p>
             <ResendVerificationButton />

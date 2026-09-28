@@ -10,7 +10,7 @@
  * - 429 honours Retry-After.
  */
 export const NOT_FOUND_MESSAGE = "This doesn't exist, or you don't have access to it.";
-export const FORBIDDEN_MESSAGE = "Your role in this organization can't do that.";
+export const FORBIDDEN_MESSAGE = "Your role in this workspace can't do that.";
 const GENERIC_MESSAGE = "Something went wrong talking to Gait. Please try again.";
 
 function fieldErrors(data) {

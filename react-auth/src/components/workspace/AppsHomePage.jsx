@@ -66,7 +66,7 @@ export function AppsHomePage() {
         <FounderNav />
         <main className="founder-shell">
           <div className="founder-empty">
-            You don't have a Company yet. <Link to="/workspace/onboarding">Create one</Link> to get started.
+            You don't have a workspace yet. <Link to="/workspace/onboarding">Create one</Link> to get started.
           </div>
         </main>
       </div>
@@ -93,7 +93,7 @@ export function AppsHomePage() {
       <main className="founder-shell">
         <header className="founder-page-head">
           <h1 className="founder-greeting">{currentOrg.name}</h1>
-          <p className="founder-page-sub">Your Company's Apps.</p>
+          <p className="founder-page-sub">Your workspace's Apps.</p>
         </header>
 
         <section className="founder-section" aria-labelledby="apps-heading">

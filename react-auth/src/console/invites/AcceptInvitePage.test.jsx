@@ -107,7 +107,7 @@ describe("token handling", () => {
         visit(`#token=${TOKEN}`, { strict: true });
         expect(window.location.hash).toBe("");
         expect(window.location.pathname).toBe("/console/invites/accept");
-        expect(await screen.findByRole("heading", { name: "App One invited you as Admin" })).toBeInTheDocument();
+        expect(await screen.findByRole("heading", { name: "App One invited you to its workspace as Admin" })).toBeInTheDocument();
         expect(previewInvite).toHaveBeenCalledTimes(1);
         expect(previewInvite).toHaveBeenCalledWith(TOKEN);
         expectTokenNowhere();
@@ -122,13 +122,13 @@ describe("token handling", () => {
 
     test("opening a second invite link in the same tab (hashchange) previews the new one", async () => {
         visit(`#token=${TOKEN}`);
-        await screen.findByRole("heading", { name: "App One invited you as Admin" });
+        await screen.findByRole("heading", { name: "App One invited you to its workspace as Admin" });
         previewInvite.mockResolvedValue(preview({ organization_name: "App Two", organization_slug: "app-two", org_role: "MEMBER" }));
         act(() => {
             window.history.replaceState(null, "", `/console/invites/accept#token=${OTHER_TOKEN}`);
             window.dispatchEvent(new HashChangeEvent("hashchange"));
         });
-        expect(await screen.findByRole("heading", { name: "App Two invited you as Member" })).toBeInTheDocument();
+        expect(await screen.findByRole("heading", { name: "App Two invited you to its workspace as Member" })).toBeInTheDocument();
         expect(previewInvite).toHaveBeenLastCalledWith(OTHER_TOKEN);
         expect(window.location.hash).toBe("");
         expectTokenNowhere(OTHER_TOKEN);
@@ -164,7 +164,7 @@ describe("invalid invites all look the same and reveal nothing", () => {
     test("the invite expiring while the page is open turns it invalid", async () => {
         previewInvite.mockResolvedValue(preview({ expires_at: new Date(Date.now() + 200).toISOString() }));
         visit(`#token=${TOKEN}`);
-        await screen.findByRole("heading", { name: "App One invited you as Admin" });
+        await screen.findByRole("heading", { name: "App One invited you to its workspace as Admin" });
         expect(await screen.findByText(CANT_BE_USED, {}, { timeout: 2000 })).toBeInTheDocument();
         expect(getPendingInvite()).toBeNull();
     });
@@ -173,7 +173,7 @@ describe("invalid invites all look the same and reveal nothing", () => {
 describe("not signed in", () => {
     test("shows company and role, and Sign in carries the allowlisted returnTo", async () => {
         visit(`#token=${TOKEN}`);
-        await screen.findByRole("heading", { name: "App One invited you as Admin" });
+        await screen.findByRole("heading", { name: "App One invited you to its workspace as Admin" });
         expect(screen.getByText("b@example.test")).toBeInTheDocument();
         fireEvent.click(screen.getByRole("button", { name: "Sign in" }));
         expect(screen.getByTestId("location")).toHaveTextContent("/login");
@@ -183,7 +183,7 @@ describe("not signed in", () => {
 
     test("Create account prefills the invited email", async () => {
         visit(`#token=${TOKEN}`);
-        await screen.findByRole("heading", { name: "App One invited you as Admin" });
+        await screen.findByRole("heading", { name: "App One invited you to its workspace as Admin" });
         fireEvent.click(screen.getByRole("button", { name: "Create account" }));
         expect(screen.getByTestId("location")).toHaveTextContent("/register");
         expect(screen.getByDisplayValue("b@example.test")).toBeInTheDocument();
@@ -191,7 +191,7 @@ describe("not signed in", () => {
 
     test("signing out in another tab forgets the invite", async () => {
         visit(`#token=${TOKEN}`);
-        await screen.findByRole("heading", { name: "App One invited you as Admin" });
+        await screen.findByRole("heading", { name: "App One invited you to its workspace as Admin" });
         act(() => handleSignedOut());
         expect(await screen.findByRole("heading", { name: "Open your invite link again" })).toBeInTheDocument();
         expect(getPendingInvite()).toBeNull();
@@ -199,7 +199,7 @@ describe("not signed in", () => {
 
     test("the session ending (refresh failed) forgets the invite", async () => {
         visit(`#token=${TOKEN}`);
-        await screen.findByRole("heading", { name: "App One invited you as Admin" });
+        await screen.findByRole("heading", { name: "App One invited you to its workspace as Admin" });
         act(() => {
             window.dispatchEvent(new Event("gait:session-ended"));
         });
@@ -319,7 +319,7 @@ describe("rate limits", () => {
         fireEvent.click(screen.getByRole("button", { name: "Try again" }));
         expect(previewInvite).toHaveBeenCalledTimes(2);
         jest.useRealTimers();
-        expect(await screen.findByRole("heading", { name: "App One invited you as Admin" })).toBeInTheDocument();
+        expect(await screen.findByRole("heading", { name: "App One invited you to its workspace as Admin" })).toBeInTheDocument();
     });
 
     test("a rate-limited join shows the same wait", async () => {

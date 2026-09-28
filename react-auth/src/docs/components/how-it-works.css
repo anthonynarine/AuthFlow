@@ -1,0 +1,236 @@
+/*
+ * How it works lesson. One color per actor, the same as the old mermaid
+ * classDefs: team teal, software purple, users orange (dashed = optional),
+ * Gait cyan.
+ */
+.hiw {
+  --hiw-team: #1abc9c;
+  --hiw-team-bg: rgba(26, 188, 156, 0.1);
+  --hiw-software: #a78bfa;
+  --hiw-software-bg: rgba(167, 139, 250, 0.1);
+  --hiw-users: #fb8a5c;
+  --hiw-users-bg: rgba(251, 138, 92, 0.1);
+  --hiw-hub: #38bdf8;
+  --hiw-hub-bg: rgba(56, 189, 248, 0.08);
+
+  margin: 0 0 24px;
+  padding: 16px;
+  border: 1px solid var(--color-border-strong);
+  border-radius: var(--radius-md);
+  background: var(--color-surface);
+}
+
+/* Mode and role pickers */
+.hiw-modes,
+.hiw-roles { display: flex; flex-wrap: wrap; gap: 6px; margin: 0 0 12px; }
+.hiw-mode,
+.hiw-role,
+.hiw-nav > button {
+  padding: 5px 12px;
+  border: 1px solid var(--color-border-strong);
+  border-radius: var(--radius-pill);
+  background: transparent;
+  color: var(--color-text-muted);
+  font: inherit;
+  font-size: 0.85rem;
+  cursor: pointer;
+  transition: background var(--transition-fast), color var(--transition-fast);
+}
+.hiw-mode[aria-pressed="true"],
+.hiw-role[aria-pressed="true"] { background: var(--color-text); border-color: var(--color-text); color: var(--color-bg); }
+.hiw-mode:hover,
+.hiw-role:hover,
+.hiw-nav > button:not(:disabled):hover { color: var(--color-text); }
+.hiw-role { font-size: 0.8rem; padding: 3px 10px; }
+
+/* The map: two columns, paths run straight down into the hub */
+.hiw-map {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  grid-template-areas:
+    "legend users"
+    "legend path-users"
+    "team software"
+    "path-team path-software"
+    "hub hub";
+  column-gap: 20px;
+  margin: 0 0 12px;
+}
+.hiw-legend { grid-area: legend; }
+.hiw-area-users { grid-area: users; }
+.hiw-area-path-users { grid-area: path-users; }
+.hiw-area-team { grid-area: team; }
+.hiw-area-software { grid-area: software; }
+.hiw-area-path-team { grid-area: path-team; }
+.hiw-area-path-software { grid-area: path-software; }
+.hiw-area-hub { grid-area: hub; }
+
+.docs-article .hiw-legend {
+  margin: 0;
+  padding: 0;
+  list-style: none;
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  font-size: 0.75rem;
+  color: var(--color-text-muted);
+}
+.docs-article .hiw-legend-item { margin: 0; display: flex; align-items: center; gap: 6px; }
+.hiw-legend-item::before { content: ""; width: 9px; height: 9px; border-radius: 50%; flex: none; }
+.hiw-legend-item--team::before { background: var(--hiw-team); }
+.hiw-legend-item--software::before { background: var(--hiw-software); }
+.hiw-legend-item--users::before { background: var(--hiw-users); }
+.hiw-legend-item--hub::before { background: var(--hiw-hub); }
+
+/* Boxes */
+.hiw-node {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  width: 100%;
+  height: 100%;
+  padding: 10px 12px;
+  border: 1.5px solid;
+  border-radius: var(--radius-sm);
+  color: var(--color-text);
+  font: inherit;
+  text-align: left;
+  transition: opacity var(--transition-base), box-shadow var(--transition-base);
+}
+button.hiw-node { cursor: pointer; }
+.hiw-node.is-dim { opacity: 0.28; }
+.hiw-node.is-selected { box-shadow: 0 0 0 3px var(--color-border-strong); }
+.hiw-node--team { border-color: var(--hiw-team); background: var(--hiw-team-bg); --hiw-tone: var(--hiw-team); }
+.hiw-node--software { border-color: var(--hiw-software); background: var(--hiw-software-bg); --hiw-tone: var(--hiw-software); }
+.hiw-node--users { border-color: var(--hiw-users); background: var(--hiw-users-bg); --hiw-tone: var(--hiw-users); }
+.hiw-node--hub {
+  align-items: center;
+  text-align: center;
+  border-color: var(--hiw-hub);
+  background: var(--hiw-hub-bg);
+  --hiw-tone: var(--hiw-hub);
+}
+.hiw-kicker {
+  font-size: 0.66rem;
+  font-weight: 700;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: var(--hiw-tone);
+}
+.hiw-title { font-weight: 650; }
+.hiw-detail { font-size: 0.8rem; color: var(--color-text-muted); }
+.hiw-credential {
+  align-self: flex-start;
+  margin-top: 4px;
+  padding: 1px 8px;
+  border: 1px solid var(--hiw-software);
+  border-radius: 6px;
+  font-size: 0.72rem;
+  color: var(--hiw-software);
+}
+.hiw-hub-items { display: flex; flex-wrap: wrap; justify-content: center; gap: 6px; margin-top: 6px; }
+.hiw-hub-item {
+  padding: 1px 10px;
+  border: 1px solid var(--hiw-hub);
+  border-radius: var(--radius-pill);
+  font-size: 0.75rem;
+  transition: opacity var(--transition-base);
+}
+.hiw-hub-item.is-dim { opacity: 0.3; }
+
+/* Paths: a vertical line with its label beside it */
+.hiw-path {
+  position: relative;
+  display: flex;
+  align-items: center;
+  min-height: 64px;
+  padding: 6px 0 6px 28px;
+  transition: opacity var(--transition-base);
+}
+.hiw-path.is-dim { opacity: 0.25; }
+.hiw-path--team { --hiw-tone: var(--hiw-team); }
+.hiw-path--software { --hiw-tone: var(--hiw-software); }
+.hiw-path--users { --hiw-tone: var(--hiw-users); }
+.hiw-path-line {
+  position: absolute;
+  left: 12px;
+  top: 0;
+  bottom: 0;
+  border-left: 2px solid var(--hiw-tone);
+}
+.hiw-path.is-optional .hiw-path-line { border-left-style: dashed; }
+.hiw-path-packet {
+  position: absolute;
+  left: -5px;
+  top: 0;
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  background: var(--hiw-tone);
+  opacity: 0;
+}
+.hiw-path.is-on .hiw-path-packet { animation: hiw-packet 1.8s ease-in-out infinite; }
+@keyframes hiw-packet {
+  0% { top: 0; opacity: 0; }
+  15% { opacity: 1; }
+  85% { opacity: 1; }
+  100% { top: calc(100% - 8px); opacity: 0; }
+}
+.hiw-path-label { font-size: 0.8rem; line-height: 1.35; color: var(--color-text); overflow-wrap: anywhere; }
+.hiw-path-number {
+  display: block;
+  font-size: 0.66rem;
+  font-weight: 700;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: var(--hiw-tone);
+}
+
+/* Coach panel */
+.hiw-coach {
+  min-height: 132px;
+  padding: 12px 14px;
+  border-radius: var(--radius-sm);
+  background: var(--color-surface-alt);
+}
+.docs-article .hiw-eyebrow {
+  margin: 0 0 4px;
+  font-size: 0.7rem;
+  font-weight: 700;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: var(--color-text-muted);
+}
+.docs-article .hiw-coach-title { margin: 0 0 4px; font-weight: 650; }
+.docs-article .hiw-coach-body { margin: 0; font-size: 0.92rem; }
+
+/* Tour navigation */
+.hiw-nav { display: flex; align-items: center; justify-content: space-between; gap: 10px; margin-top: 12px; }
+.hiw-nav > button:disabled { opacity: 0.4; cursor: default; }
+.docs-article .hiw-dots { display: flex; gap: 6px; margin: 0; padding: 0; list-style: none; }
+.docs-article .hiw-dots > li { margin: 0; }
+.hiw-dot {
+  width: 10px;
+  height: 10px;
+  padding: 0;
+  border: 1px solid var(--color-border-strong);
+  border-radius: 50%;
+  background: transparent;
+  cursor: pointer;
+}
+.hiw-dot[aria-current="step"] { background: var(--color-text); border-color: var(--color-text); }
+
+@media (max-width: 480px) {
+  .hiw { padding: 12px; }
+  .hiw-map { column-gap: 10px; }
+  .hiw-node { padding: 8px; }
+  .hiw-path { padding-left: 22px; }
+  .hiw-path-line { left: 9px; }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .hiw-path.is-on .hiw-path-packet { animation: none; }
+  .hiw-node,
+  .hiw-path,
+  .hiw-hub-item { transition: none; }
+}

@@ -2,7 +2,7 @@ import "@testing-library/jest-dom";
 import React from "react";
 import fs from "fs";
 import path from "path";
-import { render, screen, waitFor, within } from "@testing-library/react";
+import { fireEvent, render, screen, waitFor, within } from "@testing-library/react";
 import { MemoryRouter, Route, Routes } from "react-router-dom";
 import { DocsPage } from "../DocsPage";
 import { DOC_GROUPS, DOC_PAGES, findDocPage } from "../manifest";
@@ -115,6 +115,56 @@ describe("How it works", () => {
         const teamActs = screen.getAllByRole("listitem").filter((item) => within(item).queryByText(/Your team acts\./));
         expect(statusText(teamActs[teamActs.length - 1])).toBe("Live");
         await settleDiagrams();
+    });
+
+    test("every box and every path in the lesson map is labeled", () => {
+        renderDoc("how-it-works");
+        const lesson = screen.getByRole("figure");
+        for (const title of ["Your team", "Your software", "Your product's users", "Company: Acme"]) {
+            expect(within(lesson).getAllByText(title).length).toBeGreaterThan(0);
+        }
+        for (const label of [
+            "signs in to the console",
+            "reports security checks",
+            "signs in with Gait · your product decides access",
+        ]) {
+            expect(within(lesson).getByText(label)).toBeInTheDocument();
+        }
+        for (const path of ["Path 1", "Path 2", "Path 3"]) {
+            expect(within(lesson).getByText(path)).toBeInTheDocument();
+        }
+        for (const item of ["applications", "keys", "findings"]) {
+            expect(within(lesson).getByText(item)).toBeInTheDocument();
+        }
+    });
+
+    test("the guided tour walks six steps, one path at a time", () => {
+        renderDoc("how-it-works");
+        const lesson = screen.getByRole("figure");
+        const back = within(lesson).getByRole("button", { name: "Back" });
+        const next = within(lesson).getByRole("button", { name: "Next" });
+        expect(back).toBeDisabled();
+        expect(within(lesson).getByText("Guided tour · step 1 of 6")).toBeInTheDocument();
+
+        fireEvent.click(next);
+        fireEvent.click(next);
+        expect(within(lesson).getByText("Path 1 · Your team configures")).toBeInTheDocument();
+
+        fireEvent.click(within(lesson).getByRole("button", { name: "Step 6: Recap" }));
+        expect(within(lesson).getByText(/Team configures\. Software reports\./)).toBeInTheDocument();
+        expect(next).toBeDisabled();
+    });
+
+    test("explore explains a clicked box, and by role explains each role", () => {
+        renderDoc("how-it-works");
+        const lesson = screen.getByRole("figure");
+        fireEvent.click(within(lesson).getByRole("button", { name: "Explore" }));
+        fireEvent.click(within(lesson).getByRole("button", { name: /Production runtime/ }));
+        expect(within(lesson).getByText(/a key can't sign in, invite anyone or read anything/)).toBeInTheDocument();
+
+        fireEvent.click(within(lesson).getByRole("button", { name: "By role" }));
+        fireEvent.click(within(lesson).getByRole("button", { name: "End user" }));
+        expect(within(lesson).getByText(/Your product, not Gait, decides/)).toBeInTheDocument();
     });
 });
 

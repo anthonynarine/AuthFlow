@@ -62,6 +62,62 @@
   --diagram-warning-border: var(--color-danger-border);
 }
 
+/*
+ * DS-AUTH monochrome foundation (approved 2026-09-28). New --ds-* names beside
+ * the --color-* tokens above, so nothing existing changes. Redesigned pages use
+ * only these; the site-wide switch later re-points --color-* at them.
+ * Contrast on --ds-surface: text 18.1:1, muted 7.5:1, subtle 5.5:1, control edge 4.0:1.
+ */
+:root {
+  --ds-gray-0: #ffffff;
+  --ds-gray-50: #fafafa;
+  --ds-gray-200: #e5e5e5;
+  --ds-gray-400: #a3a3a3;
+  --ds-gray-450: #8a8a8a;
+  --ds-gray-500: #737373;
+  --ds-gray-600: #525252;
+  --ds-gray-800: #262626;
+  --ds-gray-850: #1c1c1c;
+  --ds-gray-900: #161616;
+  --ds-gray-925: #111111;
+  --ds-gray-950: #0a0a0a;
+
+  --ds-bg: var(--ds-gray-950);
+  --ds-surface: var(--ds-gray-925);
+  --ds-field: var(--ds-gray-900);
+  --ds-line: var(--ds-gray-800);
+  --ds-line-control: var(--ds-gray-500);
+  --ds-text: var(--ds-gray-50);
+  --ds-text-muted: var(--ds-gray-400);
+  --ds-text-subtle: var(--ds-gray-450);
+  --ds-primary: var(--ds-gray-50);
+  --ds-primary-hover: var(--ds-gray-200);
+  --ds-on-primary: var(--ds-gray-950);
+  --ds-focus: var(--ds-gray-50);
+
+  --ds-danger: #f87171;
+  --ds-danger-text: #fca5a5;
+  --ds-danger-bg: #2a1215;
+  --ds-danger-line: rgba(248, 113, 113, 0.45);
+  --ds-success: #4ade80;
+  --ds-success-text: #86efac;
+  --ds-success-bg: #0f2417;
+  --ds-success-line: rgba(74, 222, 128, 0.4);
+  --ds-warning: #fbbf24;
+  --ds-warning-text: #fcd34d;
+  --ds-warning-bg: #2a2008;
+  --ds-warning-line: rgba(251, 191, 36, 0.4);
+
+  --ds-font-display: "Fraunces", Georgia, "Times New Roman", serif;
+  --ds-font-body: ui-sans-serif, system-ui, -apple-system, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+  --ds-font-mono: ui-monospace, SFMono-Regular, Menlo, Consolas, "Liberation Mono", monospace;
+
+  --ds-radius-control: 8px;
+  --ds-radius-card: 12px;
+  --ds-label-tracking: 0.22em;
+  --ds-control-height: 44px;
+}
+
 *,
 *::before,
 *::after {

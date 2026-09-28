@@ -20,8 +20,8 @@ import {
     setPendingToken,
     subscribePendingInvite,
 } from "./pendingInvite";
-import "../../account/emailVerification.css";
-import "./AcceptInvite.css";
+import { AuthHeading, AuthLayout } from "../../ds/AuthLayout";
+import { Alert, Button, StatusLine } from "../../ds/components";
 
 function stripHash() {
     const { pathname, search } = window.location;
@@ -170,37 +170,32 @@ export function AcceptInvitePage() {
 
     const preview = invite?.preview;
     let title;
-    let body;
+    let lede = null;
+    let body = null;
+    let eyebrow = "Invitation";
 
     if (phase === "missing") {
         title = "Open your invite link again";
-        body = (
-            <p className="gv-text">
-                We couldn't find the invite in this browser tab. Open the link from your invite email again; it still
-                works if it hasn't been used or expired.
-            </p>
-        );
+        lede = "We couldn't find the invite in this browser tab. Open the link from your invite email again; it still works if it hasn't been used or expired.";
     } else if (phase === "invalid") {
         title = "This invite can't be used";
-        body = <p className="gv-text">{CANT_BE_USED}</p>;
+        lede = CANT_BE_USED;
     } else if (phase === "rate-limited" || acceptState.status === "rate-limited") {
         title = "Too many attempts";
         body = (
             <>
-                <p className="gv-text">Please wait a little, then try again.</p>
-                <button
-                    type="button"
-                    className="gv-button"
+                <Alert kind="warning">Please wait a little, then try again.</Alert>
+                <Button
                     disabled={retry.waiting}
                     onClick={() => (phase === "rate-limited" ? runPreview(invite.token) : onJoin())}
                 >
                     {retry.waiting ? `Try again in ${retry.remaining}s` : "Try again"}
-                </button>
+                </Button>
             </>
         );
     } else if (phase === "loading" || !preview || (!sessionChecked && !user)) {
         title = "Checking your invite…";
-        body = <p className="gv-text">This takes a moment.</p>;
+        body = <StatusLine>This takes a moment.</StatusLine>;
     } else {
         const company = preview.organization_name;
         const role = ROLE_LABELS[preview.org_role] || preview.org_role;
@@ -211,67 +206,67 @@ export function AcceptInvitePage() {
 
         if (!user) {
             title = `${company} invited you to its workspace as ${role}`;
-            body = (
+            lede = (
                 <>
-                    <p className="gv-text">
-                        The invite is for <strong>{invitedEmail}</strong>. Sign in with that address, or create an account
-                        with it, and you'll come straight back here.
-                    </p>
-                    <div className="gv-actions-row">
-                        <button type="button" className="gv-button" onClick={() => goSignIn("/login")}>Sign in</button>
-                        <button type="button" className="gv-button gv-button--ghost" onClick={() => goSignIn("/register")}>Create account</button>
-                    </div>
+                    The invite is for <strong>{invitedEmail}</strong>. Sign in with that address, or create an account
+                    with it, and you'll come straight back here.
                 </>
+            );
+            body = (
+                <div className="ds-actions">
+                    <Button onClick={() => goSignIn("/login")}>Sign in</Button>
+                    <Button kind="secondary" onClick={() => goSignIn("/register")}>Create account</Button>
+                </div>
             );
         } else if (user.email.toLowerCase() !== invitedEmail.toLowerCase()) {
             title = "This invite is for someone else";
-            body = (
+            lede = (
                 <>
-                    <p className="gv-text">
-                        You're signed in as <strong>{user.email}</strong>. This invite is for <strong>{invitedEmail}</strong>.
-                    </p>
-                    <button type="button" className="gv-button" onClick={onSwitchAccount}>Switch account</button>
+                    You're signed in as <strong>{user.email}</strong>. This invite is for <strong>{invitedEmail}</strong>.
                 </>
             );
+            body = <Button onClick={onSwitchAccount}>Switch account</Button>;
         } else if (alreadyMember) {
             title = `You're already in ${company}`;
             body = (
-                <Link className="gv-button" to={`/console/${preview.organization_slug}/overview`} onClick={clearPendingInvite}>
+                <Link className="ds-btn ds-btn--primary" to={`/console/${preview.organization_slug}/overview`} onClick={clearPendingInvite}>
                     Go to {company}
                 </Link>
             );
         } else if (user.email_verified === false || acceptState.status === "unverified") {
-            title = "Confirm your email first";
-            body = (
+            // Says nothing about a link already being sent: older accounts never got one.
+            title = "Confirm your email to join";
+            lede = (
                 <>
-                    <p className="gv-text">
-                        Joining needs a confirmed email address. We sent a link to <strong>{user.email}</strong>; open it
-                        (it can be in another tab), then come back here.
-                    </p>
-                    <div className="gv-actions-row">
-                        <button type="button" className="gv-button" onClick={onConfirmedEmail}>I've confirmed my email, continue</button>
-                        <ResendVerificationButton className="gv-button gv-button--ghost" />
-                    </div>
+                    Joining needs a confirmed email address for <strong>{user.email}</strong>. Use the confirmation link
+                    from your email (any tab works), or send a new one, then come back here.
                 </>
+            );
+            body = (
+                <div className="ds-actions">
+                    <Button onClick={onConfirmedEmail}>I've confirmed my email, continue</Button>
+                    <ResendVerificationButton className="ds-btn ds-btn--secondary" />
+                </div>
             );
         } else {
             title = `Join ${company}`;
+            lede = <>You're invited as {/^[AEIOU]/.test(role) ? "an" : "a"} <strong>{role}</strong>.</>;
             body = (
                 <>
-                    <dl className="gv-facts">
+                    <dl className="ds-facts">
                         <div><dt>Workspace</dt><dd>{company}</dd></div>
                         <div><dt>Your role</dt><dd>{role}: {ROLE_DESCRIPTIONS[preview.org_role]}</dd></div>
                         <div><dt>Invited by</dt><dd>{preview.invited_by_name || "a deleted account"}</dd></div>
                         <div><dt>Expires</dt><dd>{formatDateTime(preview.expires_at)}</dd></div>
                     </dl>
-                    {acceptState.status === "error" ? <p className="gc-form-error" role="alert">{acceptState.message}</p> : null}
-                    <div className="gv-actions-row">
-                        <button type="button" className="gv-button" onClick={onJoin} disabled={acceptState.status === "joining"}>
+                    {acceptState.status === "error" ? <Alert kind="danger">{acceptState.message}</Alert> : null}
+                    <div className="ds-actions">
+                        <Button onClick={onJoin} disabled={acceptState.status === "joining"}>
                             {acceptState.status === "joining" ? "Joining…" : `Join ${company}`}
-                        </button>
-                        <button type="button" className="gv-button gv-button--ghost" onClick={() => { clearPendingInvite(); navigate("/console"); }}>
+                        </Button>
+                        <Button kind="secondary" onClick={() => { clearPendingInvite(); navigate("/console"); }}>
                             Not now
-                        </button>
+                        </Button>
                     </div>
                 </>
             );
@@ -279,14 +274,11 @@ export function AcceptInvitePage() {
     }
 
     return (
-        <main className="gv-page">
-            <section className="gv-card">
-                <p className="gv-brand"><span aria-hidden="true">◆</span> Gait</p>
-                <p className="gv-visually-hidden" role="status" aria-live="polite">{title}</p>
-                <h1 className="gv-title">{title}</h1>
-                {body}
-            </section>
-        </main>
+        <AuthLayout>
+            <p className="ds-visually-hidden" role="status" aria-live="polite">{title}</p>
+            <AuthHeading eyebrow={eyebrow} title={title} lede={lede} />
+            {body}
+        </AuthLayout>
     );
 }
 

@@ -1,143 +1,115 @@
-import React, { useState } from 'react';
-import { useLocation, useNavigate } from 'react-router-dom';
+import React, { useState } from "react";
+import { Link, useLocation } from "react-router-dom";
 import { INVITE_ACCEPT_PATH, safeReturnTo } from "../../auth/returnTo";
 import { getPendingInvite } from "../../console/invites/pendingInvite";
-import "./RegisterPage.css"
-import authAppImage from "../../assets/auth-app.jpg";
-import { RiArrowGoBackLine, RiEyeLine, RiEyeOffLine } from "react-icons/ri";
-import { publicAxios } from "../../interceptors/axios";
+import { fieldErrors, registerAccount } from "../../auth/authPagesApi";
+import { AuthHeading, AuthLayout } from "../../ds/AuthLayout";
+import { Alert, Button, PasswordField, TextField } from "../../ds/components";
 
+const PASSWORD_HINT = "At least 8 characters, not only numbers, and not a common password.";
+const FIELD_MAP = {
+    first_name: "firstName",
+    last_name: "lastName",
+    email: "email",
+    password: "password",
+    password_confirm: "confirmPassword",
+};
+
+/**
+ * Create an account (DS-AUTH). Errors sit under their fields. Success shows
+ * "Check your email" naming the address, instead of dropping people on
+ * sign-in with no word about the confirmation email.
+ */
 export const RegisterPage = () => {
     // Arriving from an invite: prefill the invited address (from memory,
     // never the URL) and go back to the invite after signing in.
     const location = useLocation();
     const returnTo = safeReturnTo(location.state?.returnTo);
-    const invitedEmail = returnTo === INVITE_ACCEPT_PATH ? getPendingInvite()?.preview?.invited_email || "" : "";
-    const [formFields, setFormFields] = useState({
+    const invite = returnTo === INVITE_ACCEPT_PATH ? getPendingInvite()?.preview : null;
+    const [form, setForm] = useState({
         firstName: "",
         lastName: "",
-        email: invitedEmail,
+        email: invite?.invited_email || "",
         password: "",
         confirmPassword: "",
     });
-    const [errors, setErrors] = useState('');
-    const [isLoading, setIsLoading] = useState(false);
-    const [passwordVisible, setPasswordVisible] = useState(false);
-    const [confirmPasswordVisible, setConfirmPasswordVisible] = useState(false);
-    const navigate = useNavigate();
+    const [errors, setErrors] = useState({});
+    const [busy, setBusy] = useState(false);
+    const [done, setDone] = useState(null); // the address the confirmation went to
 
-    const handleChange = (event) => {
-        const { name, value } = event.target;
-        setFormFields(prevState => ({ ...prevState, [name]: value }));
-    };
+    const set = (key) => (event) => setForm((current) => ({ ...current, [key]: event.target.value }));
 
-    const handleSubmit = async (event) => {
+    const onSubmit = async (event) => {
         event.preventDefault();
-        setErrors("");
-        setIsLoading(true);
+        const local = {};
+        if (!form.firstName.trim()) local.firstName = "Enter your first name.";
+        if (!form.lastName.trim()) local.lastName = "Enter your last name.";
+        if (!form.email.trim()) local.email = "Enter your email address.";
+        if (!form.password) local.password = "Choose a password.";
+        else if (form.password !== form.confirmPassword) local.confirmPassword = "These don't match. Type the same password twice.";
+        setErrors(local);
+        if (Object.keys(local).length) return;
+        setBusy(true);
         try {
-            await publicAxios.post("/register/", {
-                first_name: formFields.firstName,
-                last_name: formFields.lastName,
-                email: formFields.email,
-                password: formFields.password,
-                password_confirm: formFields.confirmPassword,
-            });
-            navigate("/login", returnTo ? { state: { returnTo } } : undefined);
+            await registerAccount({ ...form, email: form.email.trim() });
+            setDone(form.email.trim());
         } catch (error) {
-            if (error.response && error.response.data.error){
-                // errors are keyed for request sent to RegisterAPIView
-                setErrors(error.response.data.error); 
-            } else {
-                setErrors({general: "Registration failed. Please try again later"});
-            }
-            console.error("Registration error:", error);
+            setErrors(fieldErrors(error, FIELD_MAP, "Your account wasn't created. Try again in a minute."));
         } finally {
-            setIsLoading(false);
+            setBusy(false);
         }
     };
 
-    const togglePasswordVisibility = () => {
-        setPasswordVisible(!passwordVisible);
-    };
-
-    const toggleConfirmPasswordVisibility = () => {
-        setConfirmPasswordVisible(!confirmPasswordVisible);
-    };
+    if (done) {
+        return (
+            <AuthLayout>
+                <AuthHeading
+                    eyebrow="Almost done"
+                    title="Check your email"
+                    lede={
+                        <>
+                            We sent a confirmation link to <strong>{done}</strong>. Open it to confirm your address; it
+                            works in any tab and lasts 48 hours.
+                        </>
+                    }
+                    focusOnMount
+                />
+                <Link className="ds-btn ds-btn--primary" to="/login" state={returnTo ? { returnTo } : undefined}>
+                    Sign in
+                </Link>
+                <p className="ds-foot">Didn't get it? Sign in and we'll offer to send another.</p>
+            </AuthLayout>
+        );
+    }
 
     return (
-        <div className="register-container">
-        {/* Navigation button to go back to the homepage */}
-        <button onClick={() => navigate("/")} 
-            className="nav-button" 
-            style={{ position: 'absolute', top: 0, left: 0, margin: '20px', background: 'none', color: "#fff", border: 'none', cursor: 'pointer' }}
-            title="Go back to homepage">
-            <RiArrowGoBackLine size="1.5em" />
-        </button>
-
-        {/* Main form area */}
-        <main className="form-register w-100 m-auto">
-            <form onSubmit={handleSubmit}>
-                {/* Logo display area */}
-                <div className="logo-container">
-                    <img src={authAppImage} alt="Auth App" className="register-logo" />
+        <AuthLayout>
+            <AuthHeading eyebrow="Gait account" title="Create your account" lede="Your account is your own sign-in. Workspaces come next." />
+            {invite ? (
+                <Alert>
+                    You were invited to <strong>{invite.organization_name}</strong>. Use <strong>{invite.invited_email}</strong> so
+                    the invite finds you.
+                </Alert>
+            ) : null}
+            {errors.general ? <Alert kind="danger">{errors.general}</Alert> : null}
+            <form className="ds-form" onSubmit={onSubmit} noValidate>
+                <div className="ds-row">
+                    <TextField label="First name" autoComplete="given-name" value={form.firstName} onChange={set("firstName")} error={errors.firstName} />
+                    <TextField label="Last name" autoComplete="family-name" value={form.lastName} onChange={set("lastName")} error={errors.lastName} />
                 </div>
-                
-                {/* Form header */}
-                <h1 className="h3 mb-4 fw-normal">Register</h1>
-
-                {/* Centralized error display */}
-                {Object.keys(errors).length > 0 && (
-                    <div className="alert alert-danger">
-                        {Object.values(errors).map((value, index) => (
-                            <p key={index}>{value}</p> // Use index as key since field names are not used
-                        ))}
-                    </div>
-                )}
-
-                {/* First Name Input Field */}
-                <div className="form-floating mb-3">
-                    <input type="text" className="form-control" id="floatingFirstName" placeholder="First Name" name="firstName" value={formFields.firstName} onChange={handleChange} />
-                    <label htmlFor="floatingFirstName">First Name</label>
+                <TextField label="Email" type="email" autoComplete="email" value={form.email} onChange={set("email")} error={errors.email} />
+                <PasswordField label="Password" autoComplete="new-password" value={form.password} onChange={set("password")} error={errors.password} hint={PASSWORD_HINT} />
+                <PasswordField label="Confirm password" autoComplete="new-password" value={form.confirmPassword} onChange={set("confirmPassword")} error={errors.confirmPassword} />
+                <div className="ds-actions">
+                    <Button type="submit" disabled={busy}>{busy ? "Creating your account…" : "Create account"}</Button>
                 </div>
-
-                {/* Last Name Input Field */}
-                <div className="form-floating mb-3">
-                    <input type="text" className="form-control" id="floatingLastName" placeholder="Last Name" name="lastName" value={formFields.lastName} onChange={handleChange} />
-                    <label htmlFor="floatingLastName">Last Name</label>
-                </div>
-
-                {/* Email Input Field */}
-                <div className="form-floating mb-3">
-                    <input type="email" className="form-control" id="floatingEmail" placeholder="name@example.com" name="email" value={formFields.email} onChange={handleChange} />
-                    <label htmlFor="floatingEmail">Email</label>
-                </div>
-
-                {/* Password Input Field */}
-                <div className="form-floating mb-3">
-                    <input type={passwordVisible ? "text" : "password"} className="form-control" id="floatingPassword" placeholder="Password" name="password" value={formFields.password} onChange={handleChange} />
-                    <label htmlFor="floatingPassword">Password</label>
-                    <button type="button" onClick={togglePasswordVisibility} className="password-toggle-button" aria-label={passwordVisible ? "Hide password" : "Show password"}>
-                        {passwordVisible ? <RiEyeOffLine /> : <RiEyeLine />}
-                    </button>
-                </div>
-
-                {/* Confirm Password Input Field */}
-                <div className="form-floating mb-3">
-                    <input type={confirmPasswordVisible ? "text" : "password"} className="form-control" id="floatingConfirmPassword" placeholder="Confirm Password" name="confirmPassword" value={formFields.confirmPassword} onChange={handleChange} />
-                    <label htmlFor="floatingConfirmPassword">Confirm Password</label>
-                    <button type="button" onClick={toggleConfirmPasswordVisibility} className="password-toggle-button" aria-label={confirmPasswordVisible ? "Hide password" : "Show password"}>
-                        {confirmPasswordVisible ? <RiEyeOffLine /> : <RiEyeLine />}
-                    </button>
-                </div>
-
-                {/* Submit Button */}
-                <button type="submit" disabled={isLoading} className="btn btn-register w-100">
-                    {isLoading ? 'Registering...' : 'Register'}
-                </button>
             </form>
-        </main>
-    </div>
+            <p className="ds-foot">
+                Already have an account?{" "}
+                <Link className="ds-link" to="/login" state={returnTo ? { returnTo } : undefined}>Sign in</Link>
+            </p>
+        </AuthLayout>
     );
 };
 
+export default RegisterPage;

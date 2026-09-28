@@ -1,4 +1,6 @@
 import React, { useState } from "react";
+import { AuthHeading } from "../../../ds/AuthLayout";
+import { Alert, Button, Field, StepIndicator, TextField } from "../../../ds/components";
 
 function slugify(value) {
   return value
@@ -37,9 +39,9 @@ function describeError(error) {
 }
 
 /**
- * UI2 Step 2 — Add your first App. Sends only { name, slug, environment }
- * — organization comes from the route/current Company, never a field on
- * this form; framework is never sent here at all (see FrameworkStep).
+ * Onboarding step 2 — add your first App (DS-AUTH). Sends only
+ * { name, slug, environment } — organization comes from the route/current
+ * workspace, never a field on this form; framework is never sent here at all.
  */
 export function AddAppStep({ companyName, onCreate, isCreating, createError }) {
   const [name, setName] = useState("");
@@ -69,43 +71,41 @@ export function AddAppStep({ companyName, onCreate, isCreating, createError }) {
   };
 
   return (
-    <div className="onboarding-step">
-      <p className="onboarding-eyebrow">Step 2 of 4</p>
-      <h1 className="onboarding-title">Add your first App</h1>
-      <p className="onboarding-sub">
-        {companyName ? `The application ${companyName} wants Gait to protect.` : "The application Gait will protect."}
-      </p>
-
-      <form className="onboarding-form" onSubmit={handleSubmit}>
-        <label className="onboarding-field">
-          <span>App name</span>
-          <input type="text" value={name} onChange={handleNameChange} placeholder="Acme API" required autoFocus />
-        </label>
-
-        <label className="onboarding-field">
-          <span>App URL slug</span>
-          <input type="text" value={slug} onChange={handleSlugChange} placeholder="acme-api" pattern="[a-z0-9-]+" required />
-        </label>
-
-        <label className="onboarding-field">
-          <span>Environment</span>
-          <select value={environment} onChange={(event) => setEnvironment(event.target.value)}>
-            {ENVIRONMENTS.map((option) => (
-              <option key={option.value} value={option.value}>
-                {option.label}
-              </option>
-            ))}
-          </select>
-          <small>Which deployment of this App is this — where it actually runs.</small>
-        </label>
-
-        {createError && <p className="onboarding-error">{describeError(createError)}</p>}
-
-        <button type="submit" className="fw-btn primary" disabled={isCreating || !name.trim() || !slug.trim()}>
-          {isCreating ? "Adding…" : "Add App"}
-        </button>
+    <>
+      <StepIndicator step={2} of={4} label="Application" />
+      <AuthHeading
+        title="Add your first App"
+        lede={companyName ? `The application ${companyName} wants Gait to protect.` : "The application Gait will protect."}
+      />
+      {createError ? <Alert kind="danger">{describeError(createError)}</Alert> : null}
+      <form className="ds-form" onSubmit={handleSubmit} noValidate>
+        <TextField label="App name" value={name} onChange={handleNameChange} placeholder="Acme API" autoComplete="off" />
+        <TextField
+          label="App URL slug"
+          value={slug}
+          onChange={handleSlugChange}
+          placeholder="acme-api"
+          autoComplete="off"
+          hint="Letters, numbers and dashes. It's how this App is identified in links."
+        />
+        <Field label="Environment" hint="Which deployment of this App is this — where it actually runs.">
+          {(aria) => (
+            <select className="ds-input ds-select" value={environment} onChange={(event) => setEnvironment(event.target.value)} {...aria}>
+              {ENVIRONMENTS.map((option) => (
+                <option key={option.value} value={option.value}>
+                  {option.label}
+                </option>
+              ))}
+            </select>
+          )}
+        </Field>
+        <div className="ds-actions">
+          <Button type="submit" disabled={isCreating || !name.trim() || !slug.trim()}>
+            {isCreating ? "Adding…" : "Add App"}
+          </Button>
+        </div>
       </form>
-    </div>
+    </>
   );
 }
 

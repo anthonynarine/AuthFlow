@@ -326,6 +326,54 @@
 .ds-invite-confirm-title:focus-visible { outline: 2px solid var(--ds-focus); outline-offset: 3px; }
 .ds-error a { color: inherit; font-weight: 600; }
 
+/* ---- Onboarding app steps ------------------------------------------------ */
+.ds-select {
+  appearance: none;
+  background-image: linear-gradient(45deg, transparent 50%, var(--ds-text-muted) 50%), linear-gradient(135deg, var(--ds-text-muted) 50%, transparent 50%);
+  background-position: calc(100% - 18px) 50%, calc(100% - 13px) 50%;
+  background-size: 5px 5px;
+  background-repeat: no-repeat;
+  padding-right: 36px;
+}
+.ds-choices { display: grid; grid-template-columns: repeat(auto-fit, minmax(140px, 1fr)); gap: 10px; }
+.ds-choice {
+  min-height: 64px;
+  padding: 14px 16px;
+  background: var(--ds-bg);
+  border: 1px solid var(--ds-gray-600);
+  border-radius: var(--ds-radius-control);
+  color: var(--ds-text);
+  font: 600 16px/1.2 var(--ds-font-body);
+  text-align: left;
+  cursor: pointer;
+}
+.ds-choice:hover { border-color: var(--ds-gray-400); }
+.ds-choice[aria-pressed="true"] { border-color: var(--ds-gray-50); box-shadow: inset 0 0 0 1px var(--ds-gray-50); }
+.ds-steps-list { list-style: none; margin: 0; padding: 0; display: flex; flex-direction: column; gap: 18px; }
+.ds-steps-list h2 { margin: 0 0 4px; font: 600 15px/1.35 var(--ds-font-body); color: var(--ds-text); }
+.ds-steps-list p { margin: 0 0 8px; color: var(--ds-text-muted); font-size: 14px; }
+.ds-code-block {
+  margin: 0;
+  padding: 12px 14px;
+  overflow-x: auto;
+  background: var(--ds-bg);
+  border: 1px solid var(--ds-line);
+  border-radius: var(--ds-radius-control);
+  color: var(--ds-text);
+  font: 13px/1.55 var(--ds-font-mono);
+  white-space: pre;
+}
+.ds-secret {
+  padding: 14px;
+  background: var(--ds-bg);
+  border: 1px solid var(--ds-gray-600);
+  border-radius: var(--ds-radius-control);
+  font: 500 14px/1.5 var(--ds-font-mono);
+  color: var(--ds-text);
+  overflow-wrap: anywhere;
+}
+.ds-head-row { display: flex; justify-content: space-between; align-items: flex-start; gap: 12px; flex-wrap: wrap; }
+
 /* ---- Account page panels ------------------------------------------------- */
 .ds-panel {
   background: var(--ds-surface);

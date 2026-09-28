@@ -5,19 +5,15 @@ import { useOrganizationApplications } from "../../../hooks/useOrganizationAppli
 import { useValidateSessionOnMount } from "../../../hooks/useValidateSessionOnMount";
 import { useBasicAuthServices } from "../../../context/auth/BasicAuthContext";
 import { useMyInvites } from "../../../console/invites/useMyInvites";
-import { FounderNav } from "../FounderNav";
-import { SecurityErrorState } from "../../security/SecurityErrorState";
 import { CreateCompanyStep } from "./CreateCompanyStep";
 import { InvitesFirstStep } from "./InvitesFirstStep";
 import { WorkspaceChooserStep } from "./WorkspaceChooserStep";
 import { AuthLayout } from "../../../ds/AuthLayout";
 import { Alert, StatusLine } from "../../../ds/components";
+import { LoadFailed } from "./LoadFailed";
 import { ResendVerificationButton } from "../../../account/ResendVerificationButton";
 import { AddAppStep } from "./AddAppStep";
 import { AppSetupFlow } from "./AppSetupFlow";
-import "../FounderWorkspace.css";
-import { EmailVerificationBanner } from "../../../account/EmailVerificationBanner";
-import "./Onboarding.css";
 
 /**
  * UI2 — /workspace/onboarding. The single orchestration route. Every step
@@ -75,24 +71,21 @@ export function OnboardingWizardPage() {
     navigate(`/workspace/apps?org=${currentOrgSlug}`, { replace: true });
   };
 
-  // The workspace steps use the DS-AUTH card; the app steps keep today's shell
-  // until they're redesigned.
-  let workspaceStep = null;
   let content;
 
   if (orgsState.isLoading && orgsState.organizations.length === 0) {
-    workspaceStep = <StatusLine>Loading…</StatusLine>;
+    content = <StatusLine>Loading…</StatusLine>;
   } else if (orgsState.error) {
-    content = <SecurityErrorState error={orgsState.error} onRetry={orgsState.refetch} />;
+    content = <LoadFailed error={orgsState.error} onRetry={orgsState.refetch} />;
   } else if (orgsState.organizations.length === 0 && myInvites.waiting) {
-    workspaceStep = <StatusLine>Loading…</StatusLine>;
+    content = <StatusLine>Loading…</StatusLine>;
   } else if (orgsState.organizations.length === 0 && myInvites.invites.length > 0 && !creatingInstead) {
-    workspaceStep = <InvitesFirstStep invites={myInvites.invites} onCreateInstead={() => setCreatingInstead(true)} />;
+    content = <InvitesFirstStep invites={myInvites.invites} onCreateInstead={() => setCreatingInstead(true)} />;
   } else if (orgsState.organizations.length === 0 || searchParams.get("new") === "1") {
     // Either a brand-new founder with no workspace yet, or one who
     // explicitly asked to create another one.
     const invited = orgsState.organizations.length === 0 && myInvites.invites.length > 0;
-    workspaceStep = (
+    content = (
       <>
         {invited ? (
           <button type="button" className="ds-link ds-link--quiet" style={{ alignSelf: "flex-start" }} onClick={() => setCreatingInstead(false)}>
@@ -110,7 +103,7 @@ export function OnboardingWizardPage() {
     // No workspace chosen yet, or the ?org= value doesn't match any real
     // membership — never invent a workspace GET /organizations/ didn't
     // actually return.
-    workspaceStep = (
+    content = (
       <WorkspaceChooserStep
         organizations={orgsState.organizations}
         onChoose={chooseCompany}
@@ -118,9 +111,9 @@ export function OnboardingWizardPage() {
       />
     );
   } else if (appsState.isLoading && appsState.applications.length === 0) {
-    content = <p className="founder-empty">Loading…</p>;
+    content = <StatusLine>Loading…</StatusLine>;
   } else if (appsState.error) {
-    content = <SecurityErrorState error={appsState.error} onRetry={appsState.refetch} />;
+    content = <LoadFailed error={appsState.error} onRetry={appsState.refetch} />;
   } else if (appsState.applications.length === 0) {
     content = (
       <AddAppStep
@@ -136,36 +129,24 @@ export function OnboardingWizardPage() {
         organizationSlug={currentOrgSlug}
         application={appsState.applications[0]}
         onDone={handleSetupDone}
-        stepLabel="Step 3 of 4"
+        stepLabel="Step 3 of 4 · Connect"
       />
     );
   }
 
-  if (workspaceStep) {
-    return (
-      <AuthLayout wide backTo="/workspace" backLabel="Back">
-        {user && user.email_verified === false ? (
-          <>
-            <Alert kind="warning">
-              <strong>Confirm {user.email}.</strong> You'll need it to create a workspace or join one. Use the link we
-              emailed you, or send a new one.
-            </Alert>
-            <ResendVerificationButton className="ds-btn ds-btn--secondary ds-btn--small" />
-          </>
-        ) : null}
-        {workspaceStep}
-      </AuthLayout>
-    );
-  }
-
   return (
-    <div className="founder-workspace">
-      <FounderNav />
-      <main className="founder-shell onboarding-shell">
-        <EmailVerificationBanner />
-        {content}
-      </main>
-    </div>
+    <AuthLayout wide backTo="/workspace" backLabel="Back">
+      {user && user.email_verified === false ? (
+        <>
+          <Alert kind="warning">
+            <strong>Confirm {user.email}.</strong> You'll need it to create a workspace or join one. Use the link we
+            emailed you, or send a new one.
+          </Alert>
+          <ResendVerificationButton className="ds-btn ds-btn--secondary ds-btn--small" />
+        </>
+      ) : null}
+      {content}
+    </AuthLayout>
   );
 }
 

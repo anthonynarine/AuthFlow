@@ -2,11 +2,10 @@ import React from "react";
 import { Navigate, useNavigate, useParams, useSearchParams } from "react-router-dom";
 import { useOrganizationApplications } from "../../hooks/useOrganizationApplications";
 import { useValidateSessionOnMount } from "../../hooks/useValidateSessionOnMount";
-import { FounderNav } from "./FounderNav";
 import { AppSetupFlow } from "./onboarding/AppSetupFlow";
-import { SecurityErrorState } from "../security/SecurityErrorState";
-import "./FounderWorkspace.css";
-import "./onboarding/Onboarding.css";
+import { LoadFailed } from "./onboarding/LoadFailed";
+import { AuthLayout } from "../../ds/AuthLayout";
+import { Alert, StatusLine } from "../../ds/components";
 
 /**
  * UI2 — /workspace/apps/:id/setup. Standalone SDK setup for an App that
@@ -29,24 +28,21 @@ export function AppSetupPage() {
   const application = appsState.applications.find((app) => app.id === id) || null;
 
   return (
-    <div className="founder-workspace">
-      <FounderNav />
-      <main className="founder-shell onboarding-shell">
-        {appsState.isLoading && appsState.applications.length === 0 ? (
-          <p className="founder-empty">Loading…</p>
-        ) : appsState.error ? (
-          <SecurityErrorState error={appsState.error} onRetry={appsState.refetch} />
-        ) : !application ? (
-          <p className="founder-empty">That App couldn't be found.</p>
-        ) : (
-          <AppSetupFlow
-            organizationSlug={organizationSlug}
-            application={application}
-            onDone={() => navigate(`/workspace/apps?org=${organizationSlug}`, { replace: true })}
-          />
-        )}
-      </main>
-    </div>
+    <AuthLayout wide backTo={`/workspace/apps?org=${organizationSlug}`} backLabel="Back to Apps">
+      {appsState.isLoading && appsState.applications.length === 0 ? (
+        <StatusLine>Loading…</StatusLine>
+      ) : appsState.error ? (
+        <LoadFailed error={appsState.error} onRetry={appsState.refetch} />
+      ) : !application ? (
+        <Alert kind="danger">That App couldn't be found.</Alert>
+      ) : (
+        <AppSetupFlow
+          organizationSlug={organizationSlug}
+          application={application}
+          onDone={() => navigate(`/workspace/apps?org=${organizationSlug}`, { replace: true })}
+        />
+      )}
+    </AuthLayout>
   );
 }
 

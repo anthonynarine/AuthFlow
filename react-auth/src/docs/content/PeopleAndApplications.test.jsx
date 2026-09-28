@@ -82,3 +82,60 @@ describe("How a person joins", () => {
         await settleDiagrams();
     });
 });
+
+describe("How an application gets its key", () => {
+    function keyLesson() {
+        return screen.getByRole("figure", { name: /An Owner or Admin adds an application/ });
+    }
+
+    function liveNumbers(lesson) {
+        return within(lesson)
+            .getAllByRole("listitem")
+            .filter((item) => item.getAttribute("aria-current") === "step")
+            .map((item) => within(item).getByText(/^\d$/).textContent);
+    }
+
+    test("labels all four lanes, the set-up steps and the loop", async () => {
+        renderPeople();
+        const lesson = keyLesson();
+        const lanes = within(lesson).getByRole("list", { name: "Lanes" });
+        expect(within(lanes).getAllByRole("listitem").map((lane) => lane.textContent)).toEqual([
+            "Owner or Admin",
+            "Gait console",
+            "Gait",
+            "Your app's backend",
+        ]);
+
+        const setUp = within(lesson).getByRole("list", { name: "Set up once: steps 1 to 4" });
+        expect(within(setUp).getAllByRole("listitem")).toHaveLength(4);
+        expect(within(setUp).getByText("Key shown once (Gait keeps only a fingerprint)")).toBeInTheDocument();
+        expect(within(setUp).getByText("Owner or Admin → Your app's backend")).toBeInTheDocument();
+
+        const loop = within(lesson).getByRole("list", { name: "Loop · every run or deploy" });
+        expect(within(loop).getByText("Your app's backend → Gait")).toBeInTheDocument();
+        expect(within(loop).getByText("Recorded for acme / acme-api / production")).toBeInTheDocument();
+        await settleDiagrams();
+    });
+
+    test("steps through set-up one message at a time, then plays the loop", async () => {
+        renderPeople();
+        const lesson = keyLesson();
+        const next = within(lesson).getByRole("button", { name: "Next" });
+        expect(within(lesson).getByText("Step 1 of 7")).toBeInTheDocument();
+
+        fireEvent.click(next);
+        expect(liveNumbers(lesson)).toEqual(["1"]);
+
+        fireEvent.click(within(lesson).getByRole("button", { name: "Step 4: Shown exactly once" }));
+        expect(liveNumbers(lesson)).toEqual(["3"]);
+        expect(within(lesson).getByText(/nobody, including Gait, can show it again/)).toBeInTheDocument();
+
+        fireEvent.click(within(lesson).getByRole("button", { name: "Step 6: Every run or deploy" }));
+        expect(liveNumbers(lesson)).toEqual(["5", "6"]);
+
+        fireEvent.click(next);
+        expect(within(lesson).getByText(/People set up; software reports\./)).toBeInTheDocument();
+        expect(next).toBeDisabled();
+        await settleDiagrams();
+    });
+});

@@ -1,16 +1,12 @@
 import React, { useEffect, useState } from "react";
 import { Link, useLocation, useNavigate, useParams } from "react-router-dom";
 import { fieldErrors, INVALID_RESET_LINK, resetPassword } from "../../auth/authPagesApi";
+import { readTokenFromHash } from "../../account/VerifyEmailPage";
 import { AuthHeading, AuthLayout } from "../../ds/AuthLayout";
 import { Alert, Button, PasswordField } from "../../ds/components";
 
 const PASSWORD_HINT = "At least 8 characters, not only numbers, and not a common password.";
 const FIELD_MAP = { password: "password", new_password: "password", password_confirm: "confirmPassword" };
-
-/** The token from "#token=…" (current emails), or "" when there isn't one. */
-function tokenFromHash(hash) {
-    return new URLSearchParams((hash || "").replace(/^#/, "")).get("token") || "";
-}
 
 /**
  * Gait answers a weak password with Django's list, stringified:
@@ -27,14 +23,16 @@ function passwordRules(message) {
  *
  * Current emails link to /reset-password#token=…: the token is read once and
  * the fragment is removed from the address bar straight away, so it isn't
- * left in history or on screen. It only ever leaves in the POST body. Older
- * emails (/reset-password/:uidb64/:token) still work until they expire.
+ * left in history or on screen. It only ever leaves in the POST body. Another
+ * link opened in this same tab only changes the fragment (no reload), so the
+ * page starts over with that link, as /verify-email does. Older emails
+ * (/reset-password/:uidb64/:token) still work until they expire.
  */
 export const ResetPassword = () => {
     const params = useParams();
     const location = useLocation();
     const navigate = useNavigate();
-    const [token] = useState(() => params.token || tokenFromHash(location.hash));
+    const [token, setToken] = useState(() => params.token || readTokenFromHash(location.hash) || "");
     const [password, setPassword] = useState("");
     const [confirmPassword, setConfirmPassword] = useState("");
     const [errors, setErrors] = useState({});
@@ -42,9 +40,18 @@ export const ResetPassword = () => {
     const [phase, setPhase] = useState(() => (token ? "form" : "invalid")); // form | done | invalid
 
     useEffect(() => {
-        if (location.hash) navigate({ pathname: location.pathname, search: location.search }, { replace: true });
+        if (!location.hash) return;
+        const next = readTokenFromHash(location.hash);
+        navigate({ pathname: location.pathname, search: location.search }, { replace: true });
+        if (next && next !== token) {
+            setToken(next);
+            setPassword("");
+            setConfirmPassword("");
+            setErrors({});
+            setPhase("form");
+        }
         // eslint-disable-next-line react-hooks/exhaustive-deps
-    }, []);
+    }, [location.hash]);
 
     const onSubmit = async (event) => {
         event.preventDefault();

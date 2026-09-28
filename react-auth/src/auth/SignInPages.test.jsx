@@ -1,7 +1,7 @@
 import "@testing-library/jest-dom";
 import React from "react";
 import { fireEvent, render, screen, waitFor, within } from "@testing-library/react";
-import { MemoryRouter, Route, Routes, useLocation } from "react-router-dom";
+import { MemoryRouter, Route, Routes, useLocation, useNavigate } from "react-router-dom";
 import { RegisterPage } from "../components/register/RegisterPage";
 import { ForgotPassword } from "../components/forgot-password/ForgotPassword";
 import { ResetPassword } from "../components/reset-password/ResetPassword";
@@ -148,6 +148,38 @@ describe("reset password", () => {
             password: TEST_PASSWORD,
             password_confirm: TEST_PASSWORD,
         });
+    });
+
+    test("another link opened in the same tab (only the fragment changes) starts over with that link's token", async () => {
+        publicAxios.post.mockResolvedValue({ data: { message: "ok" } });
+        function OpenSecondLink() {
+            const navigate = useNavigate();
+            return (
+                <button type="button" onClick={() => navigate("/reset-password#token=second-test-token")}>
+                    open second link
+                </button>
+            );
+        }
+        render(
+            <MemoryRouter initialEntries={[LINK]}>
+                <Routes>
+                    <Route path="/reset-password" element={<ResetPassword />} />
+                </Routes>
+                <OpenSecondLink />
+                <LocationProbe />
+            </MemoryRouter>
+        );
+        submit();
+        expect(await screen.findByRole("heading", { name: "Sign in with your new password" })).toBeInTheDocument();
+        fireEvent.click(screen.getByRole("button", { name: "open second link" }));
+        expect(await screen.findByRole("heading", { name: "Choose a new password" })).toBeInTheDocument();
+        await waitFor(() => expect(screen.getByTestId("location")).toHaveTextContent(/^\/reset-password$/));
+        submit();
+        await waitFor(() => expect(publicAxios.post).toHaveBeenLastCalledWith("/reset-password/", {
+            token: "second-test-token",
+            password: TEST_PASSWORD,
+            password_confirm: TEST_PASSWORD,
+        }));
     });
 
     test("an older /reset-password/:uid/:token link still works", async () => {

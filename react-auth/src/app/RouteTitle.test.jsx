@@ -6,8 +6,7 @@ import { DEFAULT_TITLE, RouteTitle, titleForPath } from "./RouteTitle";
 describe("RouteTitle", () => {
   test.each([
     ["/", DEFAULT_TITLE],
-    ["/developers", "gait-sdk for developers · Gait"],
-    ["/architecture", "Architecture · Gait"],
+    ["/docs/gait-sdk", "gait-sdk · Gait Docs"],
     ["/security", "Security Observatory · Gait"],
     ["/security-observatory", "Security Observatory · Gait"],
     ["/security-command", "Security Command · Gait"],
@@ -21,10 +20,10 @@ describe("RouteTitle", () => {
 
   test("sets document.title for the current route", () => {
     render(
-      <MemoryRouter initialEntries={["/developers"]}>
+      <MemoryRouter initialEntries={["/docs/gait-sdk"]}>
         <RouteTitle />
       </MemoryRouter>
     );
-    expect(document.title).toBe("gait-sdk for developers · Gait");
+    expect(document.title).toBe("gait-sdk · Gait Docs");
   });
 });

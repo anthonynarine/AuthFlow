@@ -47,7 +47,7 @@ describe("EarlyAccessPage", () => {
     expect(screen.getByLabelText("What's your biggest security worry right now?")).toBeInTheDocument();
     expect(screen.getByLabelText("GitHub repo (optional)")).toBeInTheDocument();
     expect(
-      screen.getByLabelText("This is urgent — we've had a security incident or active concern")
+      screen.getByLabelText("Mark as urgent (for example, a recent security incident or an active concern)")
     ).toBeInTheDocument();
   });
 
@@ -71,7 +71,20 @@ describe("EarlyAccessPage", () => {
     expect(payload.content).toContain("GitHub repo: Not provided");
     expect(payload.content).toContain("Urgent: No");
 
-    expect(await screen.findByText("Thanks — we'll be in touch.")).toBeInTheDocument();
+    const heading = await screen.findByRole("heading", { name: "Thanks — we'll be in touch." });
+    // The form is gone, so focus moves to the confirmation.
+    await waitFor(() => expect(heading).toHaveFocus());
+    expect(screen.getByText(/will reply to/)).toHaveTextContent("will reply to jamie@example.com.");
+    expect(screen.queryByText(/within a few days/)).not.toBeInTheDocument();
+  });
+
+  test("says only product sign-in is early access, and what happens to the answers", () => {
+    renderPage();
+
+    expect(screen.getByText("Early access", { selector: ".doc-status" })).toBeInTheDocument();
+    expect(screen.queryByText(/multi-tenant/i)).not.toBeInTheDocument();
+    expect(screen.getByRole("link", { name: "Quickstart" })).toHaveAttribute("href", "/docs/quickstart");
+    expect(screen.getByText("We email your answers to the Gait team. They aren't stored in Gait.")).toBeInTheDocument();
   });
 
   test("shows an inline error instead of losing the filled-out form on failure", async () => {

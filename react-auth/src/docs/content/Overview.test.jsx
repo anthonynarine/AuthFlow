@@ -61,6 +61,7 @@ describe("navigation groups", () => {
             "Start here",
             "Concepts",
             "Guides",
+            "For developers",
             "Reference",
             "Gait's platform",
         ]);

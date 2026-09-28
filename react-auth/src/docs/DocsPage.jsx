@@ -119,7 +119,6 @@ export function DocsPage() {
                     <span className="docs-brand-section">Docs</span>
                 </Link>
                 <nav className="docs-header-nav" aria-label="Site">
-                    <Link to="/developers">Developers</Link>
                     <Link to="/console" className="docs-header-cta">Console</Link>
                 </nav>
             </header>

@@ -1,4 +1,5 @@
 import React, { useState } from "react";
+import { statusOf } from "../featureStatus";
 import { LessonCoach, LessonNav } from "./LessonParts";
 import "./how-it-works.css";
 
@@ -12,6 +13,12 @@ import "./how-it-works.css";
  * Plain HTML/CSS, no mermaid, so it renders the same in search's static pass.
  */
 
+// Sign-in for your product's own users: its status comes from featureStatus.js
+// (read at render time), so this lesson stops saying "early access" the day that
+// changes. Copy that depends on it is a function of `earlyAccess`.
+const isEarlyAccess = () => statusOf("productSignIn") === "earlyAccess";
+const resolve = (value, earlyAccess) => (typeof value === "function" ? value(earlyAccess) : value);
+
 const NODES = {
     team: { kicker: "Humans in the console", title: "Your team", detail: "Owner · Admin · Member" },
     software: {
@@ -21,7 +28,7 @@ const NODES = {
         credential: "gait-sdk + connection key",
     },
     users: {
-        kicker: "Optional · early access",
+        kicker: (earlyAccess) => (earlyAccess ? "Optional · early access" : "Optional"),
         title: "Your product's users",
         detail: "People who use your product, not your team",
     },
@@ -70,14 +77,14 @@ const TOUR = [
     },
     {
         title: "Path 3 · Your users may sign in (optional)",
-        body: "In early access, your product can let its own users sign in with Gait accounts. Gait tells your product who someone is; your product still decides what they can open. Authentication is Gait's job, authorization stays yours.",
+        body: (earlyAccess) => `${earlyAccess ? "In early access, your" : "Your"} product can let its own users sign in with Gait accounts. Gait tells your product who someone is; your product still decides what they can open. Authentication is Gait's job, authorization stays yours.`,
         nodes: ["users", "software"],
         paths: ["users"],
         items: [],
     },
     {
         title: "Recap",
-        body: "Team configures. Software reports. Users may authenticate. All of it lands in the same workspace, and your team never talks to your software directly: they only meet inside Gait.",
+        body: "Team configures. Software reports. Users may authenticate. All of it lands in the same workspace. In this map your team and your software don't connect to each other: both connect to your workspace.",
         nodes: ALL_NODES,
         paths: ALL_PATHS,
         items: HUB_ITEMS,
@@ -94,14 +101,14 @@ const EXPLORE = {
     },
     software: {
         title: "Your software",
-        body: "Holds one connection key, for one application in one environment. It can report security checks for that application and nothing else: a key can't sign in, invite anyone or read anything.",
+        body: "Holds a connection key for one application in one environment. It can report security checks for that application and nothing else: a key can't sign in, invite anyone or read anything.",
         nodes: ["software", "hub"],
         paths: ["software"],
         items: ["findings"],
     },
     users: {
         title: "Your product's users",
-        body: "Optional, early access. They sign in to your product with a Gait account; your product decides what they can do. They aren't members of your Gait workspace.",
+        body: (earlyAccess) => `${earlyAccess ? "Optional, early access." : "Optional."} They sign in to your product with a Gait account; your product decides what they can do. They aren't members of your Gait workspace.`,
         nodes: ["users", "software"],
         paths: ["users"],
         items: [],
@@ -159,7 +166,7 @@ const ROLES = [
     {
         id: "end-user",
         label: "End user",
-        body: "Signs in to your product with a Gait account (early access). Your product, not Gait, decides which of your organizations and roles they get.",
+        body: (earlyAccess) => `Signs in to your product with a Gait account${earlyAccess ? " (early access)" : ""}. Your product, not Gait, decides which of your organizations and roles they get.`,
         nodes: ["users", "software"],
         paths: ["users"],
         items: [],
@@ -172,13 +179,13 @@ const MODES = [
     { id: "role", label: "By role" },
 ];
 
-function Node({ id, view, onSelect, selected }) {
+function Node({ id, view, onSelect, selected, earlyAccess }) {
     const node = NODES[id];
     const dim = !view.nodes.includes(id);
     const className = `hiw-node hiw-node--${id}${dim ? " is-dim" : ""}${selected ? " is-selected" : ""}`;
     const content = (
         <>
-            <span className="hiw-kicker">{node.kicker}</span>
+            <span className="hiw-kicker">{resolve(node.kicker, earlyAccess)}</span>
             <span className="hiw-title">{node.title}</span>
             {node.detail && <span className="hiw-detail">{node.detail}</span>}
             {node.credential && <span className="hiw-credential">{node.credential}</span>}
@@ -225,6 +232,7 @@ export function HowItWorksLesson() {
     const [step, setStep] = useState(0);
     const [picked, setPicked] = useState(null);
     const [role, setRole] = useState(ROLES[0].id);
+    const earlyAccess = isEarlyAccess();
 
     let view;
     let eyebrow;
@@ -247,7 +255,7 @@ export function HowItWorksLesson() {
             <figcaption id="hiw-caption" className="doc-visually-hidden">
                 Your team (Owner, Admin, Member) signs in to the console and works in the workspace Acme inside Gait,
                 which holds applications, keys and findings. Your software, such as Acme API in production, uses the
-                gait-sdk and a connection key to report security checks to that workspace. Optionally, in early access,
+                gait-sdk and a connection key to report security checks to that workspace. Optionally{earlyAccess ? ", in early access, " : ", "}
                 your product's own users sign in with Gait, and your product decides what they can access.
             </figcaption>
 
@@ -289,16 +297,16 @@ export function HowItWorksLesson() {
                     <li className="hiw-legend-item hiw-legend-item--hub">Gait</li>
                 </ul>
                 <div className="hiw-area-users">
-                    <Node id="users" view={view} onSelect={onSelect} selected={picked === "users"} />
+                    <Node id="users" view={view} onSelect={onSelect} selected={picked === "users"} earlyAccess={earlyAccess} />
                 </div>
                 <div className="hiw-area-path-users">
                     <Path id="users" view={view} />
                 </div>
                 <div className="hiw-area-team">
-                    <Node id="team" view={view} onSelect={onSelect} selected={picked === "team"} />
+                    <Node id="team" view={view} onSelect={onSelect} selected={picked === "team"} earlyAccess={earlyAccess} />
                 </div>
                 <div className="hiw-area-software">
-                    <Node id="software" view={view} onSelect={onSelect} selected={picked === "software"} />
+                    <Node id="software" view={view} onSelect={onSelect} selected={picked === "software"} earlyAccess={earlyAccess} />
                 </div>
                 <div className="hiw-area-path-team">
                     <Path id="team" view={view} />
@@ -307,11 +315,11 @@ export function HowItWorksLesson() {
                     <Path id="software" view={view} />
                 </div>
                 <div className="hiw-area-hub">
-                    <Node id="hub" view={view} onSelect={onSelect} selected={picked === "hub"} />
+                    <Node id="hub" view={view} onSelect={onSelect} selected={picked === "hub"} earlyAccess={earlyAccess} />
                 </div>
             </div>
 
-            <LessonCoach eyebrow={eyebrow} title={view.title} body={view.body} />
+            <LessonCoach eyebrow={eyebrow} title={view.title} body={resolve(view.body, earlyAccess)} />
 
             {mode === "tour" && <LessonNav steps={TOUR} step={step} onStep={setStep} />}
         </figure>

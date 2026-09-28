@@ -53,7 +53,7 @@ describe("How a person joins", () => {
         expect(within(newCompany).getByText("You are its Owner")).toBeInTheDocument();
         const invited = within(lesson).getByRole("list", { name: "B · Invited to an existing workspace" });
         expect(
-            within(invited).getByText("Open the invite link, signed in as the invited email")
+            within(invited).getByText("Open the invite link, signed in as the invited email, and choose Join")
         ).toBeInTheDocument();
         await settleDiagrams();
     });
@@ -111,7 +111,7 @@ describe("How an application gets its key", () => {
         expect(within(setUp).getByText("Key shown once (Gait keeps only a fingerprint)")).toBeInTheDocument();
         expect(within(setUp).getByText("Owner or Admin → Your app's backend")).toBeInTheDocument();
 
-        const loop = within(lesson).getByRole("list", { name: "Loop · every run or deploy" });
+        const loop = within(lesson).getByRole("list", { name: "Loop · whenever your backend runs its checks" });
         expect(within(loop).getByText("Your app's backend → Gait")).toBeInTheDocument();
         expect(within(loop).getByText("Recorded for acme / acme-api / production")).toBeInTheDocument();
         await settleDiagrams();
@@ -130,7 +130,7 @@ describe("How an application gets its key", () => {
         expect(liveNumbers(lesson)).toEqual(["3"]);
         expect(within(lesson).getByText(/nobody, including Gait, can show it again/)).toBeInTheDocument();
 
-        fireEvent.click(within(lesson).getByRole("button", { name: "Step 6: Every run or deploy" }));
+        fireEvent.click(within(lesson).getByRole("button", { name: "Step 6: Whenever your backend runs its checks" }));
         expect(liveNumbers(lesson)).toEqual(["5", "6"]);
 
         fireEvent.click(next);

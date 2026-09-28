@@ -24,8 +24,7 @@
 .hiw-modes,
 .hiw-roles { display: flex; flex-wrap: wrap; gap: 6px; margin: 0 0 12px; }
 .hiw-mode,
-.hiw-role,
-.hiw-nav > button {
+.hiw-role {
   padding: 5px 12px;
   border: 1px solid var(--color-border-strong);
   border-radius: var(--radius-pill);
@@ -39,8 +38,7 @@
 .hiw-mode[aria-pressed="true"],
 .hiw-role[aria-pressed="true"] { background: var(--color-text); border-color: var(--color-text); color: var(--color-bg); }
 .hiw-mode:hover,
-.hiw-role:hover,
-.hiw-nav > button:not(:disabled):hover { color: var(--color-text); }
+.hiw-role:hover { color: var(--color-text); }
 .hiw-role { font-size: 0.8rem; padding: 3px 10px; }
 
 /* The map: two columns, paths run straight down into the hub */
@@ -185,40 +183,6 @@ button.hiw-node { cursor: pointer; }
   text-transform: uppercase;
   color: var(--hiw-tone);
 }
-
-/* Coach panel */
-.hiw-coach {
-  min-height: 132px;
-  padding: 12px 14px;
-  border-radius: var(--radius-sm);
-  background: var(--color-surface-alt);
-}
-.docs-article .hiw-eyebrow {
-  margin: 0 0 4px;
-  font-size: 0.7rem;
-  font-weight: 700;
-  letter-spacing: 0.08em;
-  text-transform: uppercase;
-  color: var(--color-text-muted);
-}
-.docs-article .hiw-coach-title { margin: 0 0 4px; font-weight: 650; }
-.docs-article .hiw-coach-body { margin: 0; font-size: 0.92rem; }
-
-/* Tour navigation */
-.hiw-nav { display: flex; align-items: center; justify-content: space-between; gap: 10px; margin-top: 12px; }
-.hiw-nav > button:disabled { opacity: 0.4; cursor: default; }
-.docs-article .hiw-dots { display: flex; gap: 6px; margin: 0; padding: 0; list-style: none; }
-.docs-article .hiw-dots > li { margin: 0; }
-.hiw-dot {
-  width: 10px;
-  height: 10px;
-  padding: 0;
-  border: 1px solid var(--color-border-strong);
-  border-radius: 50%;
-  background: transparent;
-  cursor: pointer;
-}
-.hiw-dot[aria-current="step"] { background: var(--color-text); border-color: var(--color-text); }
 
 @media (max-width: 480px) {
   .hiw { padding: 12px; }

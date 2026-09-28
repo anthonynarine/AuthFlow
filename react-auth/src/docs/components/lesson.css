@@ -1,0 +1,48 @@
+/*
+ * Shared by the docs' step-through lessons (LessonParts.jsx): coach panel,
+ * Back / Next and step dots.
+ */
+/* Coach panel */
+.lesson-coach {
+  min-height: 132px;
+  padding: 12px 14px;
+  border-radius: var(--radius-sm);
+  background: var(--color-surface-alt);
+}
+.docs-article .lesson-eyebrow {
+  margin: 0 0 4px;
+  font-size: 0.7rem;
+  font-weight: 700;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: var(--color-text-muted);
+}
+.docs-article .lesson-coach-title { margin: 0 0 4px; font-weight: 650; }
+.docs-article .lesson-coach-body { margin: 0; font-size: 0.92rem; }
+
+/* Tour navigation */
+.lesson-nav { display: flex; align-items: center; justify-content: space-between; gap: 10px; margin-top: 12px; }
+.lesson-nav > button:disabled { opacity: 0.4; cursor: default; }
+.docs-article .lesson-dots { display: flex; gap: 6px; margin: 0; padding: 0; list-style: none; }
+.docs-article .lesson-dots > li { margin: 0; }
+.lesson-dot {
+  width: 10px;
+  height: 10px;
+  padding: 0;
+  border: 1px solid var(--color-border-strong);
+  border-radius: 50%;
+  background: transparent;
+  cursor: pointer;
+}
+.lesson-dot[aria-current="step"] { background: var(--color-text); border-color: var(--color-text); }
+.lesson-nav > button {
+  padding: 5px 12px;
+  border: 1px solid var(--color-border-strong);
+  border-radius: var(--radius-pill);
+  background: transparent;
+  color: var(--color-text-muted);
+  font: inherit;
+  font-size: 0.85rem;
+  cursor: pointer;
+}
+.lesson-nav > button:not(:disabled):hover { color: var(--color-text); }

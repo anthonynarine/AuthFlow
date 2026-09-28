@@ -78,12 +78,19 @@ export default function ApplicationsAndConnectionKeys() {
 
             <DocSection id="if-a-key-leaks" title="If a key leaks">
                 <ol>
+                    <li>
+                        <strong>Revoke the leaked key.</strong> It stops working at once. Your software stops
+                        reporting until it has a new key.
+                    </li>
                     <li>Issue a new key and deploy it.</li>
-                    <li>Revoke the leaked key.</li>
                 </ol>
                 <p>
-                    If you need everything stopped right now, suspend the application first (below), then rotate. A
-                    leaked key can only report checks for its own application. It can't sign in, see your console or
+                    Not sure which key leaked? Suspend the application (below) to stop all of its keys at once, revoke
+                    every key that might be affected, then reactivate it. New keys can only be issued while the
+                    application is active, so reactivate before issuing the replacement.
+                </p>
+                <p>
+                    A leaked key can only report checks for its own application. It can't sign in, see your console or
                     reach another application.
                 </p>
             </DocSection>

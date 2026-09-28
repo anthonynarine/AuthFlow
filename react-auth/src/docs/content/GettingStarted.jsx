@@ -87,7 +87,11 @@ export default function GettingStarted() {
                 )}
             </DocSection>
 
-            <DocSection id="step-2-create-your-company" title="Step 2: Create your workspace">
+            <DocSection
+                id="step-2-create-your-workspace"
+                aliases={["step-2-create-your-company"]}
+                title="Step 2: Create your workspace"
+            >
                 <p>The first time you open the console, Gait asks you to create your workspace.</p>
                 <ul>
                     <li><strong>Workspace name</strong>: what your team will see, e.g. <code>Acme</code>.</li>

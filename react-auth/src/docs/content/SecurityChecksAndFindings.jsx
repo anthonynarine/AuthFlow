@@ -11,9 +11,11 @@ const FINDING_LIFECYCLE = `flowchart LR
     APP["Your application"]:::app -- "FAIL" --> OPEN["Finding open"]:::open
     OPEN -- "Owner or Admin, with a note" --> ACK["Acknowledged"]:::human
     OPEN -- "Owner or Admin, with a note" --> RISK["Risk accepted"]:::human
+    ACK -- "Owner or Admin, with a note" --> RISK
     OPEN -- "later PASS" --> RES["Resolved"]:::done
     ACK -- "later PASS" --> RES
-    RISK -- "later PASS" --> RES`;
+    RISK -- "later PASS" --> RES
+    RES -- "FAIL again" --> OPEN`;
 
 export default function SecurityChecksAndFindings() {
     return (
@@ -26,16 +28,16 @@ export default function SecurityChecksAndFindings() {
             <DocSection id="from-report-to-finding" title="From report to finding">
                 <Diagram
                     source={FINDING_LIFECYCLE}
-                    description="When your application reports FAIL, Gait opens a finding. An Owner or Admin can acknowledge it or accept the risk, each with a written note. A later PASS from the application resolves the finding, whichever of those states it is in."
+                    description="When your application reports FAIL, Gait opens a finding. An Owner or Admin can acknowledge it or accept the risk, each with a written note; an acknowledged finding can still have its risk accepted. A later PASS from the application resolves the finding, whichever of those states it is in. If the check fails again after that, the same finding opens again."
                 />
                 <ul>
                     <li>
                         A <strong>FAIL</strong> opens one finding for that application and environment. Repeat failures
                         update the same finding; they don't pile up.
                     </li>
-                    <li>A later <strong>PASS</strong> resolves it.</li>
                     <li>
-                        Within about an hour, open findings become cases that Gait's security workflow tracks.
+                        A later <strong>PASS</strong> resolves it. If the check fails again later, the same finding
+                        opens again, with its history.
                     </li>
                     <li>
                         Each environment has its own security picture. A failure in <code>local</code> never shows up as

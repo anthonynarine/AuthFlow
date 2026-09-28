@@ -17,9 +17,9 @@ function renderNav() {
   );
 }
 
-describe("FounderNav — PLATFORM/is_staff boundary", () => {
-  test("is_staff user retains full operator access: Issues, Security Team, and Advanced", () => {
-    mockUseBasicAuthServices.mockReturnValue({ user: { is_staff: true } });
+describe("FounderNav — PLATFORM/operator boundary", () => {
+  test("an operator retains full operator access: Issues, Security Team, and Advanced", () => {
+    mockUseBasicAuthServices.mockReturnValue({ user: { is_gait_operator: true } });
     renderNav();
 
     expect(screen.getByRole("link", { name: "Home" })).toHaveAttribute("href", "/workspace");
@@ -30,8 +30,8 @@ describe("FounderNav — PLATFORM/is_staff boundary", () => {
 
   test("a tenant OWNER never gains platform navigation — no Issues, Security Team, or Advanced link", () => {
     // org_role is deliberately absent from FounderNav's own decision:
-    // is_staff is false regardless of what tenant role this account holds.
-    mockUseBasicAuthServices.mockReturnValue({ user: { is_staff: false, org_role: "OWNER" } });
+    // not an operator, regardless of what tenant role this account holds.
+    mockUseBasicAuthServices.mockReturnValue({ user: { is_gait_operator: false, org_role: "OWNER" } });
     renderNav();
 
     expect(screen.getByRole("link", { name: "Home" })).toHaveAttribute("href", "/workspace/apps");
@@ -40,8 +40,16 @@ describe("FounderNav — PLATFORM/is_staff boundary", () => {
     expect(screen.queryByRole("link", { name: /Advanced/ })).not.toBeInTheDocument();
   });
 
+  test("OPS1: is_staff or is_superuser without is_gait_operator gains nothing", () => {
+    mockUseBasicAuthServices.mockReturnValue({ user: { is_staff: true, is_superuser: true } });
+    renderNav();
+    expect(screen.getByRole("link", { name: "Home" })).toHaveAttribute("href", "/workspace/apps");
+    expect(screen.queryByRole("link", { name: "Issues" })).not.toBeInTheDocument();
+    expect(screen.queryByRole("link", { name: /Advanced/ })).not.toBeInTheDocument();
+  });
+
   test("a tenant ADMIN also never gains platform navigation", () => {
-    mockUseBasicAuthServices.mockReturnValue({ user: { is_staff: false, org_role: "ADMIN" } });
+    mockUseBasicAuthServices.mockReturnValue({ user: { is_gait_operator: false, org_role: "ADMIN" } });
     renderNav();
     expect(screen.queryByRole("link", { name: /Advanced/ })).not.toBeInTheDocument();
   });
@@ -69,7 +77,7 @@ describe("FounderNav — Account from the workspace nav", () => {
   test("staff (the operator home) can reach Account, flagged while two-step is off, and sign out", async () => {
     const logout = jest.fn(() => Promise.resolve());
     mockUseBasicAuthServices.mockReturnValue({
-      user: { is_staff: true, email: "operator@gait.test", is_2fa_enabled: false },
+      user: { is_gait_operator: true, email: "operator@gait.test", is_2fa_enabled: false },
       logout,
     });
     renderWithRoutes();
@@ -86,7 +94,7 @@ describe("FounderNav — Account from the workspace nav", () => {
 
   test("a tenant founder gets the same menu; no flag once two-step is on", () => {
     mockUseBasicAuthServices.mockReturnValue({
-      user: { is_staff: false, email: "founder@acme.test", is_2fa_enabled: true },
+      user: { is_gait_operator: false, email: "founder@acme.test", is_2fa_enabled: true },
       logout: jest.fn(),
     });
     renderWithRoutes();

@@ -8,6 +8,7 @@ import { ResetPassword } from "./components/reset-password/ResetPassword";
 import { NotFound } from "./components/not-found/NotFound";
 import HomePage from "./components/home/HomePage";
 import { RouteTitle } from "./app/RouteTitle";
+import { RequireOperator } from "./auth/RequireOperator";
 import { SecurityObservatoryPage } from "./components/security/SecurityObservatoryPage";
 import { SecurityLearnPage } from "./components/security/SecurityLearnPage";
 import { SecurityCommandPage } from "./components/security-command/SecurityCommandPage";
@@ -74,18 +75,19 @@ function App() {
                     <Route path="/account/two-step" element={<TwoStepSetupPage />} />
                     <Route path={DOCS_BASE} element={<Navigate to={docPath(DOC_PAGES[0].slug)} replace />} />
                     <Route path={`${DOCS_BASE}/:slug`} element={<DocsPage />} />
-                    <Route path="/security" element={<SecurityObservatoryPage />} />
-                    <Route path="/security-command" element={<SecurityCommandPage />} />
-                    <Route path="/security-observatory" element={<SecurityObservatoryPage />} />
-                    <Route path="/security-exercises" element={<SecurityExercisesPage />} />
-                    <Route path="/security-learn" element={<SecurityLearnPage />} />
+                    {/* OPS1: operator pages; everyone else gets "Not available". */}
+                    <Route path="/security" element={<RequireOperator><SecurityObservatoryPage /></RequireOperator>} />
+                    <Route path="/security-command" element={<RequireOperator><SecurityCommandPage /></RequireOperator>} />
+                    <Route path="/security-observatory" element={<RequireOperator><SecurityObservatoryPage /></RequireOperator>} />
+                    <Route path="/security-exercises" element={<RequireOperator><SecurityExercisesPage /></RequireOperator>} />
+                    <Route path="/security-learn" element={<RequireOperator><SecurityLearnPage /></RequireOperator>} />
                     <Route path="/workspace" element={<WorkspaceEntry />} />
                     <Route path="/workspace/onboarding" element={<OnboardingWizardPage />} />
                     <Route path="/workspace/apps" element={<AppsHomePage />} />
                     <Route path="/workspace/apps/:id/setup" element={<AppSetupPage />} />
-                    <Route path="/workspace/issues" element={<FounderIssuesPage />} />
-                    <Route path="/workspace/issues/:id" element={<FounderIssueWorkspacePage />} />
-                    <Route path="/workspace/team" element={<SecurityTeamPage />} />
+                    <Route path="/workspace/issues" element={<RequireOperator><FounderIssuesPage /></RequireOperator>} />
+                    <Route path="/workspace/issues/:id" element={<RequireOperator><FounderIssueWorkspacePage /></RequireOperator>} />
+                    <Route path="/workspace/team" element={<RequireOperator><SecurityTeamPage /></RequireOperator>} />
                     <Route path="/console" element={<ConsoleEntry />} />
                     <Route path="/console/invites/accept" element={<AcceptInvitePage />} />
                     <Route path="/console/:orgSlug" element={<ConsoleLayout />}>

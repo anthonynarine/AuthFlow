@@ -8,7 +8,6 @@ import { OverviewPage } from "./OverviewPage";
 import { belongsToOtherOrganization, consoleKeys } from "../../api/queryKeys";
 import {
     fetchControls,
-    fetchLatestEvidence,
     fetchMyOrganizations,
     fetchPosture,
     fetchPostureOverview,
@@ -28,7 +27,7 @@ jest.mock("../../api/consoleApi", () => ({
     fetchPostureOverview: jest.fn(),
     fetchPosture: jest.fn(),
     fetchControls: jest.fn(),
-    fetchLatestEvidence: jest.fn(),
+    fetchMyInvites: () => Promise.resolve([]),
 }));
 
 const APP_ONE = { id: "1", name: "App One", slug: "app-one", org_role: "OWNER", membership_status: "ACTIVE" };
@@ -66,11 +65,21 @@ const OVERVIEW = {
     ],
 };
 
-function control(status, statusLabel) {
+// H2: a control's state carries the trust of its latest evidence (null: none yet).
+const TRUST = { production: "SELF_REPORTED", staging: "GAIT_VERIFIED", local: null };
+
+function control(status, statusLabel, environment) {
+    const trust = TRUST[environment] ?? null;
     return {
         control_key: CONTROL_KEY,
         title: "Application self-reported security attestation received",
-        state: { status, status_label: statusLabel, last_evaluated_at: "2026-09-26T15:00:00Z" },
+        state: {
+            status,
+            status_label: statusLabel,
+            last_evaluated_at: "2026-09-26T15:00:00Z",
+            last_evidence_at: trust ? "2026-09-26T15:00:00Z" : null,
+            trust,
+        },
         help: {
             status_explanation: "The Application's most recent self-reported attestation for this environment claims FAIL.",
             verification_summary: "INTERNAL test file references",
@@ -128,15 +137,10 @@ beforeEach(() => {
     );
     fetchControls.mockImplementation((slug, environment) =>
         Promise.resolve([
-            environment === "production" ? control("CONTROL_FAILURE", "Control failure") : control("HEALTHY", "Healthy"),
+            environment === "production"
+                ? control("CONTROL_FAILURE", "Control failure", environment)
+                : control("HEALTHY", "Healthy", environment),
         ])
-    );
-    fetchLatestEvidence.mockImplementation((slug, environment) =>
-        Promise.resolve(
-            environment === "local"
-                ? null
-                : { id: `${environment}-e1`, trust: environment === "staging" ? "GAIT_VERIFIED" : "SELF_REPORTED", observed_at: "2026-09-26T15:00:00Z" }
-        )
     );
 });
 
@@ -177,7 +181,15 @@ describe("F1 Overview", () => {
 
         expect(fetchPosture).toHaveBeenCalledWith("app-one", "production");
         expect(fetchControls).toHaveBeenCalledWith("app-one", "production");
-        expect(fetchLatestEvidence).toHaveBeenCalledWith("app-one", "production", CONTROL_KEY);
+        const production = screen.getByRole("region", { name: "Production in detail" });
+        expect(within(production).getAllByText("Self-reported").length).toBeGreaterThan(0);
+    });
+
+    test("sources come from each control's state: one controls request per environment in use, no evidence requests", async () => {
+        renderOverview("/console/app-one/overview?env=production");
+        await waitFor(() => expect(within(screen.getByRole("region", { name: "All environments" })).getByText("Gait-verified")).toBeInTheDocument());
+        // Production (selected, shared with the detail view), Staging and Local; Test and CI have no data.
+        expect(fetchControls.mock.calls.map(([, environment]) => environment).sort()).toEqual(["local", "production", "staging"]);
     });
 
     test("choosing an environment card switches the console's environment", async () => {
@@ -235,11 +247,7 @@ describe("company isolation in the cache", () => {
     test("every F1 query key starts with the company and the environment", () => {
         expect(consoleKeys.posture("app-one", "production")).toEqual(["console", "app-one", "production", "posture"]);
         expect(consoleKeys.controls("app-one", "staging")).toEqual(["console", "app-one", "staging", "controls"]);
-        expect(consoleKeys.latestEvidence("app-one", "local", CONTROL_KEY).slice(0, 3)).toEqual([
-            "console",
-            "app-one",
-            "local",
-        ]);
+        expect(consoleKeys.controls("app-one", "local")).toEqual(["console", "app-one", "local", "controls"]);
     });
 
     test("switching company drops everything cached for the previous one", async () => {

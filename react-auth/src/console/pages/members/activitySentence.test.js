@@ -14,6 +14,8 @@ test.each([
     [row({ action: "INVITE_CREATED", to_role: "ADMIN" }), "ana@acme.test invited sam@acme.test as Admin"],
     [row({ action: "INVITE_REVOKED" }), "ana@acme.test revoked the invite for sam@acme.test"],
     [row({ action: "INVITE_ACCEPTED", to_role: "MEMBER" }), "sam@acme.test joined as Member"],
+    [row({ action: "INVITE_ACCEPTED", to_role: "ADMIN", accepted_via: "LINK" }), "sam@acme.test joined as Admin using the invite link"],
+    [row({ action: "INVITE_ACCEPTED", to_role: "OWNER", accepted_via: "VERIFIED_EMAIL" }), "sam@acme.test joined as Owner with their confirmed email"],
     [row({ action: "ROLE_CHANGED", from_role: "MEMBER", to_role: "OWNER" }), "ana@acme.test changed sam@acme.test from Member to Owner"],
     [row({ action: "MEMBER_REMOVED" }), "ana@acme.test removed sam@acme.test"],
     [row({ action: "MEMBER_REMOVED", actor_email: "sam@acme.test" }), "sam@acme.test left the company"],

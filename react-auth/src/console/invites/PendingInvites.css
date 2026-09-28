@@ -1,0 +1,139 @@
+/* INV-UX pending invites: used on onboarding, the email-confirmed page and in
+   the console, so it only leans on the shared tokens in index.css. */
+
+.pi-list {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: grid;
+  gap: 0.75rem;
+  text-align: left;
+}
+
+.pi-item {
+  border: 1px solid var(--color-border-strong);
+  border-radius: var(--radius-md);
+  background: var(--color-surface);
+  padding: 0.9rem 1rem;
+}
+
+.pi-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 0.75rem;
+  flex-wrap: wrap;
+}
+
+.pi-text {
+  margin: 0;
+  color: var(--color-text);
+  line-height: 1.45;
+  min-width: 0;
+  overflow-wrap: anywhere;
+}
+
+.pi-meta {
+  display: block;
+  color: var(--color-text-muted);
+  font-size: 0.85rem;
+  margin-top: 0.15rem;
+}
+
+.pi-button {
+  appearance: none;
+  border: 1px solid var(--color-accent);
+  background: var(--color-accent);
+  color: #0b1512;
+  font-weight: 600;
+  font-size: 0.9rem;
+  border-radius: var(--radius-sm);
+  padding: 0.5rem 0.95rem;
+  cursor: pointer;
+  transition: background var(--transition-fast);
+}
+
+.pi-button:hover:not(:disabled) {
+  background: var(--color-accent-hover);
+}
+
+.pi-button:disabled {
+  opacity: 0.65;
+  cursor: not-allowed;
+}
+
+.pi-button:focus-visible,
+.pi-confirm-title:focus-visible {
+  outline: 2px solid var(--color-accent);
+  outline-offset: 2px;
+}
+
+.pi-button--ghost {
+  background: transparent;
+  color: var(--color-text);
+  border-color: var(--color-border-strong);
+}
+
+.pi-button--ghost:hover:not(:disabled) {
+  background: var(--color-surface-glass-strong);
+}
+
+.pi-confirm {
+  margin-top: 0.85rem;
+  padding-top: 0.85rem;
+  border-top: 1px solid var(--color-border);
+}
+
+.pi-confirm-title {
+  margin: 0 0 0.6rem;
+  font-weight: 600;
+  color: var(--color-text);
+}
+
+.pi-facts {
+  margin: 0 0 0.75rem;
+  display: grid;
+  gap: 0.4rem;
+}
+
+.pi-facts div {
+  display: grid;
+  grid-template-columns: 7rem 1fr;
+  gap: 0.75rem;
+}
+
+.pi-facts dt {
+  color: var(--color-text-muted);
+  font-size: 0.85rem;
+}
+
+.pi-facts dd {
+  margin: 0;
+  color: var(--color-text);
+  font-size: 0.9rem;
+  overflow-wrap: anywhere;
+}
+
+.pi-error {
+  margin: 0 0 0.75rem;
+  color: var(--color-danger);
+  font-size: 0.9rem;
+}
+
+.pi-error a {
+  color: inherit;
+  font-weight: 600;
+}
+
+.pi-actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.5rem;
+}
+
+@media (max-width: 480px) {
+  .pi-facts div {
+    grid-template-columns: 1fr;
+    gap: 0.1rem;
+  }
+}

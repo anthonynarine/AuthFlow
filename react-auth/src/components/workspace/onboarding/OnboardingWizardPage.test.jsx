@@ -1,13 +1,17 @@
 import React from "react";
 import "@testing-library/jest-dom";
-import { fireEvent, render, screen } from "@testing-library/react";
+import { fireEvent, render, screen, waitFor } from "@testing-library/react";
 import { MemoryRouter, Route, Routes } from "react-router-dom";
+import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
+import { consoleKeys } from "../../../console/api/queryKeys";
+import { acceptInviteById, fetchMyInvites } from "../../../console/api/consoleApi";
 import { OnboardingWizardPage } from "./OnboardingWizardPage";
 import { useOrganizations } from "../../../hooks/useOrganizations";
 import { useOrganizationApplications } from "../../../hooks/useOrganizationApplications";
 
 jest.mock("../../../account/emailVerificationApi", () => ({ verifyEmailToken: jest.fn(), resendVerificationEmail: jest.fn() }));
 jest.mock("../../../hooks/useOrganizations", () => ({ useOrganizations: jest.fn() }));
+jest.mock("../../../console/api/consoleApi", () => ({ fetchMyInvites: jest.fn(), acceptInviteById: jest.fn() }));
 jest.mock("../../../hooks/useOrganizationApplications", () => ({ useOrganizationApplications: jest.fn() }));
 jest.mock("../../../hooks/useValidateSessionOnMount", () => ({ useValidateSessionOnMount: jest.fn() }));
 jest.mock("../../../context/auth/UserSessionContext", () => ({ useUserSessionServices: () => ({ validateSession: jest.fn(() => Promise.resolve()) }) }));
@@ -51,13 +55,20 @@ function apps(list, overrides = {}) {
   };
 }
 
-function renderWizard(initialPath = "/workspace/onboarding") {
+// `invites`: what Gait's "my invites" already said (default none; undefined: not asked yet).
+function renderWizard(initialPath = "/workspace/onboarding", options = {}) {
+  const invites = "invites" in options ? options.invites : [];
+  const client = new QueryClient({ defaultOptions: { queries: { retry: false, staleTime: Infinity } } });
+  if (invites !== undefined) client.setQueryData(consoleKeys.myInvites(), invites);
   return render(
-    <MemoryRouter initialEntries={[initialPath]}>
-      <Routes>
-        <Route path="/workspace/onboarding" element={<OnboardingWizardPage />} />
-      </Routes>
-    </MemoryRouter>
+    <QueryClientProvider client={client}>
+      <MemoryRouter initialEntries={[initialPath]}>
+        <Routes>
+          <Route path="/workspace/onboarding" element={<OnboardingWizardPage />} />
+          <Route path="/console/:orgSlug/overview" element={<p>Workspace overview</p>} />
+        </Routes>
+      </MemoryRouter>
+    </QueryClientProvider>
   );
 }
 
@@ -199,5 +210,67 @@ describe("OnboardingWizardPage — App setup step", () => {
     expect(screen.queryByRole("heading", { name: "Create your Company" })).not.toBeInTheDocument();
     expect(screen.queryByRole("heading", { name: "Add your first App" })).not.toBeInTheDocument();
     expect(screen.getByTestId("app-setup-flow")).toHaveTextContent("app-setup-flow:Acme API");
+  });
+});
+
+const INVITE = {
+  id: "3f0c6a52-0000-4000-8000-000000000001",
+  organization_name: "Lumen",
+  organization_slug: "lumen",
+  org_role: "ADMIN",
+  invited_by_email: "owner@lumen.test",
+  expires_at: new Date(Date.now() + 6 * 24 * 60 * 60 * 1000 - 60000).toISOString(),
+};
+
+describe("OnboardingWizardPage — invited, no workspace yet (INV-UX)", () => {
+  beforeEach(() => {
+    jest.clearAllMocks();
+    useOrganizations.mockReturnValue(orgs([]));
+    useOrganizationApplications.mockReturnValue(apps([]));
+    fetchMyInvites.mockResolvedValue([]);
+  });
+
+  test("pending invites come first; creating a workspace is the secondary choice", () => {
+    renderWizard(undefined, { invites: [INVITE] });
+    expect(screen.getByRole("heading", { name: "Join your team's workspace" })).toBeInTheDocument();
+    expect(screen.getByRole("list", { name: "Your invitations" })).toHaveTextContent("Lumen invited you to its workspace as Admin");
+    expect(screen.queryByRole("heading", { name: "Create your Company" })).not.toBeInTheDocument();
+
+    fireEvent.click(screen.getByRole("button", { name: "Create your own workspace" }));
+    expect(screen.getByRole("heading", { name: "Create your Company" })).toBeInTheDocument();
+    fireEvent.click(screen.getByRole("button", { name: "← Back to your invitations (1)" }));
+    expect(screen.getByRole("heading", { name: "Join your team's workspace" })).toBeInTheDocument();
+  });
+
+  test("joining from onboarding lands in the workspace", async () => {
+    acceptInviteById.mockResolvedValue({ organization_slug: "lumen", organization_name: "Lumen", org_role: "ADMIN" });
+    renderWizard(undefined, { invites: [INVITE] });
+    fireEvent.click(screen.getByRole("button", { name: "Join Lumen" }));
+    fireEvent.click(screen.getByRole("button", { name: "Join Lumen as an Admin" }));
+    expect(await screen.findByText("Workspace overview")).toBeInTheDocument();
+    expect(acceptInviteById).toHaveBeenCalledWith(INVITE.id);
+  });
+
+  test("while Gait is asked for invites, nothing is offered yet", () => {
+    fetchMyInvites.mockReturnValue(new Promise(() => {}));
+    renderWizard(undefined, { invites: undefined });
+    expect(screen.getByText("Loading…")).toBeInTheDocument();
+    expect(screen.queryByRole("heading", { name: "Create your Company" })).not.toBeInTheDocument();
+  });
+
+  test("an unconfirmed email (403) means no invites to show yet: the create step as before", async () => {
+    fetchMyInvites.mockRejectedValue({ response: { status: 403, data: { code: "EMAIL_NOT_VERIFIED" } } });
+    renderWizard(undefined, { invites: undefined });
+    expect(await screen.findByRole("heading", { name: "Create your Company" })).toBeInTheDocument();
+    expect(screen.queryByRole("list", { name: "Your invitations" })).not.toBeInTheDocument();
+  });
+
+  test("with a workspace already, onboarding doesn't ask for invites (the console offers them)", async () => {
+    useOrganizations.mockReturnValue(
+      orgs([{ id: "1", name: "Acme", slug: "acme", org_role: "OWNER", membership_status: "ACTIVE" }])
+    );
+    renderWizard(undefined, { invites: undefined });
+    expect(screen.getByRole("heading", { name: "Add your first App" })).toBeInTheDocument();
+    await waitFor(() => expect(fetchMyInvites).not.toHaveBeenCalled());
   });
 });

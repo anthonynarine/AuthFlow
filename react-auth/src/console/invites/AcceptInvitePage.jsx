@@ -146,8 +146,15 @@ export function AcceptInvitePage() {
             } else if (code === "ALREADY_MEMBER") {
                 setAcceptState({ status: "already-member" });
             } else if (code === "INVITE_INVALID" || error?.response?.status === 404) {
-                clearPendingInvite();
-                setPhase("invalid");
+                // INV1: they may have joined already, by confirmed email in
+                // another tab (which used up this invite). Say so, not "can't be used".
+                const fresh = await organizations.refetch();
+                if ((fresh.data || []).some((row) => row.slug === invite?.preview?.organization_slug)) {
+                    setAcceptState({ status: "already-member" });
+                } else {
+                    clearPendingInvite();
+                    setPhase("invalid");
+                }
             } else {
                 setAcceptState({ status: "error", message: apiErrorMessage(error) });
             }
@@ -156,6 +163,8 @@ export function AcceptInvitePage() {
 
     const onConfirmedEmail = async () => {
         await Promise.resolve(validateSession()).catch(() => {});
+        // They may have joined from the confirmation tab in the meantime (INV1).
+        await organizations.refetch();
         setAcceptState({ status: "idle" });
     };
 

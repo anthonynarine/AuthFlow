@@ -4,23 +4,17 @@
  * Isolation rule: everything that belongs to an organization is keyed
  * ["console", organizationSlug, environment, ...]. Two organizations (or
  * two environments of one organization) can therefore never share a cache
- * entry, even for the same endpoint shape. The only unscoped key is the
- * caller's own organization list.
+ * entry, even for the same endpoint shape. The only unscoped keys are the
+ * caller's own ("me"): their organization list and their pending invites.
  */
 export const consoleKeys = {
     myOrganizations: () => ["console", "me", "organizations"],
+    // INV1: the signed-in account's own pending invites (not an organization's data).
+    myInvites: () => ["console", "me", "invites"],
     scope: (organizationSlug, environment) => ["console", organizationSlug, environment || "all"],
     postureOverview: (organizationSlug) => ["console", organizationSlug, "all", "posture-overview"],
     posture: (organizationSlug, environment) => ["console", organizationSlug, environment, "posture"],
     controls: (organizationSlug, environment) => ["console", organizationSlug, environment, "controls"],
-    latestEvidence: (organizationSlug, environment, controlKey) => [
-        "console",
-        organizationSlug,
-        environment,
-        "evidence",
-        "latest",
-        controlKey,
-    ],
     // The application list covers every environment (the console filters it),
     // so it's keyed "all"; everything about one application hangs off its id.
     applications: (organizationSlug) => ["console", organizationSlug, "all", "applications"],

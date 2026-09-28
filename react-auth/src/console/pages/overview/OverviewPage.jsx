@@ -5,7 +5,7 @@ import { TrustBadge, TrustSummary } from "../../components/TrustBadge";
 import { ENVIRONMENT_LABELS, ENVIRONMENTS } from "../../hooks/useConsoleScope";
 import { formatDateTime } from "../../utils/formatDate";
 import { rememberLastOrganization } from "../ConsoleEntry";
-import { openFindingsTotal, useControls, useLatestEvidence, usePosture } from "./useOverviewData";
+import { openFindingsTotal, useControls, useControlsByEnvironment, usePosture } from "./useOverviewData";
 import "./OverviewPage.css";
 
 const SEVERITIES = [
@@ -84,12 +84,11 @@ function OpenFindings({ posture, findingsLink }) {
     );
 }
 
-function ControlsCard({ controls, evidenceByPair, environment }) {
+function ControlsCard({ controls }) {
     return (
         <Card title="Controls" subtitle="What Gait checks for your applications in this environment.">
             <ul className="gc-control-list">
                 {controls.map((control) => {
-                    const evidence = evidenceByPair[`${environment}:${control.control_key}`];
                     const state = control.state || {};
                     return (
                         <li key={control.control_key} className="gc-control">
@@ -97,11 +96,7 @@ function ControlsCard({ controls, evidenceByPair, environment }) {
                                 <p className="gc-control-title">{control.title}</p>
                                 <span className="gc-badge-row">
                                     <Badge value={state.status} label={state.status_label} />
-                                    {evidence?.isLoading ? (
-                                        <span className="gc-muted">Checking source…</span>
-                                    ) : (
-                                        <TrustBadge trust={evidence?.data?.trust || null} />
-                                    )}
+                                    <TrustBadge trust={state.trust || null} />
                                 </span>
                             </div>
                             {control.help?.status_explanation ? (
@@ -109,7 +104,7 @@ function ControlsCard({ controls, evidenceByPair, environment }) {
                             ) : null}
                             <p className="gc-control-meta gc-muted">
                                 Last evaluated {formatDateTime(state.last_evaluated_at)}
-                                {evidence?.data ? <> · latest evidence {formatDateTime(evidence.data.observed_at)}</> : null}
+                                {state.last_evidence_at ? <> · latest evidence {formatDateTime(state.last_evidence_at)}</> : null}
                             </p>
                         </li>
                     );
@@ -158,10 +153,9 @@ export function OverviewPage() {
 
     const posture = usePosture(orgSlug, environment, { enabled: currentInUse });
     const controls = useControls(orgSlug, environment, { enabled: overview.isSuccess });
-    const controlKeys = (controls.data || []).map((control) => control.control_key);
-    const evidenceByPair = useLatestEvidence(
+    const controlsByEnvironment = useControlsByEnvironment(
         orgSlug,
-        inUse.flatMap((row) => controlKeys.map((key) => [row.environment, key]))
+        inUse.map((row) => row.environment)
     );
 
     const header = (
@@ -181,9 +175,9 @@ export function OverviewPage() {
         return <>{header}<NoDataYet orgSlug={orgSlug} /></>;
     }
 
-    const trustsFor = (env) => controlKeys.map((key) => evidenceByPair[`${env}:${key}`]?.data?.trust);
-    const trustLoadingFor = (env) =>
-        controls.isLoading || controlKeys.some((key) => evidenceByPair[`${env}:${key}`]?.isLoading);
+    // H2: each control's state carries the trust of its latest evidence.
+    const trustsFor = (env) => (controlsByEnvironment[env]?.data || []).map((control) => control.state?.trust);
+    const trustLoadingFor = (env) => Boolean(controlsByEnvironment[env]?.isLoading);
 
     return (
         <>
@@ -243,11 +237,7 @@ export function OverviewPage() {
                             ) : controls.isError ? (
                                 <ErrorState error={controls.error} onRetry={controls.refetch} />
                             ) : (
-                                <ControlsCard
-                                    controls={controls.data}
-                                    evidenceByPair={evidenceByPair}
-                                    environment={environment}
-                                />
+                                <ControlsCard controls={controls.data} />
                             )}
                         </div>
                     </div>

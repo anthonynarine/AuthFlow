@@ -1,20 +1,22 @@
 import React from "react";
 import { Diagram } from "./Diagram";
 import "./isolation.css";
+import { DIAGRAM } from "../palette";
 
 /*
  * Isolation diagrams (mermaid, via D's Diagram component) plus the step-list
  * pieces the isolation page uses. One color per role, every time:
- *   App One  #fb8a5c (orange)    App Two  #7aa7ff (blue)
- *   keys     #a78bfa (purple)    shared account pool  #1abc9c (teal)
- *   walls    #ff6b6b (red, dashed)
+ *   App One  orange    App Two  blue
+ *   keys     purple    shared account pool  teal
+ *   walls    red, dashed
+ * (values in ../palette.js and ../tokens.css)
  * The same colors are the --iso-* tokens in isolation.css.
  */
-const CLASS_DEFS = `    classDef one fill:#3a2016,stroke:#fb8a5c,color:#e8eaed,stroke-width:2px
-    classDef two fill:#172440,stroke:#7aa7ff,color:#e8eaed,stroke-width:2px
-    classDef keyed fill:#2a2340,stroke:#a78bfa,color:#e8eaed,stroke-width:2px
-    classDef pool fill:#123029,stroke:#1abc9c,color:#e8eaed,stroke-width:2px
-    classDef wall fill:#3a1f24,stroke:#ff6b6b,color:#ffd6d6,stroke-width:2px,stroke-dasharray:6 4`;
+const CLASS_DEFS = `    classDef one fill:${DIAGRAM.fillOrange},stroke:${DIAGRAM.orange},color:${DIAGRAM.text},stroke-width:2px
+    classDef two fill:${DIAGRAM.fillBlue},stroke:${DIAGRAM.blue},color:${DIAGRAM.text},stroke-width:2px
+    classDef keyed fill:${DIAGRAM.fillPurple},stroke:${DIAGRAM.purple},color:${DIAGRAM.text},stroke-width:2px
+    classDef pool fill:${DIAGRAM.fillTeal},stroke:${DIAGRAM.teal},color:${DIAGRAM.text},stroke-width:2px
+    classDef wall fill:${DIAGRAM.fillRed},stroke:${DIAGRAM.red},color:${DIAGRAM.textOnRed},stroke-width:2px,stroke-dasharray:6 4`;
 
 // App One is declared first, which (in this LR chain) draws it on the left.
 export const CONSOLE_ISOLATION = `flowchart LR

@@ -4,14 +4,14 @@
  * Gait cyan.
  */
 .hiw {
-  --hiw-team: #1abc9c;
-  --hiw-team-bg: rgba(26, 188, 156, 0.1);
-  --hiw-software: #a78bfa;
-  --hiw-software-bg: rgba(167, 139, 250, 0.1);
-  --hiw-users: #fb8a5c;
-  --hiw-users-bg: rgba(251, 138, 92, 0.1);
-  --hiw-hub: #38bdf8;
-  --hiw-hub-bg: rgba(56, 189, 248, 0.08);
+  --hiw-team: var(--gd-teal);
+  --hiw-team-bg: var(--gd-teal-bg);
+  --hiw-software: var(--gd-purple);
+  --hiw-software-bg: var(--gd-purple-bg);
+  --hiw-users: var(--gd-orange);
+  --hiw-users-bg: var(--gd-orange-bg);
+  --hiw-hub: var(--gd-cyan);
+  --hiw-hub-bg: var(--gd-cyan-bg);
 
   margin: 0 0 24px;
   padding: 16px;

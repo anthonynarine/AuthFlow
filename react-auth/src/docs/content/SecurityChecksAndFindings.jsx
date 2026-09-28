@@ -1,13 +1,14 @@
 import React from "react";
 import { DocLink, DocSection, DocTable } from "../components/DocPrimitives";
 import { Diagram } from "../components/Diagram";
+import { DIAGRAM } from "../palette";
 
 // Top to bottom: with the reopen arrow, left to right shrinks the labels past reading.
 const FINDING_LIFECYCLE = `flowchart TB
-    classDef app fill:#2a2340,stroke:#a78bfa,color:#e8eaed,stroke-width:2px
-    classDef open fill:#3a1f24,stroke:#ff6b6b,color:#e8eaed,stroke-width:2px
-    classDef human fill:#3a2e1a,stroke:#f5b85b,color:#e8eaed,stroke-width:2px
-    classDef done fill:#1f3b36,stroke:#34d399,color:#e8eaed,stroke-width:2px
+    classDef app fill:${DIAGRAM.fillPurple},stroke:${DIAGRAM.purple},color:${DIAGRAM.text},stroke-width:2px
+    classDef open fill:${DIAGRAM.fillRed},stroke:${DIAGRAM.red},color:${DIAGRAM.text},stroke-width:2px
+    classDef human fill:${DIAGRAM.fillAmber},stroke:${DIAGRAM.amber},color:${DIAGRAM.text},stroke-width:2px
+    classDef done fill:${DIAGRAM.fillGreen},stroke:${DIAGRAM.green},color:${DIAGRAM.text},stroke-width:2px
 
     APP["Your application"]:::app -- "FAIL" --> OPEN["Finding open"]:::open
     OPEN -- "Owner or Admin, with a note" --> ACK["Acknowledged"]:::human

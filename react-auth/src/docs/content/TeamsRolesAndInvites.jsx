@@ -2,6 +2,7 @@ import React from "react";
 import { Callout, DocLink, DocSection, DocTable } from "../components/DocPrimitives";
 import { Diagram } from "../components/Diagram";
 import { statusOf } from "../featureStatus";
+import { DIAGRAM } from "../palette";
 
 const INVITE_FLOW = `sequenceDiagram
     autonumber
@@ -20,11 +21,11 @@ const INVITE_FLOW = `sequenceDiagram
 // The four ways in are nodes, not edge labels: as labels, two parallel edges
 // into the same box drew their labels on top of each other.
 const TWO_UMBRELLAS = `flowchart LR
-    classDef acct fill:#123029,stroke:#1abc9c,color:#e8eaed,stroke-width:2px
-    classDef gait fill:#1b2129,stroke:#38bdf8,color:#e8eaed,stroke-width:2px
-    classDef prod fill:#3a2016,stroke:#fb8a5c,color:#e8eaed,stroke-width:2px
-    classDef way fill:#232a34,stroke:#5b6572,color:#e8eaed,stroke-width:1px
-    classDef no fill:#3a1f24,stroke:#ff6b6b,color:#ffd6d6,stroke-width:2px,stroke-dasharray:6 4
+    classDef acct fill:${DIAGRAM.fillTeal},stroke:${DIAGRAM.teal},color:${DIAGRAM.text},stroke-width:2px
+    classDef gait fill:${DIAGRAM.surface},stroke:${DIAGRAM.cyan},color:${DIAGRAM.text},stroke-width:2px
+    classDef prod fill:${DIAGRAM.fillOrange},stroke:${DIAGRAM.orange},color:${DIAGRAM.text},stroke-width:2px
+    classDef way fill:${DIAGRAM.surfaceAlt},stroke:${DIAGRAM.muted},color:${DIAGRAM.text},stroke-width:1px
+    classDef no fill:${DIAGRAM.fillRed},stroke:${DIAGRAM.red},color:${DIAGRAM.textOnRed},stroke-width:2px,stroke-dasharray:6 4
 
     A["Gait account<br/>(anyone can register)<br/>= member of nothing"]:::acct
     A --> W1["creates a workspace<br/>→ its Owner"]:::way --> G["① Gait workspace<br/>e.g. app-one<br/>the security team"]:::gait
@@ -34,9 +35,9 @@ const TWO_UMBRELLAS = `flowchart LR
     K["Connection key"]:::no -. "can't invite,<br/>never makes a member" .-> G`;
 
 const SITES = `flowchart TB
-    classDef org fill:#3a2016,stroke:#fb8a5c,color:#e8eaed,stroke-width:2px
-    classDef site fill:#232a34,stroke:#1abc9c,color:#e8eaed,stroke-width:2px
-    classDef shared fill:#1b2129,stroke:#38bdf8,color:#e8eaed,stroke-width:2px
+    classDef org fill:${DIAGRAM.fillOrange},stroke:${DIAGRAM.orange},color:${DIAGRAM.text},stroke-width:2px
+    classDef site fill:${DIAGRAM.surfaceAlt},stroke:${DIAGRAM.teal},color:${DIAGRAM.text},stroke-width:2px
+    classDef shared fill:${DIAGRAM.surface},stroke:${DIAGRAM.cyan},color:${DIAGRAM.text},stroke-width:2px
 
     O["Example Clinic (one organization)<br/>Owner · organization-wide, sees every site<br/>only the Owner creates sites"]:::org
     subgraph M["Site: Main campus"]

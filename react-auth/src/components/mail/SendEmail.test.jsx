@@ -72,3 +72,12 @@ test("shows the server's error instead of failing silently", async () => {
     fireEvent.click(screen.getByRole("button", { name: "Send" }));
     expect(await screen.findByRole("alert")).toHaveTextContent("Subject is too long: keep it to 200 characters.");
 });
+
+test("the page's email link is Gait's own inbox", () => {
+    renderPage();
+    expect(screen.getByRole("link", { name: "security@gaitobservatory.com" })).toHaveAttribute(
+        "href",
+        "mailto:security@gaitobservatory.com"
+    );
+    expect(document.body.textContent).not.toMatch(/anjin/i);
+});

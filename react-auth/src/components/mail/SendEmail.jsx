@@ -5,6 +5,9 @@ import { RiArrowGoBackLine } from 'react-icons/ri';
 import { publicAxios } from "../../interceptors/axios";
 import { CONTACT_LIMITS, blankFields, contactErrorMessage } from "./contactForm";
 
+// The inbox the contact form also delivers to.
+export const CONTACT_ADDRESS = "security@gaitobservatory.com";
+
 const EMPTY = { reply_to: "", subject: "", content: "" };
 const LABELS = { reply_to: "Your email", subject: "Subject", content: "Message" };
 const REQUIRED = ["reply_to", "subject", "content"];
@@ -64,7 +67,7 @@ export const SendEmail = () => {
                 </button>
             </div>
             <div className="email-invite">
-                <p>Have questions or need more information? Feel free to reach out anytime at <a href="mailto:anthonynarine@anjin.org">anthonynarine@anjin.org</a></p>
+                <p>Have questions or need more information? Feel free to reach out anytime at <a href={`mailto:${CONTACT_ADDRESS}`}>{CONTACT_ADDRESS}</a></p>
             </div>
             <form onSubmit={sendEmail} className="form">
                 <h6 className="from-h6">New Message</h6>

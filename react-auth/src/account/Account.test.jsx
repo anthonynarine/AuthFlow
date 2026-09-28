@@ -32,7 +32,6 @@ jest.mock("../context/auth/UserSessionContext", () => ({
 
 const TEST_PASSWORD = "test-only-password";
 const STEP_UP = { response: { status: 403, data: { code: "STEP_UP_REQUIRED", required_strength: "password" } } };
-const STEP_UP_MFA = { response: { status: 403, data: { code: "STEP_UP_REQUIRED", required_strength: "mfa" } } };
 const TEN_CODES = Array.from({ length: 10 }, (_, index) => `test${index}-codes`);
 
 /** Gait's recovery-code count for the signed-in account (never the codes). */
@@ -234,65 +233,91 @@ describe("/account", () => {
 
     async function openTurnOff() {
         fireEvent.click(await screen.findByRole("button", { name: "Turn off" }));
-        const confirm = screen.getByRole("dialog", { name: "Turn off two-step verification?" });
-        fireEvent.click(within(confirm).getByRole("button", { name: "Turn off" }));
-        return screen.findByRole("dialog", { name: "Confirm it's you" });
+        return screen.getByRole("dialog", { name: "Turn off two-step verification?" });
     }
 
-    function mockTurnOff({ reauth = () => Promise.resolve({ data: {} }) } = {}) {
-        authAxios.post.mockImplementation((url) => (url === "/reauthenticate/" ? reauth() : Promise.reject(new Error(url))));
-        authAxios.patch
-            .mockRejectedValueOnce(STEP_UP_MFA)
-            .mockResolvedValue({ data: { is_2fa_setup_in_progress: false, sessions_revoked: 1 } });
-    }
+    const PROOF_REQUIRED = {
+        response: { status: 403, data: { code: "PROOF_REQUIRED", reason: "PROOF_REQUIRED", message: "Enter your password and a code from your authenticator app (or a recovery code).", missing: ["otp"] } },
+    };
 
-    test("turn off: are-you-sure, then confirm it's you with the password and a code; the request carries no code", async () => {
+    test("turn off: always asks for password + code in one step and sends them in the turn-off request itself (no re-authentication)", async () => {
         mockUser = { ...mockUser, is_2fa_enabled: true };
         mockRecoveryStatus();
-        mockTurnOff();
+        authAxios.patch.mockResolvedValue({ data: { is_2fa_setup_in_progress: false, sessions_revoked: 1 } });
         renderAt("/account");
         const dialog = await openTurnOff();
-        const confirm = within(dialog).getByRole("button", { name: "Confirm" });
+        const turnOff = within(dialog).getByRole("button", { name: "Turn off" });
+        expect(turnOff).toBeDisabled();
         fireEvent.change(within(dialog).getByLabelText("Current password"), { target: { value: TEST_PASSWORD } });
-        expect(confirm).toBeDisabled();
+        expect(turnOff).toBeDisabled();
         fireEvent.change(within(dialog).getByLabelText("6-digit code"), { target: { value: "12 34 56" } });
-        fireEvent.click(confirm);
+        fireEvent.click(turnOff);
 
         await waitFor(() => expect(screen.getByRole("status")).toHaveTextContent("Two-step verification is off. 1 other device was signed out."));
-        expect(authAxios.post).toHaveBeenCalledWith("/reauthenticate/", { current_password: TEST_PASSWORD, otp: "123456" });
-        expect(authAxios.patch).toHaveBeenCalledTimes(2);
-        expect(authAxios.patch.mock.calls.every(([, body]) => JSON.stringify(body) === JSON.stringify({ is_2fa_enabled: false }))).toBe(true);
+        expect(authAxios.patch).toHaveBeenCalledTimes(1);
+        expect(authAxios.patch).toHaveBeenCalledWith("/user/toggle-2fa/", { is_2fa_enabled: false, current_password: TEST_PASSWORD, otp: "123456" });
+        expect(authAxios.post).not.toHaveBeenCalledWith("/reauthenticate/", expect.anything());
         expect(mockSetUser).toHaveBeenCalled();
     });
 
-    test("turn off with a lost phone: a recovery code confirms it's you instead", async () => {
+    test("turn off with a lost phone: a recovery code goes in the request instead of the code", async () => {
         mockUser = { ...mockUser, is_2fa_enabled: true };
         mockRecoveryStatus();
-        mockTurnOff();
+        authAxios.patch.mockResolvedValue({ data: { is_2fa_setup_in_progress: false, sessions_revoked: 0 } });
         renderAt("/account");
         const dialog = await openTurnOff();
         fireEvent.change(within(dialog).getByLabelText("Current password"), { target: { value: TEST_PASSWORD } });
         fireEvent.click(within(dialog).getByRole("button", { name: "Lost your phone? Use a recovery code" }));
         fireEvent.change(within(dialog).getByLabelText("Recovery code"), { target: { value: " ABCDE-12345 " } });
-        fireEvent.click(within(dialog).getByRole("button", { name: "Confirm" }));
+        fireEvent.click(within(dialog).getByRole("button", { name: "Turn off" }));
 
         await waitFor(() => expect(screen.getByRole("status")).toHaveTextContent("Two-step verification is off."));
-        expect(authAxios.post).toHaveBeenCalledWith("/reauthenticate/", { current_password: TEST_PASSWORD, recovery_code: "ABCDE-12345" });
+        expect(authAxios.patch).toHaveBeenCalledWith("/user/toggle-2fa/", { is_2fa_enabled: false, current_password: TEST_PASSWORD, recovery_code: "ABCDE-12345" });
+        expect(authAxios.post).not.toHaveBeenCalled();
     });
 
-    test("turn off: a wrong recovery code says so, clears it, and nothing is turned off", async () => {
+    test("turn off: Gait's field errors land on their fields; the code is cleared and nothing is turned off", async () => {
         mockUser = { ...mockUser, is_2fa_enabled: true };
         mockRecoveryStatus();
-        mockTurnOff({ reauth: () => Promise.reject({ response: { status: 400, data: { error: { recovery_code: "Invalid recovery code." } } } }) });
+        authAxios.patch
+            .mockRejectedValueOnce({ response: { status: 400, data: { error: { otp: ["Invalid authentication code."] } } } })
+            .mockRejectedValueOnce({ response: { status: 400, data: { error: { current_password: ["Current password is incorrect."] } } } });
         renderAt("/account");
         const dialog = await openTurnOff();
         fireEvent.change(within(dialog).getByLabelText("Current password"), { target: { value: TEST_PASSWORD } });
-        fireEvent.click(within(dialog).getByRole("button", { name: "Lost your phone? Use a recovery code" }));
-        fireEvent.change(within(dialog).getByLabelText("Recovery code"), { target: { value: "abcde-12345" } });
-        fireEvent.click(within(dialog).getByRole("button", { name: "Confirm" }));
-        expect(await within(dialog).findByRole("alert")).toHaveTextContent("Invalid recovery code.");
-        expect(within(dialog).getByLabelText("Recovery code")).toHaveValue("");
-        expect(authAxios.patch).toHaveBeenCalledTimes(1);
+        fireEvent.change(within(dialog).getByLabelText("6-digit code"), { target: { value: "000000" } });
+        fireEvent.click(within(dialog).getByRole("button", { name: "Turn off" }));
+        expect(await within(dialog).findByText("Invalid authentication code.")).toBeInTheDocument();
+        expect(within(dialog).getByLabelText("6-digit code")).toHaveValue("");
+        expect(within(dialog).getByLabelText("6-digit code")).toHaveAttribute("aria-invalid", "true");
+        expect(within(dialog).getByLabelText("Current password")).toHaveValue(TEST_PASSWORD);
+
+        fireEvent.change(within(dialog).getByLabelText("6-digit code"), { target: { value: "111111" } });
+        fireEvent.click(within(dialog).getByRole("button", { name: "Turn off" }));
+        expect(await within(dialog).findByText("Current password is incorrect.")).toBeInTheDocument();
+        expect(within(dialog).getByLabelText("Current password")).toHaveAttribute("aria-invalid", "true");
+        expect(within(dialog).getByLabelText("Current password")).toHaveValue("");
+        expect(mockSetUser).not.toHaveBeenCalled();
+    });
+
+    test("turn off: a PROOF_REQUIRED or throttled answer is shown in the dialog, which stays open", async () => {
+        mockUser = { ...mockUser, is_2fa_enabled: true };
+        mockRecoveryStatus();
+        authAxios.patch
+            .mockRejectedValueOnce(PROOF_REQUIRED)
+            .mockRejectedValueOnce({ response: { status: 429, headers: { "retry-after": "60" }, data: {} } });
+        renderAt("/account");
+        const dialog = await openTurnOff();
+        const fill = () => {
+            fireEvent.change(within(dialog).getByLabelText("Current password"), { target: { value: TEST_PASSWORD } });
+            fireEvent.change(within(dialog).getByLabelText("6-digit code"), { target: { value: "123456" } });
+            fireEvent.click(within(dialog).getByRole("button", { name: "Turn off" }));
+        };
+        fill();
+        expect(await within(dialog).findByRole("alert")).toHaveTextContent("Enter your password and a code from your authenticator app (or a recovery code).");
+        fill();
+        await waitFor(() => expect(within(dialog).getByRole("alert")).toHaveTextContent("Too many attempts. Wait a minute, then try again."));
+        expect(screen.getByRole("dialog", { name: "Turn off two-step verification?" })).toBeInTheDocument();
     });
 
     test("recovery codes: shows how many are left, and turns amber at three or fewer", async () => {
@@ -329,39 +354,59 @@ describe("/account", () => {
         expect(within(panel).getByRole("button", { name: "Make recovery codes" })).toBeInTheDocument();
     });
 
-    test("recovery codes: making new ones confirms it's you, shows them once, and Finish forgets them", async () => {
+    test("recovery codes: making new ones always asks for proof and sends it with the request, shows them once, and Finish forgets them", async () => {
         mockUser = { ...mockUser, is_2fa_enabled: true };
         mockRecoveryStatus({ enabled: true, recovery_codes_remaining: 1, generated_at: "2026-09-01T12:00:00Z" });
-        let made = 0;
-        authAxios.post.mockImplementation((url) => {
-            if (url === "/reauthenticate/") return Promise.resolve({ data: {} });
-            if (url === "/user/2fa/recovery-codes/") {
-                made += 1;
-                return made === 1 ? Promise.reject(STEP_UP_MFA) : Promise.resolve({ data: { recovery_codes: TEN_CODES } });
-            }
-            return Promise.reject(new Error(url));
-        });
+        authAxios.post.mockImplementation((url) =>
+            url === "/user/2fa/recovery-codes/" ? Promise.resolve({ data: { recovery_codes: TEN_CODES } }) : Promise.reject(new Error(url))
+        );
         renderAt("/account");
         const panel = await screen.findByRole("region", { name: "Recovery codes" });
         await within(panel).findByText(/You have 1 recovery code left/);
         fireEvent.click(within(panel).getByRole("button", { name: "Make new codes" }));
 
-        const dialog = await screen.findByRole("dialog", { name: "Confirm it's you" });
+        const dialog = screen.getByRole("dialog", { name: "Make new recovery codes?" });
         fireEvent.change(within(dialog).getByLabelText("Current password"), { target: { value: TEST_PASSWORD } });
         fireEvent.change(within(dialog).getByLabelText("6-digit code"), { target: { value: "246810" } });
-        fireEvent.click(within(dialog).getByRole("button", { name: "Confirm" }));
+        fireEvent.click(within(dialog).getByRole("button", { name: "Make new codes" }));
 
         const list = await screen.findByRole("list", { name: "Recovery codes" });
         expect(within(list).getAllByRole("listitem")).toHaveLength(10);
+        expect(screen.queryByRole("dialog")).not.toBeInTheDocument();
         expect(screen.getByText(/Your old recovery codes no longer work/)).toBeInTheDocument();
-        expect(authAxios.post).toHaveBeenCalledWith("/reauthenticate/", { current_password: TEST_PASSWORD, otp: "246810" });
-        expect(authAxios.post).toHaveBeenCalledWith("/user/2fa/recovery-codes/", {});
+        expect(authAxios.post).toHaveBeenCalledTimes(1);
+        expect(authAxios.post).toHaveBeenCalledWith("/user/2fa/recovery-codes/", { current_password: TEST_PASSWORD, otp: "246810" });
 
         fireEvent.click(screen.getByRole("checkbox", { name: /I've saved these codes/ }));
         fireEvent.click(screen.getByRole("button", { name: "Finish" }));
         await waitFor(() => expect(screen.queryByRole("list", { name: "Recovery codes" })).not.toBeInTheDocument());
         await waitFor(() => expect(authAxios.get.mock.calls.filter(([url]) => url === "/user/2fa/recovery-codes/").length).toBe(2));
         expect(JSON.stringify({ ...window.localStorage, ...window.sessionStorage })).not.toContain("test0-codes");
+    });
+
+    test("recovery codes: a wrong code keeps the dialog open with the error on the code field; a recovery code also works", async () => {
+        mockUser = { ...mockUser, is_2fa_enabled: true };
+        mockRecoveryStatus({ enabled: true, recovery_codes_remaining: 2, generated_at: "2026-09-01T12:00:00Z" });
+        authAxios.post
+            .mockRejectedValueOnce({ response: { status: 400, data: { error: { recovery_code: ["Invalid recovery code."] } } } })
+            .mockResolvedValueOnce({ data: { recovery_codes: TEN_CODES } });
+        renderAt("/account");
+        const panel = await screen.findByRole("region", { name: "Recovery codes" });
+        await within(panel).findByText(/You have 2 recovery codes left/);
+        fireEvent.click(within(panel).getByRole("button", { name: "Make new codes" }));
+        const dialog = screen.getByRole("dialog", { name: "Make new recovery codes?" });
+        fireEvent.change(within(dialog).getByLabelText("Current password"), { target: { value: TEST_PASSWORD } });
+        fireEvent.click(within(dialog).getByRole("button", { name: "Lost your phone? Use a recovery code" }));
+        fireEvent.change(within(dialog).getByLabelText("Recovery code"), { target: { value: "wrong-codes" } });
+        fireEvent.click(within(dialog).getByRole("button", { name: "Make new codes" }));
+        expect(await within(dialog).findByText("Invalid recovery code.")).toBeInTheDocument();
+        expect(within(dialog).getByLabelText("Recovery code")).toHaveValue("");
+
+        fireEvent.change(within(dialog).getByLabelText("Recovery code"), { target: { value: "right-codes" } });
+        fireEvent.click(within(dialog).getByRole("button", { name: "Make new codes" }));
+        expect(await screen.findByRole("list", { name: "Recovery codes" })).toBeInTheDocument();
+        expect(authAxios.post).toHaveBeenLastCalledWith("/user/2fa/recovery-codes/", { current_password: TEST_PASSWORD, recovery_code: "right-codes" });
+        expect(authAxios.post).not.toHaveBeenCalledWith("/reauthenticate/", expect.anything());
     });
 
     test("sign out everywhere confirms, revokes every session, and goes to sign-in", async () => {
@@ -419,7 +464,18 @@ describe("/account/two-step", () => {
         // The Account page shows the note once, then drops it from history.
         expect(await screen.findByRole("heading", { name: "Account" })).toBeInTheDocument();
         expect(screen.getByRole("status")).toHaveTextContent("Two-step verification is on.");
+        expect(screen.getByRole("status")).not.toHaveTextContent("other devices");
         expect(screen.getByTestId("state")).toHaveTextContent("null");
+    });
+
+    test("turning it on signs out other sessions (H6): the done step and the Account note say so", async () => {
+        mockSetup({ verify: { access_token: "test-only-access", sessions_revoked: 2 } });
+        await walkToCode();
+        fireEvent.click(screen.getByRole("button", { name: "Verify" }));
+        expect(await screen.findByText(/You've been signed out on other devices\./)).toBeInTheDocument();
+        fireEvent.click(screen.getByRole("button", { name: "Back to Account" }));
+        expect(await screen.findByRole("heading", { name: "Account" })).toBeInTheDocument();
+        expect(screen.getByRole("status")).toHaveTextContent("Two-step verification is on. You'll enter a code after your password from now on. You've been signed out on other devices.");
     });
 
     test("a wrong code says so and lets them try the one showing now", async () => {

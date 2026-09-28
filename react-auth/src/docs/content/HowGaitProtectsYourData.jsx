@@ -3,7 +3,8 @@ import { DocLink, DocSection } from "../components/DocPrimitives";
 
 // Only what the code does today, for every workspace. Deliberately no numbers
 // (limits and lifetimes can change) and no claims beyond the listed items:
-// e.g. not "every secret is hashed", and nothing about 2FA or the Account page yet.
+// e.g. not "every secret is hashed", no HSTS, nothing about how the two-step
+// app secret is stored (not encrypted yet: SEC1).
 
 export default function HowGaitProtectsYourData() {
     return (
@@ -55,11 +56,14 @@ export default function HowGaitProtectsYourData() {
                 <ul>
                     <li>connection keys, shown once when they're issued;</li>
                     <li>the secret in each invite link;</li>
-                    <li>the secret in each email-confirmation link.</li>
+                    <li>the secret in each email-confirmation link;</li>
+                    <li>the secret in each password-reset link;</li>
+                    <li>your two-step recovery codes, shown once when they're made.</li>
                 </ul>
                 <p>
-                    Invite and email-confirmation links also carry their secret after the <code>#</code>, the part of a
-                    link browsers don't send to servers, and the page removes it from the address bar once it's read.
+                    Invite, email-confirmation and password-reset links also carry their secret after the{" "}
+                    <code>#</code>, the part of a link browsers don't send to servers, and the page removes it from the
+                    address bar once it's read.
                 </p>
             </DocSection>
 
@@ -73,16 +77,33 @@ export default function HowGaitProtectsYourData() {
                         Gait only accepts that cookie from requests sent by gaitobservatory.com itself.
                     </li>
                     <li>
-                        <strong>Sign out</strong> ends your session on Gait's side, not just in your browser. Resetting
-                        your password signs you out everywhere.
+                        <strong>Sign out</strong> ends your session on Gait's side, not just in your browser.{" "}
+                        <strong>Sign out everywhere</strong>, on your Account page, ends every session, including this
+                        one.
+                    </li>
+                    <li>
+                        Resetting your password signs you out everywhere. Changing your password, or turning off
+                        two-step verification, signs out your other devices.
                     </li>
                 </ul>
             </DocSection>
 
+            <DocSection id="two-step-verification" title="Two-step verification">
+                <p>
+                    Turn on <DocLink to="two-step-verification">two-step verification</DocLink> and a stolen password
+                    isn't enough: signing in also needs a code from your authenticator app, or one of your one-time
+                    recovery codes. Gait emails you when a recovery code is used, when new codes are made, and when
+                    two-step verification is turned off.
+                </p>
+                <p>
+                    Passwords need at least 8 characters, not only numbers, and can't be a common password.
+                </p>
+            </DocSection>
+
             <DocSection id="limits-on-repeated-attempts" title="Limits on repeated attempts">
                 <p>
-                    Signing in, resetting a password, confirming an email address and accepting an invite are all
-                    limited. Too many attempts in a short time and Gait asks you to wait before trying again.
+                    Signing in, entering a two-step code, resetting a password, confirming an email address and
+                    accepting an invite are all limited. Too many attempts in a short time and Gait asks you to wait before trying again.
                 </p>
                 <p>
                     Asking for a password reset gets the same answer whether or not an account exists for that

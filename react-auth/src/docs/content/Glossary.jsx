@@ -73,12 +73,22 @@ export const GLOSSARY = [
         "The workspace role with full control, including other Owners. A workspace always has at least one.",
         "teams-roles-and-invites",
     ],
+    [
+        "Recovery code",
+        "One of 10 one-time codes you save when you turn on two-step verification. Each lets you sign in once without your phone.",
+        "two-step-verification#lost-your-phone",
+    ],
     ["Security check", "A test your application runs on itself and reports as PASS or FAIL.", "connecting-your-software"],
     ["Self-reported", "Evidence your application reported about itself.", "how-it-works"],
     [
         "Site / facility",
         "A way your own product may split one customer organization into locations. It's your product's concept; Gait doesn't enforce it.",
         "teams-roles-and-invites#sites-inside-an-org",
+    ],
+    [
+        "Two-step verification",
+        "A code from an authenticator app after your password, so a stolen password isn't enough to sign in. Also called 2FA.",
+        "two-step-verification",
     ],
     [
         "Workspace",

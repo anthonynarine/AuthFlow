@@ -12,6 +12,13 @@
 export const CHANGELOG = [
     {
         date: "2026-09-28",
+        // API AUTH-B release (production confirmed by the planner, release v130) + AuthFlow #20 (merged 2026-09-28).
+        change: "Two-step verification with 10 recovery codes, a new Account page, redesigned sign-in pages, and \"Sign out everywhere\".",
+        features: ["twoStepVerification"],
+        doc: "two-step-verification",
+    },
+    {
+        date: "2026-09-28",
         // API INV1 (release v126) + console INV-UX (AuthFlow #14, merged 2026-09-28).
         change: "Accept an invite from the email address you've confirmed, without needing the link.",
         features: ["membersAndInviteAccept"],

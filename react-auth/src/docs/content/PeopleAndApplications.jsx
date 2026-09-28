@@ -117,7 +117,7 @@ export default function PeopleAndApplications() {
                         </tr>
                         <tr>
                             <th scope="row">Credential</th>
-                            <td>Password, then a short-lived session</td>
+                            <td>Password (and a code, if two-step verification is on), then a short-lived session</td>
                             <td>A connection key in the application's backend secrets</td>
                         </tr>
                         <tr>
@@ -142,7 +142,7 @@ export default function PeopleAndApplications() {
                         </tr>
                         <tr>
                             <th scope="row">If compromised</th>
-                            <td>Reset the password; sessions can be ended</td>
+                            <td>Reset the password (that signs out every device), or choose Sign out everywhere on your Account page</td>
                             <td>Revoke the key and issue a new one</td>
                         </tr>
                     </tbody>

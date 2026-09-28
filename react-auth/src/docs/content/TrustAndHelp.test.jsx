@@ -99,11 +99,12 @@ describe("How Gait protects your data", () => {
     test("claims only what's true today", () => {
         renderDoc("how-gait-protects-your-data");
         const text = document.body.textContent;
-        // Not every secret is hashed, there's no HSTS claim, and there's no
-        // console "sign out everywhere"; see the D-TRUST report before adding any.
-        expect(text).not.toMatch(/every (secret|token)|all (secrets|tokens)|HSTS|sign out everywhere/i);
+        // Not every secret is hashed, there's no HSTS, and the two-step app
+        // secret isn't encrypted yet (SEC1); see the D-TRUST and D-2FA reports.
+        expect(text).not.toMatch(/every (secret|token)|all (secrets|tokens)|HSTS|encrypt/i);
         expect(text).not.toMatch(/\b\d+\s*(minutes?|hours?|days?|attempts?)\b/i);
         expect(text).toMatch(/signs you out everywhere/);
+        expect(text).toMatch(/password-reset link/);
     });
 });
 

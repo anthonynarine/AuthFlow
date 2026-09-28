@@ -68,54 +68,6 @@
   min-width: 13rem;
 }
 
-.security-operator-badge {
-  display: inline-flex;
-  align-items: center;
-  gap: 0.6rem;
-  max-width: 18rem;
-  padding: 0.4rem 0.9rem 0.4rem 0.4rem;
-  border: 1px solid var(--color-border);
-  border-radius: var(--radius-pill);
-  background: var(--color-surface-glass);
-}
-
-.security-operator-avatar {
-  display: inline-grid;
-  place-items: center;
-  width: 2.15rem;
-  height: 2.15rem;
-  flex-shrink: 0;
-  border-radius: 50%;
-  background: var(--color-accent-soft);
-  color: var(--color-accent);
-  font-size: 0.78rem;
-  font-weight: 800;
-}
-
-.security-operator-details {
-  display: flex;
-  flex-direction: column;
-  min-width: 0;
-  line-height: 1.25;
-  text-align: left;
-}
-
-.security-operator-details strong {
-  overflow: hidden;
-  color: var(--color-text);
-  font-size: 0.85rem;
-  text-overflow: ellipsis;
-  white-space: nowrap;
-}
-
-.security-operator-status {
-  color: var(--color-text-muted);
-  font-size: 0.65rem;
-  font-weight: 800;
-  letter-spacing: 0.07em;
-  text-transform: uppercase;
-}
-
 .security-button,
 .icon-button {
   border: 1px solid var(--color-border);
@@ -1107,10 +1059,6 @@ button.posture-attention-card:hover {
 
   .security-section-heading-actions {
     justify-content: flex-start;
-    text-align: left;
-  }
-
-  .security-operator {
     text-align: left;
   }
 

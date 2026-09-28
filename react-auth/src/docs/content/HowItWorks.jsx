@@ -1,34 +1,13 @@
 import React from "react";
 import { DocLink, DocSection } from "../components/DocPrimitives";
 import { StatusCell } from "../components/StatusCell";
-import { Diagram } from "../components/Diagram";
-
-// Top to bottom so it renders at full size in the article column.
-const BIG_PICTURE = `flowchart TB
-    classDef people fill:#123029,stroke:#1abc9c,color:#e8eaed,stroke-width:2px
-    classDef gait fill:#1b2129,stroke:#38bdf8,color:#e8eaed,stroke-width:2px
-    classDef soft fill:#2a2340,stroke:#a78bfa,color:#e8eaed,stroke-width:2px
-    classDef users fill:#3a2016,stroke:#fb8a5c,color:#e8eaed,stroke-width:2px
-
-    TEAM["Your team<br/>Owner · Admin · Member"]:::people
-    subgraph GAIT["Gait"]
-        CO["Company: Acme<br/>applications · keys · findings"]:::gait
-    end
-    APP["Your software<br/>Acme API · production<br/>gait-sdk + connection key"]:::soft
-    USERS["Your product's users<br/>(optional, early access)"]:::users
-
-    TEAM -- "sign in to the console" --> CO
-    APP -- "reports security checks" --> CO
-    USERS -. "sign in with Gait;<br/>your product decides access" .-> APP`;
+import { HowItWorksLesson } from "../components/HowItWorksLesson";
 
 export default function HowItWorks() {
     return (
         <>
             <DocSection id="the-big-picture" title="The big picture">
-                <Diagram
-                    source={BIG_PICTURE}
-                    description="Your team (Owner, Admin, Member) signs in to the console and works in the company Acme inside Gait, which holds applications, keys and findings. Your software, such as Acme API in production, uses the gait-sdk and a connection key to report security checks to that company. Optionally, in early access, your product's own users sign in with Gait, and your product decides what they can access."
-                />
+                <HowItWorksLesson />
             </DocSection>
 
             <DocSection id="step-by-step" title="Step by step">

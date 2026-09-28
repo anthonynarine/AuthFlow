@@ -8,6 +8,7 @@ import { consoleTitle } from "./consoleTitle";
 import { EmailVerificationBanner } from "../../account/EmailVerificationBanner";
 import { WelcomeNote } from "./WelcomeNote";
 import { InvitationsButton } from "./InvitationsButton";
+import { UserMenu } from "../../account/UserMenu";
 import "./ConsoleLayout.css";
 
 const NAV = [
@@ -121,11 +122,7 @@ export function ConsoleLayout() {
                 <div className="gc-user">
                     <InvitationsButton />
                     <Badge value={scope.membership.org_role} />
-                    <span className="gc-user-email" title={user?.email}>{user?.email}</span>
-                    <Link to="/docs" className="gc-docs-link gc-focusable">Docs</Link>
-                    <button type="button" className="gc-button gc-button--ghost" onClick={onSignOut}>
-                        Sign out
-                    </button>
+                    <UserMenu user={user} onSignOut={onSignOut} />
                 </div>
             </header>
 

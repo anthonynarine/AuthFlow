@@ -70,7 +70,8 @@ export function useStepUpDialog() {
     setState(initialState);
   }, []);
 
-  const submitStepUp = useCallback(async ({ currentPassword, otp }) => {
+  // A recovery code (AUTH-B) stands in for the authenticator code.
+  const submitStepUp = useCallback(async ({ currentPassword, otp, recoveryCode }) => {
     setState((current) => ({
       ...current,
       status: "submitting",
@@ -83,7 +84,11 @@ export function useStepUpDialog() {
         current_password: currentPassword,
       };
 
-      if (state.requiredStrength === "mfa") {
+      // Gait wants a second factor for an "mfa" step-up, and for any step-up
+      // on an account with two-step on; send whichever one was entered.
+      if (recoveryCode) {
+        payload.recovery_code = recoveryCode.trim();
+      } else if (otp || state.requiredStrength === "mfa") {
         payload.otp = otp;
       }
 

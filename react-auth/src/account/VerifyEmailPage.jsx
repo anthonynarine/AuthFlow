@@ -7,6 +7,8 @@ import { ResendVerificationButton } from "./ResendVerificationButton";
 import { retryAfterSeconds, useRetryAfter } from "./useRetryAfter";
 import { PendingInvites } from "../console/invites/PendingInvites";
 import { useMyInvites } from "../console/invites/useMyInvites";
+import { AuthHeading, AuthLayout } from "../ds/AuthLayout";
+import { Alert, Button, StatusLine } from "../ds/components";
 import "./emailVerification.css";
 
 /** The token from "#token=...", or null. Never from the query string, which servers and logs see. */
@@ -24,12 +26,12 @@ function InvitesAfterConfirming({ invites }) {
     if (!invites.length) return null;
     const one = invites.length === 1;
     return (
-        <div className="gv-invites">
-            <p className="gv-text">
-                You've been invited to {one ? "a workspace" : `${invites.length} workspaces`}. Join now, or continue to Gait.
+        <>
+            <p className="ds-visually-hidden">
+                You've been invited to {one ? "a workspace" : `${invites.length} workspaces`}.
             </p>
-            <PendingInvites invites={invites} label="Your invitations" />
-        </div>
+            <PendingInvites invites={invites} label="Your invitations" variant="ds" />
+        </>
     );
 }
 
@@ -117,20 +119,26 @@ export function VerifyEmailPage() {
     if (state.status === "verifying") {
         body = (
             <>
-                <h1 className="gv-title">Confirming your email…</h1>
-                <p className="gv-text">This takes a moment.</p>
+                <AuthHeading eyebrow="Email" title="Confirming your email…" />
+                <StatusLine>This takes a moment.</StatusLine>
             </>
         );
     } else if (state.status === "confirmed") {
         body = (
             <>
-                <h1 className="gv-title">Email confirmed</h1>
-                <p className="gv-text">
-                    {state.email ? <><strong>{state.email}</strong> is confirmed. </> : null}
-                    {invited ? null : "You can now create a workspace or accept an invite."}
-                </p>
+                <Alert kind="success">{state.email ? <><strong>{state.email}</strong> is confirmed.</> : "Your email is confirmed."}</Alert>
+                <AuthHeading
+                    title={invited ? "You've been invited" : user ? "You're all set" : "Sign in to continue"}
+                    lede={
+                        invited
+                            ? "Join now, or continue to Gait."
+                            : user
+                                ? "You can now create a workspace or accept an invite."
+                                : "Your invites and workspaces are waiting after you sign in."
+                    }
+                />
                 <InvitesAfterConfirming invites={invited ? myInvites.invites : []} />
-                <Link className={invited ? "gv-button gv-button--ghost" : "gv-button"} to={user ? "/console" : "/login"}>
+                <Link className={`ds-btn ${invited ? "ds-btn--secondary" : "ds-btn--primary"}`} to={user ? "/console" : "/login"}>
                     {user ? "Continue" : "Sign in to continue"}
                 </Link>
             </>
@@ -138,39 +146,41 @@ export function VerifyEmailPage() {
     } else if (state.status === "rate-limited") {
         body = (
             <>
-                <h1 className="gv-title">Too many attempts</h1>
-                <p className="gv-text">
-                    {retry.waiting ? "Please wait a little, then try again." : "You can try again now."}
-                </p>
-                <button type="button" className="gv-button" onClick={submit} disabled={retry.waiting}>
+                <AuthHeading eyebrow="Email" title="Too many attempts" />
+                <Alert kind="warning">{retry.waiting ? "Please wait a little, then try again." : "You can try again now."}</Alert>
+                <Button onClick={submit} disabled={retry.waiting}>
                     {retry.waiting ? `Try again in ${retry.remaining}s` : "Try again"}
-                </button>
+                </Button>
             </>
         );
     } else if (user && user.email_verified === true) {
         body = (
             <>
-                <h1 className="gv-title">Your email is already confirmed</h1>
-                <p className="gv-text"><strong>{user.email}</strong> is confirmed, so this link isn't needed.</p>
+                <AuthHeading
+                    eyebrow="Email"
+                    title="Your email is already confirmed"
+                    lede={<><strong>{user.email}</strong> is confirmed, so this link isn't needed.</>}
+                />
                 <InvitesAfterConfirming invites={invited ? myInvites.invites : []} />
-                <Link className={invited ? "gv-button gv-button--ghost" : "gv-button"} to="/console">Continue</Link>
+                <Link className={`ds-btn ${invited ? "ds-btn--secondary" : "ds-btn--primary"}`} to="/console">Continue</Link>
             </>
         );
     } else {
         body = (
             <>
-                <h1 className="gv-title">This link can't be used</h1>
-                <p className="gv-text">
-                    It may have expired (links last 48 hours), already been used, or been replaced by a newer one.
-                </p>
+                <AuthHeading
+                    eyebrow="Email"
+                    title="This link can't be used"
+                    lede="It may have expired (links last 48 hours), already been used, or been replaced by a newer one."
+                />
                 {!checkedSession ? null : user ? (
-                    <div className="gv-actions">
-                        <p className="gv-text">Send a new link to <strong>{user.email}</strong>:</p>
-                        <ResendVerificationButton className="gv-button" />
-                    </div>
+                    <>
+                        <p className="ds-text">Send a new link to <strong>{user.email}</strong>:</p>
+                        <ResendVerificationButton className="ds-btn ds-btn--primary" />
+                    </>
                 ) : (
-                    <p className="gv-text">
-                        <Link to="/login">Sign in</Link> to get a new link.
+                    <p className="ds-text">
+                        <Link className="ds-link" to="/login">Sign in</Link> to get a new link.
                     </p>
                 )}
             </>
@@ -185,13 +195,10 @@ export function VerifyEmailPage() {
     }[state.status] || (user && user.email_verified === true ? "Your email is already confirmed" : "This link can't be used");
 
     return (
-        <main className="gv-page">
-            <section className="gv-card">
-                <p className="gv-brand"><span aria-hidden="true">◆</span> Gait</p>
-                <p className="gv-visually-hidden" role="status" aria-live="polite">{announcement}</p>
-                {body}
-            </section>
-        </main>
+        <AuthLayout>
+            <p className="ds-visually-hidden" role="status" aria-live="polite">{announcement}</p>
+            {body}
+        </AuthLayout>
     );
 }
 

@@ -90,7 +90,7 @@ describe("/verify-email", () => {
 
         expect(window.location.hash).toBe("");
         expect(window.location.pathname).toBe("/verify-email");
-        expect(await screen.findByRole("heading", { name: "Email confirmed" })).toBeInTheDocument();
+        expect(await screen.findByText(/is confirmed\./)).toBeInTheDocument();
         expect(screen.getByText("new@example.test")).toBeInTheDocument();
         expect(verifyEmailToken).toHaveBeenCalledTimes(1);
         expect(verifyEmailToken).toHaveBeenCalledWith(TOKEN);
@@ -154,7 +154,7 @@ describe("/verify-email", () => {
         });
         fireEvent.click(screen.getByRole("button", { name: "Try again" }));
         await act(() => Promise.resolve());
-        expect(screen.getByRole("heading", { name: "Email confirmed" })).toBeInTheDocument();
+        expect(screen.getByText(/is confirmed\./)).toBeInTheDocument();
         expect(verifyEmailToken).toHaveBeenNthCalledWith(2, TOKEN);
         await act(() => Promise.resolve()); // fake timers: no macrotask flush here
     });
@@ -165,7 +165,7 @@ describe("/verify-email", () => {
             .mockResolvedValueOnce({ email_verified: true, email: "me@example.test" })
             .mockRejectedValueOnce({ response: { status: 400, data: { code: "VERIFICATION_INVALID" } } });
         visitVerify(`#token=${TOKEN}`);
-        expect(await screen.findByRole("heading", { name: "Email confirmed" })).toBeInTheDocument();
+        expect(await screen.findByText(/is confirmed\./)).toBeInTheDocument();
 
         await act(async () => {
             window.history.replaceState(null, "", `/verify-email#token=${TOKEN}-2`);
@@ -271,12 +271,14 @@ describe("INV-UX: invites on the confirmed page", () => {
         acceptInviteById.mockResolvedValue({ organization_slug: "lumen", organization_name: "Lumen", org_role: "OWNER" });
         visitVerify(`#token=${TOKEN}`);
 
-        expect(await screen.findByText("You've been invited to a workspace. Join now, or continue to Gait.")).toBeInTheDocument();
+        expect(await screen.findByRole("heading", { name: "You've been invited" })).toBeInTheDocument();
+        expect(screen.getByText("You've been invited to a workspace.")).toBeInTheDocument();
+        expect(screen.getByText("Join now, or continue to Gait.")).toBeInTheDocument();
         const list = screen.getByRole("list", { name: "Your invitations" });
         expect(list).toHaveTextContent("Lumen invited you to its workspace as Owner");
         expect(list).toHaveTextContent("From owner@lumen.test · expires in 6 days");
         expect(screen.queryByText(/You can now create a company/)).not.toBeInTheDocument();
-        expect(screen.getByRole("link", { name: "Continue" })).toHaveClass("gv-button--ghost");
+        expect(screen.getByRole("link", { name: "Continue" })).toHaveClass("ds-btn--secondary");
 
         fireEvent.click(screen.getByRole("button", { name: "Join Lumen" }));
         const confirm = screen.getByRole("group", { name: "Join Lumen?" });
@@ -296,7 +298,7 @@ describe("INV-UX: invites on the confirmed page", () => {
         expect(await screen.findByText(/You can now create a workspace or accept an invite\./)).toBeInTheDocument();
         await waitFor(() => expect(fetchMyInvites).toHaveBeenCalled());
         expect(screen.queryByRole("list", { name: "Your invitations" })).not.toBeInTheDocument();
-        expect(screen.getByRole("link", { name: "Continue" })).not.toHaveClass("gv-button--ghost");
+        expect(screen.getByRole("link", { name: "Continue" })).not.toHaveClass("ds-btn--secondary");
     });
 
     test("not signed in: invites aren't asked for; signing in leads to them", async () => {
@@ -313,7 +315,7 @@ describe("INV-UX: invites on the confirmed page", () => {
         fetchMyInvites.mockResolvedValue([LUMEN_INVITE, { ...LUMEN_INVITE, id: "3f0c6a52-0000-4000-8000-000000000002", organization_name: "Acme", organization_slug: "acme", org_role: "MEMBER" }]);
         visitVerify(`#token=${TOKEN}`);
         expect(await screen.findByRole("heading", { name: "Your email is already confirmed" })).toBeInTheDocument();
-        expect(await screen.findByText("You've been invited to 2 workspaces. Join now, or continue to Gait.")).toBeInTheDocument();
+        expect(await screen.findByText("You've been invited to 2 workspaces.")).toBeInTheDocument();
         expect(screen.getAllByRole("button", { name: /^Join / })).toHaveLength(2);
     });
 });

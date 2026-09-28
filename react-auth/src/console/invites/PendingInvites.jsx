@@ -7,6 +7,20 @@ import { formatDateTime } from "../utils/formatDate";
 import { useJoinInvite } from "./useMyInvites";
 import "./PendingInvites.css";
 
+// Today's console styles (pi-*) or the DS-AUTH monochrome ones (variant="ds").
+const CLASSES = {
+    console: {
+        list: "pi-list", item: "pi-item", row: "pi-row", text: "pi-text", meta: "pi-meta", confirm: "pi-confirm",
+        confirmTitle: "pi-confirm-title", facts: "pi-facts", error: "pi-error", actions: "pi-actions",
+        button: "pi-button", ghost: "pi-button pi-button--ghost",
+    },
+    ds: {
+        list: "ds-invites", item: "ds-invite", row: "ds-invite-row", text: "ds-invite-text", meta: "ds-invite-meta",
+        confirm: "ds-invite-confirm", confirmTitle: "ds-invite-confirm-title", facts: "ds-facts", error: "ds-error",
+        actions: "ds-row-actions", button: "ds-btn ds-btn--primary ds-btn--small", ghost: "ds-btn ds-btn--secondary ds-btn--small",
+    },
+};
+
 const CANT_BE_USED = "This invite can't be used anymore. Ask whoever invited you for a new one.";
 
 function article(role) {
@@ -24,7 +38,7 @@ function joinProblem(error) {
     return { kind: "message", text: apiErrorMessage(error) };
 }
 
-function InviteRow({ invite, isOpen, onOpen, onClose, join, onJoined }) {
+function InviteRow({ invite, isOpen, onOpen, onClose, join, onJoined, c }) {
     const [problem, setProblem] = useState(null);
     const retry = useRetryAfter();
     const confirmHeading = useRef(null);
@@ -49,45 +63,45 @@ function InviteRow({ invite, isOpen, onOpen, onClose, join, onJoined }) {
     };
 
     return (
-        <li className="pi-item">
-            <div className="pi-row">
-                <p className="pi-text">
+        <li className={c.item}>
+            <div className={c.row}>
+                <p className={c.text}>
                     <strong>{workspace}</strong> invited you to its workspace as <strong>{role}</strong>
-                    <span className="pi-meta">
+                    <span className={c.meta}>
                         {invite.invited_by_email ? `From ${invite.invited_by_email} · ` : ""}expires {expiresIn(invite.expires_at)}
                     </span>
                 </p>
                 {isOpen ? null : (
-                    <button type="button" className="pi-button" onClick={onOpen} aria-label={`Join ${workspace}`}>
+                    <button type="button" className={c.button} onClick={onOpen} aria-label={`Join ${workspace}`}>
                         Join
                     </button>
                 )}
             </div>
 
             {isOpen ? (
-                <div className="pi-confirm" role="group" aria-labelledby={`pi-confirm-${invite.id}`}>
-                    <p className="pi-confirm-title" id={`pi-confirm-${invite.id}`} tabIndex={-1} ref={confirmHeading}>
+                <div className={c.confirm} role="group" aria-labelledby={`pi-confirm-${invite.id}`}>
+                    <p className={c.confirmTitle} id={`pi-confirm-${invite.id}`} tabIndex={-1} ref={confirmHeading}>
                         Join {workspace}?
                     </p>
-                    <dl className="pi-facts">
+                    <dl className={c.facts}>
                         <div><dt>Workspace</dt><dd>{workspace}</dd></div>
                         <div><dt>Your role</dt><dd>{role}: {ROLE_DESCRIPTIONS[invite.org_role]}</dd></div>
                         <div><dt>Invited by</dt><dd>{invite.invited_by_email || "a deleted account"}</dd></div>
                         <div><dt>Expires</dt><dd>{formatDateTime(invite.expires_at)}</dd></div>
                     </dl>
-                    {problem?.kind === "message" ? <p className="pi-error" role="alert">{problem.text}</p> : null}
+                    {problem?.kind === "message" ? <p className={c.error} role="alert">{problem.text}</p> : null}
                     {problem?.kind === "already-member" ? (
-                        <p className="pi-error" role="alert">
+                        <p className={c.error} role="alert">
                             You're already in {workspace}. <Link to={`/console/${invite.organization_slug}/overview`}>Go to {workspace}</Link>
                         </p>
                     ) : null}
                     {problem?.kind === "rate-limited" ? (
-                        <p className="pi-error" role="alert">Too many attempts. Please wait a little, then try again.</p>
+                        <p className={c.error} role="alert">Too many attempts. Please wait a little, then try again.</p>
                     ) : null}
-                    <div className="pi-actions">
+                    <div className={c.actions}>
                         <button
                             type="button"
-                            className="pi-button"
+                            className={c.button}
                             onClick={onJoin}
                             disabled={joining || retry.waiting}
                         >
@@ -97,7 +111,7 @@ function InviteRow({ invite, isOpen, onOpen, onClose, join, onJoined }) {
                                     ? `Try again in ${retry.remaining}s`
                                     : `Join ${workspace} as ${article(invite.org_role)} ${role}`}
                         </button>
-                        <button type="button" className="pi-button pi-button--ghost" onClick={onClose} disabled={joining}>
+                        <button type="button" className={c.ghost} onClick={onClose} disabled={joining}>
                             Cancel
                         </button>
                     </div>
@@ -113,7 +127,8 @@ function InviteRow({ invite, isOpen, onOpen, onClose, join, onJoined }) {
  * expiry). Joining lands in the workspace with the one-time welcome note.
  * No invite token is involved: Gait matches the account's confirmed email.
  */
-export function PendingInvites({ invites, label = "Pending invites" }) {
+export function PendingInvites({ invites, label = "Pending invites", variant = "console" }) {
+    const c = CLASSES[variant] || CLASSES.console;
     const navigate = useNavigate();
     const join = useJoinInvite();
     const [openId, setOpenId] = useState(null);
@@ -127,7 +142,7 @@ export function PendingInvites({ invites, label = "Pending invites" }) {
     };
 
     return (
-        <ul className="pi-list" aria-label={label}>
+        <ul className={c.list} aria-label={label}>
             {invites.map((invite) => (
                 <InviteRow
                     key={invite.id}
@@ -140,6 +155,7 @@ export function PendingInvites({ invites, label = "Pending invites" }) {
                     onClose={() => setOpenId(null)}
                     join={join}
                     onJoined={onJoined}
+                    c={c}
                 />
             ))}
         </ul>

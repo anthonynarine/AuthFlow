@@ -5,7 +5,6 @@ import { RegisterPage } from "./components/register/RegisterPage";
 import { SendEmail } from "./components/mail/SendEmail";
 import { EarlyAccessPage } from "./components/early-access/EarlyAccessPage";
 import { ResetPassword } from "./components/reset-password/ResetPassword";
-import { QRCodeSetup } from "./components/two-factor/2fa-setup/QRCodeSetup";
 import { NotFound } from "./components/not-found/NotFound";
 import HomePage from "./components/home/HomePage";
 import { RouteTitle } from "./app/RouteTitle";
@@ -29,6 +28,8 @@ import { FindingsPage } from "./console/pages/findings/FindingsPage";
 import { FindingDetailPage } from "./console/pages/findings/FindingDetailPage";
 import { VerifyEmailPage } from "./account/VerifyEmailPage";
 import { AcceptInvitePage } from "./console/invites/AcceptInvitePage";
+import { AccountPage } from "./account/AccountPage";
+import { TwoStepSetupPage } from "./account/TwoStepSetupPage";
 import { MembersPage } from "./console/pages/members/MembersPage";
 import { SettingsPage } from "./console/pages/settings/SettingsPage";
 import { DocsPage } from "./docs/DocsPage";
@@ -69,6 +70,8 @@ function App() {
                     <Route path="/send-email" element={<SendEmail />} />
                     <Route path="/early-access" element={<EarlyAccessPage />} />
                     <Route path="/verify-email" element={<VerifyEmailPage />} />
+                    <Route path="/account" element={<AccountPage />} />
+                    <Route path="/account/two-step" element={<TwoStepSetupPage />} />
                     <Route path={DOCS_BASE} element={<Navigate to={docPath(DOC_PAGES[0].slug)} replace />} />
                     <Route path={`${DOCS_BASE}/:slug`} element={<DocsPage />} />
                     <Route path="/security" element={<SecurityObservatoryPage />} />
@@ -95,8 +98,11 @@ function App() {
                       <Route path="members" element={<MembersPage />} />
                       <Route path="settings" element={<SettingsPage />} />
                     </Route>
+                    {/* Current emails: /reset-password#token=… (AUTH-B). The path form is for links sent before it; remove once those have expired. */}
+                    <Route path="/reset-password" element={<ResetPassword />} />
                     <Route path="/reset-password/:uidb64/:token" element={<ResetPassword />} />
-                    <Route path="/setup-2fa" element={<QRCodeSetup />} />
+                    {/* Two-step setup moved to the Account page; old links and bookmarks land there. */}
+                    <Route path="/setup-2fa" element={<Navigate to="/account/two-step" replace />} />
                     <Route path="*" element={<NotFound />} />
                   </Routes>
                 </UserSessionProvider>

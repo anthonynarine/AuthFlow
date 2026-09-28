@@ -5,7 +5,7 @@ import { persistAuthTokens } from "../interceptors/tokenStorage";
 
 const mockNavigate = jest.fn();
 const mockSetIsLoggedIn = jest.fn();
-const mockSetUser = jest.fn();
+const mockCancelTwoFactor = jest.fn();
 
 jest.mock("react-router-dom", () => ({
     useNavigate: () => mockNavigate,
@@ -24,7 +24,7 @@ jest.mock("../interceptors/tokenStorage", () => ({
 jest.mock("../context/auth/BasicAuthContext", () => ({
     useBasicAuthServices: () => ({
         setIsLoggedIn: mockSetIsLoggedIn,
-        setUser: mockSetUser,
+        cancelTwoFactor: mockCancelTwoFactor,
     }),
 }));
 
@@ -55,28 +55,48 @@ describe("useTwoFactorAuth session transport", () => {
         expect(mockNavigate).toHaveBeenCalledWith("/workspace");
     });
 
-    test("2FA setup (E3) uses the cookie session: no refresh token is read from the body", async () => {
-        authAxios.patch.mockResolvedValue({ data: { is_2fa_enabled: false, is_2fa_setup_in_progress: true } });
-        authAxios.post.mockResolvedValue({
+    test("a recovery code signs in instead of the code, and lands on Account with how many are left", async () => {
+        publicAxios.post.mockResolvedValue({
             status: 200,
-            data: { access_token: "access-setup", refresh_token: "must-not-be-used" },
+            data: { access_token: "access-recovery", recovery_codes_remaining: 2 },
         });
         const { result } = renderHook(() => useTwoFactorAuth());
 
         await act(async () => {
-            await result.current.toggle2fa(true);
-        });
-        await act(async () => {
-            await result.current.verify2FA("654321");
+            await result.current.verify2FA("  abcde-12345 ", { returnTo: "/console/invites/accept", recovery: true });
         });
 
-        expect(authAxios.post).toHaveBeenCalledWith(
-            "/verify-otp/",
-            { otp: "654321", session_transport: "cookie" },
+        expect(publicAxios.post).toHaveBeenCalledWith(
+            "/two-factor-login/",
+            { recovery_code: "abcde-12345", session_transport: "cookie" },
             { withCredentials: true }
         );
-        expect(persistAuthTokens).toHaveBeenCalledWith({ accessToken: "access-setup" });
-        expect(JSON.stringify(persistAuthTokens.mock.calls)).not.toContain("must-not-be-used");
+        expect(persistAuthTokens).toHaveBeenCalledWith({ accessToken: "access-recovery" });
+        expect(mockNavigate).toHaveBeenCalledWith("/account", {
+            state: { notice: expect.stringContaining("You have 2 recovery codes left.") },
+        });
+    });
+
+    test("a wrong recovery code says so and keeps them on the code step", async () => {
+        publicAxios.post.mockRejectedValue({ response: { status: 403, data: { detail: "Authentication failed." } } });
+        const { result } = renderHook(() => useTwoFactorAuth());
+        await act(async () => {
+            await result.current.verify2FA("abcde-12345", { recovery: true });
+        });
+        expect(result.current.twoFactorError).toBe("That recovery code didn't work. Check it, or try another one. Each works only once.");
+        expect(result.current.sessionExpired).toBe(false);
+        expect(mockCancelTwoFactor).not.toHaveBeenCalled();
+    });
+
+    test("a spent or expired sign-in (401) goes back to the password step", async () => {
+        publicAxios.post.mockRejectedValue({ response: { status: 401, data: { error: "Invalid temporary token." } } });
+        const { result } = renderHook(() => useTwoFactorAuth());
+        await act(async () => {
+            await result.current.verify2FA("123456");
+        });
+        expect(result.current.sessionExpired).toBe(true);
+        expect(mockCancelTwoFactor).toHaveBeenCalledTimes(1);
+        expect(mockNavigate).not.toHaveBeenCalled();
     });
 });
 

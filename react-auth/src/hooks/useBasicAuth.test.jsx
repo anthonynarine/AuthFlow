@@ -128,3 +128,16 @@ describe("useBasicAuth returnTo and the pending invite", () => {
     });
 });
 
+test("signing out after a two-step sign-in doesn't leave sign-in on the code step", async () => {
+    publicAxios.post.mockRejectedValue({ response: { status: 401, data: { "2fa_required": true } } });
+    logoutSession.mockResolvedValue(undefined);
+    const { result } = renderHook(() => useBasicAuth());
+    await act(async () => {
+        await result.current.login({ email: "a@b.c", password: "pw" });
+    });
+    expect(result.current.is2FARequired).toBe(true);
+    await act(async () => {
+        await result.current.logout();
+    });
+    expect(result.current.is2FARequired).toBe(false);
+});

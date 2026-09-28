@@ -211,6 +211,30 @@ describe("OnboardingWizardPage — App setup step", () => {
     expect(screen.queryByRole("heading", { name: "Add your first App" })).not.toBeInTheDocument();
     expect(screen.getByTestId("app-setup-flow")).toHaveTextContent("app-setup-flow:Acme API");
   });
+
+  test("a failed Apps load says so in the card and offers Retry", () => {
+    const refetch = jest.fn();
+    useOrganizations.mockReturnValue(
+      orgs([{ id: "1", name: "Acme", slug: "acme", org_role: "OWNER", membership_status: "ACTIVE" }])
+    );
+    useOrganizationApplications.mockReturnValue(apps([], { error: { response: { status: 500, data: {} } }, refetch }));
+    renderWizard();
+
+    expect(screen.getByRole("alert")).toHaveTextContent("Something went wrong loading this. Please try again.");
+    fireEvent.click(screen.getByRole("button", { name: "Retry" }));
+    expect(refetch).toHaveBeenCalledTimes(1);
+  });
+
+  test("a 403 on the Apps load explains the permission and offers no Retry", () => {
+    useOrganizations.mockReturnValue(
+      orgs([{ id: "1", name: "Acme", slug: "acme", org_role: "MEMBER", membership_status: "ACTIVE" }])
+    );
+    useOrganizationApplications.mockReturnValue(apps([], { error: { response: { status: 403, data: {} } } }));
+    renderWizard();
+
+    expect(screen.getByRole("alert")).toHaveTextContent("You don't have permission to see this workspace.");
+    expect(screen.queryByRole("button", { name: "Retry" })).not.toBeInTheDocument();
+  });
 });
 
 const INVITE = {

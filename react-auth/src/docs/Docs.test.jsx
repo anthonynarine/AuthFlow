@@ -100,6 +100,28 @@ describe("docs pages", () => {
         await waitFor(() => expect(scrollIntoView.mock.instances).toContain(heading));
     });
 
+    test.each([
+        ["getting-started", "step-2-create-your-workspace", "step-2-create-your-company", "Step 2: Create your workspace"],
+        ["troubleshooting", "signing-in-and-your-workspace", "signing-in-and-your-company", "Signing in and your workspace"],
+    ])("renamed section on %s: the new #%s and the old #%s both land on it", async (slug, newId, oldId, title) => {
+        const heading = () => screen.getByRole("heading", { level: 2, name: title });
+
+        const { unmount } = renderDocs(`/docs/${slug}#${newId}`);
+        expect(heading()).toHaveAttribute("id", newId);
+        await waitFor(() => expect(scrollIntoView.mock.instances).toContain(heading()));
+        unmount();
+        scrollIntoView.mockClear();
+
+        renderDocs(`/docs/${slug}#${oldId}`);
+        // The old id sits on an empty anchor immediately before the heading, inside the same section.
+        await waitFor(() => expect(scrollIntoView).toHaveBeenCalled());
+        const [target] = scrollIntoView.mock.instances;
+        expect(target).toHaveAttribute("id", oldId);
+        // eslint-disable-next-line testing-library/no-node-access -- the alias's position next to the heading is what's under test
+        expect(target.nextElementSibling).toBe(heading());
+        await settleDiagrams();
+    });
+
     test("the sidebar marks the current page, and next/previous move through the docs in order", async () => {
         const first = DOC_PAGES[0];
         renderDocs(`/docs/${first.slug}`);

@@ -100,7 +100,8 @@ test("journey badges: Live only if a customer can do it in the console today", a
     expect(screen.getByText(/All of this is/)).toHaveTextContent("All of this is Live.");
     const journey4 = badgesIn(screen.getByRole("list", { name: "Journey 4 steps" }));
     expect(journey4).toHaveLength(7);
-    expect(new Set(journey4)).toEqual(new Set(["Live"]));
+    // Every step depends on your product signing its users in with Gait, which is early access (productSignIn).
+    expect(new Set(journey4)).toEqual(new Set(["Early access"]));
     expect(screen.getByText(/Status as of 26 September 2026/)).toBeInTheDocument();
 });
 

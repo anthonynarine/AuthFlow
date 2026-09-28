@@ -31,7 +31,11 @@ export default function Troubleshooting() {
         <>
             <p className="doc-lede">What a message means and what to do about it.</p>
 
-            <DocSection id="signing-in-and-your-company" title="Signing in and your workspace">
+            <DocSection
+                id="signing-in-and-your-workspace"
+                aliases={["signing-in-and-your-company"]}
+                title="Signing in and your workspace"
+            >
                 <Problems
                     caption="Signing in and workspace problems"
                     rows={[
@@ -102,7 +106,7 @@ export default function Troubleshooting() {
                     rows={[
                         [
                             "Your application gets \"Invalid application credential\"",
-                            "Wrong key, a revoked key, or the application is suspended or retired.",
+                            "Wrong key, a revoked key, the application is suspended or retired, or your workspace is suspended.",
                             <>
                                 Check the application's status; issue a new key if needed. See{" "}
                                 <DocLink to="applications-and-connection-keys">Applications &amp; connection keys</DocLink>.
@@ -120,12 +124,10 @@ export default function Troubleshooting() {
                         ],
                         [
                             "A PASS didn't close a finding",
-                            "The finding is Gait-verified; a self-reported PASS can't close it.",
+                            "The PASS came from another application's key or another environment, or it reused an earlier source_reference (so it counted as a retry).",
                             <>
-                                See{" "}
-                                <DocLink to="security-checks-and-findings#self-reported-vs-gait-verified">
-                                    Self-reported vs Gait-verified
-                                </DocLink>
+                                Report the PASS from the same application, with its own key, and a new source_reference.
+                                See <DocLink to="handle-a-finding">Handle a finding</DocLink>
                                 .
                             </>,
                         ],

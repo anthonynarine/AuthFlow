@@ -261,22 +261,24 @@ export default function IsolationAndSetup() {
                 />
 
                 <H3 id="journey-4">4. Your product's own users get in</H3>
-                <p>Everything here happens in your product. Gait only provides the login.</p>
+                <p>
+                    Everything here happens in your product. Gait only provides the login, which is in early access.
+                </p>
                 <JourneySteps
                     label="Journey 4 steps"
                     steps={[
-                        ["The Org A admin registers on App One's sign-up page; App One creates a Gait account (login only)", "core"],
-                        ["The Org A admin creates customer org A in App One", "core"],
+                        ["The Org A admin registers on App One's sign-up page; App One creates a Gait account (login only)", "productSignIn"],
+                        ["The Org A admin creates customer org A in App One", "productSignIn"],
                         [
                             "The Org A admin invites user@org-a as Staff; App One gives them a one-time invite link, which they send to user@org-a",
-                            "core",
+                            "productSignIn",
                         ],
-                        ["user@org-a opens the link and signs in or registers", "core"],
-                        ["App One asks Gait \"who is this?\" (gait-sdk); Gait answers: user@org-a", "core"],
-                        ["App One checks the invite token is valid and creates a membership row: org A · Staff", "core"],
+                        ["user@org-a opens the link and signs in or registers", "productSignIn"],
+                        ["App One asks Gait \"who is this?\" (gait-sdk); Gait answers: user@org-a", "productSignIn"],
+                        ["App One checks the invite token is valid and creates a membership row: org A · Staff", "productSignIn"],
                         [
                             "On every request after that, App One verifies the token with Gait (gait-sdk), checks membership and role, and returns org A's data only",
-                            "core",
+                            "productSignIn",
                         ],
                     ]}
                 />

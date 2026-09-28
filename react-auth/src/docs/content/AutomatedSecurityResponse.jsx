@@ -8,8 +8,8 @@ import { DIAGRAM } from "../palette";
 // Top to bottom: eight steps in one row would shrink to unreadable text.
 const RESPONSE_FLOW = `flowchart TB
     classDef auto fill:${DIAGRAM.surface},stroke:${DIAGRAM.cyan},color:${DIAGRAM.text},stroke-width:2px
-    classDef human fill:${DIAGRAM.fillTeal},stroke:${DIAGRAM.teal},color:${DIAGRAM.text},stroke-width:2px
-    classDef gate fill:${DIAGRAM.fillAmber},stroke:${DIAGRAM.amber},color:${DIAGRAM.text},stroke-width:2px
+    classDef human fill:${DIAGRAM.fillAmber},stroke:${DIAGRAM.amber},color:${DIAGRAM.text},stroke-width:2px
+    classDef gate fill:${DIAGRAM.fillTeal},stroke:${DIAGRAM.teal},color:${DIAGRAM.text},stroke-width:2px
 
     O["Observe<br/>a check fails"]:::auto --> I["Investigate<br/>what changed and why"]:::auto
     I --> T["Test<br/>try to reproduce it safely"]:::auto

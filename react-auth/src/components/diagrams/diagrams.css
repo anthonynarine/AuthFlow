@@ -371,9 +371,9 @@
 }
 
 .capability-tag--healthy {
-  border-color: rgba(var(--rgb-accent), 0.32);
-  background: rgba(var(--rgb-accent), 0.12);
-  color: var(--color-accent);
+  border-color: rgba(var(--rgb-good), 0.32);
+  background: rgba(var(--rgb-good), 0.12);
+  color: var(--status-good);
 }
 
 .capability-tag--warning {

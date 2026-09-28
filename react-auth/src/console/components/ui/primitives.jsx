@@ -57,10 +57,10 @@ const TONES = {
     SUSPENDED: "warn",
     REVOKED: "muted",
     PENDING: "info",
-    // roles
-    OWNER: "accent",
-    ADMIN: "info",
-    MEMBER: "muted",
+    // roles: a role isn't a status, so every role looks the same; the label says which
+    OWNER: "role",
+    ADMIN: "role",
+    MEMBER: "role",
     // evidence trust
     SELF_REPORTED: "warn",
     GAIT_VERIFIED: "good",

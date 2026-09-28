@@ -60,6 +60,7 @@
 .gc-badge--info   { color: var(--gc-info); background: var(--gc-info-bg); border-color: var(--gc-info-border); }
 .gc-badge--accent { color: var(--color-accent); background: var(--color-accent-soft); border-color: var(--gc-accent-border); }
 .gc-badge--muted  { color: var(--color-text-muted); background: var(--color-surface-glass); border-color: var(--color-border); }
+.gc-badge--role   { color: var(--color-text); background: transparent; border-color: var(--color-border-strong); }
 
 .gc-state {
   display: flex;

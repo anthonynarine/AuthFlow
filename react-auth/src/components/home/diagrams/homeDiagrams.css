@@ -65,7 +65,7 @@
 }
 
 .topology-station.is-done::after {
-  background: var(--color-accent);
+  background: var(--status-good);
 }
 
 .topology-station-dot {
@@ -77,7 +77,7 @@
 }
 
 .topology-station.is-done .topology-station-dot {
-  background: var(--color-accent);
+  background: var(--status-good);
 }
 
 .topology-station.is-active .topology-station-dot {

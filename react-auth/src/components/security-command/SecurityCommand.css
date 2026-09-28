@@ -311,8 +311,8 @@
    independent of the exercise-run-specific tone classes. */
 
 .security-badge.tone-success {
-  background: var(--color-accent-soft);
-  border-color: var(--color-accent);
+  background: var(--status-good-bg);
+  border-color: var(--status-good);
 }
 
 .security-badge.tone-neutral {
@@ -594,7 +594,7 @@
 }
 
 .workflow-progress-status--running { color: var(--diagram-human); }
-.workflow-progress-status--complete { color: var(--color-accent); }
+.workflow-progress-status--complete { color: var(--status-good); }
 .workflow-progress-status--failed { color: var(--color-danger); }
 .workflow-progress-status--locked { color: var(--color-text-muted); }
 .workflow-progress-status--waiting { color: var(--color-text-muted); }
@@ -819,7 +819,7 @@
   background: rgba(var(--rgb-white), 0.02);
 }
 
-.commander-decision--success { border-color: rgba(var(--rgb-accent), 0.32); background: rgba(var(--rgb-accent), 0.06); }
+.commander-decision--success { border-color: rgba(var(--rgb-good), 0.32); background: rgba(var(--rgb-good), 0.06); }
 .commander-decision--attention { border-color: rgba(var(--rgb-warn), 0.34); background: rgba(var(--rgb-warn), 0.08); }
 .commander-decision--danger { border-color: var(--color-danger-border); background: var(--color-danger-bg); }
 .commander-decision--neutral { border-color: var(--color-border); }
@@ -847,7 +847,7 @@
   text-transform: uppercase;
 }
 
-.commander-decision-badge--success { background: var(--color-accent-soft); color: var(--color-accent); }
+.commander-decision-badge--success { background: var(--status-good-bg); color: var(--status-good); }
 .commander-decision-badge--attention { background: rgba(var(--rgb-warn), 0.16); color: var(--diagram-human); }
 .commander-decision-badge--danger { background: var(--color-danger-bg); color: var(--color-danger); }
 .commander-decision-badge--neutral { background: rgba(var(--rgb-white), 0.06); color: var(--color-text-muted); }
@@ -1080,8 +1080,8 @@
 }
 
 .sage-basis-success {
-  background: var(--color-accent-soft);
-  border-color: var(--color-accent);
+  background: var(--status-good-bg);
+  border-color: var(--status-good);
 }
 
 .sage-basis-neutral {

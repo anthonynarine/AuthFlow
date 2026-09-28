@@ -186,3 +186,17 @@ code {
 :focus-visible {
   outline-color: var(--ds-focus);
 }
+
+/* Browsers paint autofilled fields their own blue. Keep them in the field
+   gray (stage 2): an inset shadow covers the tint, the text stays ours. */
+input:-webkit-autofill,
+input:-webkit-autofill:hover,
+input:-webkit-autofill:focus,
+textarea:-webkit-autofill,
+select:-webkit-autofill {
+  -webkit-text-fill-color: var(--ds-text);
+  caret-color: var(--ds-text);
+  -webkit-box-shadow: 0 0 0 1000px var(--ds-field) inset;
+  box-shadow: 0 0 0 1000px var(--ds-field) inset;
+  transition: background-color 600000s 0s;
+}

@@ -7,7 +7,7 @@ import { statusOf } from "../featureStatus";
 import { DIAGRAM } from "../palette";
 
 const BIG_PICTURE = `flowchart TB
-    classDef person fill:${DIAGRAM.fillGreen},stroke:${DIAGRAM.teal},color:${DIAGRAM.text},stroke-width:2px
+    classDef person fill:${DIAGRAM.fillTeal},stroke:${DIAGRAM.teal},color:${DIAGRAM.text},stroke-width:2px
     classDef company fill:${DIAGRAM.surface},stroke:${DIAGRAM.cyan},color:${DIAGRAM.text},stroke-width:2px
     classDef app fill:${DIAGRAM.fillPurple},stroke:${DIAGRAM.purple},color:${DIAGRAM.text},stroke-width:2px
     classDef key fill:${DIAGRAM.fillAmber},stroke:${DIAGRAM.amber},color:${DIAGRAM.text},stroke-width:2px

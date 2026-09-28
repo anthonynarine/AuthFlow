@@ -3,20 +3,20 @@
   scrollbar-color: var(--color-border-strong) transparent;
   scrollbar-width: thin;
 
-  --color-bg: #121212;
-  --color-surface: #1b2129;
-  --color-surface-alt: #232a34;
+  --color-bg: var(--ds-gray-950);
+  --color-surface: var(--ds-gray-925);
+  --color-surface-alt: var(--ds-gray-850);
   --color-border: rgba(255, 255, 255, 0.08);
   --color-border-strong: rgba(255, 255, 255, 0.16);
-  --color-text: #e8eaed;
-  --color-text-muted: #9aa4af;
-  --color-accent: #1abc9c;
-  --color-accent-hover: #22d6b3;
-  --color-accent-dark: #159c82;
-  --color-accent-soft: rgba(26, 188, 156, 0.14);
-  --color-danger: #ff6b6b;
-  --color-danger-bg: rgba(255, 107, 107, 0.12);
-  --color-danger-border: rgba(255, 107, 107, 0.35);
+  --color-text: var(--ds-gray-200);
+  --color-text-muted: var(--ds-gray-400);
+  --color-accent: var(--ds-gray-50);
+  --color-accent-hover: var(--ds-gray-200);
+  --color-accent-dark: var(--ds-gray-400);
+  --color-accent-soft: rgba(255, 255, 255, 0.08);
+  --color-danger: var(--status-danger);
+  --color-danger-bg: var(--status-danger-bg);
+  --color-danger-border: var(--status-danger-line);
   --color-surface-glass: rgba(255, 255, 255, 0.04);
   --color-surface-glass-strong: rgba(255, 255, 255, 0.07);
   --radius-sm: 8px;
@@ -26,36 +26,36 @@
   --shadow-sm: 0 2px 8px rgba(0, 0, 0, 0.25);
   --shadow-md: 0 12px 32px rgba(0, 0, 0, 0.35);
   --shadow-lg: 0 24px 64px rgba(0, 0, 0, 0.5);
-  --shadow-glow-accent: 0 0 36px rgba(26, 188, 156, 0.2);
+  --shadow-glow-accent: 0 0 0 transparent;
   --transition-fast: 0.15s ease;
   --transition-base: 0.25s ease;
 
   /* Diagram semantic roles — consistent meaning across every architecture
      diagram: human authority, AI reasoning, deterministic control, trusted
      evidence, enforcement, protected systems, warning/failure, healthy. */
-  --diagram-human: #f5b85b;
-  --diagram-human-bg: rgba(245, 184, 91, 0.1);
-  --diagram-human-border: rgba(245, 184, 91, 0.32);
+  --diagram-human: #d6b98c;
+  --diagram-human-bg: rgba(214, 185, 140, 0.08);
+  --diagram-human-border: rgba(214, 185, 140, 0.45);
 
-  --diagram-ai: #a78bfa;
-  --diagram-ai-bg: rgba(167, 139, 250, 0.1);
-  --diagram-ai-border: rgba(167, 139, 250, 0.32);
+  --diagram-ai: #b8aee0;
+  --diagram-ai-bg: rgba(184, 174, 224, 0.08);
+  --diagram-ai-border: rgba(184, 174, 224, 0.45);
 
-  --diagram-deterministic: var(--color-accent);
-  --diagram-deterministic-bg: rgba(26, 188, 156, 0.1);
-  --diagram-deterministic-border: rgba(26, 188, 156, 0.32);
+  --diagram-deterministic: var(--ds-gray-50);
+  --diagram-deterministic-bg: rgba(255, 255, 255, 0.06);
+  --diagram-deterministic-border: rgba(255, 255, 255, 0.40);
 
-  --diagram-truth: #38bdf8;
-  --diagram-truth-bg: rgba(56, 189, 248, 0.1);
-  --diagram-truth-border: rgba(56, 189, 248, 0.32);
+  --diagram-truth: #a7c7d9;
+  --diagram-truth-bg: rgba(167, 199, 217, 0.08);
+  --diagram-truth-border: rgba(167, 199, 217, 0.45);
 
-  --diagram-enforcement: #64748b;
-  --diagram-enforcement-bg: rgba(100, 116, 139, 0.14);
-  --diagram-enforcement-border: rgba(148, 163, 184, 0.32);
+  --diagram-enforcement: var(--ds-gray-400);
+  --diagram-enforcement-bg: rgba(255, 255, 255, 0.04);
+  --diagram-enforcement-border: rgba(255, 255, 255, 0.20);
 
-  --diagram-protected: #e8eaed;
-  --diagram-protected-bg: rgba(255, 255, 255, 0.035);
-  --diagram-protected-border: var(--color-border-strong);
+  --diagram-protected: var(--ds-gray-200);
+  --diagram-protected-bg: rgba(255, 255, 255, 0.03);
+  --diagram-protected-border: rgba(255, 255, 255, 0.16);
 
   --diagram-warning: var(--color-danger);
   --diagram-warning-bg: var(--color-danger-bg);
@@ -107,6 +107,24 @@
   --ds-warning-text: #fcd34d;
   --ds-warning-bg: #2a2008;
   --ds-warning-line: rgba(251, 191, 36, 0.4);
+
+  /* Stage 2: status is the only saturated colour; one set for every surface. */
+  --status-good: #4ade80;
+  --status-good-text: #86efac;
+  --status-good-bg: rgba(74, 222, 128, 0.10);
+  --status-good-line: rgba(74, 222, 128, 0.40);
+  --status-warn: #fbbf24;
+  --status-warn-text: #fcd34d;
+  --status-warn-bg: rgba(251, 191, 36, 0.10);
+  --status-warn-line: rgba(251, 191, 36, 0.40);
+  --status-danger: #f87171;
+  --status-danger-text: #fca5a5;
+  --status-danger-bg: rgba(248, 113, 113, 0.10);
+  --status-danger-line: rgba(248, 113, 113, 0.45);
+  --status-info: #93c5fd;
+  --status-info-bg: rgba(147, 197, 253, 0.10);
+  --status-info-line: rgba(147, 197, 253, 0.40);
+  --severity-high: #fb923c;
 
   --ds-font-display: "Fraunces", Georgia, "Times New Roman", serif;
   --ds-font-body: ui-sans-serif, system-ui, -apple-system, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
@@ -162,4 +180,23 @@ code {
 
 ::-webkit-scrollbar-corner {
   background: transparent;
+}
+
+/* One visible focus ring everywhere: white, like the design system (stage 2). */
+:focus-visible {
+  outline-color: var(--ds-focus);
+}
+
+/* Browsers paint autofilled fields their own blue. Keep them in the field
+   gray (stage 2): an inset shadow covers the tint, the text stays ours. */
+input:-webkit-autofill,
+input:-webkit-autofill:hover,
+input:-webkit-autofill:focus,
+textarea:-webkit-autofill,
+select:-webkit-autofill {
+  -webkit-text-fill-color: var(--ds-text);
+  caret-color: var(--ds-text);
+  -webkit-box-shadow: 0 0 0 1000px var(--ds-field) inset;
+  box-shadow: 0 0 0 1000px var(--ds-field) inset;
+  transition: background-color 600000s 0s;
 }

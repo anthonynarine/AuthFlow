@@ -1,7 +1,7 @@
 /* App.css */
 
 body {
-  background-color:#121212; 
+  background-color:var(--color-bg); 
 }
 
 .app-container {

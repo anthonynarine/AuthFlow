@@ -89,7 +89,7 @@
   padding: 0.75rem 0.9rem;
   border: 1px solid var(--color-border);
   border-radius: var(--radius-sm);
-  background: rgba(255, 255, 255, 0.02);
+  background: rgba(var(--rgb-white), 0.02);
   color: var(--color-text);
   text-align: left;
   cursor: pointer;
@@ -106,8 +106,8 @@
 }
 
 .active-case-row.is-selected {
-  border-color: rgba(26, 188, 156, 0.4);
-  background: rgba(26, 188, 156, 0.08);
+  border-color: rgba(var(--rgb-accent), 0.4);
+  background: rgba(var(--rgb-accent), 0.08);
 }
 
 .active-case-title {
@@ -135,7 +135,7 @@
   padding: 1rem 1.1rem;
   border: 1px solid var(--color-border);
   border-radius: var(--radius-md);
-  background: rgba(255, 255, 255, 0.02);
+  background: rgba(var(--rgb-white), 0.02);
 }
 
 .attention-banner--loading {
@@ -144,18 +144,18 @@
 }
 
 .attention-banner--calm {
-  border-color: rgba(26, 188, 156, 0.3);
-  background: rgba(26, 188, 156, 0.06);
+  border-color: rgba(var(--rgb-accent), 0.3);
+  background: rgba(var(--rgb-accent), 0.06);
 }
 
 .attention-banner--info {
-  border-color: rgba(56, 189, 248, 0.3);
-  background: rgba(56, 189, 248, 0.06);
+  border-color: rgba(var(--rgb-info), 0.3);
+  background: rgba(var(--rgb-info), 0.06);
 }
 
 .attention-banner--attention {
-  border-color: rgba(245, 184, 91, 0.35);
-  background: rgba(245, 184, 91, 0.08);
+  border-color: rgba(var(--rgb-warn), 0.35);
+  background: rgba(var(--rgb-warn), 0.08);
 }
 
 .attention-banner--danger {
@@ -210,7 +210,7 @@
 
 .attention-banner-stale {
   margin: 0.75rem 0 0;
-  color: var(--diagram-human, #f5b85b);
+  color: var(--diagram-human);
   font-size: 0.78rem;
 }
 
@@ -220,7 +220,7 @@
   padding: 1.1rem 1.25rem;
   border: 1px solid var(--color-border);
   border-radius: var(--radius-md);
-  background: rgba(255, 255, 255, 0.02);
+  background: rgba(var(--rgb-white), 0.02);
 }
 
 .case-header--empty {
@@ -280,7 +280,7 @@
   padding: 0.6rem 0.75rem;
   border: 1px solid var(--color-border);
   border-radius: var(--radius-sm);
-  background: rgba(255, 255, 255, 0.02);
+  background: rgba(var(--rgb-white), 0.02);
 }
 
 .case-header-facts dt {
@@ -326,8 +326,8 @@
 }
 
 .security-badge.tone-attention {
-  background: rgba(255, 193, 7, 0.12);
-  border-color: rgba(255, 193, 7, 0.4);
+  background: rgba(var(--rgb-amber), 0.12);
+  border-color: rgba(var(--rgb-amber), 0.4);
 }
 
 .strategy-recommendation-card,
@@ -335,7 +335,7 @@
   padding: 0.9rem 1rem;
   border: 1px solid var(--color-border);
   border-radius: var(--radius-sm);
-  background: rgba(255, 255, 255, 0.02);
+  background: rgba(var(--rgb-white), 0.02);
 }
 
 .strategy-recommendation-empty .security-button {
@@ -447,7 +447,7 @@
 
 .strategy-recommendation-rejection {
   margin: 0.6rem 0 0;
-  color: var(--color-danger, #e5484d);
+  color: var(--color-danger);
   font-size: 0.82rem;
 }
 
@@ -459,7 +459,7 @@
 
 .strategy-recommendation-action-error {
   margin: 0.6rem 0 0;
-  color: var(--color-danger, #e5484d);
+  color: var(--color-danger);
   font-size: 0.82rem;
 }
 
@@ -523,7 +523,7 @@
   padding: 0.6rem 0.75rem;
   border: 1px solid var(--color-border);
   border-radius: var(--radius-sm);
-  background: rgba(255, 255, 255, 0.02);
+  background: rgba(var(--rgb-white), 0.02);
 }
 
 .commander-handoff-immutable-note p {
@@ -562,7 +562,7 @@
   padding: 0.65rem 0.75rem;
   border: 1px solid var(--color-border);
   border-radius: var(--radius-sm);
-  background: rgba(255, 255, 255, 0.02);
+  background: rgba(var(--rgb-white), 0.02);
 }
 
 .workflow-progress-node--deterministic { border-top: 2px solid var(--diagram-deterministic); }
@@ -623,10 +623,10 @@
 .case-timeline-stale {
   margin: 0 0 0.85rem;
   padding: 0.6rem 0.75rem;
-  border: 1px solid var(--diagram-human-border, rgba(245, 184, 91, 0.34));
+  border: 1px solid var(--diagram-human-border, rgba(var(--rgb-warn), 0.34));
   border-radius: var(--radius-sm);
-  background: var(--diagram-human-bg, rgba(245, 184, 91, 0.1));
-  color: var(--diagram-human, #f5b85b);
+  background: var(--diagram-human-bg, rgba(var(--rgb-warn), 0.1));
+  color: var(--diagram-human);
   font-size: 0.8rem;
 }
 
@@ -755,7 +755,7 @@
   padding: 0.65rem 0.75rem;
   border: 1px solid var(--color-border);
   border-radius: var(--radius-sm);
-  background: rgba(255, 255, 255, 0.02);
+  background: rgba(var(--rgb-white), 0.02);
 }
 
 .case-timeline-details div {
@@ -816,11 +816,11 @@
   padding: 0.65rem 0.8rem;
   border: 1px solid var(--color-border);
   border-radius: var(--radius-sm);
-  background: rgba(255, 255, 255, 0.02);
+  background: rgba(var(--rgb-white), 0.02);
 }
 
-.commander-decision--success { border-color: rgba(26, 188, 156, 0.32); background: rgba(26, 188, 156, 0.06); }
-.commander-decision--attention { border-color: rgba(245, 184, 91, 0.34); background: rgba(245, 184, 91, 0.08); }
+.commander-decision--success { border-color: rgba(var(--rgb-accent), 0.32); background: rgba(var(--rgb-accent), 0.06); }
+.commander-decision--attention { border-color: rgba(var(--rgb-warn), 0.34); background: rgba(var(--rgb-warn), 0.08); }
 .commander-decision--danger { border-color: var(--color-danger-border); background: var(--color-danger-bg); }
 .commander-decision--neutral { border-color: var(--color-border); }
 
@@ -847,10 +847,10 @@
   text-transform: uppercase;
 }
 
-.commander-decision-badge--success { background: rgba(26, 188, 156, 0.14); color: var(--color-accent); }
-.commander-decision-badge--attention { background: rgba(245, 184, 91, 0.16); color: var(--diagram-human); }
+.commander-decision-badge--success { background: var(--color-accent-soft); color: var(--color-accent); }
+.commander-decision-badge--attention { background: rgba(var(--rgb-warn), 0.16); color: var(--diagram-human); }
 .commander-decision-badge--danger { background: var(--color-danger-bg); color: var(--color-danger); }
-.commander-decision-badge--neutral { background: rgba(255, 255, 255, 0.06); color: var(--color-text-muted); }
+.commander-decision-badge--neutral { background: rgba(var(--rgb-white), 0.06); color: var(--color-text-muted); }
 
 .commander-decision-specialist {
   color: var(--color-text-muted);
@@ -929,8 +929,8 @@
 .copilot-message--operator {
   align-self: flex-end;
   max-width: 85%;
-  background: rgba(26, 188, 156, 0.1);
-  border: 1px solid rgba(26, 188, 156, 0.24);
+  background: rgba(var(--rgb-accent), 0.1);
+  border: 1px solid rgba(var(--rgb-accent), 0.24);
   color: var(--color-text);
 }
 
@@ -940,7 +940,7 @@
 
 .copilot-message--gait {
   border: 1px solid var(--color-border);
-  background: rgba(255, 255, 255, 0.02);
+  background: rgba(var(--rgb-white), 0.02);
 }
 
 .copilot-message--failed {
@@ -973,7 +973,7 @@
   padding: 0.35rem 0.7rem;
   border: 1px solid var(--color-border);
   border-radius: var(--radius-pill);
-  background: rgba(255, 255, 255, 0.02);
+  background: rgba(var(--rgb-white), 0.02);
   color: var(--color-text-muted);
   font-size: 0.76rem;
   cursor: pointer;
@@ -1005,7 +1005,7 @@
   padding: 0.55rem 0.75rem;
   border: 1px solid var(--color-border);
   border-radius: var(--radius-sm);
-  background: rgba(255, 255, 255, 0.03);
+  background: rgba(var(--rgb-white), 0.03);
   color: var(--color-text);
   font-size: 0.85rem;
 }
@@ -1090,8 +1090,8 @@
 }
 
 .sage-basis-attention {
-  background: rgba(255, 193, 7, 0.12);
-  border-color: rgba(255, 193, 7, 0.4);
+  background: rgba(var(--rgb-amber), 0.12);
+  border-color: rgba(var(--rgb-amber), 0.4);
 }
 
 .sage-mode-chip {
@@ -1318,7 +1318,7 @@
   padding: 0.6rem 0.75rem;
   border: 1px solid var(--color-border);
   border-radius: var(--radius-sm);
-  background: rgba(255, 255, 255, 0.02);
+  background: rgba(var(--rgb-white), 0.02);
 }
 
 .commander-routing-panel-facts dt {
@@ -1346,7 +1346,7 @@
   border: 1px solid var(--color-border);
   border-radius: var(--radius-md);
   padding: 0.85rem 1rem;
-  background: rgba(255, 255, 255, 0.02);
+  background: rgba(var(--rgb-white), 0.02);
 }
 
 .specialist-card-name {
@@ -1432,7 +1432,7 @@
   border: 1px solid var(--color-border);
   border-radius: var(--radius-md);
   padding: 1rem 1.1rem;
-  background: rgba(255, 255, 255, 0.02);
+  background: rgba(var(--rgb-white), 0.02);
 }
 
 .diagnosis-panel-eyebrow-row {

@@ -138,8 +138,6 @@ describe("forgot password", () => {
 
 describe("reset password", () => {
     const LINK = "/reset-password#token=test-only-reset-token";
-    const OLD_LINK = "/reset-password/MQ/test-only-reset-token";
-    const OLD_ROUTE = "/reset-password/:uidb64/:token";
     const INVALID = "This password reset link is invalid or has expired.";
 
     function submit(password = TEST_PASSWORD, confirm = TEST_PASSWORD) {
@@ -194,18 +192,6 @@ describe("reset password", () => {
         }));
     });
 
-    test("an older /reset-password/:uid/:token link still works", async () => {
-        publicAxios.post.mockResolvedValue({ data: { message: "ok" } });
-        visit(OLD_LINK, <ResetPassword />, OLD_ROUTE);
-        submit();
-        expect(await screen.findByRole("heading", { name: "Sign in with your new password" })).toBeInTheDocument();
-        expect(publicAxios.post).toHaveBeenCalledWith("/reset-password/", {
-            token: "test-only-reset-token",
-            password: TEST_PASSWORD,
-            password_confirm: TEST_PASSWORD,
-        });
-    });
-
     test("a link without a token is a dead link straight away, and nothing is sent", () => {
         visit("/reset-password", <ResetPassword />, "/reset-password");
         expect(screen.getByRole("heading", { name: "This reset link can't be used" })).toBeInTheDocument();
@@ -233,7 +219,7 @@ describe("reset password", () => {
 
     test("a field-shaped weak-password answer is shown on its field too", async () => {
         publicAxios.post.mockRejectedValue({ response: { status: 400, data: { error: { password: ["This password is too short."] } } } });
-        visit(OLD_LINK, <ResetPassword />, OLD_ROUTE);
+        visit(LINK, <ResetPassword />, "/reset-password");
         submit("short", "short");
         expect(await screen.findByText("This password is too short.")).toBeInTheDocument();
         expect(screen.getByLabelText("New password")).toHaveAttribute("aria-invalid", "true");

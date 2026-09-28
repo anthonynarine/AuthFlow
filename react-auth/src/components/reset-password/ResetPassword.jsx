@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from "react";
-import { Link, useLocation, useNavigate, useParams } from "react-router-dom";
+import { Link, useLocation, useNavigate } from "react-router-dom";
 import { fieldErrors, INVALID_RESET_LINK, readableMessages, resetPassword } from "../../auth/authPagesApi";
 import { readTokenFromHash } from "../../account/VerifyEmailPage";
 import { AuthHeading, AuthLayout } from "../../ds/AuthLayout";
@@ -16,14 +16,12 @@ const FIELD_MAP = { password: "password", new_password: "password", password_con
  * the fragment is removed from the address bar straight away, so it isn't
  * left in history or on screen. It only ever leaves in the POST body. Another
  * link opened in this same tab only changes the fragment (no reload), so the
- * page starts over with that link, as /verify-email does. Older emails
- * (/reset-password/:uidb64/:token) still work until they expire.
+ * page starts over with that link, as /verify-email does.
  */
 export const ResetPassword = () => {
-    const params = useParams();
     const location = useLocation();
     const navigate = useNavigate();
-    const [token, setToken] = useState(() => params.token || readTokenFromHash(location.hash) || "");
+    const [token, setToken] = useState(() => readTokenFromHash(location.hash) || "");
     const [password, setPassword] = useState("");
     const [confirmPassword, setConfirmPassword] = useState("");
     const [errors, setErrors] = useState({});

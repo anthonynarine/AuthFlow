@@ -100,29 +100,6 @@ export const useBasicAuth = () => {
         }
     }, []);
 
-    const resetPassword = useCallback(async ({ password, confirmPassword, uidb64, token }) => {
-        setIsLoading(true);
-        setMessage('');
-        setError('');
-        try {
-            // Formulate the payload as per Django View expectations
-            const payload = {
-                password,
-                password_confirm: confirmPassword,
-                uidb64,
-                token
-            };
-            const { data } = await publicAxios.post("/reset-password/", payload);
-            setMessage(data.message || "Your password has been successfully reset.");
-            navigate("/login/");
-        } catch (error) {
-            console.error("Reset Password error", error);
-            setError(error.response?.data?.error || "An error occurred while attempting to reset the password. Try again.");
-        } finally {
-            setIsLoading(false);
-        }
-    }, [navigate]);
-
     return {
         login,
         guestLogin,
@@ -142,6 +119,5 @@ export const useBasicAuth = () => {
         message,
         setMessage,
         forgotPassword,
-        resetPassword,
     };
 };

@@ -68,9 +68,19 @@ export const DOC_GROUPS = [
                 summary: "Sign in, create your workspace, add an application and get its connection key.",
             },
             {
+                slug: "local-to-production",
+                title: "Go from local to production",
+                summary: "Add production (or staging, test, CI) next to local: one application and one key per environment.",
+            },
+            {
                 slug: "security-checks-and-findings",
                 title: "Security checks & findings",
                 summary: "What Gait does with what your application reports, and how to act on a finding.",
+            },
+            {
+                slug: "handle-a-finding",
+                title: "Handle a finding",
+                summary: "Find it, acknowledge it or accept the risk, and let a passing check resolve it.",
             },
             {
                 slug: "teams-roles-and-invites",
@@ -81,6 +91,16 @@ export const DOC_GROUPS = [
                 slug: "applications-and-connection-keys",
                 title: "Applications & connection keys",
                 summary: "Environments, one-time keys, safe rotation, and suspending or retiring an application.",
+            },
+            {
+                slug: "rotate-a-connection-key",
+                title: "Rotate a connection key",
+                summary: "Issue a new key, deploy it, check Last used, then revoke the old one.",
+            },
+            {
+                slug: "product-organizations-and-invites",
+                title: "Your product's organizations & invites",
+                summary: "A pattern for your product's own customers, roles, invites and sites, when its users sign in with Gait.",
             },
         ],
     },

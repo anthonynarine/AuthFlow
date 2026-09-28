@@ -9,10 +9,17 @@ export function StatusBadge({ feature, status: fixedStatus }) {
     return <span className={`doc-status doc-status--${status}`}>{STATUS_LABELS[status]}</span>;
 }
 
-/** A top-level section of a docs page. Its h2 feeds the "On this page" list. */
-export function DocSection({ id, title, children }) {
+/**
+ * A top-level section of a docs page. Its h2 feeds the "On this page" list.
+ * `aliases` are old ids for this section: each gets an empty anchor just above
+ * the heading, so links made before a rename still land here.
+ */
+export function DocSection({ id, title, aliases = [], children }) {
     return (
         <section className="doc-section" aria-labelledby={id}>
+            {aliases.map((alias) => (
+                <span key={alias} id={alias} className="doc-anchor-alias" aria-hidden="true" />
+            ))}
             <h2 id={id} className="doc-h2">
                 {title}
             </h2>

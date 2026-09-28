@@ -183,6 +183,8 @@
   letter-spacing: -0.01em;
   scroll-margin-top: 72px;
 }
+/* Old ids for a renamed section (DocSection aliases): same landing spot as the heading. */
+.doc-anchor-alias { display: block; scroll-margin-top: 72px; }
 .docs-article p { margin: 0 0 14px; }
 .docs-article ul,
 .docs-article ol { margin: 0 0 14px; padding-left: 1.4em; }
@@ -357,7 +359,7 @@
   .docs-mobile-nav nav { padding: 0 8px 12px; }
   .docs-main { padding: 20px 16px 48px; }
   .docs-title { font-size: 1.6rem; }
-  .doc-h2, .docs-article { scroll-margin-top: 110px; }
+  .doc-h2, .docs-article, .doc-anchor-alias { scroll-margin-top: 110px; }
   /* Keep diagram text readable: scroll the diagram sideways instead of shrinking it. */
   /* ...but never wider than the diagram's natural width (set by Diagram.jsx). */
   .doc-diagram-svg svg { min-width: min(560px, var(--diagram-natural-width, 560px)); max-width: none !important; }

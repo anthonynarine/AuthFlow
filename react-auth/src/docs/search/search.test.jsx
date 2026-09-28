@@ -70,7 +70,7 @@ describe("search index", () => {
 
     test("text from separate blocks doesn't run together", () => {
         const leak = index.find((entry) => entry.sectionId === "if-a-key-leaks");
-        expect(leak.text).toContain("Issue a new key and deploy it. Revoke the leaked key.");
+        expect(leak.text).toContain("until it has a new key. Issue a new key and deploy it.");
     });
 
     test("each glossary term is its own result, and it ranks first for its own name", () => {

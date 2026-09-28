@@ -168,7 +168,7 @@ describe("F4 members list and role gating", () => {
         expect(screen.queryByText("Pending invites")).not.toBeInTheDocument();
         expect(screen.queryByText("Activity")).not.toBeInTheDocument();
         expect(fetchMemberActivity).not.toHaveBeenCalled();
-        expect(screen.getByRole("button", { name: "Leave company" })).toBeInTheDocument();
+        expect(screen.getByRole("button", { name: "Leave workspace" })).toBeInTheDocument();
     });
 
     test("an Owner changes a role, and Gait's LAST_OWNER refusal explains how to hand over", async () => {
@@ -191,7 +191,7 @@ describe("F4 members list and role gating", () => {
         fireEvent.click(screen.getByRole("button", { name: "Change role for Ana" }));
         const dialog = screen.getByRole("dialog");
         fireEvent.click(within(dialog).getByRole("radio", { name: /^Member/ }));
-        expect(within(dialog).getByRole("note")).toHaveTextContent("A company always keeps at least one Owner");
+        expect(within(dialog).getByRole("note")).toHaveTextContent("A workspace always keeps at least one Owner");
         expect(within(dialog).getByRole("button", { name: "Save role" })).toBeDisabled();
     });
 
@@ -212,7 +212,7 @@ describe("F4 leaving", () => {
         fetchMembers.mockResolvedValue(roster("OWNER"));
         renderAt("/console/app-one/members");
         await membersTable();
-        fireEvent.click(screen.getByRole("button", { name: "Leave company" }));
+        fireEvent.click(screen.getByRole("button", { name: "Leave workspace" }));
         const dialog = screen.getByRole("dialog", { name: "You can't leave App One yet" });
         expect(dialog).toHaveTextContent("You're its only Owner");
         expect(within(dialog).queryByRole("button", { name: /Leave/ })).not.toBeInTheDocument();
@@ -224,7 +224,7 @@ describe("F4 leaving", () => {
         removeMember.mockResolvedValue(undefined);
         renderAt("/console/app-one/members", "ADMIN");
         await membersTable();
-        fireEvent.click(screen.getByRole("button", { name: "Leave company" }));
+        fireEvent.click(screen.getByRole("button", { name: "Leave workspace" }));
         fireEvent.click(within(screen.getByRole("dialog")).getByRole("button", { name: "Leave App One" }));
         await waitFor(() => expect(removeMember).toHaveBeenCalledWith("app-one", "ana"));
         await waitFor(() => expect(screen.getByTestId("location")).toHaveTextContent(/^\/console$/));
@@ -325,7 +325,7 @@ describe("F4 activity", () => {
         );
         renderAt("/console/app-one/members");
         const list = await screen.findByRole("list", { name: "Membership activity" });
-        expect(list).toHaveTextContent("mia@app-one.test left the company");
+        expect(list).toHaveTextContent("mia@app-one.test left the workspace");
         expect(list).toHaveTextContent("a deleted account invited new@app-one.test as Member");
         expect(screen.getByText("Page 1 of 2")).toBeInTheDocument();
         fireEvent.click(screen.getByRole("button", { name: "Older" }));
@@ -341,12 +341,12 @@ describe("F4 settings", () => {
         fetchOrganization.mockResolvedValue({ ...ORG, your_role: "OWNER" });
         renderOrganizationRename();
         renderAt("/console/app-one/settings");
-        const input = await screen.findByLabelText("Company name");
+        const input = await screen.findByLabelText("Workspace name");
         expect(screen.getByRole("button", { name: "Save name" })).toBeDisabled();
         expect(screen.getByText("app-one")).toBeInTheDocument();
-        expect(screen.getByText(/The slug can't be changed/)).toBeInTheDocument();
+        expect(screen.getByText(/The workspace URL can't be changed later/)).toBeInTheDocument();
         fireEvent.change(input, { target: { value: "   " } });
-        expect(screen.getByText("Give the company a name.")).toBeInTheDocument();
+        expect(screen.getByText("Give the workspace a name.")).toBeInTheDocument();
         fireEvent.change(input, { target: { value: "  App One Health  " } });
         fireEvent.click(screen.getByRole("button", { name: "Save name" }));
         await waitFor(() => expect(renameOrganization).toHaveBeenCalledWith("app-one", "App One Health"));
@@ -356,7 +356,7 @@ describe("F4 settings", () => {
     test.each(["ADMIN", "MEMBER"])("%s sees the settings read-only", async (role) => {
         fetchOrganization.mockResolvedValue({ ...ORG, your_role: role });
         renderAt("/console/app-one/settings", role);
-        expect(await screen.findByText("Only Owners can rename the company.", { exact: false })).toBeInTheDocument();
+        expect(await screen.findByText("Only Owners can rename the workspace.", { exact: false })).toBeInTheDocument();
         expect(screen.queryByRole("textbox")).not.toBeInTheDocument();
         expect(screen.queryByRole("button", { name: "Save name" })).not.toBeInTheDocument();
     });

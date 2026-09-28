@@ -51,7 +51,7 @@ export function ConsoleEntry() {
         return <Navigate to="/login" replace state={{ from: location.pathname }} />;
     }
     if (organizations.isLoading) {
-        return <div className="gc-fullpage"><LoadingState label="Loading your organizations…" /></div>;
+        return <div className="gc-fullpage"><LoadingState label="Loading your workspaces…" /></div>;
     }
     if (organizations.isError) {
         return (

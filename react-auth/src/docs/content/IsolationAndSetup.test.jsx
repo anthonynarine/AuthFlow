@@ -74,12 +74,12 @@ test("both isolation diagrams use the shared mermaid Diagram, walls included, Ap
     expect(screen.getByText(/A wall between the two reads: separate databases/)).toBeInTheDocument();
 });
 
-test("the wrong-door flow ends in a 404, and a key decides the company", async () => {
+test("the wrong-door flow ends in a 404, and a key decides the workspace", async () => {
     renderIsolation();
     await settleDiagrams();
     const wrongDoor = screen.getByRole("list", { name: "An app-one Admin asks for app-two's findings" });
     const steps = within(wrongDoor).getAllByRole("listitem");
-    expect(steps[steps.length - 1]).toHaveTextContent("404, exactly like a company that doesn't exist.");
+    expect(steps[steps.length - 1]).toHaveTextContent("404, exactly like a workspace that doesn't exist.");
     expect(wrongDoor).toHaveTextContent("GET /api/organizations/app-two/security/findings/");
 
     expect(screen.getByText("Nothing in the request can point it at app-one.")).toBeInTheDocument();

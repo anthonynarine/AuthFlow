@@ -286,7 +286,7 @@ describe("F3 actions", () => {
         const dialog = screen.getByRole("dialog");
         fireEvent.change(within(dialog).getByLabelText("What are you doing about it?"), { target: { value: "Rolling out the fix today." } });
         fireEvent.click(within(dialog).getByRole("button", { name: "Acknowledge" }));
-        expect(await within(dialog).findByText("Your role in this organization can't do that.")).toBeInTheDocument();
+        expect(await within(dialog).findByText("Your role in this workspace can't do that.")).toBeInTheDocument();
     });
 
     test("noteProblem counts trimmed characters", () => {

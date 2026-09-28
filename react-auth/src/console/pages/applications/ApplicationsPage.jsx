@@ -70,7 +70,7 @@ export function ApplicationsPage() {
             >
                 {canManage
                     ? "Add one for each piece of software that runs here, then give it a connection key."
-                    : "Ask an Owner or Admin of this company to add one."}
+                    : "Ask an Owner or Admin of this workspace to add one."}
             </EmptyState>
         );
     } else {

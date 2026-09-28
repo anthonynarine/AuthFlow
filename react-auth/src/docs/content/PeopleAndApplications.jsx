@@ -16,7 +16,7 @@ const BIG_PICTURE = `flowchart TB
         P2["security@acme.example"]:::person
     end
 
-    subgraph COMPANY["Company: acme"]
+    subgraph COMPANY["Workspace: acme"]
         direction LR
         R1["Owner"]:::company
         R2["Admin"]:::company
@@ -73,10 +73,10 @@ const BOUNDARIES = `flowchart LR
     K["Connection key"] --> Y1["Report checks for its own application"]:::ok
     K --x N1["Sign in"]:::no
     K --x N2["Invite anyone"]:::no
-    K --x N3["See other applications or companies"]:::no
+    K --x N3["See other applications or workspaces"]:::no
 
-    M["Member"] --> Y2["See their own company"]:::ok
-    M --x N4["See another company"]:::no
+    M["Member"] --> Y2["See their own workspace"]:::ok
+    M --x N4["See another workspace"]:::no
     M --x N5["Manage applications, keys or people"]:::no`;
 
 export default function PeopleAndApplications() {
@@ -91,15 +91,15 @@ export default function PeopleAndApplications() {
             <DocSection id="the-big-picture" title="The big picture">
                 <Diagram
                     source={BIG_PICTURE}
-                    description="Two people sign in to Gait and belong to the company acme, one as Owner and one as Admin. The company has two applications, acme-api in local and acme-api in production. Each application has its own connection key, stored in that copy of the software's backend, which it uses to report security checks."
+                    description="Two people sign in to Gait and belong to the workspace acme, one as Owner and one as Admin. The workspace has two applications, acme-api in local and acme-api in production. Each application has its own connection key, stored in that copy of the software's backend, which it uses to report security checks."
                 />
                 <ul>
                     <li>
-                        <strong>People</strong> sign in, belong to companies, and have a <strong>role</strong> in each
-                        company.
+                        <strong>People</strong> sign in, belong to workspaces, and have a <strong>role</strong> in each
+                        workspace.
                     </li>
                     <li>
-                        <strong>Applications</strong> are pieces of software inside a company, one per environment.
+                        <strong>Applications</strong> are pieces of software inside a workspace, one per environment.
                         Each has <strong>connection keys</strong> that live in the software's backend configuration.
                     </li>
                     <li>
@@ -127,8 +127,8 @@ export default function PeopleAndApplications() {
                         </tr>
                         <tr>
                             <th scope="row">How it gets in</th>
-                            <td>Creates an account and confirms their email; creates a company or joins one by invite</td>
-                            <td>An Owner or Admin adds it to a company</td>
+                            <td>Creates an account and confirms their email; creates a workspace or joins one by invite</td>
+                            <td>An Owner or Admin adds it to a workspace</td>
                         </tr>
                         <tr>
                             <th scope="row">Credential</th>
@@ -137,7 +137,7 @@ export default function PeopleAndApplications() {
                         </tr>
                         <tr>
                             <th scope="row">Has a role?</th>
-                            <td>Yes: Owner, Admin or Member, <strong>per company</strong></td>
+                            <td>Yes: Owner, Admin or Member, <strong>per workspace</strong></td>
                             <td><strong>No</strong></td>
                         </tr>
                         <tr>
@@ -164,8 +164,8 @@ export default function PeopleAndApplications() {
                 </DocTable>
                 <p>
                     A connection key is deliberately narrow. It proves <em>"I am acme-api (production), owned by the
-                    company acme"</em> and nothing more. It can't read the console, act as a person, see other
-                    applications, or touch another company.
+                    workspace acme"</em> and nothing more. It can't read the console, act as a person, see other
+                    applications, or touch another workspace.
                 </p>
             </DocSection>
 
@@ -180,7 +180,7 @@ export default function PeopleAndApplications() {
             <DocSection id="how-an-application-gets-its-key" title="How an application gets its key">
                 <Diagram
                     source={APP_GETS_KEY}
-                    description="An Owner or Admin adds an application with a name, slug and environment, then issues a connection key. Gait shows the key once and keeps only a fingerprint of it. The key goes into the backend's secret settings, and from then on the backend reports security checks with it, which Gait records for that company, application and environment."
+                    description="An Owner or Admin adds an application with a name, slug and environment, then issues a connection key. Gait shows the key once and keeps only a fingerprint of it. The key goes into the backend's secret settings, and from then on the backend reports security checks with it, which Gait records for that workspace, application and environment."
                 />
                 <p>
                     See <DocLink to="applications-and-connection-keys">Applications &amp; connection keys</DocLink> and{" "}
@@ -191,8 +191,8 @@ export default function PeopleAndApplications() {
             <DocSection id="your-products-own-users" title="Your product's own users">
                 <p>
                     Your product can use Gait to sign its own users in <strong>without</strong> making them members of
-                    your Gait company. Say your company <code>acme</code> sells a product to a customer called Example
-                    Clinic, whose staff sign in to your product:
+                    your Gait workspace. Say your company, with the Gait workspace <code>acme</code>, sells a product to a customer
+                    called Example Clinic, whose staff sign in to your product:
                 </p>
                 <Diagram
                     source={PRODUCT_USERS}
@@ -205,15 +205,15 @@ export default function PeopleAndApplications() {
                         product's roles the person has, using your own invites and data.
                     </li>
                     <li>
-                        Jordan never joins your Gait company <code>acme</code> and never sees the Gait console. Your Gait
-                        company is for the people who look after your product's security.
+                        Jordan never joins your Gait workspace <code>acme</code> and never sees the Gait console. Your Gait
+                        workspace is for the people who look after your product's security.
                     </li>
                 </ul>
-                <DocTable caption="Your Gait company compared with a customer inside your product">
+                <DocTable caption="Your Gait workspace compared with a customer inside your product">
                     <thead>
                         <tr>
                             <th scope="col"><span className="doc-visually-hidden">Property</span></th>
-                            <th scope="col">Gait company <code>acme</code></th>
+                            <th scope="col">Gait workspace <code>acme</code></th>
                             <th scope="col">Your customer "Example Clinic"</th>
                         </tr>
                     </thead>
@@ -245,17 +245,17 @@ export default function PeopleAndApplications() {
             <DocSection id="boundaries-that-always-hold" title="Boundaries that always hold">
                 <Diagram
                     source={BOUNDARIES}
-                    description="A connection key can report checks for its own application, and cannot sign in, invite anyone, or see other applications or companies. A Member can see their own company, and cannot see another company or manage applications, keys or people."
+                    description="A connection key can report checks for its own application, and cannot sign in, invite anyone, or see other applications or workspaces. A Member can see their own workspace, and cannot see another workspace or manage applications, keys or people."
                 />
                 <ol>
                     <li><strong>A key is never a person.</strong> Keys can't sign in, invite, or hold a role.</li>
                     <li>
-                        <strong>A role never crosses companies.</strong> Being Owner of one company means nothing in
-                        another. Links to another company's pages behave as if they don't exist.
+                        <strong>A role never crosses workspaces.</strong> Being Owner of one workspace means nothing in
+                        another. Links to another workspace's pages behave as if they don't exist.
                     </li>
                     <li>
-                        <strong>Joining needs proof.</strong> An invite link <em>and</em> a signed-in account with the
-                        invited, confirmed email address.
+                        <strong>Joining needs proof.</strong> A signed-in account with the invited, confirmed email
+                        address, whether you join from the invite link or from the invites Gait shows you.
                     </li>
                     <li>
                         <strong>Gait authenticates; your product authorizes.</strong> Gait never stores or enforces your

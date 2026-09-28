@@ -22,7 +22,7 @@ function describeError(error) {
   if (error?.response?.status === 401) {
     return "Your session has expired. Please sign in again.";
   }
-  return "Something went wrong creating your Company. Please try again.";
+  return "Something went wrong creating your workspace. Please try again.";
 }
 
 /**
@@ -62,17 +62,17 @@ export function CreateCompanyStep({ onCreate, isCreating, createError }) {
   return (
     <div className="onboarding-step">
       <p className="onboarding-eyebrow">Step 1 of 4</p>
-      <h1 className="onboarding-title">Create your Company</h1>
-      <p className="onboarding-sub">This is the company Gait will protect.</p>
+      <h1 className="onboarding-title">Create your workspace</h1>
+      <p className="onboarding-sub">A workspace holds your team, your applications and their security findings.</p>
 
       <form className="onboarding-form" onSubmit={handleSubmit}>
         <label className="onboarding-field">
-          <span>Company name</span>
+          <span>Workspace name</span>
           <input type="text" value={name} onChange={handleNameChange} placeholder="Acme Inc." required autoFocus />
         </label>
 
         <label className="onboarding-field">
-          <span>Company URL slug</span>
+          <span>Workspace URL</span>
           <input
             type="text"
             value={slug}
@@ -81,7 +81,7 @@ export function CreateCompanyStep({ onCreate, isCreating, createError }) {
             pattern="[a-z0-9-]+"
             required
           />
-          <small>You can edit this — it's how your Company is identified in the URL.</small>
+          <small>It's how your workspace is identified in links. You can edit it now; it can't be changed later.</small>
         </label>
 
         {createError?.response?.data?.code === "EMAIL_NOT_VERIFIED" ? (
@@ -95,7 +95,7 @@ export function CreateCompanyStep({ onCreate, isCreating, createError }) {
         ) : null}
 
         <button type="submit" className="fw-btn primary" disabled={isCreating || !name.trim() || !slug.trim()}>
-          {isCreating ? "Creating…" : "Create Company"}
+          {isCreating ? "Creating…" : "Create workspace"}
         </button>
       </form>
     </div>

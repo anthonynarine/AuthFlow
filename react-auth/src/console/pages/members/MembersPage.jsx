@@ -112,7 +112,7 @@ export function MembersPage() {
     const header = (
         <PageHeader
             title="Members"
-            description={`Who can see and manage ${companyName}. Roles apply to this company only.`}
+            description={`Who can see and manage ${companyName}. Roles apply to this workspace only.`}
             actions={
                 <>
                     {manager ? (
@@ -122,7 +122,7 @@ export function MembersPage() {
                     ) : null}
                     {you ? (
                         <button type="button" className="gc-button gc-button--ghost" onClick={() => setDialog({ type: "leave" })}>
-                            Leave company
+                            Leave workspace
                         </button>
                     ) : null}
                 </>

@@ -19,7 +19,7 @@ export const FEATURE_STATUS = {
     findingsScreen: "live",
     // Sign-in for your own product's users with Gait accounts (gait-sdk).
     productSignIn: "earlyAccess",
-    // Everything else: accounts, companies, applications, keys, signals.
+    // Everything else: accounts, workspaces, applications, keys, signals.
     core: "live",
 };
 

@@ -10,7 +10,7 @@
  * Rules for everything under src/docs/:
  *   - Customer-facing only. Never copy operator/internal material (API
  *     internals, deployment, runbooks) into these pages.
- *   - Neutral examples only: company "acme", application "acme-api", a
+ *   - Neutral examples only: workspace "acme", application "acme-api", a
  *     product's own users at "Example Clinic". No real customer names.
  *     docsContent.test.jsx enforces FORBIDDEN_TERMS.
  *   - Example keys must never look like real keys.
@@ -65,7 +65,7 @@ export const DOC_GROUPS = [
             {
                 slug: "getting-started",
                 title: "Getting started",
-                summary: "Sign in, create your company, add an application and get its connection key.",
+                summary: "Sign in, create your workspace, add an application and get its connection key.",
             },
             {
                 slug: "connecting-your-software",
@@ -80,7 +80,7 @@ export const DOC_GROUPS = [
             {
                 slug: "teams-roles-and-invites",
                 title: "Teams, roles & invites",
-                summary: "Who can do what in your company, and how people join it.",
+                summary: "Who can do what in your workspace, and how people join it.",
             },
             {
                 slug: "applications-and-connection-keys",

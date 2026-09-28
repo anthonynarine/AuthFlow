@@ -13,7 +13,7 @@ const TITLES = [
   [/^\/developers\/?$/, "gait-sdk for developers · Gait"],
   [/^\/early-access\/?$/, "Early access · Gait"],
   [/^\/verify-email\/?$/, "Confirm your email · Gait"],
-  [/^\/console\/invites\/accept\/?$/, "Join a company · Gait"],
+  [/^\/console\/invites\/accept\/?$/, "Join a workspace · Gait"],
   ...DOC_PAGES.map((page) => [new RegExp(`^/docs/${page.slug}/?$`), docTitle(page)]),
   [/^\/docs(\/|$)/, "Gait Docs"],
   [/^\/login\/?$/, "Log in · Gait"],
@@ -29,6 +29,8 @@ const TITLES = [
   [/^\/workspace\/issues\/[^/]+\/?$/, "Issue · Gait"],
   [/^\/workspace\/issues\/?$/, "Issues · Gait"],
   [/^\/workspace\/team\/?$/, "Security team · Gait"],
+  [/^\/workspace\/onboarding\/?$/, "Set up your workspace · Gait"],
+  [/^\/workspace\/apps(\/|$)/, "Apps · Gait"],
   [/^\/workspace\/?$/, "Workspace · Gait"],
 ];
 

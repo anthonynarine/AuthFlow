@@ -38,7 +38,7 @@ const BIG_PICTURE = `flowchart TB
 
     TEAM["Your team<br/>Owner · Admin · Member"]:::people
     subgraph GAIT["Gait"]
-        CO["Company: Acme<br/>applications · keys · findings"]:::gait
+        CO["Workspace: Acme<br/>applications · keys · findings"]:::gait
     end
     APP["Your software<br/>Acme API · production<br/>gait-sdk + connection key"]:::soft
     USERS["Your product's users<br/>(optional, early access)"]:::users
@@ -48,14 +48,14 @@ const BIG_PICTURE = `flowchart TB
     USERS -. "sign in with Gait;<br/>your product decides access" .-> APP`;
 
 const BIG_PICTURE_DESCRIPTION =
-  "Your team (Owner, Admin, Member) signs in to the console and works in the company Acme inside Gait, which holds applications, keys and findings. Your software, such as Acme API in production, uses the gait-sdk and a connection key to report security checks to that company. Optionally, in early access, your product's own users sign in with Gait, and your product decides what they can access.";
+  "Your team (Owner, Admin, Member) signs in to the console and works in the workspace Acme inside Gait, which holds applications, keys and findings. Your software, such as Acme API in production, uses the gait-sdk and a connection key to report security checks to that workspace. Optionally, in early access, your product's own users sign in with Gait, and your product decides what they can access.";
 
 // HOW_IT_WORKS.md, "Step by step", steps 1-4. Step 5 (acting on findings in
 // the console) waits on the Findings screen and is listed under status below.
 const HOW_IT_WORKS_STEPS = [
   {
     title: "Your team signs in",
-    body: "to the Gait console and works inside your company. Each person has a role: Owner, Admin or Member.",
+    body: "to the Gait console and works inside your workspace. Each person has a role: Owner, Admin or Member.",
   },
   {
     title: "You register each piece of software, per environment.",
@@ -63,7 +63,7 @@ const HOW_IT_WORKS_STEPS = [
   },
   {
     title: "Your software reports security checks.",
-    body: "It runs its own checks (for example \"debug mode is off\") and sends PASS or FAIL to Gait with the gait-sdk. The connection key tells Gait which application, and so which company, the report belongs to.",
+    body: "It runs its own checks (for example \"debug mode is off\") and sends PASS or FAIL to Gait with the gait-sdk. The connection key tells Gait which application, and so which workspace, the report belongs to.",
   },
   {
     title: "Gait keeps score.",
@@ -75,9 +75,9 @@ const HOW_IT_WORKS_STEPS = [
 // it comes from FEATURE_STATUS through StatusCell.
 const WHAT_YOU_GET = [
   {
-    feature: "A private company space",
+    feature: "A private workspace",
     description:
-      "Your team's own area in the Gait console. Your people, applications, keys and findings live there, and nobody outside your company can see any of it.",
+      "Your team's own area in the Gait console. Your people, applications, keys and findings live there, and nobody outside your workspace can see any of it.",
     features: ["core"],
   },
   {
@@ -262,7 +262,7 @@ function HomePage() {
               <p className="hero-subtitle">
                 Your software reports its own security checks with gait-sdk. Gait keeps the history, opens a finding
                 when a check fails and closes it when a later check passes, per app and per environment, isolated to
-                your company.
+                your workspace.
               </p>
               {message && <p className="session-message">{message}</p>}
               <div className="hero-actions">
@@ -330,10 +330,10 @@ function HomePage() {
           <h2 id="isolation-title">Private by default. Read-only by design.</h2>
           <div className="home-card-grid">
             <div className="home-card">
-              <h3>Other companies can't see you.</h3>
+              <h3>Other workspaces can't see you.</h3>
               <p>
-                Your people, applications and findings belong to your company alone. To anyone outside it, your
-                company doesn't exist: Gait answers 404, the same answer as for a company that doesn't exist.
+                Your people, applications and findings belong to your workspace alone. To anyone outside it, your
+                workspace doesn't exist: Gait answers 404, the same answer as for a workspace that doesn't exist.
               </p>
             </div>
             <div className="home-card">
@@ -415,7 +415,7 @@ function HomePage() {
           <RiShieldCheckLine />
           <h2 id="final-cta-title">Connect your first app in about 15 minutes.</h2>
           <p className="section-lede">
-            Create your company, register an application, get its connection key and send your first security check.
+            Create your workspace, register an application, get its connection key and send your first security check.
           </p>
           <div className="hero-actions">
             <Link to={docPath("quickstart")} className="btn-pill btn-pill-primary">

@@ -92,7 +92,7 @@ describe("pending invites list", () => {
 
         fireEvent.click(screen.getByRole("button", { name: "Join Lumen" }));
         const confirm = screen.getByRole("group", { name: "Join Lumen?" });
-        expect(confirm).toHaveTextContent("Sees the company's applications, findings and members");
+        expect(confirm).toHaveTextContent("Sees the workspace's applications, findings and members");
         expect(within(confirm).getByText("Join Lumen?")).toHaveFocus();
 
         fireEvent.click(screen.getByRole("button", { name: "Join Acme" }));

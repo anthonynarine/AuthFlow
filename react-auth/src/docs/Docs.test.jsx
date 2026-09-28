@@ -193,7 +193,7 @@ describe("diagrams", () => {
     test("render once mermaid loads, with the description always visible", async () => {
         renderDocs("/docs/people-and-applications");
         expect(
-            screen.getByText(/Two people sign in to Gait and belong to the company acme/, { selector: "figcaption" })
+            screen.getByText(/Two people sign in to Gait and belong to the workspace acme/, { selector: "figcaption" })
         ).toBeInTheDocument();
         await settleDiagrams();
         expect(screen.getAllByTestId("mermaid-svg").length).toBeGreaterThan(0);

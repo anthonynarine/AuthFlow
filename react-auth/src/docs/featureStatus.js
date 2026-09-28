@@ -6,7 +6,7 @@
  *   pending      not yet, including an API that exists but has no console screen
  *   earlyAccess  available to early-access customers only
  */
-export const STATUS_AS_OF = "2026-09-26";
+export const STATUS_AS_OF = "2026-09-28";
 
 export const FEATURE_STATUS = {
     // Stage E1: confirming your email address. Live with the E1-E3 release.
@@ -62,7 +62,7 @@ export const STATUS_LABELS = {
     earlyAccess: "Early access",
 };
 
-/** STATUS_AS_OF as "26 September 2026". */
+/** STATUS_AS_OF as "28 September 2026". */
 export function statusAsOfLabel() {
     const [year, month, day] = STATUS_AS_OF.split("-").map(Number);
     return new Date(Date.UTC(year, month - 1, day)).toLocaleDateString("en-GB", {

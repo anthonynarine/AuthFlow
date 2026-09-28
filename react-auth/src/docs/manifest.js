@@ -132,6 +132,11 @@ export const DOC_GROUPS = [
                 title: "Report a vulnerability",
                 summary: "How to tell us privately about a security problem in Gait or gait-sdk.",
             },
+            {
+                slug: "automated-security-response",
+                title: "Automated security response",
+                summary: "How Gait looks after its own platform, with people in charge of every change that matters.",
+            },
         ],
     },
     {
@@ -161,16 +166,6 @@ export const DOC_GROUPS = [
                 slug: "whats-live",
                 title: "What's live & changelog",
                 summary: "What you can use today, and what has changed recently.",
-            },
-        ],
-    },
-    {
-        title: "Gait's platform",
-        pages: [
-            {
-                slug: "automated-security-response",
-                title: "Automated security response",
-                summary: "How Gait looks after its own platform, with people in charge of every change that matters.",
             },
         ],
     },

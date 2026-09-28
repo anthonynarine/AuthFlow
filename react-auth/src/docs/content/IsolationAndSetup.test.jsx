@@ -102,7 +102,7 @@ test("journey badges: Live only if a customer can do it in the console today", a
     expect(journey4).toHaveLength(7);
     // Every step depends on your product signing its users in with Gait, which is early access (productSignIn).
     expect(new Set(journey4)).toEqual(new Set(["Early access"]));
-    expect(screen.getByText(/Status as of 26 September 2026/)).toBeInTheDocument();
+    expect(screen.getByText(/Status as of 28 September 2026/)).toBeInTheDocument();
 });
 
 test("updating the status object is all it takes to flip a badge", async () => {

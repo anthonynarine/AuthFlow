@@ -28,7 +28,11 @@ afterEach(() => {
 
 test("Security & trust and Help groups hold the new pages", () => {
     const slugsOf = (title) => DOC_GROUPS.find((group) => group.title === title).pages.map((page) => page.slug);
-    expect(slugsOf("Security & trust")).toEqual(["how-gait-protects-your-data", "report-a-vulnerability"]);
+    expect(slugsOf("Security & trust")).toEqual([
+        "how-gait-protects-your-data",
+        "report-a-vulnerability",
+        "automated-security-response",
+    ]);
     expect(slugsOf("Help")).toEqual(["faq", "whats-live"]);
 });
 

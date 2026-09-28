@@ -167,6 +167,24 @@ describe("How it works", () => {
         fireEvent.click(within(lesson).getByRole("button", { name: "End user" }));
         expect(within(lesson).getByText(/Your product, not Gait, decides/)).toBeInTheDocument();
     });
+
+    test("the lesson's early-access wording follows featureStatus.js", () => {
+        const original = FEATURE_STATUS.productSignIn;
+        try {
+            const { unmount } = renderDoc("how-it-works");
+            expect(within(screen.getByRole("figure")).getByText("Optional · early access")).toBeInTheDocument();
+            unmount();
+
+            FEATURE_STATUS.productSignIn = "live";
+            renderDoc("how-it-works");
+            const lesson = screen.getByRole("figure");
+            expect(within(lesson).getByText("Optional")).toBeInTheDocument();
+            fireEvent.click(within(lesson).getByRole("button", { name: "Step 5: Path 3 · Your users may sign in (optional)" }));
+            expect(lesson.textContent).not.toMatch(/early access/i);
+        } finally {
+            FEATURE_STATUS.productSignIn = original;
+        }
+    });
 });
 
 describe("Quickstart", () => {

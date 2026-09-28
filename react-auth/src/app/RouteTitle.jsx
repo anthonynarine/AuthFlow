@@ -19,7 +19,7 @@ const TITLES = [
   [/^\/login\/?$/, "Sign in · Gait"],
   [/^\/register\/?$/, "Create account · Gait"],
   [/^\/forgot-password\/?$/, "Forgot password · Gait"],
-  [/^\/reset-password(\/|$)/, "Reset password · Gait"],
+  [/^\/reset-password\/?$/, "Reset password · Gait"],
   [/^\/send-email\/?$/, "Contact · Gait"],
   [/^\/security-command\/?$/, "Security Command · Gait"],
   [/^\/security(-observatory)?\/?$/, "Security Observatory · Gait"],

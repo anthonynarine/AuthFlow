@@ -78,6 +78,9 @@ export const useBasicAuth = () => {
             // (or any organization it could see) may survive locally.
             queryClient.clear();
             handleSignedOut();
+            // A finished two-step sign-in must not leave the next visit to
+            // /login on the code step.
+            setIs2FARequired(false);
             setIsLoading(false);
         }
     }, []);

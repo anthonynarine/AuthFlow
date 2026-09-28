@@ -84,9 +84,16 @@ export const useTwoFactorAuth = () => {
                 }
             }
         } catch (error) {
-            const errorMsg = error.response?.data?.error;
-            const parsedError = errorMsg ? Object.values(errorMsg).join("") : "An error occurred during 2FA login";
-            setTwoFactorError(parsedError)
+            // Gait refuses a wrong or expired code with 400/401/403 and says
+            // little; say what to do instead of "an error occurred".
+            const status = error.response?.status;
+            if (status === 429) {
+                setTwoFactorError("Too many attempts. Wait a minute, then enter the code showing now.");
+            } else if (status && status < 500) {
+                setTwoFactorError("That code didn't work. Codes change every 30 seconds; enter the one showing now.");
+            } else {
+                setTwoFactorError("We couldn't check that code just now. Try again in a moment.");
+            }
         } finally {
             setIsLoading(false);
         }

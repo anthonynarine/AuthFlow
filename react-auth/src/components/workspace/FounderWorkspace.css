@@ -1,12 +1,12 @@
 .founder-workspace {
   --fw-good: var(--color-accent);
   --fw-good-bg: var(--color-accent-soft);
-  --fw-warn: #f5b85b;
-  --fw-warn-bg: rgba(245, 184, 91, 0.12);
+  --fw-warn: rgb(var(--rgb-warn));
+  --fw-warn-bg: rgba(var(--rgb-warn), 0.12);
   --fw-danger: var(--color-danger);
   --fw-danger-bg: var(--color-danger-bg);
-  --fw-info: #79bdff;
-  --fw-info-bg: rgba(121, 189, 255, 0.12);
+  --fw-info: rgb(var(--rgb-periwinkle));
+  --fw-info-bg: rgba(var(--rgb-periwinkle), 0.12);
 
   min-height: 100vh;
   color: var(--color-text);
@@ -32,7 +32,7 @@
   margin: 0 auto;
   padding: 1rem 1.5rem;
   border-bottom: 1px solid var(--color-border);
-  background: rgba(18, 18, 18, 0.9);
+  background: rgba(var(--rgb-bg), 0.9);
   backdrop-filter: blur(12px);
 }
 
@@ -500,7 +500,7 @@
 .fw-btn.primary {
   background: var(--color-accent);
   border-color: var(--color-accent);
-  color: #07110f;
+  color: var(--color-on-accent);
 }
 
 .fw-btn.danger {
@@ -517,7 +517,7 @@
   align-items: center;
   justify-content: center;
   padding: 1.5rem;
-  background: rgba(0, 0, 0, 0.6);
+  background: rgba(var(--rgb-black), 0.6);
 }
 
 .founder-confirm-dialog {

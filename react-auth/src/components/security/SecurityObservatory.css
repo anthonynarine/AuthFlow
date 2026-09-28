@@ -2,7 +2,7 @@
   min-height: 100vh;
   padding: 1.5rem 1.5rem 8rem;
   background:
-    radial-gradient(circle at top left, rgba(26, 188, 156, 0.08), transparent 24rem),
+    radial-gradient(circle at top left, rgba(var(--rgb-accent), 0.08), transparent 24rem),
     var(--color-bg);
   color: var(--color-text);
 }
@@ -137,7 +137,7 @@
 
 .security-button.primary {
   background: var(--color-accent);
-  color: #0d1117;
+  color: var(--color-on-accent-cool);
 }
 
 .security-button.primary:hover {
@@ -247,7 +247,7 @@
 .security-tab.active {
   background: var(--color-accent);
   border-color: var(--color-accent);
-  color: #0d1117;
+  color: var(--color-on-accent-cool);
 }
 
 .security-panel {
@@ -255,7 +255,7 @@
   padding: 1.2rem;
   border: 1px solid var(--color-border);
   border-radius: var(--radius-md);
-  background: rgba(27, 33, 41, 0.78);
+  background: rgba(var(--rgb-surface), 0.78);
   box-shadow: var(--shadow-sm);
 }
 
@@ -321,7 +321,7 @@
   align-items: center;
   justify-content: center;
   padding: 1.25rem;
-  background: rgba(8, 10, 12, 0.72);
+  background: rgba(var(--rgb-ink), 0.72);
   backdrop-filter: blur(4px);
 }
 
@@ -449,11 +449,11 @@
 }
 
 .summary-card.replay-card {
-  border-color: rgba(255, 193, 7, 0.45);
+  border-color: rgba(var(--rgb-amber), 0.45);
 }
 
 .current-session-panel {
-  background: rgba(35, 42, 52, 0.72);
+  background: rgba(var(--rgb-surface-alt), 0.72);
 }
 
 .current-session-grid {
@@ -547,7 +547,7 @@
 
 .security-table th {
   color: var(--color-text-muted);
-  background: rgba(255, 255, 255, 0.035);
+  background: rgba(var(--rgb-white), 0.035);
   font-size: 0.75rem;
   letter-spacing: 0.06em;
   text-transform: uppercase;
@@ -572,12 +572,12 @@
 
 .security-table tbody tr:hover,
 .security-table tbody tr:focus {
-  background: rgba(255, 255, 255, 0.045);
+  background: rgba(var(--rgb-white), 0.045);
   outline: none;
 }
 
 .security-table tbody tr.replay-row {
-  background: rgba(255, 193, 7, 0.06);
+  background: rgba(var(--rgb-amber), 0.06);
 }
 
 .table-link {
@@ -595,7 +595,7 @@
 .row-note {
   display: block;
   margin-top: 0.25rem;
-  color: #f6c75a;
+  color: var(--color-caution);
   font-size: 0.72rem;
   font-weight: 700;
   text-transform: uppercase;
@@ -618,19 +618,19 @@
 .severity-info,
 .outcome-success,
 .session-active {
-  background: rgba(26, 188, 156, 0.12);
-  border-color: rgba(26, 188, 156, 0.35);
+  background: rgba(var(--rgb-accent), 0.12);
+  border-color: rgba(var(--rgb-accent), 0.35);
 }
 
 .severity-warning {
-  background: rgba(255, 193, 7, 0.12);
-  border-color: rgba(255, 193, 7, 0.4);
+  background: rgba(var(--rgb-amber), 0.12);
+  border-color: rgba(var(--rgb-amber), 0.4);
 }
 
 .severity-high,
 .outcome-denied {
-  background: rgba(255, 139, 61, 0.12);
-  border-color: rgba(255, 139, 61, 0.45);
+  background: rgba(var(--rgb-orange), 0.12);
+  border-color: rgba(var(--rgb-orange), 0.45);
 }
 
 .severity-critical,
@@ -642,23 +642,23 @@
 .outcome-revoked,
 .session-revoked,
 .session-expired {
-  background: rgba(154, 164, 175, 0.12);
-  border-color: rgba(154, 164, 175, 0.36);
+  background: rgba(var(--rgb-muted), 0.12);
+  border-color: rgba(var(--rgb-muted), 0.36);
 }
 
 .control-status-healthy,
 .evidence-result-pass,
 .finding-status-resolved {
-  background: rgba(26, 188, 156, 0.12);
-  border-color: rgba(26, 188, 156, 0.35);
+  background: rgba(var(--rgb-accent), 0.12);
+  border-color: rgba(var(--rgb-accent), 0.35);
 }
 
 .control-status-needs_attention,
 .evidence-result-warning,
 .finding-status-open,
 .finding-status-acknowledged {
-  background: rgba(255, 193, 7, 0.12);
-  border-color: rgba(255, 193, 7, 0.4);
+  background: rgba(var(--rgb-amber), 0.12);
+  border-color: rgba(var(--rgb-amber), 0.4);
 }
 
 .control-status-control_failure,
@@ -672,15 +672,15 @@
 .evidence-result-informational,
 .finding-status-accepted_risk,
 .finding-status-false_positive {
-  background: rgba(154, 164, 175, 0.12);
-  border-color: rgba(154, 164, 175, 0.36);
+  background: rgba(var(--rgb-muted), 0.12);
+  border-color: rgba(var(--rgb-muted), 0.36);
 }
 
 .expired-flag {
   display: inline-flex;
   align-items: center;
   margin-left: 0.5rem;
-  color: #f6c75a;
+  color: var(--color-caution);
   font-size: 0.72rem;
   font-weight: 800;
   text-transform: uppercase;
@@ -694,7 +694,7 @@
 }
 
 .posture-panel {
-  background: rgba(35, 42, 52, 0.72);
+  background: rgba(var(--rgb-surface-alt), 0.72);
 }
 
 .posture-panel h2 {
@@ -813,7 +813,7 @@ button.posture-attention-card:hover {
 }
 
 .posture-attention-card--danger strong {
-  color: var(--color-danger, #e5484d);
+  color: var(--color-danger);
 }
 
 .posture-attention-card--success strong {
@@ -960,7 +960,7 @@ button.posture-attention-card:hover {
   align-items: center;
   justify-content: center;
   padding: 1.25rem;
-  background: rgba(8, 10, 12, 0.7);
+  background: rgba(var(--rgb-ink), 0.7);
   backdrop-filter: blur(4px);
 }
 
@@ -1045,7 +1045,7 @@ button.posture-attention-card:hover {
   align-items: center;
   gap: 0.5rem;
   margin-bottom: 1rem;
-  color: #f6c75a;
+  color: var(--color-caution);
   font-size: 0.78rem;
   font-weight: 800;
 }
@@ -1157,7 +1157,7 @@ button.posture-attention-card:hover {
 /* B-AI2 Phase 4: AI Budget Countdown -- quiet by default, only visually
    elevated when the backend says requires_attention is true. */
 .ai-budget-panel {
-  background: rgba(35, 42, 52, 0.72);
+  background: rgba(var(--rgb-surface-alt), 0.72);
 }
 
 .ai-budget-panel h2 {
@@ -1168,17 +1168,17 @@ button.posture-attention-card:hover {
 }
 
 .ai-budget-panel--attention {
-  border-color: rgba(255, 193, 7, 0.45);
+  border-color: rgba(var(--rgb-amber), 0.45);
 }
 
 .ai-budget-status-normal {
-  background: rgba(26, 188, 156, 0.12);
-  border-color: rgba(26, 188, 156, 0.35);
+  background: rgba(var(--rgb-accent), 0.12);
+  border-color: rgba(var(--rgb-accent), 0.35);
 }
 
 .ai-budget-status-auto_paused {
-  background: rgba(255, 193, 7, 0.12);
-  border-color: rgba(255, 193, 7, 0.4);
+  background: rgba(var(--rgb-amber), 0.12);
+  border-color: rgba(var(--rgb-amber), 0.4);
 }
 
 .ai-budget-status-exhausted {
@@ -1192,7 +1192,7 @@ button.posture-attention-card:hover {
 }
 
 .ai-budget-note--attention {
-  color: #f6c75a;
+  color: var(--color-caution);
   font-weight: 600;
 }
 
@@ -1222,7 +1222,7 @@ button.posture-attention-card:hover {
 .ai-budget-progress {
   height: 0.6rem;
   border-radius: 999px;
-  background: rgba(255, 255, 255, 0.08);
+  background: var(--color-border);
   overflow: hidden;
   margin-top: 0.5rem;
 }
@@ -1234,7 +1234,7 @@ button.posture-attention-card:hover {
 }
 
 .ai-budget-panel--attention .ai-budget-progress-fill {
-  background: #f6c75a;
+  background: var(--color-caution);
 }
 
 .ai-budget-progress-label {
@@ -1258,7 +1258,7 @@ button.posture-attention-card:hover {
   padding: 0.6rem 0.75rem;
   border-radius: var(--radius-md, 0.5rem);
   border: 1px solid var(--color-border);
-  background: rgba(255, 255, 255, 0.03);
+  background: rgba(var(--rgb-white), 0.03);
 }
 
 .ai-budget-stat-card span {

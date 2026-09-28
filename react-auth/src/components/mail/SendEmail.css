@@ -5,10 +5,10 @@
   margin-top: 0; /* Removed top margin */
   margin-bottom: 10rem;
   padding: 2rem;
-  background: #1e1e1e; /* Dark background */
+  background: var(--mail-bg); /* Dark background */
   border-radius: 8px;
-  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.3); /* Subtle shadow */
-  color: #e0e0e0; /* Light text color */
+  box-shadow: 0 4px 6px rgba(var(--rgb-black), 0.3); /* Subtle shadow */
+  color: var(--mail-text); /* Light text color */
   font-family: 'Arial', sans-serif; /* Modern, clean font */
   position: relative; /* Ensure the nav buttons are relative to the form */
 }
@@ -28,14 +28,14 @@
 .nav-button {
   top: 15px;
   background: none;
-  color: #d3d3d3;
+  color: var(--mail-label);
   border: none;
   cursor: pointer;
   transition: transform 0.3s ease, color 0.3s ease; /* Smooth transitions */
 }
 
 .nav-button:hover {
-  color: #1abc9c; /* Color change on hover */
+  color: var(--color-accent); /* Color change on hover */
   transform: scale(1.2); /* Slightly enlarge on hover */
 }
 
@@ -47,7 +47,7 @@
 /* Form headings */
 .form h6.from-h6 {
   font-size: 1rem;
-  color: #30815e;
+  color: var(--mail-accent);
   margin-bottom: 1rem;
   text-align: center;
   font-weight: normal;
@@ -59,16 +59,16 @@
   width: 100%;
   padding: 10px;
   margin-bottom: 1rem;
-  border: 2px solid #333; /* Dark border */
+  border: 2px solid var(--mail-border); /* Dark border */
   border-radius: 4px;
   box-sizing: border-box;
-  color: #e0e0e0; /* Light text color */
-  background-color: #121212; /* Dark background */
+  color: var(--mail-text); /* Light text color */
+  background-color: var(--color-bg); /* Dark background */
 }
 
 .form-input:focus,
 .form-textarea:focus {
-  border-color: #1abc9c; /* Teal border on focus */
+  border-color: var(--color-accent); /* Teal border on focus */
   outline: none; /* Remove default outline */
 }
 
@@ -81,7 +81,7 @@
 /* Submit button */
 .form-button[type="submit"] {
   width: 100%;
-  background-color: #30815e;
+  background-color: var(--mail-accent);
   color: white;
   padding: 15px 20px;
   border: none;
@@ -92,7 +92,7 @@
 }
 
 .form-button[type="submit"]:hover {
-  background-color: #14a365; /* Darker teal on hover */
+  background-color: var(--mail-accent-hover); /* Darker teal on hover */
 }
 
 /* Email invite section */
@@ -101,21 +101,21 @@
   max-width: 400px; /* Smaller max-width */
   margin: 3rem auto 1rem auto; /* Center aligns the div with top & bottom margin */
   text-align: center; /* Center-align the text */
-  color: #ecf0f1; /* Lighter text color for contrast */
+  color: var(--mail-button-text); /* Lighter text color for contrast */
   font-size: 1rem; /* Adjust text size for readability */
   line-height: 1.5; /* Improves readability */
 }
 
 /* Links in email invite */
 .email-invite a {
-  color: #1abc9c; /* Bright, inviting color for the link */
+  color: var(--color-accent); /* Bright, inviting color for the link */
   text-decoration: none; /* Removes underline to keep it sleek */
   font-weight: bold; /* Makes the email address stand out */
   transition: color 0.3s ease; /* Smooth transition for color */
 }
 
 .email-invite a:hover {
-  color: #2ecc71; /* Slightly lighter shade on hover */
+  color: var(--mail-link-hover); /* Slightly lighter shade on hover */
 }
 
 /* Media query for smaller screens */

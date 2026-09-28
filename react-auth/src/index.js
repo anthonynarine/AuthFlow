@@ -4,6 +4,7 @@ import { QueryClientProvider } from "@tanstack/react-query";
 import App from './App';
 import { BrowserRouter } from "react-router-dom";
 import "./index.css";
+import "./theme/palette.css";
 import "./interceptors/axios"
 import { queryClient } from "./app/queryClient";
 import { purgeLegacyTokenCookies } from "./interceptors/tokenStorage";

@@ -9,8 +9,6 @@ export const DEFAULT_TITLE = "Gait: See the security of every app you ship";
 // (including 404s) fall back to DEFAULT_TITLE, which matches index.html.
 const TITLES = [
   [/^\/$/, DEFAULT_TITLE],
-  [/^\/architecture\/?$/, "Architecture · Gait"],
-  [/^\/developers\/?$/, "gait-sdk for developers · Gait"],
   [/^\/early-access\/?$/, "Early access · Gait"],
   [/^\/verify-email\/?$/, "Confirm your email · Gait"],
   [/^\/console\/invites\/accept\/?$/, "Join a workspace · Gait"],

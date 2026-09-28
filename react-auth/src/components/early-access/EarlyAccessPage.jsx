@@ -1,9 +1,12 @@
-import React, { useState } from "react";
+import React, { useEffect, useRef, useState } from "react";
 import "../home/Home.css";
+import "../../docs/docs.css";
 import "./EarlyAccessPage.css";
 import { Link } from "react-router-dom";
 import { RiArrowLeftLine, RiShieldKeyholeLine } from "react-icons/ri";
 import { publicAxios } from "../../interceptors/axios";
+import { StatusBadge } from "../../docs/components/DocPrimitives";
+import { docPath } from "../../docs/manifest";
 
 const TEAM_SIZE_OPTIONS = ["Just me", "2–5 people", "6–15 people", "16+ people"];
 const STAGE_OPTIONS = ["Idea", "Building", "Launched", "Scaling"];
@@ -45,6 +48,13 @@ export function EarlyAccessPage() {
   const [form, setForm] = useState(initialForm);
   const [status, setStatus] = useState("idle"); // idle | submitting | success | error
   const [errorMessage, setErrorMessage] = useState("");
+  const successHeading = useRef(null);
+
+  // The form is replaced by the confirmation; move focus there so keyboard and
+  // screen-reader users aren't left on a control that no longer exists.
+  useEffect(() => {
+    if (status === "success") successHeading.current?.focus();
+  }, [status]);
 
   const handleChange = (event) => {
     const { name, value, type, checked } = event.target;
@@ -91,17 +101,18 @@ export function EarlyAccessPage() {
           <p className="eyebrow">Early access</p>
           <h1 className="early-access-title">Tell us about your app.</h1>
           <p className="section-lede">
-            Gait's multi-tenant support is still being built, so we're onboarding a small number of teams by hand.
-            A few details here help us figure out if it's a fit, and where to start if it is.
+            Sign-in for your own product <StatusBadge feature="productSignIn" /> lets your users sign in with Gait
+            accounts through the gait-sdk. A few details here help us figure out if it's a fit, and where to start
+            if it is. Everything else in Gait you can start today: see the{" "}
+            <Link to={docPath("quickstart")}>Quickstart</Link>.
           </p>
 
           {status === "success" ? (
             <div className="early-access-card early-access-success" role="status">
               <p className="panel-label">Request received</p>
-              <h2>Thanks — we'll be in touch.</h2>
+              <h2 ref={successHeading} tabIndex={-1}>Thanks — we'll be in touch.</h2>
               <p>
-                We read every early access request ourselves. Expect a reply at <strong>{form.reply_to}</strong>{" "}
-                within a few days.
+                We read every early access request ourselves and will reply to <strong>{form.reply_to.trim()}</strong>.
               </p>
               <Link to="/" className="btn-pill btn-pill-secondary">Back to homepage</Link>
             </div>
@@ -201,12 +212,16 @@ export function EarlyAccessPage() {
                   checked={form.urgent}
                   onChange={handleChange}
                 />
-                <span>This is urgent — we've had a security incident or active concern</span>
+                <span>Mark as urgent (for example, a recent security incident or an active concern)</span>
               </label>
 
               {status === "error" && (
                 <p className="early-access-error" role="alert">{errorMessage}</p>
               )}
+
+              <p className="early-access-note">
+                We email your answers to the Gait team. They aren't stored in Gait.
+              </p>
 
               <button type="submit" className="btn-pill btn-pill-primary" disabled={status === "submitting"}>
                 {status === "submitting" ? "Sending..." : "Request Early Access"}

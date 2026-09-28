@@ -127,7 +127,7 @@ describe("HomePage product positioning", () => {
       "href",
       "/docs/connecting-your-software"
     );
-    expect(screen.getByRole("link", { name: /Developer guide/ })).toHaveAttribute("href", "/developers");
+    expect(screen.getByRole("link", { name: /gait-sdk docs/ })).toHaveAttribute("href", "/docs/gait-sdk");
     screen.getAllByRole("link", { name: /Request early access/i }).forEach((link) =>
       expect(link).toHaveAttribute("href", "/early-access")
     );
@@ -179,12 +179,12 @@ describe("HomePage product positioning", () => {
     );
   });
 
-  test("Docs and Developers are in the header, behind a menu button on phones", () => {
+  test("Docs is in the header (no separate Developers page), behind a menu button on phones", () => {
     renderHome({ isLoggedIn: false, user: null });
 
     const nav = screen.getByRole("navigation", { name: "Product navigation" });
     expect(within(nav).getByRole("link", { name: "Docs" })).toHaveAttribute("href", "/docs");
-    expect(within(nav).getByRole("link", { name: "Developers" })).toHaveAttribute("href", "/developers");
+    expect(within(nav).queryByRole("link", { name: "Developers" })).not.toBeInTheDocument();
 
     const toggle = screen.getByRole("button", { name: "Menu" });
     expect(toggle).toHaveAttribute("aria-expanded", "false");

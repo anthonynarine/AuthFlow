@@ -40,12 +40,17 @@ export default function AutomatedSecurityResponse() {
                 <ul>
                     <li>
                         <strong>A person approves every deployment.</strong> A fix can't reach production without an
-                        administrator approving that exact fix. Each approval works once, for one change, and expires.
+                        administrator approving that exact fix. Each approval works once, for one change, and expires. If
+                        the fix changes after it's approved, the approval no longer applies.
                     </li>
                     <li>
                         <strong>Fixes are checked by something other than what wrote them.</strong> A separate step
                         reproduces the problem, confirms the fix resolves it, checks that it only changed what it said it
                         would, and runs the tests.
+                    </li>
+                    <li>
+                        <strong>AI helps; it doesn't decide.</strong> Automated agents investigate and prepare fixes,
+                        but they can't approve a change, and nothing they say counts as proof that a problem is fixed.
                     </li>
                     <li>
                         <strong>Every fix starts isolated.</strong> Fixes are prepared in a separate copy of the code and

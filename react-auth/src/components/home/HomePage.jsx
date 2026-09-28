@@ -217,7 +217,6 @@ function HomePage() {
         >
           <a href="#how-it-works">How it works</a>
           <Link to="/docs">Docs</Link>
-          <Link to="/developers">Developers</Link>
           {!isLoggedIn && (
             <Link to="/early-access" className="nav-cta secondary">Early access</Link>
           )}
@@ -373,8 +372,8 @@ function HomePage() {
             <Link to={docPath("connecting-your-software")} className="btn-pill btn-pill-secondary">
               <RiBookOpenLine /> Connecting your software
             </Link>
-            <Link to="/developers" className="btn-pill btn-pill-ghost">
-              <RiTerminalBoxLine /> Developer guide
+            <Link to={docPath("gait-sdk")} className="btn-pill btn-pill-ghost">
+              <RiTerminalBoxLine /> gait-sdk docs
             </Link>
           </div>
         </section>

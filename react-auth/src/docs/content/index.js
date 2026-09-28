@@ -5,6 +5,7 @@ import PeopleAndApplications from "./PeopleAndApplications";
 import IsolationAndSetup from "./IsolationAndSetup";
 import GettingStarted from "./GettingStarted";
 import ConnectingYourSoftware from "./ConnectingYourSoftware";
+import GaitSdk from "./GaitSdk";
 import SecurityChecksAndFindings from "./SecurityChecksAndFindings";
 import TeamsRolesAndInvites from "./TeamsRolesAndInvites";
 import ApplicationsAndConnectionKeys from "./ApplicationsAndConnectionKeys";
@@ -21,6 +22,7 @@ export const DOC_CONTENT = {
     isolation: IsolationAndSetup,
     "getting-started": GettingStarted,
     "connecting-your-software": ConnectingYourSoftware,
+    "gait-sdk": GaitSdk,
     "security-checks-and-findings": SecurityChecksAndFindings,
     "teams-roles-and-invites": TeamsRolesAndInvites,
     "applications-and-connection-keys": ApplicationsAndConnectionKeys,

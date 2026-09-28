@@ -36,6 +36,10 @@ export function useJoinInvite() {
     const queryClient = useQueryClient();
     return useMutation({
         mutationFn: (inviteId) => acceptInviteById(inviteId),
+        // Wait for the fresh workspace list (cached ones included) before the
+        // join resolves: the console checks membership against it, and a list
+        // cached before joining would bounce them straight back out.
+        onSuccess: () => queryClient.invalidateQueries({ queryKey: consoleKeys.myOrganizations(), refetchType: "all" }),
         onSettled: () => {
             queryClient.invalidateQueries({ queryKey: consoleKeys.myInvites() });
             queryClient.invalidateQueries({ queryKey: consoleKeys.myOrganizations() });

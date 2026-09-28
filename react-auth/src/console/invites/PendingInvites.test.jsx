@@ -5,6 +5,7 @@ import { MemoryRouter, Route, Routes, useLocation } from "react-router-dom";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { PendingInvites } from "./PendingInvites";
 import { ConsoleLayout } from "../layout/ConsoleLayout";
+import { consoleKeys } from "../api/queryKeys";
 import { acceptInviteById, fetchMyInvites, fetchMyOrganizations, fetchPostureOverview } from "../api/consoleApi";
 
 jest.mock("../../account/emailVerificationApi", () => ({ verifyEmailToken: jest.fn(), resendVerificationEmail: jest.fn() }));
@@ -131,6 +132,33 @@ describe("pending invites list", () => {
         fireEvent.click(screen.getByRole("button", { name: "Join Lumen as a Member" }));
         expect(await screen.findByRole("alert")).toHaveTextContent("Too many attempts");
         expect(screen.getByRole("button", { name: /Try again in \d+s/ })).toBeDisabled();
+    });
+
+    test("a workspace list cached before joining can't bounce them out of the new workspace", async () => {
+        const client = new QueryClient({ defaultOptions: { queries: { retry: false, staleTime: 30_000 } } });
+        client.setQueryData(consoleKeys.myOrganizations(), [ACME]); // e.g. from an earlier visit to /console
+        acceptInviteById.mockImplementation(async () => {
+            fetchMyOrganizations.mockResolvedValue([ACME, LUMEN]);
+            return { organization_slug: "lumen", organization_name: "Lumen", org_role: "MEMBER" };
+        });
+        render(
+            <QueryClientProvider client={client}>
+                <MemoryRouter initialEntries={["/somewhere"]}>
+                    <Routes>
+                        <Route path="/somewhere" element={<PendingInvites invites={[invite()]} />} />
+                        <Route path="/console/:orgSlug" element={<ConsoleLayout />}>
+                            <Route path="overview" element={<p>Overview body</p>} />
+                        </Route>
+                        <Route path="/console" element={<p>Console entry</p>} />
+                    </Routes>
+                    <LocationProbe />
+                </MemoryRouter>
+            </QueryClientProvider>
+        );
+        fireEvent.click(screen.getByRole("button", { name: "Join Lumen" }));
+        fireEvent.click(screen.getByRole("button", { name: "Join Lumen as a Member" }));
+        expect(await screen.findByText("Overview body")).toBeInTheDocument();
+        expect(screen.getByTestId("location")).toHaveTextContent("/console/lumen/overview");
     });
 
     test("joining sends only the invite's id and lands in the workspace", async () => {

@@ -332,3 +332,30 @@ describe("rate limits", () => {
         await settle();
     });
 });
+
+describe("joined elsewhere by confirmed email (INV1)", () => {
+    const APP_ONE_MEMBERSHIP = { id: "1", name: "App One", slug: "app-one", org_role: "ADMIN" };
+
+    test("Join says 'already in', not 'can't be used', when the invite was used up by joining in another tab", async () => {
+        mockUser = { email: "b@example.test", email_verified: true };
+        acceptInvite.mockImplementation(() => {
+            fetchMyOrganizations.mockResolvedValue([APP_ONE_MEMBERSHIP]);
+            return Promise.reject({ response: { status: 404, data: { code: "INVITE_INVALID", detail: "x" } } });
+        });
+        visit(`#token=${TOKEN}`);
+        fireEvent.click(await screen.findByRole("button", { name: "Join App One" }));
+        expect(await screen.findByRole("heading", { name: "You're already in App One" })).toBeInTheDocument();
+        expect(screen.queryByText(CANT_BE_USED)).not.toBeInTheDocument();
+    });
+
+    test("\"I've confirmed my email, continue\" rechecks workspaces, so a join in the other tab shows as already in", async () => {
+        mockUser = { email: "b@example.test", email_verified: false };
+        visit(`#token=${TOKEN}`);
+        await screen.findByRole("heading", { name: "Confirm your email first" });
+        mockUser = { email: "b@example.test", email_verified: true };
+        fetchMyOrganizations.mockResolvedValue([APP_ONE_MEMBERSHIP]);
+        fireEvent.click(screen.getByRole("button", { name: "I've confirmed my email, continue" }));
+        expect(await screen.findByRole("link", { name: "Go to App One" })).toHaveAttribute("href", "/console/app-one/overview");
+        expect(acceptInvite).not.toHaveBeenCalled();
+    });
+});

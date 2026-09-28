@@ -62,8 +62,9 @@ describe("navigation groups", () => {
             "Concepts",
             "Guides",
             "For developers",
+            "Security & trust",
             "Reference",
-            "Gait's platform",
+            "Help",
         ]);
         expect(DOC_PAGES.map((page) => page.slug).slice(0, 5)).toEqual([
             "what-gait-is",
@@ -88,7 +89,7 @@ describe("What Gait is", () => {
             "Live",
             "Early access",
         ]);
-        expect(screen.getByText(/Status as of 26 September 2026/)).toBeInTheDocument();
+        expect(screen.getByText(/Status as of 28 September 2026/)).toBeInTheDocument();
     });
 
     test("the status object drives the badge and the waiting note", () => {

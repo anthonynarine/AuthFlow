@@ -6,7 +6,7 @@
  *   pending      not yet, including an API that exists but has no console screen
  *   earlyAccess  available to early-access customers only
  */
-export const STATUS_AS_OF = "2026-09-26";
+export const STATUS_AS_OF = "2026-09-28";
 
 export const FEATURE_STATUS = {
     // Stage E1: confirming your email address. Live with the E1-E3 release.
@@ -23,13 +23,46 @@ export const FEATURE_STATUS = {
     core: "live",
 };
 
+/**
+ * What each status key covers, for the "What's live" page: a customer-facing
+ * name, one line, and the docs page that explains it. Statuses themselves stay
+ * in FEATURE_STATUS above. Every key there needs an entry here (a test checks).
+ */
+export const FEATURE_INFO = {
+    core: {
+        name: "Workspaces, applications, connection keys and security checks",
+        summary: "Your private workspace, one application per environment, keys shown once, and the checks your software reports.",
+        doc: "getting-started",
+    },
+    emailVerification: {
+        name: "Confirming your email address",
+        summary: "Needed before you create a workspace or join one.",
+        doc: "getting-started#step-1-sign-in",
+    },
+    membersAndInviteAccept: {
+        name: "Members and invites in the console",
+        summary: "Invite teammates as Owner, Admin or Member, and accept an invite.",
+        doc: "teams-roles-and-invites",
+    },
+    findingsScreen: {
+        name: "Findings screen",
+        summary: "See findings per environment, acknowledge them or accept the risk with a note.",
+        doc: "handle-a-finding",
+    },
+    productSignIn: {
+        name: "Sign-in for your own product",
+        summary: "Your product's users sign in with Gait accounts, verified with the gait-sdk.",
+        doc: "product-organizations-and-invites",
+    },
+};
+
 export const STATUS_LABELS = {
     live: "Live",
     pending: "Pending",
     earlyAccess: "Early access",
 };
 
-/** STATUS_AS_OF as "26 September 2026". */
+/** STATUS_AS_OF as "28 September 2026". */
 export function statusAsOfLabel() {
     const [year, month, day] = STATUS_AS_OF.split("-").map(Number);
     return new Date(Date.UTC(year, month - 1, day)).toLocaleDateString("en-GB", {

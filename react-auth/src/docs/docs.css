@@ -448,3 +448,6 @@
 .doc-glossary dt { font-weight: 650; margin: 0 0 4px; }
 .doc-glossary dd { margin: 0; }
 .doc-glossary-more { display: inline-block; font-size: 0.85rem; color: var(--color-text-muted); }
+
+/* FAQ: the glossary's list, with room between one answer and the next question. */
+.docs-article .doc-faq dd { margin-bottom: 16px; }

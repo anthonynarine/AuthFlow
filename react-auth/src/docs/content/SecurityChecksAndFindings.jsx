@@ -2,7 +2,8 @@ import React from "react";
 import { DocLink, DocSection, DocTable } from "../components/DocPrimitives";
 import { Diagram } from "../components/Diagram";
 
-const FINDING_LIFECYCLE = `flowchart LR
+// Top to bottom: with the reopen arrow, left to right shrinks the labels past reading.
+const FINDING_LIFECYCLE = `flowchart TB
     classDef app fill:#2a2340,stroke:#a78bfa,color:#e8eaed,stroke-width:2px
     classDef open fill:#3a1f24,stroke:#ff6b6b,color:#e8eaed,stroke-width:2px
     classDef human fill:#3a2e1a,stroke:#f5b85b,color:#e8eaed,stroke-width:2px

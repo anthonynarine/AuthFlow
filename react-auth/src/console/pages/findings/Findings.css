@@ -1,3 +1,5 @@
+@import "../../tokens.css";
+
 /* F3 Findings. Built on the console tokens, ui.css and Applications.css. */
 
 .gc-filters { display: flex; flex-wrap: wrap; align-items: flex-end; gap: 12px; margin-bottom: 16px; }
@@ -12,15 +14,15 @@
   margin-bottom: 16px;
   padding: 14px 16px;
   border-radius: var(--radius-md);
-  border: 1px solid var(--diagram-truth-border);
-  background: var(--diagram-truth-bg);
+  border: 1px solid var(--gc-info-border);
+  background: var(--gc-info-bg);
 }
-.gc-accepted-title { margin: 0 0 6px; font-weight: 650; color: var(--diagram-truth); }
+.gc-accepted-title { margin: 0 0 6px; font-weight: 650; color: var(--gc-info); }
 .gc-accepted-text { margin: 0; font-size: 0.9rem; line-height: 1.5; color: var(--color-text); }
 .gc-accepted-note {
   margin: 10px 0 0;
   padding: 8px 12px;
-  border-left: 3px solid var(--diagram-truth-border);
+  border-left: 3px solid var(--gc-info-border);
   color: var(--color-text);
   font-size: 0.9rem;
   white-space: pre-wrap;

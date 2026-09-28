@@ -1,3 +1,5 @@
+@import "../tokens.css";
+
 .gc-shell {
   min-height: 100vh;
   background: var(--color-bg);
@@ -14,7 +16,7 @@
   align-items: center;
   gap: 16px;
   padding: 10px 20px;
-  background: rgba(18, 18, 18, 0.85);
+  background: var(--gc-topbar-bg);
   backdrop-filter: blur(10px);
   border-bottom: 1px solid var(--color-border);
   flex-wrap: wrap;
@@ -154,7 +156,7 @@
   padding: 0 6px;
   border-radius: var(--radius-pill);
   background: var(--color-accent);
-  color: #0b1512;
+  color: var(--gc-on-accent-strong);
   font-size: 0.75rem;
   font-weight: 700;
   line-height: 20px;

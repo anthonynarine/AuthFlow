@@ -68,11 +68,6 @@ export const DOC_GROUPS = [
                 summary: "Sign in, create your workspace, add an application and get its connection key.",
             },
             {
-                slug: "connecting-your-software",
-                title: "Connecting your software",
-                summary: "Install the Gait SDK, configure it, and report your first security check.",
-            },
-            {
                 slug: "security-checks-and-findings",
                 title: "Security checks & findings",
                 summary: "What Gait does with what your application reports, and how to act on a finding.",
@@ -86,6 +81,21 @@ export const DOC_GROUPS = [
                 slug: "applications-and-connection-keys",
                 title: "Applications & connection keys",
                 summary: "Environments, one-time keys, safe rotation, and suspending or retiring an application.",
+            },
+        ],
+    },
+    {
+        title: "For developers",
+        pages: [
+            {
+                slug: "gait-sdk",
+                title: "gait-sdk",
+                summary: "Gait's Python package: install it, report a security check, verify a user.",
+            },
+            {
+                slug: "connecting-your-software",
+                title: "Connecting your software",
+                summary: "Install the Gait SDK, configure it, and report your first security check.",
             },
         ],
     },

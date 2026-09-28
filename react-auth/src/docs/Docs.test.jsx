@@ -256,6 +256,16 @@ describe("docs are public", () => {
         expect(screen.getByTestId("location")).toHaveTextContent(`/docs/${DOC_PAGES[DOC_PAGES.length - 1].slug}`);
     });
 
+    test.each([
+        ["/developers", "gait-sdk", "gait-sdk"],
+        ["/architecture", "automated-security-response", "Automated security response"],
+    ])("retired page %s redirects to /docs/%s", async (path, slug, title) => {
+        renderApp(path);
+        expect(screen.getByTestId("location")).toHaveTextContent(`/docs/${slug}`);
+        expect(screen.getByRole("heading", { level: 1, name: title })).toBeInTheDocument();
+        await settleDiagrams();
+    });
+
     test("/docs opens the first page", async () => {
         renderApp("/docs");
         expect(screen.getByTestId("location")).toHaveTextContent(`/docs/${DOC_PAGES[0].slug}`);

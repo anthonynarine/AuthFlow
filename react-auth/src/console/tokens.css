@@ -1,0 +1,33 @@
+/*
+ * Console palette (stage 1). Every color the console uses is named here, so a
+ * later stage can change the console's look in one place. Values are exactly
+ * what the console showed before; nothing here changes how it looks.
+ *
+ * The console only: the auth pages use src/ds, the docs their own styles.
+ */
+:root {
+  /* Text on an accent-filled surface (primary buttons, count pills). */
+  --gc-on-accent: #04211b;
+  --gc-on-accent-strong: #0b1512;
+
+  /* Accent outlines. */
+  --gc-accent-border: rgba(26, 188, 156, 0.35);
+  --gc-accent-border-strong: rgba(26, 188, 156, 0.4);
+
+  /* Status roles used by badges and notices. */
+  --gc-good: #34d399;
+  --gc-good-bg: rgba(52, 211, 153, 0.12);
+  --gc-good-border: rgba(52, 211, 153, 0.3);
+
+  --gc-warn: var(--diagram-human);
+  --gc-warn-bg: var(--diagram-human-bg);
+  --gc-warn-border: var(--diagram-human-border);
+
+  --gc-info: var(--diagram-truth);
+  --gc-info-bg: var(--diagram-truth-bg);
+  --gc-info-border: var(--diagram-truth-border);
+
+  /* Chrome. */
+  --gc-topbar-bg: rgba(18, 18, 18, 0.85);
+  --gc-overlay: rgba(0, 0, 0, 0.6);
+}

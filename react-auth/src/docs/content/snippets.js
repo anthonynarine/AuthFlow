@@ -30,3 +30,24 @@ asyncio.run(send_security_signal(
     source_reference="self-check:2026-09-25T20:00Z:1",   # unique per run
     payload={"checks": {"debug_disabled": "FAIL", "hsts_enabled": "PASS"}},
 ))`;
+
+// Verify your product's users (Early access): Django REST Framework, in the
+// SDK's default "introspection" mode, which needs only GAIT_AUTH_URL. The SDK's
+// "jwks" mode waits until Gait publishes signing keys (its JWKS is empty today).
+export const VERIFY_USER_SETTINGS = `# settings.py
+# "gait_sdk" checks the configuration at startup.
+INSTALLED_APPS = [..., "gait_sdk"]
+
+REST_FRAMEWORK = {
+    "DEFAULT_AUTHENTICATION_CLASSES": ["gait_sdk.authentication.ExternalJWTAuthentication"],
+}
+
+GAIT_AUTH_URL = "${GAIT_API_URL}"`;
+
+export const VERIFY_USER_VIEW = `# views.py
+class ProjectList(APIView):
+    def get(self, request):
+        # Who Gait says this is: identity.subject, identity.email
+        identity = request.verified_identity
+        # Your product decides what they may see.
+        ...`;

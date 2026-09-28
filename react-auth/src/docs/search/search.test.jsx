@@ -4,13 +4,12 @@ import { fireEvent, render, screen, waitFor, within } from "@testing-library/rea
 import { MemoryRouter, Route, Routes, useLocation } from "react-router-dom";
 import { DocsPage } from "../DocsPage";
 import { DOC_PAGES } from "../manifest";
-import { buildSearchIndex, searchDocs } from "./searchIndex";
+import { loadSearchIndex, searchDocs } from "./searchIndex";
 
 // react-dom/server's browser build expects TextEncoder, which this jsdom lacks.
 const { TextEncoder, TextDecoder } = require("util");
 global.TextEncoder = global.TextEncoder || TextEncoder;
 global.TextDecoder = global.TextDecoder || TextDecoder;
-const { renderToStaticMarkup } = require("react-dom/server");
 
 function LocationProbe() {
     const location = useLocation();
@@ -30,8 +29,12 @@ function renderDocs(path) {
 
 let index;
 
-beforeAll(() => {
-    index = buildSearchIndex(renderToStaticMarkup);
+// Build the index once, through the same loadSearchIndex() the search box uses,
+// so every test (including the UI ones) shares it. Building it renders every
+// docs page; left to the first UI test, that took up to ~900 ms under a full
+// run, against findBy's 1 s wait, and occasionally timed out.
+beforeAll(async () => {
+    index = await loadSearchIndex();
 });
 
 beforeEach(() => {

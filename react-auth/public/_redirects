@@ -1,3 +1,6 @@
 /static/*    /static/:splat   200
+# Retired pages (their content moved into /docs). Before the SPA fallback.
+/developers     /docs/gait-sdk                       301
+/architecture   /docs/automated-security-response    301
 /reset-password/*    /index.html   200
 /*           /index.html      200

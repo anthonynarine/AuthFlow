@@ -1,5 +1,6 @@
 import React from "react";
 import { Callout, DocLink, DocSection, DocTable } from "../components/DocPrimitives";
+import { AppGetsKeyLesson } from "../components/AppGetsKeyLesson";
 import { Diagram } from "../components/Diagram";
 import { PersonJoinsLesson } from "../components/PersonJoinsLesson";
 import { statusOf } from "../featureStatus";
@@ -35,22 +36,6 @@ const BIG_PICTURE = `flowchart TB
     A1 -- "connection key" --> E1
     A2 -- "connection key" --> E2
     E1 -. "reports security checks" .-> A1`;
-
-const APP_GETS_KEY = `sequenceDiagram
-    autonumber
-    actor O as Owner or Admin
-    participant C as Gait console
-    participant G as Gait
-    participant S as Your app's backend
-
-    O->>C: Add application (name, slug, environment)
-    O->>C: Issue a connection key (label)
-    G-->>O: Key shown once (Gait keeps only a fingerprint)
-    O->>S: Store the key in the backend's secret settings
-    loop Every run or deploy
-        S->>G: Report a security check (with the key)
-        G-->>S: Recorded for acme / acme-api / production
-    end`;
 
 const PRODUCT_USERS = `flowchart LR
     classDef gait fill:#1b2129,stroke:#38bdf8,color:#e8eaed,stroke-width:2px
@@ -178,10 +163,7 @@ export default function PeopleAndApplications() {
             </DocSection>
 
             <DocSection id="how-an-application-gets-its-key" title="How an application gets its key">
-                <Diagram
-                    source={APP_GETS_KEY}
-                    description="An Owner or Admin adds an application with a name, slug and environment, then issues a connection key. Gait shows the key once and keeps only a fingerprint of it. The key goes into the backend's secret settings, and from then on the backend reports security checks with it, which Gait records for that workspace, application and environment."
-                />
+                <AppGetsKeyLesson />
                 <p>
                     See <DocLink to="applications-and-connection-keys">Applications &amp; connection keys</DocLink> and{" "}
                     <DocLink to="connecting-your-software">Connecting your software</DocLink>.

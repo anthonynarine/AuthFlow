@@ -7,8 +7,6 @@ import { EarlyAccessPage } from "./components/early-access/EarlyAccessPage";
 import { ResetPassword } from "./components/reset-password/ResetPassword";
 import { NotFound } from "./components/not-found/NotFound";
 import HomePage from "./components/home/HomePage";
-import GaitArchitecturePage from "./components/home/GaitArchitecturePage";
-import { DevelopersPage } from "./components/developers/DevelopersPage";
 import { RouteTitle } from "./app/RouteTitle";
 import { SecurityObservatoryPage } from "./components/security/SecurityObservatoryPage";
 import { SecurityLearnPage } from "./components/security/SecurityLearnPage";
@@ -63,8 +61,9 @@ function App() {
                 <UserSessionProvider>
                   <Routes>
                     <Route path="/" element={<HomePage />} />
-                    <Route path="/architecture" element={<GaitArchitecturePage />} />
-                    <Route path="/developers" element={<DevelopersPage />} />
+                    {/* Retired pages; public/_redirects sends direct loads here with a 301. */}
+                    <Route path="/architecture" element={<Navigate to={docPath("automated-security-response")} replace />} />
+                    <Route path="/developers" element={<Navigate to={docPath("gait-sdk")} replace />} />
                     <Route path="/register" element={<RegisterPage />} />
                     <Route path="/login" element={<LoginPage />} />
                     <Route path="/forgot-password" element={<ForgotPassword />} />

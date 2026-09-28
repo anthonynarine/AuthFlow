@@ -1,6 +1,6 @@
 import React from "react";
 import "@testing-library/jest-dom";
-import { fireEvent, render, screen, within } from "@testing-library/react";
+import { fireEvent, render, screen, waitFor, within } from "@testing-library/react";
 import { MemoryRouter, Route, Routes, useLocation } from "react-router-dom";
 import HomePage from "./HomePage";
 import { FEATURE_STATUS, STATUS_LABELS } from "../../docs/featureStatus";
@@ -229,11 +229,36 @@ describe("HomePage security navigation (staff gating)", () => {
 
     const link = screen.getAllByRole("link", { name: /Security Command/i })[0];
     expect(link).toHaveAttribute("href", "/security-command");
-    expect(screen.getByText("Anthony Narine")).toBeInTheDocument();
+    expect(screen.getByRole("button", { name: /^Your account/ })).toHaveTextContent("staff@example.com");
 
     fireEvent.click(link);
 
     expect(screen.getByTestId("location")).toHaveTextContent("/security-command");
+  });
+
+  test("signed in: the account menu reaches Account and flags 2FA off; signing out stays on the home page", async () => {
+    const logout = jest.fn(() => Promise.resolve());
+    renderHome({
+      logout,
+      user: { first_name: "Anthony", last_name: "Narine", email: "staff@example.com", is_staff: true, is_2fa_enabled: false },
+    });
+
+    const menuButton = screen.getByRole("button", { name: "Your account, two-step verification is off" });
+    expect(screen.queryByRole("button", { name: "Logout" })).not.toBeInTheDocument();
+    fireEvent.click(menuButton);
+    const account = screen.getByRole("menuitem", { name: /Account/ });
+    expect(account).toHaveAttribute("href", "/account");
+    expect(account).toHaveTextContent("2FA off");
+
+    fireEvent.click(screen.getByRole("menuitem", { name: "Sign out" }));
+    await waitFor(() => expect(logout).toHaveBeenCalledTimes(1));
+    expect(screen.getByTestId("location")).toHaveTextContent(/^\/$/);
+  });
+
+  test("signed out: a Login link, no account menu", () => {
+    renderHome({ isLoggedIn: false, user: null });
+    expect(screen.getByRole("link", { name: "Login" })).toHaveAttribute("href", "/login");
+    expect(screen.queryByRole("button", { name: /^Your account/ })).not.toBeInTheDocument();
   });
 
   test("falls back to is_staff when capability field is not present", () => {

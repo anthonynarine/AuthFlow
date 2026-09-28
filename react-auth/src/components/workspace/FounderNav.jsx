@@ -2,6 +2,7 @@ import React from "react";
 import { Link, useLocation } from "react-router-dom";
 import { RiShieldKeyholeLine, RiToolsLine } from "react-icons/ri";
 import { useBasicAuthServices } from "../../context/auth/BasicAuthContext";
+import { AccountMenu } from "../../account/AccountMenu";
 
 const STAFF_LINKS = [
   { key: "home", label: "Home", path: "/workspace" },
@@ -55,6 +56,8 @@ export function FounderNav() {
           </Link>
         )}
       </div>
+      {/* Account (and the "2FA off" flag) is reachable from every signed-in shell. */}
+      <AccountMenu />
     </nav>
   );
 }

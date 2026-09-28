@@ -7,7 +7,7 @@ import { NOTE_MAX, NOTE_MIN } from "./findingLabels";
 const COPY = {
     acknowledge: {
         title: "Acknowledge this finding",
-        description: "Tells your team you've seen it and are working on it. It stays open until a later check passes.",
+        description: "Tells your team you've seen it and are working on it. It stays acknowledged until a later check passes and resolves it.",
         label: "What are you doing about it?",
         confirm: "Acknowledge",
         pending: "Acknowledging…",

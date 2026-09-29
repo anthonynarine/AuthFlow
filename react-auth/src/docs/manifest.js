@@ -68,6 +68,11 @@ export const DOC_GROUPS = [
                 summary: "Sign in, create your workspace, add an application and get its connection key.",
             },
             {
+                slug: "two-step-verification",
+                title: "Two-step verification",
+                summary: "Turn it on, sign in with a code or a recovery code, and what to do if you lose your phone.",
+            },
+            {
                 slug: "local-to-production",
                 title: "Go from local to production",
                 summary: "Add production (or staging, test, CI) next to local: one application and one key per environment.",

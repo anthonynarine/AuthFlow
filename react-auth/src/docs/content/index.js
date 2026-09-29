@@ -12,6 +12,7 @@ import ApplicationsAndConnectionKeys from "./ApplicationsAndConnectionKeys";
 import Glossary from "./Glossary";
 import Troubleshooting from "./Troubleshooting";
 import AutomatedSecurityResponse from "./AutomatedSecurityResponse";
+import TwoStepVerification from "./TwoStepVerification";
 import FaqPage from "./Faq";
 import HowGaitProtectsYourData from "./HowGaitProtectsYourData";
 import ReportAVulnerability from "./ReportAVulnerability";
@@ -37,6 +38,7 @@ export const DOC_CONTENT = {
     glossary: Glossary,
     troubleshooting: Troubleshooting,
     "automated-security-response": AutomatedSecurityResponse,
+    "two-step-verification": TwoStepVerification,
     faq: FaqPage,
     "how-gait-protects-your-data": HowGaitProtectsYourData,
     "report-a-vulnerability": ReportAVulnerability,

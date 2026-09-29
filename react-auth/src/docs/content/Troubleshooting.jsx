@@ -56,6 +56,34 @@ export default function Troubleshooting() {
                             "A security upgrade occasionally signs everyone out once.",
                             "Sign in again.",
                         ],
+                        [
+                            "Your two-step code isn't accepted",
+                            "Codes change every 30 seconds and each one works once. After too many tries, Gait asks you to wait a minute.",
+                            "Enter the code showing now for Gait in your authenticator app. If it keeps failing, check your phone's clock is set automatically.",
+                        ],
+                        [
+                            "You've lost your phone",
+                            "Your authenticator app is on it.",
+                            <>
+                                On the code screen, choose "Lost your phone? Use a recovery code". See{" "}
+                                <DocLink to="two-step-verification#lost-your-phone">Lost your phone?</DocLink>
+                            </>,
+                        ],
+                        [
+                            "\"That sign-in timed out\"",
+                            "More than 10 minutes passed between your password and your code.",
+                            "Enter your password again, then the code showing now.",
+                        ],
+                        [
+                            "\"This reset link can't be used\"",
+                            "The link expired (it lasts an hour), was used already, or a newer one replaced it.",
+                            "Choose Send a new link, and use the newest email.",
+                        ],
+                        [
+                            "Your new password isn't accepted",
+                            "It needs at least 8 characters, not only numbers, and not a common password. When you change it from your Account page, it also can't be too like your name or email address.",
+                            "Choose a longer, less common password.",
+                        ],
                     ]}
                 />
             </DocSection>

@@ -60,7 +60,8 @@ describe("Two-step verification guide", () => {
         const text = document.body.textContent;
         // H6: turning it off and making new codes always ask for the password and a code;
         // other changes only when your sign-in isn't recent. Turning it on signs out other
-        // devices. No staff recovery service or encrypted-secret claim to make.
+        // devices. No staff recovery service; the encrypted-secret claim lives on
+        // How Gait protects your data, not here.
         const confirm = section("\"Confirm it's you\"");
         expect(confirm).toHaveTextContent(
             /making new recovery codes always ask for your password and a code from your app \(or a recovery code\), every time/

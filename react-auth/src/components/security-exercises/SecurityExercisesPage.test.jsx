@@ -12,21 +12,21 @@ jest.mock("../../interceptors/axios", () => ({
   },
 }));
 
-// `mockUser` is reassigned per test to exercise different is_staff/role
+// `mockUser` is reassigned per test to exercise different operator/role
 // combinations. Jest hoists jest.mock() above this declaration, but the
 // factory's arrow function body only runs later, when a rendered component
 // actually calls useBasicAuthServices() -- by which point mockUser already
 // holds the value the test set. (Variable must be prefixed "mock" for
 // Jest's out-of-scope-reference allowlist to permit this.)
 //
-// Gait Security Exercise access is is_staff only -- role is Lumen's own
+// Gait Security Exercise access is operators only (is_gait_operator) -- role is Lumen's own
 // business-role model and must never gate Minato. The default role here is
 // deliberately a non-admin one to prove that.
 let mockUser = {
   first_name: "Security",
   last_name: "Operator",
   email: "operator@example.test",
-  is_staff: true,
+  is_gait_operator: true,
   role: "technologist",
 };
 
@@ -144,7 +144,7 @@ describe("SecurityExercisesPage catalog", () => {
       first_name: "Security",
       last_name: "Admin",
       email: "admin@example.test",
-      is_staff: true,
+      is_gait_operator: true,
       role: "admin",
     };
   });
@@ -276,7 +276,7 @@ describe("SecurityExercisesPage catalog", () => {
   });
 });
 
-describe("SecurityExercisesPage Run Exercise visibility (is_staff only, never Lumen role)", () => {
+describe("SecurityExercisesPage Run Exercise visibility (operators only, never Lumen role)", () => {
   beforeEach(() => {
     authAxios.get.mockReset();
     authAxios.post.mockReset();
@@ -285,7 +285,7 @@ describe("SecurityExercisesPage Run Exercise visibility (is_staff only, never Lu
   test.each(["technologist", "physician", "admin"])(
     "staff %s sees Run Exercise on a Ready, executable playbook",
     async (role) => {
-      mockUser = { ...mockUser, is_staff: true, role };
+      mockUser = { ...mockUser, is_gait_operator: true, role };
       mockCatalogAndHistory({ catalog: [READY_PLAYBOOK] });
       renderPage();
 
@@ -298,7 +298,7 @@ describe("SecurityExercisesPage Run Exercise visibility (is_staff only, never Lu
   test.each(["technologist", "physician", "admin", undefined])(
     "non-staff denies Run Exercise regardless of role (role=%s)",
     async (role) => {
-      mockUser = { ...mockUser, is_staff: false, role };
+      mockUser = { ...mockUser, is_gait_operator: false, role };
       mockCatalogAndHistory({ catalog: [READY_PLAYBOOK] });
       renderPage();
 
@@ -310,7 +310,7 @@ describe("SecurityExercisesPage Run Exercise visibility (is_staff only, never Lu
   );
 
   test("a staff user still never sees Run Exercise on a Planned playbook", async () => {
-    mockUser = { ...mockUser, is_staff: true, role: "technologist" };
+    mockUser = { ...mockUser, is_gait_operator: true, role: "technologist" };
     mockCatalogAndHistory({ catalog: [PLANNED_PLAYBOOK] });
     renderPage();
 
@@ -319,7 +319,7 @@ describe("SecurityExercisesPage Run Exercise visibility (is_staff only, never Lu
   });
 
   test("a staff user still never sees Run Exercise when executable is false", async () => {
-    mockUser = { ...mockUser, is_staff: true, role: "technologist" };
+    mockUser = { ...mockUser, is_gait_operator: true, role: "technologist" };
     const notExecutable = { ...READY_PLAYBOOK, key: "auth.step_up_bypass", title: "Step-Up Bypass", executable: false };
     mockCatalogAndHistory({ catalog: [notExecutable] });
     renderPage();
@@ -329,7 +329,7 @@ describe("SecurityExercisesPage Run Exercise visibility (is_staff only, never Lu
   });
 
   test("Run Exercise submission still POSTs only the safe playbook-level fields for a non-admin staff operator", async () => {
-    mockUser = { ...mockUser, is_staff: true, role: "technologist" };
+    mockUser = { ...mockUser, is_gait_operator: true, role: "technologist" };
     mockCatalogAndHistory({ catalog: [READY_PLAYBOOK] });
     authAxios.post.mockResolvedValue({
       data: { id: "run-9", playbook_key: READY_PLAYBOOK.key, playbook_version: 1, environment: "test", status: "PASSED", requested_at: new Date().toISOString() },
@@ -355,7 +355,7 @@ describe("SecurityExercisesPage Run Exercise visibility (is_staff only, never Lu
   });
 
   test("production is never offered as an environment, regardless of staff role", async () => {
-    mockUser = { ...mockUser, is_staff: true, role: "physician" };
+    mockUser = { ...mockUser, is_gait_operator: true, role: "physician" };
     const unsafePlaybook = { ...READY_PLAYBOOK, allowed_environments: ["test", "staging", "production"] };
     mockCatalogAndHistory({ catalog: [unsafePlaybook] });
     renderPage();
@@ -375,7 +375,7 @@ describe("SecurityExercisesPage run history", () => {
       first_name: "Security",
       last_name: "Admin",
       email: "admin@example.test",
-      is_staff: true,
+      is_gait_operator: true,
       role: "admin",
     };
   });

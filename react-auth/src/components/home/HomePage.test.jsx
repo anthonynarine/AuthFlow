@@ -196,7 +196,7 @@ describe("HomePage product positioning", () => {
 
 describe("HomePage Console link", () => {
   test("appears in the header and hero when signed in", () => {
-    renderHome({ user: { email: "user@example.com", is_staff: false } });
+    renderHome({ user: { email: "user@example.com" } });
 
     const nav = screen.getByRole("navigation", { name: "Product navigation" });
     expect(within(nav).getByRole("link", { name: "Console" })).toHaveAttribute("href", "/console");
@@ -211,19 +211,18 @@ describe("HomePage Console link", () => {
   });
 });
 
-describe("HomePage security navigation (staff gating)", () => {
+describe("HomePage security navigation (OPS1: is_gait_operator only)", () => {
   beforeEach(() => {
     jest.clearAllMocks();
   });
 
-  test("staff capability sees enabled Security Command link and can navigate", () => {
+  test("an operator sees the Security Command link and can navigate", () => {
     renderHome({
       user: {
         first_name: "Anthony",
         last_name: "Narine",
         email: "staff@example.com",
-        can_view_security_dashboard: true,
-        is_staff: false,
+        is_gait_operator: true,
       },
     });
 
@@ -240,7 +239,7 @@ describe("HomePage security navigation (staff gating)", () => {
     const logout = jest.fn(() => Promise.resolve());
     renderHome({
       logout,
-      user: { first_name: "Anthony", last_name: "Narine", email: "staff@example.com", is_staff: true, is_2fa_enabled: false },
+      user: { first_name: "Anthony", last_name: "Narine", email: "staff@example.com", is_gait_operator: true, is_2fa_enabled: false },
     });
 
     const menuButton = screen.getByRole("button", { name: "Your account, two-step verification is off" });
@@ -261,33 +260,20 @@ describe("HomePage security navigation (staff gating)", () => {
     expect(screen.queryByRole("button", { name: /^Your account/ })).not.toBeInTheDocument();
   });
 
-  test("falls back to is_staff when capability field is not present", () => {
-    renderHome({
-      user: {
-        email: "staff@example.com",
-        is_staff: true,
-      },
-    });
+  test.each([
+    ["the flag is false", { is_gait_operator: false }],
+    ["the flag is missing", {}],
+    ["the flag is missing, even for staff and superusers", { is_staff: true, is_superuser: true }],
+    ["the flag is false, even with the old capability field", { is_gait_operator: false, can_view_security_dashboard: true }],
+    ["the flag is truthy but not true", { is_gait_operator: "true" }],
+  ])("no Security Command entry when %s", (_label, fields) => {
+    renderHome({ user: { email: "user@example.com", ...fields } });
 
-    expect(screen.getAllByRole("link", { name: /Security Command/i })[0]).toHaveAttribute("href", "/security-command");
-  });
-
-  test("non-staff authenticated user sees disabled staff-only control and cannot navigate", () => {
-    renderHome({
-      user: {
-        email: "user@example.com",
-        can_view_security_dashboard: false,
-        is_staff: true,
-      },
-    });
-
-    const button = screen.getByRole("button", { name: /Security Command, staff only/i });
-    expect(button).toBeDisabled();
-    expect(screen.getByText("Staff only")).toBeInTheDocument();
-
-    fireEvent.click(button);
-
-    expect(screen.getByTestId("location")).toHaveTextContent("/");
+    expect(screen.queryByRole("link", { name: /Security Command/i })).not.toBeInTheDocument();
+    expect(screen.queryByText(/Staff only/i)).not.toBeInTheDocument();
+    // Signed in still gets the Console link.
+    expect(within(screen.getByRole("navigation", { name: "Product navigation" })).getByRole("link", { name: "Console" }))
+      .toBeInTheDocument();
   });
 
   test("unauthenticated users do not see the operational control", () => {
@@ -297,6 +283,5 @@ describe("HomePage security navigation (staff gating)", () => {
     });
 
     expect(screen.queryByRole("link", { name: /Security Command/i })).not.toBeInTheDocument();
-    expect(screen.queryByRole("button", { name: /Security Command, staff only/i })).not.toBeInTheDocument();
   });
 });

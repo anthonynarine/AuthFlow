@@ -24,9 +24,9 @@ const PAGES = [
  * buttons in its header actions; this replaces that with a single
  * consistent nav row, one level above each page's own section tabs.
  *
- * Staff-only entries (like the architecture docs external link) are
- * appended here too, gated on the same is_staff check used everywhere
- * else in Gait -- this is a UX-only mirror. The real boundary is the
+ * Operator-only entries (like the architecture docs external link) are
+ * appended here too, gated on the same is_gait_operator check (OPS1) used
+ * everywhere else in Gait -- this is a UX-only mirror. The real boundary is the
  * target page's own server-side 403 (a separate django_auth-served page,
  * not a client-side route).
  */

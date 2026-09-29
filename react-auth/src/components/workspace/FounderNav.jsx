@@ -3,8 +3,9 @@ import { Link, useLocation } from "react-router-dom";
 import { RiShieldKeyholeLine, RiToolsLine } from "react-icons/ri";
 import { useBasicAuthServices } from "../../context/auth/BasicAuthContext";
 import { AccountMenu } from "../../account/AccountMenu";
+import { isGaitOperator } from "../../auth/operator";
 
-const STAFF_LINKS = [
+const OPERATOR_LINKS = [
   { key: "home", label: "Home", path: "/workspace" },
   { key: "issues", label: "Issues", path: "/workspace/issues" },
   { key: "team", label: "Security Team", path: "/workspace/team" },
@@ -13,23 +14,22 @@ const STAFF_LINKS = [
 const TENANT_LINKS = [{ key: "home", label: "Home", path: "/workspace/apps" }];
 
 /**
- * UI2: the PLATFORM/is_staff boundary applies here too. Issues, Security
- * Team, and the Advanced/operator link are all backed by is_staff-gated
- * PLATFORM endpoints (unchanged, verified read-only against the ONB2
- * backend) — a tenant founder (however senior their org_role) never sees
- * them here. This mirrors backend authority; it does not substitute for
- * it. `is_staff` comes from the authenticated user record, never a
- * tenant OWNER/ADMIN/MEMBER role.
+ * UI2/OPS1: the PLATFORM/operator boundary applies here too. Issues,
+ * Security Team, and the Advanced/operator link are all backed by
+ * operator-only PLATFORM endpoints — a tenant founder (however senior their
+ * org_role) never sees them here. This mirrors backend authority; it does
+ * not substitute for it. `is_gait_operator` comes from the authenticated
+ * user record, never a tenant OWNER/ADMIN/MEMBER role and never is_staff.
  */
 export function FounderNav() {
   const location = useLocation();
   const { user } = useBasicAuthServices();
-  const isStaff = Boolean(user?.is_staff);
-  const links = isStaff ? STAFF_LINKS : TENANT_LINKS;
+  const isOperator = isGaitOperator(user);
+  const links = isOperator ? OPERATOR_LINKS : TENANT_LINKS;
 
   return (
     <nav className="founder-nav" aria-label="Founder workspace">
-      <Link to={isStaff ? "/workspace" : "/workspace/apps"} className="founder-nav-brand">
+      <Link to={isOperator ? "/workspace" : "/workspace/apps"} className="founder-nav-brand">
         <RiShieldKeyholeLine />
         <span>Gait</span>
       </Link>
@@ -50,7 +50,7 @@ export function FounderNav() {
             </Link>
           );
         })}
-        {isStaff && (
+        {isOperator && (
           <Link to="/security-command" className="founder-nav-advanced">
             <RiToolsLine /> Advanced
           </Link>

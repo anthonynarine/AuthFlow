@@ -22,6 +22,7 @@ import { statusAsOfLabel } from "../../docs/featureStatus";
 import { docPath } from "../../docs/manifest";
 import { INSTALL, REPORT } from "../../docs/content/snippets";
 import { AccountMenu } from "../../account/AccountMenu";
+import { isGaitOperator } from "../../auth/operator";
 
 /*
  * Every customer-facing claim on this page comes from the public docs in the
@@ -150,12 +151,8 @@ function HomePage() {
     };
   }, [setError]);
 
-  const hasSecurityCapability = user
-    ? Object.prototype.hasOwnProperty.call(user, "can_view_security_dashboard")
-    : false;
-  const canViewSecurity = hasSecurityCapability
-    ? Boolean(user.can_view_security_dashboard)
-    : Boolean(user?.is_staff);
+  // OPS1: only the server's is_gait_operator flag; no is_staff fallback.
+  const canViewSecurity = isGaitOperator(user);
 
   const closeMenu = () => setMenuOpen(false);
 
@@ -196,17 +193,6 @@ function HomePage() {
             <Link to="/security-command" className="nav-cta secondary">
               Security Command
             </Link>
-          )}
-          {isLoggedIn && !canViewSecurity && (
-            <button
-              type="button"
-              className="nav-cta secondary disabled"
-              title="Staff only"
-              aria-label="Security Command, staff only"
-              disabled
-            >
-              Staff only
-            </button>
           )}
           {/* Signed in: the same account menu as the console (Account, with the
               "2FA off" flag; Docs; Sign out, which leaves you on this page). */}

@@ -4,26 +4,27 @@ import { useBasicAuthServices } from "../../context/auth/BasicAuthContext";
 import { useUserSessionServices } from "../../context/auth/UserSessionContext";
 import { useOrganizations } from "../../hooks/useOrganizations";
 import { FounderHomePage } from "./FounderHomePage";
+import { isGaitOperator } from "../../auth/operator";
 import "./FounderWorkspace.css";
 
 /**
  * UI2 — the /workspace entry gate.
  *
- * PLATFORM/is_staff boundary (unchanged, backend-enforced regardless of
- * this component): `is_staff` decides between two entirely different
- * experiences here, never a tenant org_role.
+ * PLATFORM/operator boundary (backend-enforced regardless of this
+ * component): `is_gait_operator` (OPS1; never is_staff, never a tenant
+ * org_role) decides between two entirely different experiences here.
  *
- *   is_staff       -> FounderHomePage, exactly as UI1 built it, completely
+ *   operator       -> FounderHomePage, exactly as UI1 built it, completely
  *                     unmodified. This is Gait operating on Gait; nothing
  *                     about tenant Companies changes it.
- *   not is_staff   -> resolve the founder's own Companies from
+ *   not operator   -> resolve the founder's own Companies from
  *                     GET /organizations/ (never a JWT claim) and route:
  *                       0 Companies  -> /workspace/onboarding
  *                       1 Company    -> /workspace/apps
  *                       >1 Companies -> /workspace/apps (its own chooser)
  *
- * A non-staff account is never shown FounderHomePage, which calls
- * PLATFORM-only, is_staff-gated endpoints (useSecurityPosture/
+ * A non-operator account is never shown FounderHomePage, which calls
+ * PLATFORM-only, operator-gated endpoints (useSecurityPosture/
  * useFounderIssues) — this gate exists so that account never even
  * attempts that call and sees a raw "Permission denied" screen instead
  * of a sensible destination.
@@ -31,8 +32,8 @@ import "./FounderWorkspace.css";
 export function WorkspaceEntry() {
   const { user } = useBasicAuthServices();
   const { validateSession } = useUserSessionServices();
-  const isStaff = Boolean(user?.is_staff);
-  const orgsState = useOrganizations(Boolean(user) && !isStaff);
+  const isOperator = isGaitOperator(user);
+  const orgsState = useOrganizations(Boolean(user) && !isOperator);
 
   useEffect(() => {
     validateSession().catch(() => {});
@@ -49,7 +50,7 @@ export function WorkspaceEntry() {
     );
   }
 
-  if (isStaff) {
+  if (isOperator) {
     return <FounderHomePage />;
   }
 

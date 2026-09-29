@@ -21,7 +21,7 @@ const STATUS_LABELS = {
  * BACKEND_UI_CONTRACT_GAP: TENANT_WORKSPACE_READ — there is no tenant-
  * scoped security read contract yet (no findings/posture/evidence
  * endpoint accepts an organization_slug; every security/security_agents
- * endpoint remains is_staff-gated, verified read-only against the ONB2
+ * endpoint remains operator-gated (OPS1), verified read-only against the ONB2
  * backend branch). This page never falls back to PLATFORM data, never
  * shows fake findings, and never claims the founder's App is protected —
  * it finishes onboarding into an honest empty state instead.

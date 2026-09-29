@@ -17,7 +17,7 @@ let mockUser = {
   first_name: "Security",
   last_name: "Operator",
   email: "operator@example.test",
-  is_staff: true,
+  is_gait_operator: true,
   role: "technologist",
 };
 
@@ -183,11 +183,11 @@ describe("Security Exercises tabs (regression -- adding Schedules must not break
   });
 });
 
-describe("Schedules staff authorization (is_staff only, never Lumen role)", () => {
+describe("Schedules staff authorization (operators only, never Lumen role)", () => {
   test.each(["technologist", "physician", "admin"])(
     "staff %s can access schedule management controls",
     async (role) => {
-      mockUser = { ...mockUser, is_staff: true, role };
+      mockUser = { ...mockUser, is_gait_operator: true, role };
       mockAllGets({ schedules: [makeSchedule()] });
       renderPage();
       goToSchedules();
@@ -199,7 +199,7 @@ describe("Schedules staff authorization (is_staff only, never Lumen role)", () =
   );
 
   test("non-staff cannot access schedule mutation controls", async () => {
-    mockUser = { ...mockUser, is_staff: false, role: "admin" };
+    mockUser = { ...mockUser, is_gait_operator: false, role: "admin" };
     mockAllGets({ schedules: [makeSchedule()] });
     renderPage();
     goToSchedules();
@@ -207,13 +207,13 @@ describe("Schedules staff authorization (is_staff only, never Lumen role)", () =
     await screen.findByText("Refresh Replay Daily");
     expect(screen.queryByRole("button", { name: "+ Create Schedule" })).not.toBeInTheDocument();
     expect(screen.queryByRole("button", { name: "Disable Schedule" })).not.toBeInTheDocument();
-    // Non-staff can still view (read access mirrors the same is_staff boundary here).
+    // Non-staff can still view (read access mirrors the same operator boundary here).
     expect(screen.getByRole("button", { name: "View" })).toBeInTheDocument();
   });
 
   test("Lumen role never gates Itachi -- a staff user of any role sees the same controls", async () => {
     for (const role of ["technologist", "physician", "admin", undefined]) {
-      mockUser = { is_staff: true, role, email: "x@example.test" };
+      mockUser = { is_gait_operator: true, role, email: "x@example.test" };
       mockAllGets({ schedules: [makeSchedule()] });
       const { unmount } = renderPage();
       goToSchedules();
@@ -226,7 +226,7 @@ describe("Schedules staff authorization (is_staff only, never Lumen role)", () =
 
 describe("Schedule list rendering", () => {
   beforeEach(() => {
-    mockUser = { is_staff: true, role: "admin", email: "admin@example.test" };
+    mockUser = { is_gait_operator: true, role: "admin", email: "admin@example.test" };
   });
 
   test("renders backend schedule fields: playbook (via catalog), environment, cadence, next run", async () => {
@@ -325,7 +325,7 @@ describe("Schedule list rendering", () => {
 
 describe("Create Schedule flow", () => {
   beforeEach(() => {
-    mockUser = { is_staff: true, role: "technologist", email: "tech@example.test" };
+    mockUser = { is_gait_operator: true, role: "technologist", email: "tech@example.test" };
   });
 
   test("a successful create refreshes the schedule list", async () => {
@@ -371,7 +371,7 @@ describe("Create Schedule flow", () => {
 
 describe("Enable/Disable from the list", () => {
   beforeEach(() => {
-    mockUser = { is_staff: true, role: "admin", email: "admin@example.test" };
+    mockUser = { is_gait_operator: true, role: "admin", email: "admin@example.test" };
   });
 
   test("disabling from the card PATCHes and refreshes, preserving the card (history is not deleted)", async () => {
@@ -394,7 +394,7 @@ describe("Enable/Disable from the list", () => {
 
 describe("Occurrence -> Run lineage", () => {
   beforeEach(() => {
-    mockUser = { is_staff: true, role: "admin", email: "admin@example.test" };
+    mockUser = { is_gait_operator: true, role: "admin", email: "admin@example.test" };
   });
 
   test("Schedule -> Occurrences -> View run opens the existing Run Detail dialog with PASSED and the Security Truth note", async () => {
@@ -432,7 +432,7 @@ describe("Occurrence -> Run lineage", () => {
 
 describe("Frontend never triggers scheduler/occurrence/probe execution directly", () => {
   beforeEach(() => {
-    mockUser = { is_staff: true, role: "admin", email: "admin@example.test" };
+    mockUser = { is_gait_operator: true, role: "admin", email: "admin@example.test" };
   });
 
   test("browsing and managing schedules never calls any management-command/scheduler-trigger endpoint", async () => {

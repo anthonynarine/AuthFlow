@@ -130,31 +130,36 @@ describe("production safety helpers (B-RED1C section 33)", () => {
 });
 
 /**
- * Gait Security Exercise access is `is_staff` only. `user.role` is Lumen's
+ * Gait Security Exercise access is Gait operators only (is_gait_operator). `user.role` is Lumen's
  * own business-role model (admin / physician / technologist) and must
  * never gate Minato -- a staff technologist or physician is a legitimate
  * Gait operator, same as a staff admin.
  */
 describe("canRunSecurityExercises", () => {
   test("staff technologist is allowed", () => {
-    expect(canRunSecurityExercises({ is_staff: true, role: "technologist" })).toBe(true);
+    expect(canRunSecurityExercises({ is_gait_operator: true, role: "technologist" })).toBe(true);
   });
 
   test("staff physician is allowed", () => {
-    expect(canRunSecurityExercises({ is_staff: true, role: "physician" })).toBe(true);
+    expect(canRunSecurityExercises({ is_gait_operator: true, role: "physician" })).toBe(true);
   });
 
   test("staff admin is allowed", () => {
-    expect(canRunSecurityExercises({ is_staff: true, role: "admin" })).toBe(true);
+    expect(canRunSecurityExercises({ is_gait_operator: true, role: "admin" })).toBe(true);
   });
 
   test("role is irrelevant when the user is not staff", () => {
-    expect(canRunSecurityExercises({ is_staff: false, role: "admin" })).toBe(false);
-    expect(canRunSecurityExercises({ is_staff: false, role: "technologist" })).toBe(false);
+    expect(canRunSecurityExercises({ is_gait_operator: false, role: "admin" })).toBe(false);
+    expect(canRunSecurityExercises({ is_gait_operator: false, role: "technologist" })).toBe(false);
   });
 
-  test("a user with no role at all is allowed purely on is_staff", () => {
-    expect(canRunSecurityExercises({ is_staff: true })).toBe(true);
+  test("a user with no role at all is allowed purely on is_gait_operator", () => {
+    expect(canRunSecurityExercises({ is_gait_operator: true })).toBe(true);
+  });
+
+  test("OPS1: is_staff or is_superuser without the operator flag is denied", () => {
+    expect(canRunSecurityExercises({ is_staff: true, role: "admin" })).toBe(false);
+    expect(canRunSecurityExercises({ is_staff: true, is_superuser: true })).toBe(false);
   });
 
   test("a null or undefined user is denied", () => {

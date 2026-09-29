@@ -8,7 +8,7 @@ describe("SecurityPageSwitcher", () => {
   test("staff operators see the architecture docs link, opening in a new tab", () => {
     render(
       <MemoryRouter>
-        <SecurityPageSwitcher current="observatory" user={{ is_staff: true }} />
+        <SecurityPageSwitcher current="observatory" user={{ is_gait_operator: true }} />
       </MemoryRouter>
     );
 
@@ -21,7 +21,7 @@ describe("SecurityPageSwitcher", () => {
   test("non-staff operators never see the architecture docs link", () => {
     render(
       <MemoryRouter>
-        <SecurityPageSwitcher current="observatory" user={{ is_staff: false }} />
+        <SecurityPageSwitcher current="observatory" user={{ is_gait_operator: false }} />
       </MemoryRouter>
     );
 
@@ -41,7 +41,7 @@ describe("SecurityPageSwitcher", () => {
   test("still renders all four page destinations regardless of staff status", () => {
     render(
       <MemoryRouter>
-        <SecurityPageSwitcher current="command" user={{ is_staff: false }} />
+        <SecurityPageSwitcher current="command" user={{ is_gait_operator: false }} />
       </MemoryRouter>
     );
 

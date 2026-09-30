@@ -169,6 +169,7 @@ export default function FaqPage() {
                             <>
                                 Yes: <StatusBadge feature="productSignIn" />. Gait says who they are; your
                                 product decides what they can do. See{" "}
+                                <DocLink to="add-gait-sign-in">Add Gait sign-in to your product</DocLink>, then{" "}
                                 <DocLink to="product-organizations-and-invites">
                                     Your product's organizations &amp; invites
                                 </DocLink>

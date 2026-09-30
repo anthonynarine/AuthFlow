@@ -21,7 +21,7 @@ import {
     signOutEverywhere,
 } from "./accountApi";
 
-const PASSWORD_HINT = "At least 8 characters, not only numbers, and not a common password.";
+const PASSWORD_HINT = "At least 12 characters, not only numbers, and not a common password.";
 
 function Panel({ title, text, status, children }) {
     return (

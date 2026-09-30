@@ -23,6 +23,11 @@ export const consoleKeys = {
         ...consoleKeys.application(organizationSlug, applicationId),
         "activity",
     ],
+    // CHK2a: the application's built-in check results.
+    applicationChecks: (organizationSlug, applicationId) => [
+        ...consoleKeys.application(organizationSlug, applicationId),
+        "checks",
+    ],
     credentials: (organizationSlug, applicationId) => [
         ...consoleKeys.application(organizationSlug, applicationId),
         "credentials",

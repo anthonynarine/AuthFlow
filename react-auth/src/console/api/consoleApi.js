@@ -73,6 +73,17 @@ export async function fetchApplicationActivity(organizationSlug, applicationId) 
     return data;
 }
 
+/**
+ * CHK2a: the latest result of each built-in check this application has
+ * reported (gait-sdk `gait_check`). Any member; another workspace's
+ * application is a 404. Only reported checks are listed; `total_checks`
+ * says how many exist.
+ */
+export async function fetchApplicationChecks(organizationSlug, applicationId) {
+    const { data } = await authAxios.get(`${app(organizationSlug, applicationId)}/checks/`);
+    return data;
+}
+
 /** Key metadata (never secrets). Owners and Admins only; Gait answers 403 to anyone else. */
 export async function fetchCredentials(organizationSlug, applicationId) {
     const { data } = await authAxios.get(`${app(organizationSlug, applicationId)}/credentials/`);

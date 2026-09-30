@@ -96,7 +96,8 @@ export default function HowGaitProtectsYourData() {
                     two-step verification is turned off.
                 </p>
                 <p>
-                    Passwords need at least 8 characters, not only numbers, and can't be a common password.
+                    New passwords need at least 12 characters, not only numbers, and can't be a common password or too
+                    like your name or email address.
                 </p>
             </DocSection>
 

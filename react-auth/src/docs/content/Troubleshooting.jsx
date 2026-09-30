@@ -81,7 +81,7 @@ export default function Troubleshooting() {
                         ],
                         [
                             "Your new password isn't accepted",
-                            "It needs at least 8 characters, not only numbers, and not a common password. When you change it from your Account page, it also can't be too like your name or email address.",
+                            "It needs at least 12 characters, not only numbers, not a common password, and not too like your name or email address. A password you already have keeps working; the rules apply when you set a new one.",
                             "Choose a longer, less common password.",
                         ],
                     ]}

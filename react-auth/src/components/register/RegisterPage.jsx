@@ -6,7 +6,7 @@ import { fieldErrors, registerAccount } from "../../auth/authPagesApi";
 import { AuthHeading, AuthLayout } from "../../ds/AuthLayout";
 import { Alert, Button, PasswordField, TextField } from "../../ds/components";
 
-const PASSWORD_HINT = "At least 8 characters, not only numbers, and not a common password.";
+const PASSWORD_HINT = "At least 12 characters, not only numbers, and not a common password.";
 const FIELD_MAP = {
     first_name: "firstName",
     last_name: "lastName",

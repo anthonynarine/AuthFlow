@@ -28,6 +28,8 @@ jest.mock("../hooks/useTwoFactorAuth", () => ({
 }));
 
 const TEST_PASSWORD = "test-only-passphrase";
+// CHK2a: Gait's exact message once new passwords need 12 characters.
+const TOO_SHORT_12 = "This password is too short. It must contain at least 12 characters.";
 
 function LocationProbe() {
     const location = useLocation();
@@ -104,6 +106,19 @@ describe("create account", () => {
         expect(await screen.findByText("This password is too common. This password can't be entirely numeric.")).toBeInTheDocument();
         expect(screen.getByLabelText("Password")).toHaveAttribute("aria-invalid", "true");
         expect(screen.queryByText(/\[/)).not.toBeInTheDocument();
+    });
+
+    test("CHK2a: the hint asks for 12 characters, and Gait's too-short message lands on the field", async () => {
+        publicAxios.post.mockRejectedValue({
+            response: { status: 400, data: { error: { password: [TOO_SHORT_12] } } },
+        });
+        visit("/register", <RegisterPage />);
+        expect(screen.getByText(/At least 12 characters/)).toBeInTheDocument();
+        expect(screen.queryByText(/At least 8 characters/)).not.toBeInTheDocument();
+        fill();
+        fireEvent.click(screen.getByRole("button", { name: "Create account" }));
+        expect(await screen.findByText(TOO_SHORT_12)).toBeInTheDocument();
+        expect(screen.getByLabelText("Password")).toHaveAttribute("aria-invalid", "true");
     });
 
     test("mismatched passwords are caught before asking Gait", () => {
@@ -223,6 +238,16 @@ describe("reset password", () => {
         submit("short", "short");
         expect(await screen.findByText("This password is too short.")).toBeInTheDocument();
         expect(screen.getByLabelText("New password")).toHaveAttribute("aria-invalid", "true");
+    });
+
+    test("CHK2a: the hint asks for 12 characters, and Gait's too-short message lands on the field", async () => {
+        publicAxios.post.mockRejectedValue({ response: { status: 400, data: { error: { password: [TOO_SHORT_12] } } } });
+        visit(LINK, <ResetPassword />, "/reset-password");
+        expect(screen.getByText(/At least 12 characters/)).toBeInTheDocument();
+        submit("eleven-char", "eleven-char");
+        expect(await screen.findByText(TOO_SHORT_12)).toBeInTheDocument();
+        expect(screen.getByLabelText("New password")).toHaveAttribute("aria-invalid", "true");
+        expect(screen.queryByRole("heading", { name: "This reset link can't be used" })).not.toBeInTheDocument();
     });
 
     test("mismatched passwords are caught before asking Gait", () => {

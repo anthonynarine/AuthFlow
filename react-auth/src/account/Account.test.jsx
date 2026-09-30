@@ -231,6 +231,20 @@ describe("/account", () => {
         expect(screen.getByLabelText("Current password")).toHaveAttribute("aria-invalid", "true");
     });
 
+    test("change password (CHK2a): the hint asks for 12 characters, and Gait's too-short message lands on New password", async () => {
+        const tooShort = "This password is too short. It must contain at least 12 characters.";
+        authAxios.post.mockRejectedValue({ response: { status: 400, data: { error: { new_password: [tooShort] } } } });
+        renderAt("/account");
+        fireEvent.click(await screen.findByRole("button", { name: "Change password" }));
+        expect(screen.getByText(/At least 12 characters/)).toBeInTheDocument();
+        fireEvent.change(screen.getByLabelText("Current password"), { target: { value: TEST_PASSWORD } });
+        fireEvent.change(screen.getByLabelText("New password"), { target: { value: "eleven-char" } });
+        fireEvent.change(screen.getByLabelText("Confirm new password"), { target: { value: "eleven-char" } });
+        fireEvent.click(screen.getByRole("button", { name: "Save new password" }));
+        expect(await screen.findByText(tooShort)).toBeInTheDocument();
+        expect(screen.getByLabelText("New password")).toHaveAttribute("aria-invalid", "true");
+    });
+
     async function openTurnOff() {
         fireEvent.click(await screen.findByRole("button", { name: "Turn off" }));
         return screen.getByRole("dialog", { name: "Turn off two-step verification?" });

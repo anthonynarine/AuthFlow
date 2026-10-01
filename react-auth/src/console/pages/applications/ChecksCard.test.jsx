@@ -2,7 +2,7 @@ import "@testing-library/jest-dom";
 import React from "react";
 import { fireEvent, render, screen, within } from "@testing-library/react";
 import { MemoryRouter } from "react-router-dom";
-import { ChecksCard, SETUP_SNIPPET, checksSummary, factLabel, formatFact, sortChecks } from "./ChecksCard";
+import { ChecksCard, SETUP_SNIPPET, checksSummary, factLabel, formatFact, packLabel, sortChecks } from "./ChecksCard";
 import { consoleKeys } from "../../api/queryKeys";
 import { FEATURE_STATUS } from "../../../docs/featureStatus";
 
@@ -178,6 +178,78 @@ describe("CHK2a checks grid", () => {
         expect(screen.getByText("Early access")).toBeInTheDocument();
         expect(screen.getByRole("link", { name: "gait-sdk docs" })).toHaveAttribute("href", "/docs/gait-sdk");
         expect(checksSummary({ checks: [], reported_checks: 0, total_checks: 21 })).toBeNull();
+    });
+
+    test("CHK2b: the total and the packs come from Gait, never a built-in 21", () => {
+        renderCard(
+            loaded({
+                checks: CHECKS,
+                last_run_at: "2026-09-28T10:00:00Z",
+                reported_checks: 5,
+                total_checks: 27,
+                packs: ["django", "fastapi", "deps"],
+            })
+        );
+        expect(screen.getByText("5 of 27 checks reported · 2 failing · Packs: Django, FastAPI, Dependencies")).toBeInTheDocument();
+        expect(screen.queryByText(/of 21 checks/)).toBeNull();
+        expect(checksSummary({ checks: CHECKS, reported_checks: 2, total_checks: 6 })).toBe("2 of 6 checks reported · 2 failing");
+    });
+
+    const VULNS = check({
+        id: "CHK.DEPS.KNOWN_VULNS",
+        title: "No dependency has a known vulnerability",
+        pack: "deps",
+        severity: "HIGH",
+        result: "FAIL",
+        outcome: "fail",
+        facts: {
+            tool: "pip-audit",
+            vulnerable_count: 2,
+            unfixed_count: 1,
+            items: [
+                { package: "django", version: "4.2.1", advisory_id: "GHSA-test-0001", fixed_in: "4.2.16" },
+                { package: "leftpad-py", version: "0.1.0", advisory_id: "PYSEC-test-0002" },
+            ],
+        },
+    });
+
+    test("CHK2b known vulnerabilities: counts, then a Package / Version / Advisory / Fixed in table", () => {
+        renderCard(loaded({ checks: [VULNS], last_run_at: null, reported_checks: 1, total_checks: 1, packs: ["deps"] }));
+        const row = screen.getByRole("listitem", { name: "No dependency has a known vulnerability" });
+        fireEvent.click(within(row).getByText("Details and how to fix"));
+        expect(within(row).getByText("Vulnerable packages")).toBeInTheDocument();
+        expect(within(row).getByText("2")).toBeInTheDocument();
+        expect(within(row).getByText("Without a fix yet")).toBeInTheDocument();
+        expect(within(row).getByText("pip-audit")).toBeInTheDocument();
+
+        const table = within(row).getByRole("table", { name: "Known vulnerabilities" });
+        expect(within(table).getAllByRole("columnheader").map((th) => th.textContent)).toEqual([
+            "Package",
+            "Version",
+            "Advisory",
+            "Fixed in",
+        ]);
+        const [, fixed, unfixed] = within(table).getAllByRole("row");
+        expect(within(fixed).getAllByRole("cell").map((td) => td.textContent)).toEqual(["django", "4.2.1", "GHSA-test-0001", "4.2.16"]);
+        expect(within(unfixed).getAllByRole("cell").map((td) => td.textContent)).toEqual(["leftpad-py", "0.1.0", "PYSEC-test-0002", "—"]);
+        expect(within(row).queryByText(/Couldn't check/)).toBeNull();
+    });
+
+    test("CHK2b known vulnerabilities: a scan that didn't run says why, with no table", () => {
+        const notRun = { ...VULNS, result: "INFORMATIONAL", outcome: "error", facts: { tool: "pip-audit", reason: "tool_missing", vulnerable_count: 0, unfixed_count: 0, items: [] } };
+        renderCard(loaded({ checks: [notRun], last_run_at: null, reported_checks: 1, total_checks: 1, packs: ["deps"] }));
+        const row = screen.getByRole("listitem", { name: "No dependency has a known vulnerability" });
+        fireEvent.click(within(row).getByText("Details and how to fix"));
+        expect(within(row).getByText("Couldn't check: Tool missing")).toBeInTheDocument();
+        expect(within(row).queryByRole("table")).toBeNull();
+        expect(packLabel("deps")).toBe("Dependencies");
+        expect(packLabel("something_new")).toBe("Something new");
+    });
+
+    test("empty state mentions the deps pack", () => {
+        renderCard(loaded({ checks: [], last_run_at: null, reported_checks: 0, total_checks: 0, packs: [] }));
+        expect(screen.getByText(/to include dependency checks\./)).toHaveClass("gc-muted");
+        expect(screen.getByText("--pack deps")).toBeInTheDocument();
     });
 
     test("loading and error states", () => {

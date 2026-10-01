@@ -32,7 +32,15 @@ export function factLabel(name) {
     return FACT_LABELS[name] || humanize(name).replace(ACRONYMS, (word) => (word.toLowerCase() === "ids" ? "IDs" : word.toUpperCase()));
 }
 
+const PACK_LABELS = { django: "Django", fastapi: "FastAPI", deps: "Dependencies" };
+// CHK2b: the dependency-vulnerability check reports a list of advisories.
+export const KNOWN_VULNS_CHECK = "CHK.DEPS.KNOWN_VULNS";
+
 export const SETUP_SNIPPET = 'pip install "gait-sdk[django]"\npython manage.py gait_check';
+
+export function packLabel(pack) {
+    return PACK_LABELS[pack] || humanize(pack);
+}
 
 /** Worst first: FAIL, WARNING, informational, PASS; then by severity, then title. */
 export function sortChecks(checks) {
@@ -67,6 +75,50 @@ function SetupSnippet() {
         <pre className="gc-snippet" aria-label="Setup commands">
             <code>{SETUP_SNIPPET}</code>
         </pre>
+    );
+}
+
+/**
+ * CHK.DEPS.KNOWN_VULNS: counts, then one table row per advisory. `reason`
+ * means the scan itself didn't run (tool_missing, timeout, unparseable,
+ * network), which is said in words instead of as a fact.
+ */
+function KnownVulnsFacts({ facts }) {
+    const items = Array.isArray(facts?.items) ? facts.items.filter((item) => item && typeof item === "object") : [];
+    return (
+        <>
+            {facts?.reason ? <p className="gc-card-text">Couldn't check: {humanize(facts.reason)}</p> : null}
+            <dl className="gc-meta gc-pack-check-facts">
+                {facts?.tool ? <div><dt>Tool</dt><dd>{formatFact(facts.tool)}</dd></div> : null}
+                <div><dt>Vulnerable packages</dt><dd>{formatFact(facts?.vulnerable_count)}</dd></div>
+                <div><dt>Without a fix yet</dt><dd>{formatFact(facts?.unfixed_count)}</dd></div>
+            </dl>
+            {items.length ? (
+                <div className="gc-table-wrap">
+                    <table className="gc-table gc-pack-check-vulns">
+                        <caption className="gc-visually-hidden">Known vulnerabilities</caption>
+                        <thead>
+                            <tr>
+                                <th scope="col">Package</th>
+                                <th scope="col">Version</th>
+                                <th scope="col">Advisory</th>
+                                <th scope="col">Fixed in</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {items.map((item) => (
+                                <tr key={`${item.package}-${item.version}-${item.advisory_id}`}>
+                                    <td>{formatFact(item.package)}</td>
+                                    <td>{formatFact(item.version)}</td>
+                                    <td><code className="gc-code">{formatFact(item.advisory_id)}</code></td>
+                                    <td>{formatFact(item.fixed_in)}</td>
+                                </tr>
+                            ))}
+                        </tbody>
+                    </table>
+                </div>
+            ) : null}
+        </>
     );
 }
 
@@ -127,7 +179,7 @@ function CheckRow({ check, orgSlug, environment }) {
                 <summary>Details and how to fix</summary>
                 <div className="gc-pack-check-details-body">
                     <h4 className="gc-pack-check-subhead">What your application reported</h4>
-                    <Facts facts={check.facts} />
+                    {check.id === KNOWN_VULNS_CHECK ? <KnownVulnsFacts facts={check.facts} /> : <Facts facts={check.facts} />}
                     <h4 className="gc-pack-check-subhead">How to fix</h4>
                     <p className="gc-card-text">{check.remediation}</p>
                     {check.source_reference ? (
@@ -141,7 +193,11 @@ function CheckRow({ check, orgSlug, environment }) {
     );
 }
 
-/** "18 of 21 checks reported · 2 failing", or null before anything is reported. */
+/**
+ * "18 of 21 checks reported · 2 failing", or null before anything is
+ * reported. The total is Gait's `total_checks`: the checks in the packs this
+ * application has reported, never a number built in here.
+ */
 export function checksSummary(data) {
     if (!data || !data.reported_checks) return null;
     const failing = data.checks.filter((check) => check.result === "FAIL").length;
@@ -165,10 +221,12 @@ export function ChecksCard({ checks, orgSlug, environment }) {
         body = (
             <EmptyState title="No checks reported yet">
                 <p className="gc-card-text">
-                    Run the built-in Django checks from your application with gait-sdk. Each run reports up to{" "}
-                    {checks.data.total_checks} checks here.
+                    Run the built-in checks from your application with gait-sdk; each run reports its results here.
                 </p>
                 <SetupSnippet />
+                <p className="gc-card-text gc-muted">
+                    Add <code className="gc-code">--pack deps</code> to include dependency checks.
+                </p>
                 <p className="gc-card-text">
                     <a href="/docs/gait-sdk">gait-sdk docs</a>
                 </p>
@@ -177,7 +235,10 @@ export function ChecksCard({ checks, orgSlug, environment }) {
     } else {
         body = (
             <>
-                <p className="gc-card-text gc-muted gc-pack-checks-count">{checksSummary(checks.data)}</p>
+                <p className="gc-card-text gc-muted gc-pack-checks-count">
+                    {checksSummary(checks.data)}
+                    {checks.data.packs?.length ? ` · Packs: ${checks.data.packs.map(packLabel).join(", ")}` : null}
+                </p>
                 <ul className="gc-pack-checks" aria-label="Built-in checks">
                     {sortChecks(checks.data.checks).map((check) => (
                         <CheckRow key={check.id} check={check} orgSlug={orgSlug} environment={environment} />

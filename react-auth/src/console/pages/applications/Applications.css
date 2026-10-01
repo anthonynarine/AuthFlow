@@ -51,11 +51,11 @@
 .gc-pack-checks-jump a { color: var(--color-text-muted); font-size: 0.875rem; }
 .gc-pack-checks-jump a:hover { color: var(--color-text); }
 .gc-pack-checks-count { margin-bottom: 12px; }
-.gc-pack-checks { list-style: none; margin: 0; padding: 0; border-top: 1px solid var(--color-border); }
+.gc-pack-checks { --gc-pack-result-w: 6.5rem; /* the widest pill: "Couldn't check" / "Not applicable" */ list-style: none; margin: 0; padding: 0; border-top: 1px solid var(--color-border); }
 .gc-pack-check { border-bottom: 1px solid var(--color-border); padding: 12px 0; }
 .gc-pack-check-row {
   display: grid;
-  grid-template-columns: 8.5rem minmax(0, 1fr) auto auto;
+  grid-template-columns: var(--gc-pack-result-w) minmax(0, 1fr) auto auto;
   gap: 8px 16px;
   align-items: start;
 }
@@ -65,7 +65,7 @@
 .gc-pack-check-when { font-size: 0.8rem; color: var(--color-text-muted); text-align: right; }
 .gc-pack-check-reported { display: inline-flex; align-items: center; gap: 6px; flex-wrap: wrap; justify-content: flex-end; }
 .gc-pack-check-finding { min-width: 6.5rem; text-align: right; font-size: 0.85rem; }
-.gc-pack-check-details { margin-top: 8px; margin-left: calc(8.5rem + 16px); }
+.gc-pack-check-details { margin-top: 8px; margin-left: calc(var(--gc-pack-result-w) + 16px); }
 .gc-pack-check-details summary { cursor: pointer; font-size: 0.8rem; color: var(--color-text-muted); }
 .gc-pack-check-details summary:hover { color: var(--color-text); }
 .gc-pack-check-details-body { padding: 8px 0 4px; display: grid; grid-template-columns: minmax(0, 1fr); gap: 8px; }

@@ -15,7 +15,7 @@ jest.mock("../../interceptors/axios", () => ({
 
 jest.mock("../../context/auth/BasicAuthContext", () => ({
   useBasicAuthServices: () => ({
-    user: { first_name: "Security", last_name: "Staff", email: "security@example.test", is_staff: true },
+    user: { first_name: "Security", last_name: "Staff", email: "security@example.test", is_gait_operator: true },
   }),
 }));
 

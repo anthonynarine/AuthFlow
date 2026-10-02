@@ -6,8 +6,6 @@ import {
     INSTALL,
     REPORT,
     SDK_VERSION,
-    VERIFY_USER_SETTINGS,
-    VERIFY_USER_VIEW,
     installCommand,
 } from "./snippets";
 
@@ -56,16 +54,12 @@ export default function GaitSdk() {
 
             <DocSection id="verify-a-user" title="Verify a user">
                 <p>
-                    <StatusBadge feature="productSignIn" /> Your product can let its users sign in with Gait accounts.
-                    In your API, gait-sdk checks each request's sign-in with Gait. Gait says who the user is; your
-                    product still decides what they may do.
+                    <StatusBadge feature="productSignIn" /> Your product can let its users sign in with Gait accounts,
+                    and gait-sdk checks each request's sign-in with Gait. The whole setup, both your server and your
+                    API, is in <DocLink to="add-gait-sign-in">Add Gait sign-in to your product</DocLink>.
                 </p>
-                <CodeBlock label="Python" code={VERIFY_USER_SETTINGS} />
-                <CodeBlock label="Python" code={VERIFY_USER_VIEW} />
                 <p>
-                    Want to use it? <Link to="/early-access">Request early access</Link>. How this fits with your
-                    workspace: <DocLink to="people-and-applications#your-products-own-users">Your product's own
-                    users</DocLink>.
+                    Want to use it? <Link to="/early-access">Request early access</Link>.
                 </p>
             </DocSection>
 

@@ -51,3 +51,53 @@ class ProjectList(APIView):
         identity = request.verified_identity
         # Your product decides what they may see.
         ...`;
+
+// Add Gait sign-in to your product: your server, not the browser, talks to Gait.
+export const SERVER_SIGN_IN = `# Your server, not the browser, talks to Gait.
+import requests
+
+GAIT = "${GAIT_API_URL}"
+
+def sign_in(email, password):
+    r = requests.post(f"{GAIT}/login/", json={"email": email, "password": password}, timeout=5)
+    if r.status_code == 401 and r.json().get("2fa_required"):
+        # Keep this with the pending sign-in, on your server: 10 minutes, one use.
+        return {"needs_code": True, "temp_token": r.cookies.get("temp_token")}
+    r.raise_for_status()
+    return r.json()  # {"access_token": ..., "refresh_token": ...}
+
+def send_code(temp_token, code):
+    r = requests.post(
+        f"{GAIT}/two-factor-login/",
+        json={"otp": code},  # or {"recovery_code": ...}
+        cookies={"temp_token": temp_token},
+        timeout=5,
+    )
+    r.raise_for_status()
+    return r.json()  # the same two tokens`;
+
+export const SERVER_REFRESH_SIGN_OUT = `def refresh(refresh_token):
+    r = requests.post(f"{GAIT}/token-refresh/", json={"refresh_token": refresh_token}, timeout=5)
+    r.raise_for_status()
+    return r.json()  # save BOTH tokens: the refresh token changes every time
+
+def sign_out(refresh_token):
+    requests.post(f"{GAIT}/logout/", json={"refresh_token": refresh_token}, timeout=5)`;
+
+export const LIVE_SESSION_VIEW = `from gait_sdk.django.authentication import require_live_session
+
+def post(self, request, project_id):
+    ...                            # 1. your own rules first
+    require_live_session(request)  # 2. always asks Gait: 401 if signed out, 503 if unreachable
+    ...                            # 3. make the change`;
+
+export const LINK_ON_FIRST_REQUEST = `# Create your user the first time someone signs in.
+account, _ = Account.objects.get_or_create(
+    gait_subject=request.user.id,
+    defaults={"email": request.user.email},
+)`;
+
+export const LINK_BY_INVITE = `# Only people you've invited get in.
+member = Member.objects.filter(team=team, gait_subject=request.user.id).first()
+if member is None:
+    raise NotFound()`;

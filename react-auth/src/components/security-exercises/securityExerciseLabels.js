@@ -1,4 +1,5 @@
 import { humanizeEnum } from "../security/securityLabels";
+import { isGaitOperator } from "../../auth/operator";
 
 export const RUN_STATUSES = [
   "REQUESTED",
@@ -200,16 +201,16 @@ export function isSafelyExecutable(playbook) {
 }
 
 /**
- * Gait Security Exercise access is `is_staff` only -- it is Gait security
- * authorization, not Lumen/business role gating. `user.role` (admin /
- * physician / technologist) is Lumen's own role model and must never gate
- * Minato: a `role: "technologist"` user with `is_staff: true` is a
- * legitimate Gait operator.
+ * Gait Security Exercise access is Gait operators only (OPS1:
+ * `is_gait_operator`, an active superuser with two-step on) -- it is Gait
+ * security authorization, not Lumen/business role gating. `user.role`
+ * (admin / physician / technologist) is Lumen's own role model and must
+ * never gate Minato, and `is_staff` alone no longer grants anything.
  *
  * This is a UX-only mirror of the backend policy, never a security
  * boundary: POST /security-exercises/runs/ is authorized again, and
  * independently, by CanRunSecurityExercise itself.
  */
 export function canRunSecurityExercises(user) {
-  return Boolean(user?.is_staff);
+  return isGaitOperator(user);
 }

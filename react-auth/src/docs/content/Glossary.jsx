@@ -86,6 +86,11 @@ export const GLOSSARY = [
         "teams-roles-and-invites#sites-inside-an-org",
     ],
     [
+        "Subject",
+        "Gait's stable id for a person, which gait-sdk gives your API. Store it to link the person to your own records; don't parse it.",
+        "add-gait-sign-in#link-to-your-users",
+    ],
+    [
         "Two-step verification",
         "A code from an authenticator app after your password, so a stolen password isn't enough to sign in. Also called 2FA.",
         "two-step-verification",

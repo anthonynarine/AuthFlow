@@ -35,7 +35,7 @@ export default function ProductOrganizationsAndInvites() {
                 <p>
                     On each request, gait-sdk hands your API a verified identity: a <strong>subject</strong> (a stable
                     id for the person: store it, don't parse it) and their <strong>email</strong>. See{" "}
-                    <DocLink to="gait-sdk#verify-a-user">gait-sdk: Verify a user</DocLink>.
+                    <DocLink to="add-gait-sign-in">Add Gait sign-in to your product</DocLink>.
                 </p>
                 <p>It doesn't give you:</p>
                 <ul>

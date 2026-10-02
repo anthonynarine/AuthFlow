@@ -113,9 +113,14 @@ export const DOC_GROUPS = [
         title: "For developers",
         pages: [
             {
+                slug: "add-gait-sign-in",
+                title: "Add Gait sign-in to your product",
+                summary: "Your product's users sign in with Gait: your server signs them in, gait-sdk checks each request.",
+            },
+            {
                 slug: "gait-sdk",
                 title: "gait-sdk",
-                summary: "Gait's Python package: install it, report a security check, verify a user.",
+                summary: "Gait's Python package: install it, report a security check, and where to verify a user.",
             },
             {
                 slug: "connecting-your-software",

@@ -5,6 +5,7 @@ import PeopleAndApplications from "./PeopleAndApplications";
 import IsolationAndSetup from "./IsolationAndSetup";
 import GettingStarted from "./GettingStarted";
 import ConnectingYourSoftware from "./ConnectingYourSoftware";
+import AddGaitSignIn from "./AddGaitSignIn";
 import GaitSdk from "./GaitSdk";
 import SecurityChecksAndFindings from "./SecurityChecksAndFindings";
 import TeamsRolesAndInvites from "./TeamsRolesAndInvites";
@@ -32,6 +33,7 @@ export const DOC_CONTENT = {
     "getting-started": GettingStarted,
     "connecting-your-software": ConnectingYourSoftware,
     "gait-sdk": GaitSdk,
+    "add-gait-sign-in": AddGaitSignIn,
     "security-checks-and-findings": SecurityChecksAndFindings,
     "teams-roles-and-invites": TeamsRolesAndInvites,
     "applications-and-connection-keys": ApplicationsAndConnectionKeys,

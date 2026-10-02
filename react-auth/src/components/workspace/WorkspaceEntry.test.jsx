@@ -36,15 +36,24 @@ describe("WorkspaceEntry — PLATFORM vs tenant routing", () => {
     mockUser = null;
   });
 
-  test("is_staff renders the existing PLATFORM FounderHomePage unmodified, regardless of Company count", () => {
-    mockUser = { is_staff: true };
+  test("an operator gets the existing PLATFORM FounderHomePage unmodified, regardless of Company count", () => {
+    mockUser = { is_gait_operator: true };
     useOrganizations.mockReturnValue({ organizations: [], isLoading: false });
     renderEntry();
     expect(screen.getByTestId("founder-home-page")).toBeInTheDocument();
   });
 
+  test("OPS1: staff without is_gait_operator gets the tenant path, never FounderHomePage", () => {
+    mockUser = { is_staff: true, is_superuser: true };
+    useOrganizations.mockReturnValue({ organizations: [], isLoading: false });
+    renderEntry();
+    expect(useOrganizations).toHaveBeenCalledWith(true);
+    expect(screen.getByTestId("onboarding")).toBeInTheDocument();
+    expect(screen.queryByTestId("founder-home-page")).not.toBeInTheDocument();
+  });
+
   test("non-staff with zero Companies is routed to onboarding, never shown FounderHomePage", () => {
-    mockUser = { is_staff: false };
+    mockUser = { is_gait_operator: false };
     useOrganizations.mockReturnValue({ organizations: [], isLoading: false });
     renderEntry();
     expect(screen.getByTestId("onboarding")).toBeInTheDocument();
@@ -52,7 +61,7 @@ describe("WorkspaceEntry — PLATFORM vs tenant routing", () => {
   });
 
   test("non-staff with an existing Company is routed to the tenant console, never PLATFORM data", () => {
-    mockUser = { is_staff: false };
+    mockUser = { is_gait_operator: false };
     useOrganizations.mockReturnValue({
       organizations: [{ id: "1", name: "Acme", slug: "acme", org_role: "OWNER" }],
       isLoading: false,
@@ -63,7 +72,7 @@ describe("WorkspaceEntry — PLATFORM vs tenant routing", () => {
   });
 
   test("non-staff with multiple Companies is also routed to the console (its org switcher handles which one)", () => {
-    mockUser = { is_staff: false };
+    mockUser = { is_gait_operator: false };
     useOrganizations.mockReturnValue({
       organizations: [
         { id: "1", name: "Acme", slug: "acme", org_role: "OWNER" },
@@ -76,7 +85,7 @@ describe("WorkspaceEntry — PLATFORM vs tenant routing", () => {
   });
 
   test("organizations are never fetched for a staff user (they don't need onboarding forced on them)", () => {
-    mockUser = { is_staff: true };
+    mockUser = { is_gait_operator: true };
     useOrganizations.mockReturnValue({ organizations: [], isLoading: false });
     renderEntry();
     expect(useOrganizations).toHaveBeenCalledWith(false);

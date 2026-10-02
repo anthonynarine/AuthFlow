@@ -32,9 +32,13 @@ afterEach(() => {
 });
 
 describe("gait-sdk page", () => {
-    test("opens the For developers group, with Connecting your software after it", () => {
+    test("sits in For developers after Add Gait sign-in, with Connecting your software after it", () => {
         const group = DOC_GROUPS.find((entry) => entry.title === "For developers");
-        expect(group.pages.map((page) => page.slug)).toEqual(["gait-sdk", "connecting-your-software"]);
+        expect(group.pages.map((page) => page.slug)).toEqual([
+            "add-gait-sign-in",
+            "gait-sdk",
+            "connecting-your-software",
+        ]);
         expect(DOC_GROUPS.find((entry) => entry.title === "Guides").pages.map((page) => page.slug)).not.toContain(
             "connecting-your-software"
         );

@@ -5,7 +5,7 @@ import { readTokenFromHash } from "../../account/VerifyEmailPage";
 import { AuthHeading, AuthLayout } from "../../ds/AuthLayout";
 import { Alert, Button, PasswordField } from "../../ds/components";
 
-const PASSWORD_HINT = "At least 8 characters, not only numbers, and not a common password.";
+const PASSWORD_HINT = "At least 12 characters, not only numbers, and not a common password.";
 const FIELD_MAP = { password: "password", new_password: "password", password_confirm: "confirmPassword" };
 
 /**

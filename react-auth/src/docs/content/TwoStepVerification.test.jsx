@@ -60,7 +60,8 @@ describe("Two-step verification guide", () => {
         const text = document.body.textContent;
         // H6: turning it off and making new codes always ask for the password and a code;
         // other changes only when your sign-in isn't recent. Turning it on signs out other
-        // devices. No staff recovery service or encrypted-secret claim to make.
+        // devices. No staff recovery service; the encrypted-secret claim lives on
+        // How Gait protects your data, not here.
         const confirm = section("\"Confirm it's you\"");
         expect(confirm).toHaveTextContent(
             /making new recovery codes always ask for your password and a code from your app \(or a recovery code\), every time/
@@ -84,6 +85,20 @@ describe("pages updated for two-step verification", () => {
         ]) {
             expect(screen.getByRole("row", { name: problem })).toBeInTheDocument();
         }
+    });
+
+    test("password rules say 12 characters everywhere, and existing passwords keep working", () => {
+        // CHK2a: a 12-character minimum for new passwords (register, reset, change).
+        for (const slug of ["getting-started", "how-gait-protects-your-data", "troubleshooting"]) {
+            const { unmount } = renderDoc(slug);
+            expect(document.body.textContent).toMatch(/at least 12 characters/);
+            expect(document.body.textContent).not.toMatch(/at least 8 characters/);
+            unmount();
+        }
+        renderDoc("troubleshooting");
+        expect(screen.getByRole("row", { name: /new password isn't accepted/ })).toHaveTextContent(
+            /A password you already have keeps working/
+        );
     });
 
     test("the glossary defines two-step verification and recovery codes", () => {

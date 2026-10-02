@@ -66,7 +66,8 @@ export default function GettingStarted() {
             <DocSection id="step-1-sign-in" title="Step 1: Sign in">
                 <p>
                     <Link to="/login">Sign in</Link>, or <Link to="/register">create an account</Link>. A password
-                    needs at least 8 characters, not only numbers, and not a common password.
+                    needs at least 12 characters, not only numbers, not a common password, and not too like your name
+                    or email address.
                 </p>
                 <p>
                     Then turn on <DocLink to="two-step-verification">two-step verification</DocLink> from your{" "}

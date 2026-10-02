@@ -99,9 +99,13 @@ describe("How Gait protects your data", () => {
     test("claims only what's true today", () => {
         renderDoc("how-gait-protects-your-data");
         const text = document.body.textContent;
-        // Not every secret is hashed, there's no HSTS, and the two-step app
-        // secret isn't encrypted yet (SEC1); see the D-TRUST and D-2FA reports.
-        expect(text).not.toMatch(/every (secret|token)|all (secrets|tokens)|HSTS|encrypt/i);
+        // Not every secret is hashed. SEC1 (live): only the two-step secret is
+        // claimed as encrypted, HTTPS is enforced; no HSTS name or duration, no
+        // key-management detail, no compliance names. See D-TRUST, D-2FA, D-SEC1.
+        expect(text).not.toMatch(/every (secret|token)|all (secrets|tokens)|HSTS|HIPAA|SOC ?2|Fernet|AES|key rotation/i);
+        expect(text.match(/encrypt/gi)).toHaveLength(1);
+        expect(text).toMatch(/Two-step verification secrets are encrypted in our database\./);
+        expect(text).toMatch(/only work over HTTPS/);
         expect(text).not.toMatch(/\b\d+\s*(minutes?|hours?|days?|attempts?)\b/i);
         expect(text).toMatch(/signs you out everywhere/);
         expect(text).toMatch(/password-reset link/);

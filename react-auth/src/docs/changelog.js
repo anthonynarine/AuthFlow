@@ -12,6 +12,20 @@
 export const CHANGELOG = [
     {
         date: "2026-09-28",
+        // API SEC1 (production verified by the planner, release v135). HTTPS and HSTS checked live on the API and website.
+        change: "Two-step verification secrets are now encrypted in our database, and Gait only works over HTTPS.",
+        features: [],
+        doc: "how-gait-protects-your-data#https-only",
+    },
+    {
+        date: "2026-09-28",
+        // API H6 (production confirmed by the planner, release v131) + AuthFlow #29 (merged 2026-09-28).
+        change: "Turning off two-step verification or making new recovery codes now always asks for your password and a code. Turning it on signs out your other devices.",
+        features: [],
+        doc: "two-step-verification#confirm-its-you",
+    },
+    {
+        date: "2026-09-28",
         // API AUTH-B release (production confirmed by the planner, release v130) + AuthFlow #20 (merged 2026-09-28).
         change: "Two-step verification with 10 recovery codes, a new Account page, redesigned sign-in pages, and \"Sign out everywhere\".",
         features: ["twoStepVerification"],

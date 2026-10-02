@@ -3,8 +3,10 @@ import { DocLink, DocSection } from "../components/DocPrimitives";
 
 // Only what the code does today, for every workspace. Deliberately no numbers
 // (limits and lifetimes can change) and no claims beyond the listed items:
-// e.g. not "every secret is hashed", no HSTS, nothing about how the two-step
-// app secret is stored (not encrypted yet: SEC1).
+// e.g. not "every secret is hashed". SEC1 (live, v135): the two-step secret is
+// encrypted in the database, and HTTPS is enforced on the website and API
+// (redirect plus HSTS). No key-management specifics, no HSTS duration, and no
+// compliance names.
 
 export default function HowGaitProtectsYourData() {
     return (
@@ -31,6 +33,13 @@ export default function HowGaitProtectsYourData() {
                 </ul>
                 <p>
                     More: <DocLink to="isolation">Isolation and setup</DocLink>.
+                </p>
+            </DocSection>
+
+            <DocSection id="https-only" title="HTTPS only">
+                <p>
+                    Gait's website and API only work over HTTPS. A plain <code>http://</code> address is sent on to
+                    HTTPS, and browsers are told to use HTTPS for Gait from then on.
                 </p>
             </DocSection>
 
@@ -94,6 +103,10 @@ export default function HowGaitProtectsYourData() {
                     isn't enough: signing in also needs a code from your authenticator app, or one of your one-time
                     recovery codes. Gait emails you when a recovery code is used, when new codes are made, and when
                     two-step verification is turned off.
+                </p>
+                <p>
+                    Gait has to keep the secret that links your authenticator app to your account, so it can check
+                    your codes. Two-step verification secrets are encrypted in our database.
                 </p>
                 <p>
                     New passwords need at least 12 characters, not only numbers, and can't be a common password or too

@@ -22,6 +22,10 @@ export const FEATURE_STATUS = {
     twoStepVerification: "live",
     // Sign-in for your own product's users with Gait accounts (gait-sdk).
     productSignIn: "earlyAccess",
+    // CHK2a/2b: the built-in check packs (Django, FastAPI, deps via
+    // `gait_check`) and the console's per-application checks grid. Flip to "live" once
+    // gait-sdk 0.6.0 is on PyPI.
+    checkPacks: "earlyAccess",
     // Everything else: accounts, workspaces, applications, keys, signals.
     core: "live",
 };
@@ -61,6 +65,11 @@ export const FEATURE_INFO = {
         name: "Sign-in for your own product",
         summary: "Your product's users sign in with Gait accounts, verified with the gait-sdk.",
         doc: "add-gait-sign-in",
+    },
+    checkPacks: {
+        name: "Built-in check packs",
+        summary: "gait-sdk checks your Django or FastAPI settings and your dependencies; each application's results appear in the console.",
+        doc: "gait-sdk",
     },
 };
 

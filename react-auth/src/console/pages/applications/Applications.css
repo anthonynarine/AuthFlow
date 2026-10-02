@@ -40,9 +40,55 @@
 .gc-dialog-text { margin: 0; font-size: 0.9rem; line-height: 1.5; }
 .gc-secret { font-family: ui-monospace, SFMono-Regular, Menlo, Consolas, monospace; font-size: 0.85rem; }
 .gc-secret-actions { display: flex; flex-wrap: wrap; align-items: center; gap: 10px; font-size: 0.85rem; }
-.gc-checkbox { display: flex; align-items: center; gap: 8px; font-size: 0.9rem; cursor: pointer; }
-.gc-checkbox input { width: 16px; height: 16px; accent-color: var(--color-accent); }
+.gc-pack-checkbox { display: flex; align-items: center; gap: 8px; font-size: 0.9rem; cursor: pointer; }
+.gc-pack-checkbox input { width: 16px; height: 16px; accent-color: var(--color-accent); }
 
 @media (max-width: 700px) {
   .gc-app-grid { grid-template-columns: minmax(0, 1fr); }
+}
+
+/* CHK2a built-in checks. Colour lives only in the result badge. */
+.gc-pack-checks-jump a { color: var(--color-text-muted); font-size: 0.875rem; }
+.gc-pack-checks-jump a:hover { color: var(--color-text); }
+.gc-pack-checks-count { margin-bottom: 12px; }
+.gc-pack-checks { --gc-pack-result-w: 6.5rem; /* the widest pill: "Couldn't check" / "Not applicable" */ list-style: none; margin: 0; padding: 0; border-top: 1px solid var(--color-border); }
+.gc-pack-check { border-bottom: 1px solid var(--color-border); padding: 12px 0; }
+.gc-pack-check-row {
+  display: grid;
+  grid-template-columns: var(--gc-pack-result-w) minmax(0, 1fr) auto auto;
+  gap: 8px 16px;
+  align-items: start;
+}
+.gc-pack-check-title { margin: 0; font-size: 0.9rem; font-weight: 600; color: var(--color-text); }
+.gc-pack-check-main .gc-cell-sub { margin: 2px 0 0; }
+.gc-pack-check-id { font-size: 0.72rem; }
+.gc-pack-check-when { font-size: 0.8rem; color: var(--color-text-muted); text-align: right; }
+.gc-pack-check-reported { display: inline-flex; align-items: center; gap: 6px; flex-wrap: wrap; justify-content: flex-end; }
+.gc-pack-check-finding { min-width: 6.5rem; text-align: right; font-size: 0.85rem; }
+.gc-pack-check-details { margin-top: 8px; margin-left: calc(var(--gc-pack-result-w) + 16px); }
+.gc-pack-check-details summary { cursor: pointer; font-size: 0.8rem; color: var(--color-text-muted); }
+.gc-pack-check-details summary:hover { color: var(--color-text); }
+.gc-pack-check-details-body { padding: 8px 0 4px; display: grid; grid-template-columns: minmax(0, 1fr); gap: 8px; }
+.gc-pack-check-subhead { margin: 4px 0 0; font-size: 0.75rem; font-weight: 600; letter-spacing: 0.04em; text-transform: uppercase; color: var(--color-text-muted); }
+.gc-pack-check-facts { max-width: 28rem; }
+.gc-snippet {
+  margin: 12px 0;
+  padding: 10px 12px;
+  text-align: left;
+  font-family: ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
+  font-size: 0.8rem;
+  line-height: 1.6;
+  background: var(--color-surface-alt);
+  border: 1px solid var(--color-border);
+  border-radius: 8px;
+  color: var(--color-text);
+  overflow-x: auto;
+  white-space: pre;
+}
+
+@media (max-width: 700px) {
+  .gc-pack-check-row { grid-template-columns: minmax(0, 1fr); gap: 6px; }
+  .gc-pack-check-when, .gc-pack-check-finding { text-align: left; min-width: 0; }
+  .gc-pack-check-reported { justify-content: flex-start; }
+  .gc-pack-check-details { margin-left: 0; }
 }

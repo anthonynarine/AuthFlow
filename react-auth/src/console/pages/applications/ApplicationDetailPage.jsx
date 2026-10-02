@@ -8,9 +8,11 @@ import { ENVIRONMENT_LABELS } from "../../hooks/useConsoleScope";
 import { formatDateTime } from "../../utils/formatDate";
 import { IssueKeyDialog, RenameDialog, RetireDialog, RevokeKeyDialog, StatusDialog } from "./ApplicationDialogs";
 import { APPLICATION_STATUS_LABELS, CREDENTIAL_STATUS_LABELS } from "./applicationStatus";
+import { ChecksCard, checksSummary } from "./ChecksCard";
 import {
     useApplication,
     useApplicationActivity,
+    useApplicationChecks,
     useChangeApplicationStatus,
     useCredentials,
     useRenameApplication,
@@ -111,7 +113,7 @@ function KeysCard({ application, credentials, canManage, onIssue, onRevoke }) {
     );
 }
 
-/** F2: one application: its activity, lifecycle actions and connection keys. */
+/** F2: one application: its activity, built-in checks (CHK2a), lifecycle actions and connection keys. */
 export function ApplicationDetailPage() {
     const scope = useOutletContext();
     const { orgSlug, canManage, isOwner } = scope;
@@ -122,6 +124,7 @@ export function ApplicationDetailPage() {
 
     const application = useApplication(orgSlug, applicationId);
     const activity = useApplicationActivity(orgSlug, applicationId);
+    const checks = useApplicationChecks(orgSlug, applicationId);
     const credentials = useCredentials(orgSlug, applicationId, { enabled: canManage });
     const rename = useRenameApplication(orgSlug, applicationId);
     const status = useChangeApplicationStatus(orgSlug, applicationId);
@@ -192,6 +195,11 @@ export function ApplicationDetailPage() {
                 }
                 actions={actions}
             />
+            {checksSummary(checks.data) ? (
+                <p className="gc-page-note gc-pack-checks-jump">
+                    <a href="#checks">Checks: {checksSummary(checks.data)}</a>
+                </p>
+            ) : null}
             {app.status === "SUSPENDED" ? (
                 <p className="gc-warning gc-page-note">Suspended: none of this application's keys work until it's reactivated.</p>
             ) : null}
@@ -207,6 +215,9 @@ export function ApplicationDetailPage() {
                         <div><dt>Last changed</dt><dd>{formatDateTime(app.updated_at)}</dd></div>
                     </dl>
                 </Card>
+                <div className="gc-app-wide" id="checks">
+                    <ChecksCard checks={checks} orgSlug={orgSlug} environment={app.environment} />
+                </div>
                 <div className="gc-app-wide">
                     <KeysCard
                         application={app}

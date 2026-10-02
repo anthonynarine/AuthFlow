@@ -4,6 +4,7 @@ import {
     createApplication,
     fetchApplication,
     fetchApplicationActivity,
+    fetchApplicationChecks,
     fetchApplications,
     fetchCredentials,
     renameApplication,
@@ -29,6 +30,14 @@ export function useApplicationActivity(organizationSlug, applicationId) {
     return useQuery({
         queryKey: consoleKeys.applicationActivity(organizationSlug, applicationId),
         queryFn: () => fetchApplicationActivity(organizationSlug, applicationId),
+    });
+}
+
+/** CHK2a: the built-in check results this application has reported. */
+export function useApplicationChecks(organizationSlug, applicationId) {
+    return useQuery({
+        queryKey: consoleKeys.applicationChecks(organizationSlug, applicationId),
+        queryFn: () => fetchApplicationChecks(organizationSlug, applicationId),
     });
 }
 

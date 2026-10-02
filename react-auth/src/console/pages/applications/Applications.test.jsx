@@ -11,6 +11,7 @@ import {
     createApplication,
     fetchApplication,
     fetchApplicationActivity,
+    fetchApplicationChecks,
     fetchApplications,
     fetchCredentials,
     fetchMyOrganizations,
@@ -36,6 +37,7 @@ jest.mock("../../api/consoleApi", () => ({
     renameApplication: jest.fn(),
     changeApplicationStatus: jest.fn(),
     fetchApplicationActivity: jest.fn(),
+    fetchApplicationChecks: jest.fn(),
     fetchCredentials: jest.fn(),
     issueCredential: jest.fn(),
     revokeCredential: jest.fn(),
@@ -101,6 +103,7 @@ beforeEach(() => {
         )
     );
     fetchCredentials.mockResolvedValue(KEYS);
+    fetchApplicationChecks.mockResolvedValue({ checks: [], last_run_at: null, reported_checks: 0, total_checks: 21 });
 });
 
 describe("F2 application list", () => {
@@ -227,6 +230,39 @@ describe("F2 application detail: role gating", () => {
         renderAt("/console/app-one/applications/zzz?env=production");
         expect(await screen.findByText("This doesn't exist, or you don't have access to it.")).toBeInTheDocument();
         expect(screen.queryByRole("button", { name: "Try again" })).toBeNull();
+    });
+});
+
+describe("CHK2a checks on the application page", () => {
+    test("every role sees the checks for this workspace and application, with a jump link", async () => {
+        asRole("MEMBER");
+        fetchApplicationChecks.mockResolvedValue({
+            checks: [
+                {
+                    id: "CHK.DJANGO.DEBUG_OFF", title: "Django DEBUG is off", pack: "django", severity: "HIGH",
+                    result: "FAIL", outcome: "fail", facts: { debug: true }, reported_at: "2026-09-28T10:00:00Z",
+                    valid_until: "2026-10-05T10:00:00Z", stale: false, source_reference: "",
+                    remediation: "Set DEBUG = False.", finding: { id: "f-9", status: "OPEN" },
+                },
+            ],
+            last_run_at: "2026-09-28T10:00:00Z",
+            reported_checks: 1,
+            total_checks: 21,
+        });
+        renderAt("/console/app-one/applications/a1?env=production");
+        expect(await screen.findByText("Django DEBUG is off")).toBeInTheDocument();
+        expect(fetchApplicationChecks).toHaveBeenCalledWith("app-one", "a1");
+        expect(screen.getByRole("link", { name: "Checks: 1 of 21 checks reported · 1 failing" })).toHaveAttribute("href", "#checks");
+        expect(screen.getByRole("link", { name: "View the finding for Django DEBUG is off" })).toHaveAttribute(
+            "href",
+            "/console/app-one/security/findings/f-9?env=production"
+        );
+    });
+
+    test("nothing reported: the empty state, and no jump link", async () => {
+        renderAt("/console/app-one/applications/a1?env=production");
+        expect(await screen.findByText("No checks reported yet")).toBeInTheDocument();
+        expect(screen.queryByRole("link", { name: /^Checks:/ })).toBeNull();
     });
 });
 

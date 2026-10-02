@@ -109,7 +109,8 @@ export default function HowGaitProtectsYourData() {
                     your codes. Two-step verification secrets are encrypted in our database.
                 </p>
                 <p>
-                    Passwords need at least 8 characters, not only numbers, and can't be a common password.
+                    New passwords need at least 12 characters, not only numbers, and can't be a common password or too
+                    like your name or email address.
                 </p>
             </DocSection>
 

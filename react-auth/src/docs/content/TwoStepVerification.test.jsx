@@ -87,6 +87,20 @@ describe("pages updated for two-step verification", () => {
         }
     });
 
+    test("password rules say 12 characters everywhere, and existing passwords keep working", () => {
+        // CHK2a: a 12-character minimum for new passwords (register, reset, change).
+        for (const slug of ["getting-started", "how-gait-protects-your-data", "troubleshooting"]) {
+            const { unmount } = renderDoc(slug);
+            expect(document.body.textContent).toMatch(/at least 12 characters/);
+            expect(document.body.textContent).not.toMatch(/at least 8 characters/);
+            unmount();
+        }
+        renderDoc("troubleshooting");
+        expect(screen.getByRole("row", { name: /new password isn't accepted/ })).toHaveTextContent(
+            /A password you already have keeps working/
+        );
+    });
+
     test("the glossary defines two-step verification and recovery codes", () => {
         const terms = GLOSSARY.map(([term]) => term);
         expect(terms).toEqual(expect.arrayContaining(["Two-step verification", "Recovery code"]));

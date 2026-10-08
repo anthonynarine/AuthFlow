@@ -206,4 +206,24 @@ describe("Gait session transport", () => {
         expect(cookieStore.access_token).toBeUndefined();
         expect(cookieStore.refresh_token).toBeUndefined();
     });
+
+    // GAIT-SEC-035/036: the interceptors' error log never carries credentials.
+    test("a failed request is logged without body, Authorization header or query string", async () => {
+        const { publicInstance } = loadAxiosModule();
+        const error = {
+            code: "ERR_BAD_REQUEST",
+            config: {
+                method: "post",
+                url: "/login/?token=query-SECRET",
+                headers: { Authorization: "Bearer access-SECRET" },
+                data: JSON.stringify({ email: "a@b.c", password: "pw-SECRET" }),
+            },
+            response: { status: 400, headers: {}, data: { access_token: "resp-SECRET" } },
+        };
+
+        await expect(runResponseError(publicInstance, error)).rejects.toBe(error);
+
+        expect(console.error).toHaveBeenCalledWith("Request failed: POST /login/, status 400, code ERR_BAD_REQUEST");
+        expect(JSON.stringify(console.error.mock.calls)).not.toMatch(/SECRET|Bearer|token=|password/);
+    });
 });

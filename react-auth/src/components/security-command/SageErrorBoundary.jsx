@@ -1,4 +1,5 @@
 import React from "react";
+import { safeLogError } from "../../utils/safeLog";
 
 /**
  * B-UX3 section 24: a Sage rendering failure (a malformed citation, an
@@ -19,8 +20,9 @@ export class SageErrorBoundary extends React.Component {
   }
 
   componentDidCatch(error) {
-    // eslint-disable-next-line no-console
-    console.error("Sage response failed to render", error);
+    // The error's class name only: its message can quote response content
+    // (GAIT-SEC-095).
+    safeLogError("Sage response failed to render", error);
   }
 
   render() {

@@ -4,6 +4,7 @@ import { logoutSession, publicAxios, SESSION_TRANSPORT } from "../interceptors/a
 import { queryClient } from "../app/queryClient";
 import { afterSignIn } from "../auth/returnTo";
 import { handleSignedOut, keepThroughNextSignOut } from "../console/invites/pendingInvite";
+import { safeLogError } from "../utils/safeLog";
 
 export const useBasicAuth = () => {
     const [isLoading, setIsLoading] = useState(false);
@@ -30,7 +31,7 @@ export const useBasicAuth = () => {
                 setIs2FARequired(true);
             } else {
                 setError(error.response?.data?.error || "An error occurred during login.");
-                console.error("Login error:", error);
+                safeLogError("Login failed", error);
             }
         } finally {
             setIsLoading(false);
@@ -53,7 +54,7 @@ export const useBasicAuth = () => {
             navigate("/workspace");
         } catch (error) {
             setError("Guest login is unavailable right now. Please try again shortly.");
-            console.error("Guest login error:", error);
+            safeLogError("Guest login failed", error);
         } finally {
             setIsLoading(false);
         }
@@ -72,7 +73,7 @@ export const useBasicAuth = () => {
             setMessage("You are logged out");
             setIsLoggedIn(false);
         } catch (error) {
-            console.error("Logout error", error);
+            safeLogError("Logout failed", error);
         } finally {
             // Whatever happened server-side, nothing cached for this session
             // (or any organization it could see) may survive locally.
@@ -93,7 +94,7 @@ export const useBasicAuth = () => {
             const { data } = await publicAxios.post("/forgot-password/", { email });
             setMessage(data.message || "If your email is registered, you will receive a password reset link shortly.");
         } catch (error) {
-            console.error("Forgot Password error", error);
+            safeLogError("Forgot password request failed", error);
             setError("An error occurred while attempting to reset the password. Try again.");
         } finally {
             setIsLoading(false);

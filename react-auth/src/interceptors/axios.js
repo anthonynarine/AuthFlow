@@ -3,6 +3,7 @@ import Cookies from "js-cookie";
 import { refreshWithBrowserCoordination } from "./refreshCoordinator";
 import { clearAuthTokens, getAccessToken, persistAuthTokens } from "./tokenStorage";
 import { SESSION_ENDED_EVENT, broadcastSignedOut } from "./sessionEvents";
+import { safeLogError } from "../utils/safeLog";
 
 /**
  * Gait HTTP clients (Gait console F0 -- secure session transport).
@@ -31,8 +32,10 @@ const isSecureOrigin = typeof window !== "undefined" && window.location?.protoco
 export const SESSION_TRANSPORT = { session_transport: "cookie" };
 export { SESSION_ENDED_EVENT };
 
+// Never logs the error object: it carries the request body, the Authorization
+// header and the full URL (GAIT-SEC-035/036). See utils/safeLog.js.
 const logError = (error) => {
-    console.error(`Error in request to ${error.config?.url}: ${error.message}`);
+    safeLogError("Request failed", error);
     return Promise.reject(error);
 };
 

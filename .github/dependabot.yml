@@ -1,0 +1,26 @@
+# Dependency update PRs (GAIT-SEC-041): npm packages of the app in
+# react-auth/, and the SHA-pinned GitHub Actions in .github/workflows/.
+version: 2
+updates:
+  - package-ecosystem: npm
+    directory: /react-auth
+    schedule:
+      interval: weekly
+    # Wait a week after a release before proposing it.
+    cooldown:
+      default-days: 7
+    open-pull-requests-limit: 5
+    groups:
+      npm-minor-and-patch:
+        update-types: [minor, patch]
+
+  - package-ecosystem: github-actions
+    directory: /
+    schedule:
+      interval: weekly
+    # Wait a week after a release before proposing it.
+    cooldown:
+      default-days: 7
+    groups:
+      github-actions:
+        patterns: ["*"]

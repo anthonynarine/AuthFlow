@@ -1,8 +1,9 @@
 /**
  * Gait documentation — the list of pages.
  *
- * Gait is my internal security system: it protects Lumen and Gait itself, and
- * is not offered to other companies (GAIT-13). Write in the first person ("I",
+ * Gait is my internal security system, not offered to other companies
+ * (GAIT-13). In production today it protects itself; Lumen is in development
+ * (it signs in through Gait; its check reporting is built, not yet running). Write in the first person ("I",
  * "my apps") and use Lumen as the example app.
  *
  * SOURCE OF TRUTH: the pages under src/docs/ ARE Gait's public documentation
@@ -109,7 +110,7 @@ export const DOC_GROUPS = [
             {
                 slug: "product-organizations-and-invites",
                 title: "An app's own organizations & invites",
-                summary: "A pattern for an app's own organizations, roles, invites and sites, when its users sign in with Gait (as Lumen's do).",
+                summary: "A pattern for an app's own organizations, roles, invites and sites, when its users sign in with Gait (as Lumen's do, in development).",
             },
         ],
     },
@@ -119,7 +120,7 @@ export const DOC_GROUPS = [
             {
                 slug: "add-gait-sign-in",
                 title: "Add Gait sign-in to an app",
-                summary: "How Lumen's users sign in with Gait: the app's server signs them in, gait-sdk checks each request.",
+                summary: "How an app's users sign in with Gait (Lumen's do, in development): the app's server signs them in, gait-sdk checks each request.",
             },
             {
                 slug: "gait-sdk",

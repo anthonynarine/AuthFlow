@@ -26,6 +26,8 @@ export default function WhatsLive() {
                 <p>
                     <StatusBadge status="live" /> means it works today.{" "}
                     <StatusBadge status="earlyAccess" /> means it's in early use and may still change.{" "}
+                    <StatusBadge status="inDevelopment" /> means it works in an app that is itself still in development.{" "}
+                    <StatusBadge status="inProgress" /> means it's built but not yet running.{" "}
                     <StatusBadge status="pending" /> means it isn't available yet.
                 </p>
                 <DocTable caption="What's live">

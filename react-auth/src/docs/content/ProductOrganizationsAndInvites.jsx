@@ -5,7 +5,7 @@ export default function ProductOrganizationsAndInvites() {
     return (
         <>
             <p className="doc-lede">
-                When an app of mine lets its users sign in with Gait, as Lumen does, Gait tells the app{" "}
+                When an app of mine lets its users sign in with Gait, as Lumen (in development) does, Gait tells the app{" "}
                 <em>who</em> someone is. Which of the app's organizations they belong to, and what they may do there,
                 is the app's to build. This guide describes a pattern that works, modelled on how Gait runs its own
                 workspaces.

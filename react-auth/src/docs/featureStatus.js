@@ -5,6 +5,13 @@
  *   live         it works in the console (or in an app such as Lumen) today
  *   pending      not yet, including an API that exists but has no console screen
  *   earlyAccess  in early use and may still change
+ *   inDevelopment  works in an app that is itself still in development (not in production)
+ *   inProgress     built but not yet running; not live
+ *
+ * Lumen is in development, not in production (GAIT-13 review). It signs in
+ * through Gait with gait-sdk; its security-check reporting is built but not yet
+ * running. Every claim about Lumen using Gait points at `lumenSignIn` or
+ * `lumenChecks`, never at a live key.
  */
 export const STATUS_AS_OF = "2026-09-28";
 
@@ -20,8 +27,13 @@ export const FEATURE_STATUS = {
     // Two-step verification (authenticator codes) and recovery codes, from the
     // Account page. Shipped with the AUTH-B release on 2026-09-28.
     twoStepVerification: "live",
-    // Sign-in for an app's own users (Lumen's) with Gait accounts (gait-sdk).
+    // Sign-in for an app's own users with Gait accounts (gait-sdk), on Gait's side.
     productSignIn: "earlyAccess",
+    // Lumen signs in through Gait with gait-sdk, but Lumen itself is still in
+    // development. Flip to "live" only when Lumen is in production on it.
+    lumenSignIn: "inDevelopment",
+    // Lumen's gait-sdk self-check command exists but has never reported to Gait.
+    lumenChecks: "inProgress",
     // CHK2a/2b: the built-in check packs (Django, FastAPI, deps via
     // `gait_check`) and the console's per-application checks grid. Flip to "live" once
     // gait-sdk 0.6.0 is on PyPI.
@@ -62,9 +74,19 @@ export const FEATURE_INFO = {
         doc: "two-step-verification",
     },
     productSignIn: {
-        name: "Sign-in for Lumen",
-        summary: "Lumen's users sign in with Gait accounts, verified with gait-sdk.",
+        name: "Sign-in for an app's own users",
+        summary: "An app's users sign in with Gait accounts, verified with gait-sdk.",
         doc: "add-gait-sign-in",
+    },
+    lumenSignIn: {
+        name: "Lumen signs in through Gait",
+        summary: "Lumen, my clinical app, is in development. It signs in through Gait with gait-sdk.",
+        doc: "what-gait-is#who-its-for",
+    },
+    lumenChecks: {
+        name: "Lumen reports its security checks",
+        summary: "Lumen's security-check reporting with gait-sdk is built but not yet running.",
+        doc: "what-gait-is#who-its-for",
     },
     checkPacks: {
         name: "Built-in check packs",
@@ -77,6 +99,8 @@ export const STATUS_LABELS = {
     live: "Live",
     pending: "Pending",
     earlyAccess: "Early access",
+    inDevelopment: "In development",
+    inProgress: "In progress",
 };
 
 /** STATUS_AS_OF as "28 September 2026". */

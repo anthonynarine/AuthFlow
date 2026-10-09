@@ -45,7 +45,7 @@ export default function AddGaitSignIn() {
     return (
         <>
             <p className="doc-lede">
-                How an app of mine lets its users sign in with a Gait account, as Lumen does. Gait checks who they
+                How an app of mine lets its users sign in with a Gait account, as Lumen (in development) does. Gait checks who they
                 are; the app still decides what they may do.
             </p>
             <p>

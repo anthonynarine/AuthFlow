@@ -25,7 +25,7 @@ const NODES = {
     software: {
         kicker: "Production runtime",
         title: "Lumen",
-        detail: "Lumen API · production",
+        detail: "Lumen API · in development",
         credential: "gait-sdk + connection key",
     },
     users: {
@@ -50,7 +50,7 @@ const ALL_PATHS = ["team", "software", "users"];
 const TOUR = [
     {
         title: "The whole map",
-        body: "Four boxes, three paths. Gait isn't a fourth actor next to the others: it's the workspace where the other three meet.",
+        body: "Four boxes, three paths. Gait isn't a fourth actor next to the others: it's the workspace where the other three meet. Lumen is in development: its sign-in through Gait works, and its check reporting is built but not yet running.",
         nodes: ALL_NODES,
         paths: ALL_PATHS,
         items: HUB_ITEMS,
@@ -70,8 +70,8 @@ const TOUR = [
         items: ["applications", "keys"],
     },
     {
-        title: "Path 2 · Lumen reports",
-        body: "Lumen API runs its own checks (for example \"debug mode is off\") and sends PASS or FAIL with gait-sdk. The connection key it holds tells Gait which application, and so which workspace, the report belongs to. A FAIL opens a finding; a later PASS closes it.",
+        title: "Path 2 · Lumen reports (not yet running)",
+        body: "Once its reporting runs, Lumen API runs its own checks (for example \"debug mode is off\") and sends PASS or FAIL with gait-sdk. The connection key it holds tells Gait which application, and so which workspace, the report belongs to. A FAIL opens a finding; a later PASS closes it.",
         nodes: ["software", "hub"],
         paths: ["software"],
         items: HUB_ITEMS,
@@ -85,7 +85,7 @@ const TOUR = [
     },
     {
         title: "Recap",
-        body: "I configure. Lumen reports. Lumen's users authenticate. All of it lands in the same workspace. In this map I and Lumen don't connect to each other: both connect to Lumen's workspace in Gait.",
+        body: "I configure. Lumen will report. Lumen's users authenticate. All of it lands in the same workspace. In this map I and Lumen don't connect to each other: both connect to Lumen's workspace in Gait.",
         nodes: ALL_NODES,
         paths: ALL_PATHS,
         items: HUB_ITEMS,
@@ -255,8 +255,8 @@ export function HowItWorksLesson() {
         <figure className="hiw" aria-labelledby="hiw-caption">
             <figcaption id="hiw-caption" className="doc-visually-hidden">
                 I sign in to the console and work in Lumen's workspace inside Gait, which holds applications, keys and
-                findings. Lumen, for example Lumen API in production, uses gait-sdk and a connection key to report
-                security checks to that workspace. {earlyAccess ? "In early access, " : ""}Lumen's own users sign in
+                findings. Lumen API, in development, has gait-sdk check reporting built but not yet running; once it
+                runs, it reports security checks to that workspace with a connection key. {earlyAccess ? "In early access, " : ""}Lumen's own users sign in
                 with Gait, and Lumen decides what they can access.
             </figcaption>
 

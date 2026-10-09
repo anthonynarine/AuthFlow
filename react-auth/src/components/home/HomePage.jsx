@@ -25,8 +25,11 @@ import { AccountMenu } from "../../account/AccountMenu";
 import { isGaitOperator } from "../../auth/operator";
 
 /*
- * Gait is my internal security system (it protects Lumen and Gait itself), not
- * a product for other companies; keep the first-person voice (GAIT-13).
+ * Gait is my internal security system, not a product for other companies; keep
+ * the first-person voice (GAIT-13). In production today it protects itself.
+ * Lumen is in development: it signs in through Gait with gait-sdk, and its
+ * check reporting is built but not yet running. Lumen claims point at the
+ * `lumenSignIn` / `lumenChecks` statuses, never a live one.
  * Every claim on this page comes from the public docs in the
  * Gait repo (docs/public/WHAT_GAIT_IS.md, HOW_IT_WORKS.md,
  * AUTOMATED_SECURITY_RESPONSE.md) or from src/docs/featureStatus.js. Change
@@ -45,15 +48,15 @@ const BIG_PICTURE = `flowchart TB
     subgraph GAIT["Gait"]
         CO["Workspace: Lumen<br/>applications · keys · findings"]:::gait
     end
-    APP["Lumen<br/>Lumen API · production<br/>gait-sdk + connection key"]:::soft
-    USERS["Lumen's users<br/>(sign in with Gait, early access)"]:::users
+    APP["Lumen (in development)<br/>Lumen API<br/>check reporting: built, not yet running"]:::soft
+    USERS["Lumen's users<br/>(sign in with Gait, in development)"]:::users
 
     ME -- "sign in to the console" --> CO
     APP -- "reports security checks" --> CO
     USERS -. "sign in with Gait;<br/>Lumen decides access" .-> APP`;
 
 const BIG_PICTURE_DESCRIPTION =
-  "I sign in to the console and work in Lumen's workspace inside Gait, which holds its applications, keys and findings. Lumen, for example Lumen API in production, uses gait-sdk and a connection key to report security checks to that workspace. In early access, Lumen's own users sign in with Gait, and Lumen decides what they can access.";
+  "Lumen is in development. I sign in to the console and work in Lumen's workspace inside Gait, which holds its applications, keys and findings. Lumen's own users sign in with Gait through gait-sdk, and Lumen decides what they can access. Lumen API's security-check reporting with gait-sdk and a connection key is built but not yet running.";
 
 // HOW_IT_WORKS.md, "Step by step", steps 1-4. Step 5 (acting on findings in
 // the console) waits on the Findings screen and is listed under status below.
@@ -64,11 +67,11 @@ const HOW_IT_WORKS_STEPS = [
   },
   {
     title: "I register each app, per environment.",
-    body: "Lumen API in local and Lumen API in production are two applications, each with its own connection key.",
+    body: "Lumen API in local and Lumen API in production will be two applications, each with its own connection key.",
   },
   {
     title: "My apps report security checks.",
-    body: "Lumen runs its own checks (for example \"debug mode is off\") and sends PASS or FAIL to Gait with gait-sdk. The connection key tells Gait which application, and so which workspace, the report belongs to.",
+    body: "An app runs its own checks (for example \"debug mode is off\") and sends PASS or FAIL to Gait with gait-sdk. The connection key tells Gait which application, and so which workspace, the report belongs to. Lumen's reporting is built but not yet running.",
   },
   {
     title: "Gait keeps score.",
@@ -94,7 +97,7 @@ const WHAT_YOU_GET = [
   {
     feature: "Security checks from my apps",
     description:
-      "Lumen reports its own security checks to Gait using gait-sdk and a connection key. Gait keeps the history and tracks what's healthy and what isn't.",
+      "An app reports its own security checks to Gait using gait-sdk and a connection key. Gait keeps the history and tracks what's healthy and what isn't.",
     features: ["core"],
   },
   {
@@ -113,10 +116,20 @@ const WHAT_YOU_GET = [
     features: ["membersAndInviteAccept", "emailVerification"],
   },
   {
-    feature: "Sign-in for Lumen",
+    feature: "Sign-in for an app's own users",
     description:
-      "Lumen's users sign in with Gait accounts, verified with gait-sdk, while Lumen keeps its own organizations and roles.",
+      "An app's users sign in with Gait accounts, verified with gait-sdk, while the app keeps its own organizations and roles.",
     features: ["productSignIn"],
+  },
+  {
+    feature: "Lumen signs in through Gait",
+    description: "Lumen, my clinical app, is in development. It signs in through Gait with gait-sdk.",
+    features: ["lumenSignIn"],
+  },
+  {
+    feature: "Lumen reports its security checks",
+    description: "Lumen's security-check reporting with gait-sdk is built but not yet running.",
+    features: ["lumenChecks"],
   },
 ];
 
@@ -212,9 +225,10 @@ function HomePage() {
             <div className="hero-copy">
               <h1 className="display-serif">The security system behind my apps.</h1>
               <p className="hero-subtitle">
-                Gait is the internal security system I built to protect my own applications. It guards Lumen and
-                itself: hardened sign-in, isolated data, apps that report their own security checks, and AI agents
-                that prepare fixes that never ship without my approval.
+                Gait is the internal security system I built to protect my own applications. In production today it
+                protects itself: hardened sign-in, isolated data, security checks, and AI agents that prepare fixes
+                that never ship without my approval. Lumen, my clinical app, is in development: it signs in through
+                Gait with gait-sdk, and its security-check reporting is built but not yet running.
               </p>
               {message && <p className="session-message">{message}</p>}
               <div className="hero-actions">
@@ -295,7 +309,7 @@ function HomePage() {
             </div>
             <div className="home-card">
               <h3>Gait never reaches into Lumen.</h3>
-              <p>Gait is not a remote control for my apps. It never changes Lumen's code, servers or data; it only records the checks Lumen reports.</p>
+              <p>Gait is not a remote control for my apps. It never changes an app's code, servers or data; it only records the checks the app reports.</p>
             </div>
           </div>
           <Link to={docPath("isolation")} className="home-text-link">
@@ -313,12 +327,12 @@ function HomePage() {
           </div>
           <div className="home-card home-card--inline">
             <h3>
-              Sign-in for Lumen <StatusBadge feature="productSignIn" />
+              Sign-in for an app's own users <StatusBadge feature="productSignIn" />
             </h3>
             <p>
-              gait-sdk also verifies Gait sign-in tokens inside Lumen's API, so Lumen's users sign in with Gait
-              accounts while Lumen keeps its own organizations and roles. gait-sdk is public and open source (MIT,
-              on PyPI).
+              gait-sdk also verifies Gait sign-in tokens inside an app's API, so its users sign in with Gait accounts
+              while the app keeps its own organizations and roles. Lumen, in development, signs in this way. gait-sdk
+              is public and open source (MIT, on PyPI).
             </p>
           </div>
           <div className="hero-actions">
@@ -360,7 +374,11 @@ function HomePage() {
 
         {/* 7. Origin */}
         <section className="section home-origin" aria-label="Origin">
-          <p>Built first to secure Lumen, my clinical app. Today it protects Lumen and Gait itself.</p>
+          <p>
+            Built first to secure Lumen, my clinical app, which is in development. It signs in through Gait with
+            gait-sdk; its security-check reporting is built but not yet running. In production today, Gait protects
+            itself.
+          </p>
         </section>
 
         {/* 8. Closing: where to read more */}

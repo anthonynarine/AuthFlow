@@ -18,6 +18,13 @@ export const FORBIDDEN_TERMS = [
     "your software",
     "every app you ship",
     "request early access",
+    // Never claim compliance or certification (GAIT-13 review).
+    "hipaa",
+    "soc 2",
+    "soc2",
+    "certified",
+    "compliant",
+    "compliance",
     "hospital",
     "physician",
     "technologist",
@@ -31,8 +38,16 @@ export const FORBIDDEN_TERMS = [
     "auth_integration",
 ];
 
-// Example names and descriptions that contain a forbidden word; removed before checking.
-const ALLOWED_PHRASES = ["example clinic", "a clinical app"];
+// Example names and descriptions that contain a forbidden word; removed before
+// checking. Word boundaries, so "a clinical application" or "a clinical
+// appointment" still trips the "clinic" ban.
+export const ALLOWED_PHRASES = [
+    /\bexample clinic\b/gi,
+    /\b(a|my) clinical app\b/gi,
+    // HowGaitProtectsYourData.jsx's header comment: a rule against naming
+    // compliance standards, not a compliance claim.
+    /\bno (\/\/ )?compliance names\b/gi,
+];
 
 // Mixed case with digits, 24+ characters: what a real secret tends to look like.
 const KEY_SHAPED = /\b(?=[A-Za-z0-9_-]*\d)(?=[A-Za-z0-9_-]*[a-z])(?=[A-Za-z0-9_-]*[A-Z])[A-Za-z0-9_-]{24,}\b/;
@@ -47,6 +62,13 @@ function docsSourceFiles(dir) {
 
 const FILES = docsSourceFiles(__dirname);
 
+test("allowed phrases match whole words only", () => {
+    const strip = (text) => ALLOWED_PHRASES.reduce((acc, phrase) => acc.replace(phrase, " "), text.toLowerCase());
+    expect(strip("Lumen, a clinical app.")).not.toContain("clinic");
+    expect(strip("a clinical application")).toContain("clinic");
+    expect(strip("a clinical appointment")).toContain("clinic");
+});
+
 test("the guard actually sees the docs pages", () => {
     expect(FILES.some((file) => file.endsWith("Troubleshooting.jsx"))).toBe(true);
     expect(FILES.length).toBeGreaterThanOrEqual(10);
@@ -59,7 +81,7 @@ describe.each(FILES.map((file) => [path.relative(__dirname, file), file]))("%s",
         // Collapse whitespace so a phrase wrapped across JSX lines still matches.
         let text = source.toLowerCase().replace(/\s+/g, " ");
         ALLOWED_PHRASES.forEach((phrase) => {
-            text = text.split(phrase).join("");
+            text = text.replace(phrase, " ");
         });
         const found = FORBIDDEN_TERMS.filter((term) => text.includes(term));
         expect(found).toEqual([]);

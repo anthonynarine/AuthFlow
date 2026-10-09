@@ -443,6 +443,8 @@
 .doc-status-cell { display: inline-flex; flex-wrap: wrap; align-items: center; gap: 6px; }
 .doc-status-note { font-size: 0.78rem; color: var(--color-text-muted); }
 .doc-status--earlyAccess { color: var(--gd-info); background: var(--gd-info-bg); border-color: var(--gd-info-border); }
+.doc-status--inDevelopment { color: var(--gd-info); background: var(--gd-info-bg); border-color: var(--gd-info-border); }
+.doc-status--inProgress { color: var(--gd-warn); background: var(--gd-warn-bg); border-color: var(--gd-warn-border); }
 
 /* Glossary */
 .doc-glossary { margin: 0; }

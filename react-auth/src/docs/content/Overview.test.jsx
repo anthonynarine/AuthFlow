@@ -89,6 +89,8 @@ describe("What Gait is", () => {
             "Live",
             "Live",
             "Early access",
+            "In development",
+            "In progress",
         ]);
         expect(screen.getByText(/Status as of 28 September 2026/)).toBeInTheDocument();
     });
@@ -154,7 +156,7 @@ describe("How it works", () => {
         expect(within(lesson).getByText("Path 1 · I configure")).toBeInTheDocument();
 
         fireEvent.click(within(lesson).getByRole("button", { name: "Step 6: Recap" }));
-        expect(within(lesson).getByText(/I configure\. Lumen reports\./)).toBeInTheDocument();
+        expect(within(lesson).getByText(/I configure\. Lumen will report\./)).toBeInTheDocument();
         expect(next).toBeDisabled();
     });
 

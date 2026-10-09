@@ -7,9 +7,9 @@
 
 **[Live site → gaitobservatory.com](https://gaitobservatory.com/)**
 
-Gait is the internal security system I built to protect my own applications. Today it protects Lumen, a clinical app (Gait was first built to secure it), and Gait itself. It is not a product for other companies.
+Gait is the internal security system I built to protect my own applications. It is not a product for other companies. Gait was first built to secure Lumen, my clinical app, which is in development: it signs in through Gait with gait-sdk, and its security-check reporting is built but not yet running. In production today, Gait protects itself.
 
-What it does: hardened identity (cookie sessions, refresh-token rotation with replay detection, two-step sign-in), strict workspace isolation, apps that report their own security checks with [gait-sdk](https://pypi.org/project/gait-sdk/) (public, MIT), findings that open on FAIL and close on PASS, and AI agents that investigate Gait's own problems and prepare fixes inside fixed boundaries, checked by an independent validator, with every production change approved by me.
+What it does: hardened identity (cookie sessions, refresh-token rotation with replay detection, two-step sign-in), strict workspace isolation, security checks that apps report with [gait-sdk](https://pypi.org/project/gait-sdk/) (public, MIT), findings that open on FAIL and close on PASS, and AI agents that investigate Gait's own problems and prepare fixes inside fixed boundaries, checked by an independent validator, with every production change approved by me.
 
 This repo started as a working authentication system — not a mockup. Registration, login, TOTP-based two-factor auth, automatic token refresh, and a password-reset flow, all wired to a real Django REST API. Built to understand web security from the inside out: where auth actually breaks, and how modern systems close those gaps.
 

@@ -23,7 +23,7 @@ export default function GaitSdk() {
             <p className="doc-lede">
                 gait-sdk is Gait's Python package for Django REST Framework and FastAPI services, and how my apps
                 talk to Gait. It reports an application's security checks to its workspace, and it can check who an
-                app's users are when they sign in with Gait, as Lumen's do. It's public and open source.
+                app's users are when they sign in with Gait, as Lumen's do in development. It's public and open source.
             </p>
             <ul>
                 <li>

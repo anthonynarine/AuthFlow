@@ -1,5 +1,5 @@
 import React from "react";
-import { DocLink, DocSection, DocTable } from "../components/DocPrimitives";
+import { DocLink, DocSection, DocTable, StatusBadge } from "../components/DocPrimitives";
 import { StatusCell } from "../components/StatusCell";
 import { statusAsOfLabel } from "../featureStatus";
 
@@ -17,7 +17,7 @@ const WHAT_IT_DOES = [
     ],
     [
         "Security checks from my apps",
-        "Lumen reports its own security checks to Gait using gait-sdk and a connection key. Gait keeps the history and tracks what's healthy and what isn't.",
+        "An app reports its own security checks to Gait using gait-sdk and a connection key. Gait keeps the history and tracks what's healthy and what isn't.",
         ["core"],
     ],
     [
@@ -32,9 +32,19 @@ const WHAT_IT_DOES = [
     ],
     ["Members and invites", "Invite people into a workspace as Owner, Admin or Member.", ["membersAndInviteAccept", "emailVerification"]],
     [
-        "Sign-in for Lumen",
-        "Lumen's users sign in with Gait accounts, verified with gait-sdk, while Lumen keeps its own organizations and roles.",
+        "Sign-in for an app's own users",
+        "An app's users sign in with Gait accounts, verified with gait-sdk, while the app keeps its own organizations and roles.",
         ["productSignIn"],
+    ],
+    [
+        "Lumen signs in through Gait",
+        "Lumen, my clinical app, is in development. It signs in through Gait with gait-sdk.",
+        ["lumenSignIn"],
+    ],
+    [
+        "Lumen reports its security checks",
+        "Lumen's security-check reporting with gait-sdk is built but not yet running.",
+        ["lumenChecks"],
     ],
 ];
 
@@ -43,7 +53,9 @@ export default function WhatGaitIs() {
         <>
             <p className="doc-lede">
                 Gait is the internal security system I built to protect my own applications. It watches their security
-                and gives me one private place to see it and act on it.
+                and gives me one private place to see it and act on it. Lumen, my clinical app, is in development. It signs in
+                through Gait with gait-sdk; its security-check reporting is built but not yet running. In production
+                today, Gait protects itself.
             </p>
 
             <DocSection id="what-you-get" title="What it does">
@@ -71,11 +83,13 @@ export default function WhatGaitIs() {
             <DocSection id="who-its-for" title="What it protects">
                 <ul>
                     <li>
-                        <strong>Lumen</strong>, a clinical app. Gait was first built to secure it. Lumen reports its
-                        security checks with gait-sdk, and its users sign in with Gait.
+                        <strong>Lumen</strong>, a clinical app. Gait was first built to secure it. Lumen is in
+                        development, not in production. It signs in through Gait with gait-sdk{" "}
+                        <StatusBadge feature="lumenSignIn" />; its security-check reporting is built but not yet
+                        running <StatusBadge feature="lumenChecks" />.
                     </li>
                     <li>
-                        <strong>Gait itself.</strong> AI agents investigate problems in Gait's own platform and prepare
+                        <strong>Gait itself</strong>, in production today. AI agents investigate problems in Gait's own platform and prepare
                         fixes inside fixed boundaries; an independent validator checks each fix, and I approve every
                         production change. See <DocLink to="automated-security-response">Automated security
                         response</DocLink>.
@@ -93,12 +107,12 @@ export default function WhatGaitIs() {
                         software.
                     </li>
                     <li>
-                        <strong>Not a place for an app's users.</strong> Lumen's users never see the Gait console. When
-                        they sign in with Gait, Gait only answers "who is this?"; Lumen decides what they can do.
+                        <strong>Not a place for an app's users.</strong> An app's users never see the Gait console. When
+                        they sign in with Gait, Gait only answers "who is this?"; the app decides what they can do.
                     </li>
                     <li>
                         <strong>Not a remote control for my apps.</strong> A connection key can only report security
-                        checks. Gait never changes Lumen's code, servers or data.
+                        checks. Gait never changes an app's code, servers or data.
                     </li>
                 </ul>
             </DocSection>

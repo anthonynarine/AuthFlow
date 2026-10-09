@@ -7,7 +7,8 @@ export default function ConnectingYourSoftware() {
         <>
             <p className="doc-lede">
                 Once an application has a connection key, it can report its own security checks to Gait. This is how I
-                connect an app such as Lumen: install gait-sdk, configure it, and send the first report.
+                connect an app: install gait-sdk, configure it, and send the first report. Lumen's reporting is built
+                this way but not yet running.
             </p>
             <p>
                 You'll need an application and its connection key first. See{" "}

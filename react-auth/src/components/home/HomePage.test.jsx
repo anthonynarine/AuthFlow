@@ -94,8 +94,11 @@ describe("HomePage product positioning", () => {
       within(statusRow("Acting on findings in the console")).getByText(STATUS_LABELS[FEATURE_STATUS.findingsScreen])
     ).toBeInTheDocument();
     expect(
-      within(statusRow("Sign-in for Lumen")).getByText(STATUS_LABELS[FEATURE_STATUS.productSignIn])
+      within(statusRow("Sign-in for an app's own users")).getByText(STATUS_LABELS[FEATURE_STATUS.productSignIn])
     ).toBeInTheDocument();
+    // Lumen is in development: never shown as Live.
+    expect(within(statusRow("Lumen signs in through Gait")).getByText("In development")).toBeInTheDocument();
+    expect(within(statusRow("Lumen reports its security checks")).getByText("In progress")).toBeInTheDocument();
     expect(screen.getByText("AI investigation and fixes for Lumen: planned.")).toBeInTheDocument();
   });
 
@@ -130,11 +133,11 @@ describe("HomePage product positioning", () => {
   });
 
   test("no buyer calls to action: no Quickstart hero button and no link to early access", () => {
-    const { container } = renderHome({ isLoggedIn: false, user: null });
+    renderHome({ isLoggedIn: false, user: null });
 
     expect(screen.queryByRole("link", { name: /Read the Quickstart/i })).not.toBeInTheDocument();
     expect(screen.queryByRole("link", { name: /early access/i })).not.toBeInTheDocument();
-    expect(container.querySelector('a[href="/early-access"]')).toBeNull();
+    screen.queryAllByRole("link").forEach((link) => expect(link).not.toHaveAttribute("href", "/early-access"));
   });
 
   test("the agents section is scoped to Gait itself: never on Lumen", () => {
@@ -169,8 +172,8 @@ describe("HomePage product positioning", () => {
     renderHome({ isLoggedIn: false, user: null });
 
     expect(
-      screen.getByText("Built first to secure Lumen, my clinical app. Today it protects Lumen and Gait itself.")
-    ).toBeInTheDocument();
+      screen.getByText(/Built first to secure Lumen, my clinical app, which is in development\./)
+    ).toHaveTextContent("In production today, Gait protects itself.");
   });
 
   test("the header brand uses the single-ink gate mark", () => {

@@ -28,8 +28,9 @@ export default function FaqPage() {
                         [
                             "Is Gait a product I can sign my company up for?",
                             <>
-                                No. Gait is the internal security system I built to protect my own apps: Lumen and Gait
-                                itself. gait-sdk is public and open source (MIT, on PyPI). See{" "}
+                                No. Gait is the internal security system I built to protect my own apps. In production
+                                today it protects Gait itself; Lumen, my clinical app, is in development. gait-sdk is
+                                public and open source (MIT, on PyPI). See{" "}
                                 <DocLink to="what-gait-is">What Gait is</DocLink>.
                             </>,
                         ],
@@ -175,8 +176,9 @@ export default function FaqPage() {
                         [
                             "Do Lumen's users sign in with Gait?",
                             <>
-                                Yes: <StatusBadge feature="productSignIn" />. Gait says who they are; Lumen decides
-                                what they can do. See{" "}
+                                Yes, in development: <StatusBadge feature="lumenSignIn" />. Lumen signs in through Gait
+                                with gait-sdk, but Lumen itself isn't in production yet. Gait says who they are; Lumen
+                                decides what they can do. See{" "}
                                 <DocLink to="add-gait-sign-in">Add Gait sign-in to an app</DocLink>, then{" "}
                                 <DocLink to="product-organizations-and-invites">
                                     An app's own organizations &amp; invites

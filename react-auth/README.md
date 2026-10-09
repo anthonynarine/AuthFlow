@@ -1,6 +1,6 @@
 # Gait Security Observatory Frontend
 
-React frontend for Gait, the internal security system I built to protect my own applications (Lumen and Gait itself): the public site and docs, the console, and the Security Observatory.
+React frontend for Gait, the internal security system I built to protect my own applications (in production today it protects itself; Lumen, my clinical app, is in development): the public site and docs, the console, and the Security Observatory.
 
 ## What it does
 

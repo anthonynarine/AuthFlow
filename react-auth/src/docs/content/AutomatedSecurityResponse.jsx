@@ -71,8 +71,8 @@ export default function AutomatedSecurityResponse() {
             <DocSection id="what-this-means-for-your-applications" title="What this means for Lumen">
                 <p>
                     These agents work on Gait's own platform. <strong>They don't investigate, change or deploy
-                    Lumen.</strong> Lumen's findings stay in its workspace: Gait tracks them and shows them there, and I
-                    decide what to do. AI investigation and fixes for Lumen are planned, not live.
+                    Lumen.</strong> Lumen is in development and its check reporting isn't running yet; once it is, its findings stay in its
+                    workspace, where Gait tracks them and I decide what to do. AI investigation and fixes for Lumen are planned, not live.
                 </p>
             </DocSection>
         </>

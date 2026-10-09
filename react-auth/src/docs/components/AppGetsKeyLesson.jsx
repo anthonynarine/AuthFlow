@@ -11,7 +11,7 @@ const LANES = [
     { id: "admin", label: "Owner or Admin", tone: "person" },
     { id: "console", label: "Gait console", tone: "console" },
     { id: "gait", label: "Gait", tone: "gait" },
-    { id: "backend", label: "Lumen's backend", tone: "software" },
+    { id: "backend", label: "The app's backend", tone: "software" },
 ];
 
 const BLOCKS = [
@@ -28,7 +28,7 @@ const BLOCKS = [
     },
     {
         kind: "frame",
-        label: "Loop · whenever Lumen's backend runs its checks",
+        label: "Loop · whenever the app's backend runs its checks",
         branches: [
             {
                 id: "loop",
@@ -54,7 +54,7 @@ const BEATS = [
     },
     {
         title: "Add the application",
-        body: "An Owner or Admin adds an application with a name, a slug and one environment. Lumen API in local and Lumen API in production are two separate applications.",
+        body: "An Owner or Admin adds an application with a name, a slug and one environment. For example, Lumen API in local and Lumen API in production would be two separate applications.",
         live: [1],
         shown: [1],
     },
@@ -77,8 +77,8 @@ const BEATS = [
         shown: range(1, 4),
     },
     {
-        title: "Whenever Lumen's backend runs its checks",
-        body: "The backend reports a security check with the key. The key alone tells Gait which application, and so which workspace and environment, the result belongs to: lumen / lumen-api / production.",
+        title: "Whenever the app's backend runs its checks",
+        body: "The backend reports a security check with the key. The key alone tells Gait which application, and so which workspace and environment, the result belongs to, for example lumen / lumen-api / production.",
         live: [5, 6],
         shown: range(1, 6),
     },

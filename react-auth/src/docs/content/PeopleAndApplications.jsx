@@ -71,7 +71,7 @@ export default function PeopleAndApplications() {
             <p className="doc-lede">
                 Gait has two completely different kinds of identity, <strong>people</strong> and{" "}
                 <strong>applications</strong>, and they never stand in for each other. A third layer appears when
-                an app has its own users, as Lumen does.
+                an app has its own users, as Lumen (in development) does.
             </p>
 
             <DocSection id="the-big-picture" title="The big picture">
@@ -174,7 +174,7 @@ export default function PeopleAndApplications() {
             <DocSection id="your-products-own-users" title="An app's own users">
                 <p>
                     An app can use Gait to sign its own users in <strong>without</strong> making them members of its
-                    Gait workspace. Lumen does this. Say Lumen, with the Gait workspace <code>lumen</code>, is used by an
+                    Gait workspace. Lumen, in development, works this way. Say Lumen, with the Gait workspace <code>lumen</code>, is used by an
                     organization called Example Clinic (a made-up name), whose staff sign in to Lumen:
                 </p>
                 <Diagram

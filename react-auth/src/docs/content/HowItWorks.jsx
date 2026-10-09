@@ -18,12 +18,13 @@ export default function HowItWorks() {
                     </li>
                     <li>
                         <strong>I register each app, per environment.</strong> Lumen API in{" "}
-                        <code>local</code> and Lumen API in <code>production</code> are two applications, each with its
+                        <code>local</code> and Lumen API in <code>production</code> would be two applications, each with its
                         own connection key.
                     </li>
                     <li>
-                        <strong>My apps report security checks.</strong> Lumen runs its own checks (for example
-                        "debug mode is off") and sends PASS or FAIL to Gait with gait-sdk. The connection key tells
+                        <strong>My apps report security checks.</strong> An app runs its own checks (for example
+                        "debug mode is off") and sends PASS or FAIL to Gait with gait-sdk; Lumen's reporting is built
+                        but not yet running. The connection key tells
                         Gait which application, and so which workspace, the report belongs to. Nothing in the report can
                         point it anywhere else.
                     </li>

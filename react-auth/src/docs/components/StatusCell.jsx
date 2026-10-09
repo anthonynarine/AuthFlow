@@ -2,7 +2,7 @@ import React from "react";
 import { StatusBadge } from "./DocPrimitives";
 import { statusOf } from "../featureStatus";
 
-// What a Pending item is waiting for, in customer words.
+// What a Pending item is waiting for, in plain words.
 const WAITING_ON = {
     findingsScreen: "Findings screen",
     membersAndInviteAccept: "Members screen",

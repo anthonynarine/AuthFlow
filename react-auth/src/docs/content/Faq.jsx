@@ -22,25 +22,33 @@ export default function FaqPage() {
         <>
             <p className="doc-lede">Short answers to common questions, each with a link to the page that explains it.</p>
 
-            <DocSection id="your-data" title="Your data">
+            <DocSection id="your-data" title="Data">
                 <Faq
                     items={[
                         [
-                            "Can another workspace see our findings, people or applications?",
+                            "Is Gait a product I can sign my company up for?",
                             <>
-                                No. To anyone outside your workspace it doesn't exist: they get the same answer as for a
+                                No. Gait is the internal security system I built to protect my own apps: Lumen and Gait
+                                itself. gait-sdk is public and open source (MIT, on PyPI). See{" "}
+                                <DocLink to="what-gait-is">What Gait is</DocLink>.
+                            </>,
+                        ],
+                        [
+                            "Can another workspace see a workspace's findings, people or applications?",
+                            <>
+                                No. To anyone outside a workspace it doesn't exist: they get the same answer as for a
                                 workspace that doesn't exist. See <DocLink to="isolation">Isolation and setup</DocLink>.
                             </>,
                         ],
                         [
-                            "Does Gait change our code, servers or data?",
+                            "Does Gait change Lumen's code, servers or data?",
                             <>
                                 No. A connection key can only report security checks. See{" "}
                                 <DocLink to="what-gait-is#what-gait-is-not">What Gait is not</DocLink>.
                             </>,
                         ],
                         [
-                            "How do we report a security problem?",
+                            "How do I report a security problem?",
                             <>
                                 Privately, never in public. For Gait itself, email the address on{" "}
                                 <DocLink to="report-a-vulnerability">Report a vulnerability</DocLink>; for gait-sdk, use
@@ -48,7 +56,7 @@ export default function FaqPage() {
                             </>,
                         ],
                         [
-                            "Do Gait's automated agents work on our software?",
+                            "Do Gait's AI agents work on Lumen?",
                             <>
                                 No. They look after Gait's own platform only. See{" "}
                                 <DocLink to="automated-security-response">Automated security response</DocLink>.
@@ -62,7 +70,7 @@ export default function FaqPage() {
                 <Faq
                     items={[
                         [
-                            "Why is the same software several applications?",
+                            "Why is the same app several applications?",
                             <>
                                 Each environment is its own application, with its own keys and results, so a problem in{" "}
                                 <code>local</code> never touches <code>production</code>. See{" "}
@@ -70,7 +78,7 @@ export default function FaqPage() {
                             </>,
                         ],
                         [
-                            "We lost a connection key. Can Gait show it again?",
+                            "A connection key is lost. Can Gait show it again?",
                             <>
                                 No. It's shown once and Gait keeps only a fingerprint. Issue a new one and revoke the old
                                 one. See <DocLink to="rotate-a-connection-key">Rotate a connection key</DocLink>.
@@ -101,14 +109,14 @@ export default function FaqPage() {
                 />
             </DocSection>
 
-            <DocSection id="team-and-invites" title="Your team and invites">
+            <DocSection id="team-and-invites" title="People and invites">
                 <Faq
                     items={[
                         [
                             "How long does an invite link work?",
                             <>
                                 Once, for 7 days. See{" "}
-                                <DocLink to="teams-roles-and-invites#inviting-your-team">Inviting your team</DocLink>.
+                                <DocLink to="teams-roles-and-invites#inviting-your-team">Inviting people</DocLink>.
                             </>,
                         ],
                         [
@@ -140,7 +148,7 @@ export default function FaqPage() {
                             </>,
                         ],
                         [
-                            "If we accept a risk, will new failures reopen it?",
+                            "If I accept a risk, will new failures reopen it?",
                             <>
                                 No. It stays accepted, and the new reports are still recorded. See{" "}
                                 <DocLink to="handle-a-finding#if-it-fails-again">If the check fails again</DocLink>.
@@ -149,7 +157,7 @@ export default function FaqPage() {
                         [
                             "What does \"self-reported\" mean?",
                             <>
-                                Your software reported it about itself; "Gait-verified" means Gait ran or confirmed it.
+                                The app reported it about itself; "Gait-verified" means Gait ran or confirmed it.
                                 Both count. See{" "}
                                 <DocLink to="security-checks-and-findings#self-reported-vs-gait-verified">
                                     Self-reported vs Gait-verified
@@ -161,27 +169,27 @@ export default function FaqPage() {
                 />
             </DocSection>
 
-            <DocSection id="your-products-users" title="Your product's users">
+            <DocSection id="your-products-users" title="Lumen's users">
                 <Faq
                     items={[
                         [
-                            "Can our product's users sign in with Gait?",
+                            "Do Lumen's users sign in with Gait?",
                             <>
-                                Yes: <StatusBadge feature="productSignIn" />. Gait says who they are; your
-                                product decides what they can do. See{" "}
-                                <DocLink to="add-gait-sign-in">Add Gait sign-in to your product</DocLink>, then{" "}
+                                Yes: <StatusBadge feature="productSignIn" />. Gait says who they are; Lumen decides
+                                what they can do. See{" "}
+                                <DocLink to="add-gait-sign-in">Add Gait sign-in to an app</DocLink>, then{" "}
                                 <DocLink to="product-organizations-and-invites">
-                                    Your product's organizations &amp; invites
+                                    An app's own organizations &amp; invites
                                 </DocLink>
                                 .
                             </>,
                         ],
                         [
-                            "Do our product's users see the Gait console?",
+                            "Do Lumen's users see the Gait console?",
                             <>
-                                No, and they never join your Gait workspace. See{" "}
+                                No, and they never join Lumen's Gait workspace. See{" "}
                                 <DocLink to="people-and-applications#your-products-own-users">
-                                    Your product's own users
+                                    An app's own users
                                 </DocLink>
                                 .
                             </>,

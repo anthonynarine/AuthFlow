@@ -1,6 +1,6 @@
 /*
- * SDK facts and code shown in more than one place: the docs (Connecting your
- * software, Quickstart) and the console's onboarding instructions. Import
+ * SDK facts and code shown in more than one place: the docs (Connecting an
+ * app, Quickstart) and the console's onboarding instructions. Import
  * these; never copy them, so nothing can drift apart.
  */
 
@@ -31,7 +31,7 @@ asyncio.run(send_security_signal(
     payload={"checks": {"debug_disabled": "FAIL", "hsts_enabled": "PASS"}},
 ))`;
 
-// Verify your product's users (Early access): Django REST Framework, in the
+// Verify an app's own users (Early access): Django REST Framework, in the
 // SDK's default "introspection" mode, which needs only GAIT_AUTH_URL. The SDK's
 // "jwks" mode waits until Gait publishes signing keys (its JWKS is empty today).
 export const VERIFY_USER_SETTINGS = `# settings.py
@@ -49,11 +49,11 @@ class ProjectList(APIView):
     def get(self, request):
         # Who Gait says this is: identity.subject, identity.email
         identity = request.verified_identity
-        # Your product decides what they may see.
+        # The app decides what they may see.
         ...`;
 
-// Add Gait sign-in to your product: your server, not the browser, talks to Gait.
-export const SERVER_SIGN_IN = `# Your server, not the browser, talks to Gait.
+// Add Gait sign-in to an app: the app's server, not the browser, talks to Gait.
+export const SERVER_SIGN_IN = `# The app's server, not the browser, talks to Gait.
 import requests
 
 GAIT = "${GAIT_API_URL}"
@@ -61,7 +61,7 @@ GAIT = "${GAIT_API_URL}"
 def sign_in(email, password):
     r = requests.post(f"{GAIT}/login/", json={"email": email, "password": password}, timeout=5)
     if r.status_code == 401 and r.json().get("2fa_required"):
-        # Keep this with the pending sign-in, on your server: 10 minutes, one use.
+        # Keep this with the pending sign-in, on the server: 10 minutes, one use.
         return {"needs_code": True, "temp_token": r.cookies.get("temp_token")}
     r.raise_for_status()
     return r.json()  # {"access_token": ..., "refresh_token": ...}
@@ -87,17 +87,17 @@ def sign_out(refresh_token):
 export const LIVE_SESSION_VIEW = `from gait_sdk.django.authentication import require_live_session
 
 def post(self, request, project_id):
-    ...                            # 1. your own rules first
+    ...                            # 1. the app's own rules first
     require_live_session(request)  # 2. always asks Gait: 401 if signed out, 503 if unreachable
     ...                            # 3. make the change`;
 
-export const LINK_ON_FIRST_REQUEST = `# Create your user the first time someone signs in.
+export const LINK_ON_FIRST_REQUEST = `# Create the app's user the first time someone signs in.
 account, _ = Account.objects.get_or_create(
     gait_subject=request.user.id,
     defaults={"email": request.user.email},
 )`;
 
-export const LINK_BY_INVITE = `# Only people you've invited get in.
+export const LINK_BY_INVITE = `# Only people the app has invited get in.
 member = Member.objects.filter(team=team, gait_subject=request.user.id).first()
 if member is None:
     raise NotFound()`;

@@ -32,7 +32,7 @@ afterEach(() => {
 });
 
 describe("gait-sdk page", () => {
-    test("sits in For developers after Add Gait sign-in, with Connecting your software after it", () => {
+    test("sits in For developers after Add Gait sign-in, with Connecting an app after it", () => {
         const group = DOC_GROUPS.find((entry) => entry.title === "For developers");
         expect(group.pages.map((page) => page.slug)).toEqual([
             "add-gait-sign-in",
@@ -59,10 +59,7 @@ describe("gait-sdk page", () => {
         expect(within(section("Report a security check")).getByText("Live", badge)).toBeInTheDocument();
         expect(within(section("Verify a user")).getByText("Early access", badge)).toBeInTheDocument();
         expect(within(section("Verify a user")).queryByText("Live", badge)).not.toBeInTheDocument();
-        expect(within(section("Verify a user")).getByRole("link", { name: "Request early access" })).toHaveAttribute(
-            "href",
-            "/early-access"
-        );
+        expect(within(section("Verify a user")).queryByRole("link", { name: /early access/i })).not.toBeInTheDocument();
     });
 
     test("the verify snippet uses the SDK's default mode, which needs only GAIT_AUTH_URL", () => {

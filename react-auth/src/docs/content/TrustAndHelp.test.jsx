@@ -104,7 +104,7 @@ describe("How Gait protects your data", () => {
         // key-management detail, no compliance names. See D-TRUST, D-2FA, D-SEC1.
         expect(text).not.toMatch(/every (secret|token)|all (secrets|tokens)|HSTS|HIPAA|SOC ?2|Fernet|AES|key rotation/i);
         expect(text.match(/encrypt/gi)).toHaveLength(1);
-        expect(text).toMatch(/Two-step verification secrets are encrypted in our database\./);
+        expect(text).toMatch(/Two-step verification secrets are encrypted in Gait's database\./);
         expect(text).toMatch(/only work over HTTPS/);
         expect(text).not.toMatch(/\b\d+\s*(minutes?|hours?|days?|attempts?)\b/i);
         expect(text).toMatch(/signs you out everywhere/);

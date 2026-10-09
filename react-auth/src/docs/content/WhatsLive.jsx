@@ -1,7 +1,6 @@
 import React from "react";
-import { Link } from "react-router-dom";
 import { DocLink, DocSection, DocTable, StatusBadge } from "../components/DocPrimitives";
-import { FEATURE_INFO, STATUS_LABELS, statusAsOfLabel } from "../featureStatus";
+import { FEATURE_INFO, statusAsOfLabel } from "../featureStatus";
 import { CHANGELOG } from "../changelog";
 import { findDocPage } from "../manifest";
 
@@ -21,12 +20,12 @@ function dateLabel(isoDate) {
 export default function WhatsLive() {
     return (
         <>
-            <p className="doc-lede">What you can use today, and what has changed recently.</p>
+            <p className="doc-lede">What works today, and what has changed recently.</p>
 
             <DocSection id="status" title="What's live">
                 <p>
-                    <StatusBadge status="live" /> means you can use it today.{" "}
-                    <StatusBadge status="earlyAccess" /> means it's open to early-access customers only.{" "}
+                    <StatusBadge status="live" /> means it works today.{" "}
+                    <StatusBadge status="earlyAccess" /> means it's in early use and may still change.{" "}
                     <StatusBadge status="pending" /> means it isn't available yet.
                 </p>
                 <DocTable caption="What's live">
@@ -55,8 +54,7 @@ export default function WhatsLive() {
                     </tbody>
                 </DocTable>
                 <p className="doc-muted">
-                    Status as of {statusAsOfLabel()}. Interested in something marked{" "}
-                    {STATUS_LABELS.earlyAccess}? <Link to="/early-access">Request early access</Link>.
+                    Status as of {statusAsOfLabel()}.
                 </p>
             </DocSection>
 

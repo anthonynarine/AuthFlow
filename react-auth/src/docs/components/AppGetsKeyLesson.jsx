@@ -11,7 +11,7 @@ const LANES = [
     { id: "admin", label: "Owner or Admin", tone: "person" },
     { id: "console", label: "Gait console", tone: "console" },
     { id: "gait", label: "Gait", tone: "gait" },
-    { id: "backend", label: "Your app's backend", tone: "software" },
+    { id: "backend", label: "Lumen's backend", tone: "software" },
 ];
 
 const BLOCKS = [
@@ -28,7 +28,7 @@ const BLOCKS = [
     },
     {
         kind: "frame",
-        label: "Loop · whenever your backend runs its checks",
+        label: "Loop · whenever Lumen's backend runs its checks",
         branches: [
             {
                 id: "loop",
@@ -36,7 +36,7 @@ const BLOCKS = [
                 tone: "software",
                 messages: [
                     { n: 5, from: "backend", to: "gait", text: "Report a security check (with the key)" },
-                    { n: 6, from: "gait", to: "backend", text: "Recorded for acme / acme-api / production" },
+                    { n: 6, from: "gait", to: "backend", text: "Recorded for lumen / lumen-api / production" },
                 ],
             },
         ],
@@ -48,13 +48,13 @@ const range = (from, to) => Array.from({ length: to - from + 1 }, (_, i) => from
 const BEATS = [
     {
         title: "Four lanes, two scenes",
-        body: "First a person sets things up once, in the console. After that your backend talks to Gait on its own, whenever it runs its checks, with no person involved.",
+        body: "First a person sets things up once, in the console. After that the app's backend talks to Gait on its own, whenever it runs its checks, with no person involved.",
         live: [],
         shown: [],
     },
     {
         title: "Add the application",
-        body: "An Owner or Admin adds an application with a name, a slug and one environment. Acme API in local and Acme API in production are two separate applications.",
+        body: "An Owner or Admin adds an application with a name, a slug and one environment. Lumen API in local and Lumen API in production are two separate applications.",
         live: [1],
         shown: [1],
     },
@@ -72,19 +72,19 @@ const BEATS = [
     },
     {
         title: "Store it in the backend",
-        body: "The key goes into the backend's secret settings, as GAIT_APPLICATION_CREDENTIAL. From here on your backend holds the key; Gait holds only its fingerprint.",
+        body: "The key goes into the backend's secret settings, as GAIT_APPLICATION_CREDENTIAL. From here on the backend holds the key; Gait holds only its fingerprint.",
         live: [4],
         shown: range(1, 4),
     },
     {
-        title: "Whenever your backend runs its checks",
-        body: "The backend reports a security check with the key. The key alone tells Gait which application, and so which workspace and environment, the result belongs to: acme / acme-api / production.",
+        title: "Whenever Lumen's backend runs its checks",
+        body: "The backend reports a security check with the key. The key alone tells Gait which application, and so which workspace and environment, the result belongs to: lumen / lumen-api / production.",
         live: [5, 6],
         shown: range(1, 6),
     },
     {
         title: "Recap",
-        body: "People set up; software reports. The key is shown once in the console, lives only in your backend, and is the only credential your backend needs to report.",
+        body: "People set up; software reports. The key is shown once in the console, lives only in the backend, and is the only credential the backend needs to report.",
         live: [],
         shown: range(1, 6),
     },

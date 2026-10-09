@@ -1,5 +1,5 @@
 /**
- * Guard for the customer docs (src/docs): they must stay neutral and must
+ * Guard for the public docs (src/docs): they must stay neutral and must
  * never carry internal material or key-shaped values. To ban another word,
  * add it to FORBIDDEN_TERMS.
  */
@@ -10,6 +10,14 @@ import path from "path";
 // Lumen is allowed since GAIT-13: it is my own app, the one Gait protects, and
 // the docs use it as their example.
 export const FORBIDDEN_TERMS = [
+    // GAIT-13: Gait is my internal security system, not a product sold to
+    // other companies; these phrases framed it as one.
+    "acme",
+    "your team",
+    "your company",
+    "your software",
+    "every app you ship",
+    "request early access",
     "hospital",
     "physician",
     "technologist",

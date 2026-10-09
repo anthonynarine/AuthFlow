@@ -85,7 +85,7 @@ test("the wrong-door flow ends in a 404, and a key decides the workspace", async
     expect(screen.getByText("Nothing in the request can point it at app-one.")).toBeInTheDocument();
 });
 
-test("journey badges: Live only if a customer can do it in the console today", async () => {
+test("journey badges: Live only if it works in the console today", async () => {
     renderIsolation();
     await settleDiagrams();
     const journey1 = screen.getByRole("list", { name: "Journey 1 steps" });
@@ -100,7 +100,7 @@ test("journey badges: Live only if a customer can do it in the console today", a
     expect(screen.getByText(/All of this is/)).toHaveTextContent("All of this is Live.");
     const journey4 = badgesIn(screen.getByRole("list", { name: "Journey 4 steps" }));
     expect(journey4).toHaveLength(7);
-    // Every step depends on your product signing its users in with Gait, which is early access (productSignIn).
+    // Every step depends on the app signing its users in with Gait, which is early access (productSignIn).
     expect(new Set(journey4)).toEqual(new Set(["Early access"]));
     expect(screen.getByText(/Status as of 28 September 2026/)).toBeInTheDocument();
 });

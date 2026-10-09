@@ -6,10 +6,10 @@ export default function HandleAFinding() {
         <>
             <p className="doc-lede">
                 A failing check opened a finding. This guide takes it from <strong>Open</strong> to{" "}
-                <strong>Resolved</strong>, or to a decision your team has written down.
+                <strong>Resolved</strong>, or to a decision written down in Gait.
             </p>
             <p>
-                The Findings screen is <StatusBadge feature="findingsScreen" />. Everyone in your workspace can see
+                The Findings screen is <StatusBadge feature="findingsScreen" />. Everyone in the workspace can see
                 findings; only Owners and Admins can act on them. Background:{" "}
                 <DocLink to="security-checks-and-findings">Security checks &amp; findings</DocLink>.
             </p>
@@ -27,7 +27,7 @@ export default function HandleAFinding() {
                     <li>
                         Open a finding. <strong>What happened</strong> says what failed and when it was first and last
                         seen, <strong>Reports</strong> lists the checks behind it, and <strong>Decisions</strong> shows
-                        what your team has decided so far.
+                        what has been decided so far.
                     </li>
                 </ol>
             </DocSection>
@@ -63,7 +63,7 @@ export default function HandleAFinding() {
                     </li>
                     <li>
                         Every decision goes into the finding's permanent history: who decided, when, the note, and the
-                        change (for example open → acknowledged). Anyone in your workspace can read it under{" "}
+                        change (for example open → acknowledged). Anyone in the workspace can read it under{" "}
                         <strong>Decisions</strong>.
                     </li>
                     <li>A decision can't be edited or undone.</li>
@@ -72,9 +72,9 @@ export default function HandleAFinding() {
 
             <DocSection id="fix-it" title="Fix it and let a check pass">
                 <ol>
-                    <li>Fix the problem in your software.</li>
+                    <li>Fix the problem in the app.</li>
                     <li>
-                        Let your application report the same check again, and PASS: from <strong>the same
+                        Let the application report the same check again, and PASS: from <strong>the same
                         application</strong> (its own key), in <strong>the same environment</strong>, with a{" "}
                         <strong>new</strong> <code>source_reference</code>. A reused one counts as a retry and changes
                         nothing.
@@ -85,7 +85,7 @@ export default function HandleAFinding() {
                     </li>
                 </ol>
                 <p>
-                    How to report: <DocLink to="connecting-your-software">Connecting your software</DocLink>.
+                    How to report: <DocLink to="connecting-your-software">Connecting an app</DocLink>.
                 </p>
             </DocSection>
 

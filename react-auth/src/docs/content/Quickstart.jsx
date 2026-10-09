@@ -10,7 +10,7 @@ const STEPS = [
     [<><strong>Confirm your email</strong> from the link Gait sends</>, ["emailVerification"], "getting-started", "Getting started"],
     [
         <>
-            <strong>Create your workspace</strong>: a name and a short slug such as <code>acme</code>. The slug can't be
+            <strong>Create the app's workspace</strong>: a name and a short slug such as <code>lumen</code>. The slug can't be
             changed later. You become its Owner.
         </>,
         ["core"],
@@ -19,7 +19,7 @@ const STEPS = [
     ],
     [
         <>
-            <strong>Add an application</strong>: name, slug and environment, e.g. Acme API · <code>local</code>.
+            <strong>Add an application</strong>: name, slug and environment, e.g. Lumen API · <code>local</code>.
         </>,
         ["core"],
         "applications-and-connection-keys",
@@ -27,7 +27,7 @@ const STEPS = [
     ],
     [
         <>
-            <strong>Copy the connection key.</strong> It's shown once. Put it in your app's <code>.env</code> or your
+            <strong>Copy the connection key.</strong> It's shown once. Put it in the app's <code>.env</code> or the
             host's secret settings, never in code.
         </>,
         ["core"],
@@ -41,13 +41,13 @@ const STEPS = [
         </>,
         ["core"],
         "connecting-your-software",
-        "Connecting your software",
+        "Connecting an app",
     ],
     [
-        <><strong>Send your first security check</strong> (PASS or FAIL).</>,
+        <><strong>Send the first security check</strong> (PASS or FAIL).</>,
         ["core"],
         "connecting-your-software#report-a-security-check",
-        "Connecting your software",
+        "Connecting an app",
     ],
     [
         <>
@@ -62,7 +62,9 @@ const STEPS = [
 export default function Quickstart() {
     return (
         <>
-            <p className="doc-lede">From nothing to your first security check in about 15 minutes.</p>
+            <p className="doc-lede">
+                How I take a new app from nothing to its first security check in Gait, in about 15 minutes.
+            </p>
 
             <DocSection id="checklist" title="Checklist">
                 <DocTable caption="Quickstart checklist">
@@ -96,19 +98,19 @@ export default function Quickstart() {
             <DocSection id="step-7-send-your-first-check" title="Step 7: Send your first check">
                 <CodeBlock label="Python" code={REPORT} />
                 <p>
-                    Details: <DocLink to="connecting-your-software#report-a-security-check">Connecting your software</DocLink>.
+                    Details: <DocLink to="connecting-your-software#report-a-security-check">Connecting an app</DocLink>.
                 </p>
             </DocSection>
 
             <DocSection id="next" title="Next">
                 <ul>
                     <li>
-                        Add an application for each other environment you run (<code>staging</code>,{" "}
+                        Add an application for each other environment the app runs in (<code>staging</code>,{" "}
                         <code>production</code>), each with its own key.
                     </li>
-                    <li>Run your checks on every deploy, or on a schedule.</li>
+                    <li>Run the checks on every deploy, or on a schedule.</li>
                     <li>
-                        <DocLink to="teams-roles-and-invites">Invite your team</DocLink>{" "}
+                        <DocLink to="teams-roles-and-invites">Invite other people</DocLink>{" "}
                         <StatusCell features={["membersAndInviteAccept"]} />
                     </li>
                 </ul>

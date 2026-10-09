@@ -10,7 +10,7 @@ const FINDING_LIFECYCLE = `flowchart TB
     classDef human fill:${DIAGRAM.fillAmber},stroke:${DIAGRAM.amber},color:${DIAGRAM.text},stroke-width:2px
     classDef done fill:${DIAGRAM.fillGreen},stroke:${DIAGRAM.green},color:${DIAGRAM.text},stroke-width:2px
 
-    APP["Your application"]:::app -- "FAIL" --> OPEN["Finding open"]:::open
+    APP["Application (e.g. lumen-api)"]:::app -- "FAIL" --> OPEN["Finding open"]:::open
     OPEN -- "Owner or Admin, with a note" --> ACK["Acknowledged"]:::human
     OPEN -- "Owner or Admin, with a note" --> RISK["Risk accepted"]:::human
     ACK -- "Owner or Admin, with a note" --> RISK
@@ -23,14 +23,14 @@ export default function SecurityChecksAndFindings() {
     return (
         <>
             <p className="doc-lede">
-                What Gait does with the security checks your application reports, and how your team acts on what it
+                What Gait does with the security checks an application reports, and how I act on what it
                 finds.
             </p>
 
             <DocSection id="from-report-to-finding" title="From report to finding">
                 <Diagram
                     source={FINDING_LIFECYCLE}
-                    description="When your application reports FAIL, Gait opens a finding. An Owner or Admin can acknowledge it or accept the risk, each with a written note; an acknowledged finding can still have its risk accepted. A later PASS from the application resolves the finding, whichever of those states it is in. If the check fails again after that, the same finding opens again."
+                    description="When an application reports FAIL, Gait opens a finding. An Owner or Admin can acknowledge it or accept the risk, each with a written note; an acknowledged finding can still have its risk accepted. A later PASS from the application resolves the finding, whichever of those states it is in. If the check fails again after that, the same finding opens again."
                 />
                 <ul>
                     <li>
@@ -61,12 +61,12 @@ export default function SecurityChecksAndFindings() {
                     <tbody>
                         <tr>
                             <th scope="row">Comes from</th>
-                            <td>Your application's own checks, sent with its connection key</td>
+                            <td>The application's own checks, sent with its connection key</td>
                             <td>Checks Gait ran or confirmed itself</td>
                         </tr>
                         <tr>
                             <th scope="row">What it means</th>
-                            <td>Your software says so; Gait hasn't independently confirmed it</td>
+                            <td>The app says so; Gait hasn't independently confirmed it</td>
                             <td>Gait has confirmed it</td>
                         </tr>
                         <tr>
@@ -77,7 +77,7 @@ export default function SecurityChecksAndFindings() {
                     </tbody>
                 </DocTable>
                 <p>
-                    Everything your application sends in a report's payload is kept as evidence for the finding, which
+                    Everything an application sends in a report's payload is kept as evidence for the finding, which
                     is why the payload should hold check names and results only.
                 </p>
             </DocSection>
@@ -85,8 +85,8 @@ export default function SecurityChecksAndFindings() {
             <DocSection id="acting-on-a-finding" title="Acting on a finding">
                 <p>Owners and Admins can:</p>
                 <ul>
-                    <li><strong>Acknowledge</strong>: "we've seen it and we're on it."</li>
-                    <li><strong>Accept the risk</strong>: "we've decided to live with this, and here's why."</li>
+                    <li><strong>Acknowledge</strong>: "I've seen it and I'm on it."</li>
+                    <li><strong>Accept the risk</strong>: "I've decided to live with this, and here's why."</li>
                 </ul>
                 <p>
                     Both need a written note of <strong>10 to 2,000 characters</strong>, and both are kept in the
@@ -94,7 +94,7 @@ export default function SecurityChecksAndFindings() {
                 </p>
                 <ul>
                     <li>
-                        An accepted risk stays accepted even if your application keeps reporting the same failure. The
+                        An accepted risk stays accepted even if the application keeps reporting the same failure. The
                         new reports are still recorded.
                     </li>
                     <li>A PASS resolves the finding once it's actually fixed.</li>

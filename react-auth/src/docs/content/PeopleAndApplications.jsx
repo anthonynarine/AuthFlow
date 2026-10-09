@@ -14,19 +14,19 @@ const BIG_PICTURE = `flowchart TB
 
     subgraph PEOPLE["People: sign in with a Gait account"]
         direction LR
-        P1["you@acme.example"]:::person
-        P2["security@acme.example"]:::person
+        P1["me@lumen.example"]:::person
+        P2["security@lumen.example"]:::person
     end
 
-    subgraph COMPANY["Workspace: acme"]
+    subgraph COMPANY["Workspace: lumen"]
         direction LR
         R1["Owner"]:::company
         R2["Admin"]:::company
-        A1["acme-api (local)"]:::app
-        A2["acme-api (production)"]:::app
+        A1["lumen-api (local)"]:::app
+        A2["lumen-api (production)"]:::app
     end
 
-    subgraph SOFTWARE["Your software's backend"]
+    subgraph SOFTWARE["Lumen's backend"]
         direction LR
         E1["Connection key (local)"]:::key
         E2["Connection key (production)"]:::key
@@ -45,9 +45,9 @@ const PRODUCT_USERS = `flowchart LR
     subgraph G["Gait: who you are"]
         ACC["Gait account<br/>jordan@example.org<br/>email confirmed"]:::gait
     end
-    subgraph P["Your product: what you may do"]
-        CUST["Customer: Example Clinic"]:::product
-        ROLE["Role in your product: editor"]:::product
+    subgraph P["Lumen: what you may do"]
+        CUST["Organization: Example Clinic"]:::product
+        ROLE["Role in Lumen, set by Lumen"]:::product
     end
     ACC -- "signs in to" --> P
     CUST --> ROLE`;
@@ -71,13 +71,13 @@ export default function PeopleAndApplications() {
             <p className="doc-lede">
                 Gait has two completely different kinds of identity, <strong>people</strong> and{" "}
                 <strong>applications</strong>, and they never stand in for each other. A third layer appears when
-                your own product has its own users.
+                an app has its own users, as Lumen does.
             </p>
 
             <DocSection id="the-big-picture" title="The big picture">
                 <Diagram
                     source={BIG_PICTURE}
-                    description="Two people sign in to Gait and belong to the workspace acme, one as Owner and one as Admin. The workspace has two applications, acme-api in local and acme-api in production. Each application has its own connection key, stored in that copy of the software's backend, which it uses to report security checks."
+                    description="Two people sign in to Gait and belong to the workspace lumen, one as Owner and one as Admin. The workspace has two applications, lumen-api in local and lumen-api in production. Each application has its own connection key, stored in that copy of Lumen's backend, which it uses to report security checks."
                 />
                 <ul>
                     <li>
@@ -89,8 +89,8 @@ export default function PeopleAndApplications() {
                         Each has <strong>connection keys</strong> that live in the software's backend configuration.
                     </li>
                     <li>
-                        <strong>Your product's own users</strong> sign in with Gait accounts too, but their roles
-                        belong to your product, not to Gait. See{" "}
+                        <strong>An app's own users</strong> (Lumen's, for example) sign in with Gait accounts too, but
+                        their roles belong to the app, not to Gait. See{" "}
                         <a href="#your-products-own-users">below</a>.
                     </li>
                 </ul>
@@ -109,7 +109,7 @@ export default function PeopleAndApplications() {
                         <tr>
                             <th scope="row">What it is</th>
                             <td>A human with a Gait account</td>
-                            <td>A piece of your software, in one environment</td>
+                            <td>A piece of an app, in one environment</td>
                         </tr>
                         <tr>
                             <th scope="row">How it gets in</th>
@@ -149,8 +149,8 @@ export default function PeopleAndApplications() {
                     </tbody>
                 </DocTable>
                 <p>
-                    A connection key is deliberately narrow. It proves <em>"I am acme-api (production), owned by the
-                    workspace acme"</em> and nothing more. It can't read the console, act as a person, see other
+                    A connection key is deliberately narrow. It proves <em>"I am lumen-api (production), owned by the
+                    workspace lumen"</em> and nothing more. It can't read the console, act as a person, see other
                     applications, or touch another workspace.
                 </p>
             </DocSection>
@@ -167,59 +167,59 @@ export default function PeopleAndApplications() {
                 <AppGetsKeyLesson />
                 <p>
                     See <DocLink to="applications-and-connection-keys">Applications &amp; connection keys</DocLink> and{" "}
-                    <DocLink to="connecting-your-software">Connecting your software</DocLink>.
+                    <DocLink to="connecting-your-software">Connecting an app</DocLink>.
                 </p>
             </DocSection>
 
-            <DocSection id="your-products-own-users" title="Your product's own users">
+            <DocSection id="your-products-own-users" title="An app's own users">
                 <p>
-                    Your product can use Gait to sign its own users in <strong>without</strong> making them members of
-                    your Gait workspace. Say your company, with the Gait workspace <code>acme</code>, sells a product to a customer
-                    called Example Clinic, whose staff sign in to your product:
+                    An app can use Gait to sign its own users in <strong>without</strong> making them members of its
+                    Gait workspace. Lumen does this. Say Lumen, with the Gait workspace <code>lumen</code>, is used by an
+                    organization called Example Clinic (a made-up name), whose staff sign in to Lumen:
                 </p>
                 <Diagram
                     source={PRODUCT_USERS}
-                    description="A Gait account, jordan@example.org, with a confirmed email, signs in to your product. Your product decides that Jordan belongs to its customer Example Clinic and has the role editor in your product."
+                    description="A Gait account, jordan@example.org, with a confirmed email, signs in to Lumen. Lumen decides that Jordan belongs to its organization Example Clinic and which role Jordan has in Lumen."
                 />
                 <ul>
                     <li><strong>Gait authenticates</strong>: it answers "who is this?".</li>
                     <li>
-                        <strong>Your product authorizes</strong>: it decides which customer and which of your
-                        product's roles the person has, using your own invites and data.
+                        <strong>Lumen authorizes</strong>: it decides which organization and which of Lumen's roles
+                        the person has, using its own invites and data.
                     </li>
                     <li>
-                        Jordan never joins your Gait workspace <code>acme</code> and never sees the Gait console. Your Gait
-                        workspace is for the people who look after your product's security.
+                        Jordan never joins the Gait workspace <code>lumen</code> and never sees the Gait console. That
+                        workspace is for the people who look after Lumen's security.
                     </li>
                 </ul>
-                <DocTable caption="Your Gait workspace compared with a customer inside your product">
+                <DocTable caption="Lumen's Gait workspace compared with an organization inside Lumen">
                     <thead>
                         <tr>
                             <th scope="col"><span className="doc-visually-hidden">Property</span></th>
-                            <th scope="col">Gait workspace <code>acme</code></th>
-                            <th scope="col">Your customer "Example Clinic"</th>
+                            <th scope="col">Gait workspace <code>lumen</code></th>
+                            <th scope="col">Lumen organization "Example Clinic"</th>
                         </tr>
                     </thead>
                     <tbody>
                         <tr>
                             <th scope="row">Who's in it</th>
-                            <td>You, and whoever manages your product's security in Gait</td>
-                            <td>Your customer's staff</td>
+                            <td>Me, and anyone I invite to look after Lumen's security in Gait</td>
+                            <td>That organization's staff</td>
                         </tr>
                         <tr>
                             <th scope="row">Roles</th>
                             <td>Owner / Admin / Member (Gait's)</td>
-                            <td>Whatever your product defines, e.g. admin / editor / viewer</td>
+                            <td>Whatever Lumen defines</td>
                         </tr>
                         <tr>
                             <th scope="row">Joined by</th>
                             <td>A Gait invite</td>
-                            <td>Your product's own invite</td>
+                            <td>Lumen's own invite</td>
                         </tr>
                         <tr>
                             <th scope="row">Sees</th>
                             <td>The Gait console</td>
-                            <td>Your product</td>
+                            <td>Lumen</td>
                         </tr>
                     </tbody>
                 </DocTable>
@@ -241,13 +241,13 @@ export default function PeopleAndApplications() {
                         address, whether you join from the invite link or from the invites Gait shows you.
                     </li>
                     <li>
-                        <strong>Gait authenticates; your product authorizes.</strong> Gait never stores or enforces your
-                        product's own roles.
+                        <strong>Gait authenticates; the app authorizes.</strong> Gait never stores or enforces an app's
+                        own roles.
                     </li>
                 </ol>
                 <Callout kind="availability">
                     {statusOf("membersAndInviteAccept") === "live"
-                        ? "Inviting teammates and accepting an invite both work in the console today."
+                        ? "Inviting people and accepting an invite both work in the console today."
                         : "The console screen for accepting an invite is still being built."}{" "}
                     See <DocLink to="teams-roles-and-invites#availability">what works today</DocLink>.
                 </Callout>

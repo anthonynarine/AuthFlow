@@ -8,15 +8,15 @@
  * SOURCE OF TRUTH: the pages under src/docs/ ARE Gait's public documentation
  * (served at https://gaitobservatory.com/docs). The copies that
  * used to live in the Gait repo (docs/console/GETTING_STARTED.md and the
- * customer parts of IDENTITY_MODEL.md / INVITES_AND_JOINING.md) point here.
- * Change customer docs here, not there.
+ * public parts of IDENTITY_MODEL.md / INVITES_AND_JOINING.md) point here.
+ * Change the public docs here, not there.
  *
  * Rules for everything under src/docs/:
  *   - Public-facing only. Never copy operator/internal material (API
  *     internals, deployment, runbooks) into these pages.
  *   - Examples use Lumen: workspace "lumen", application "lumen-api", and
- *     Lumen's own users at "Example Clinic". No real people or customer
- *     names. docsContent.test.js enforces FORBIDDEN_TERMS.
+ *     Lumen's own users at "Example Clinic". No real people or
+ *     organization names. docsContent.test.js enforces FORBIDDEN_TERMS.
  *   - Example keys must never look like real keys.
  *   - Public pages: no session restore, no API calls.
  *
@@ -109,7 +109,7 @@ export const DOC_GROUPS = [
             {
                 slug: "product-organizations-and-invites",
                 title: "An app's own organizations & invites",
-                summary: "The pattern Lumen uses for its own organizations, roles, invites and sites, when its users sign in with Gait.",
+                summary: "A pattern for an app's own organizations, roles, invites and sites, when its users sign in with Gait (as Lumen's do).",
             },
         ],
     },

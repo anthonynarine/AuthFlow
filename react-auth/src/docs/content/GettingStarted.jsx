@@ -7,23 +7,23 @@ export default function GettingStarted() {
     return (
         <>
             <p className="doc-lede">
-                Gait watches the security of your software and helps you fix what it finds. This guide sets up your
-                workspace in the Gait console and connects your first application.
+                This is how I add an app to Gait: set up its workspace in the Gait console and connect its first
+                application.
             </p>
 
             <Callout kind="availability" title="What works today">
-                Signing in, creating your workspace, inviting your team, managing applications and their connection
+                Signing in, creating a workspace, inviting people, managing applications and their connection
                 keys, reporting security checks, and reviewing and acting on findings all work in the console now.
                 Where something isn't available yet, the page describing it says so.
             </Callout>
 
             <p>
-                New here? Read <DocLink to="people-and-applications">People and applications</DocLink> first. It's
+                New to Gait? Read <DocLink to="people-and-applications">People and applications</DocLink> first. It's
                 the one idea everything else builds on.
             </p>
 
-            <DocSection id="the-four-things-youll-create" title="The four things you'll create">
-                <DocTable caption="The four things you'll create">
+            <DocSection id="the-four-things-youll-create" title="The four things I create">
+                <DocTable caption="The four things I create">
                     <thead>
                         <tr>
                             <th scope="col">Thing</th>
@@ -35,15 +35,15 @@ export default function GettingStarted() {
                         <tr>
                             <th scope="row">Workspace</th>
                             <td>
-                                Your team's private space in Gait. Everything else belongs to it, and nobody outside it
+                                An app's private space in Gait. Everything else belongs to it, and nobody outside it
                                 can see any of it.
                             </td>
-                            <td><code>Acme</code></td>
+                            <td><code>Lumen</code></td>
                         </tr>
                         <tr>
                             <th scope="row">Application</th>
-                            <td>One piece of your software, in <strong>one</strong> environment.</td>
-                            <td><code>Acme API</code> in <code>production</code></td>
+                            <td>One piece of an app, in <strong>one</strong> environment.</td>
+                            <td><code>Lumen API</code> in <code>production</code></td>
                         </tr>
                         <tr>
                             <th scope="row">Environment</th>
@@ -52,12 +52,12 @@ export default function GettingStarted() {
                                 <code>staging</code> or <code>production</code>. The same software in two environments
                                 is two applications.
                             </td>
-                            <td><code>local</code> for your laptop, <code>production</code> for the live service</td>
+                            <td><code>local</code> for my laptop, <code>production</code> for the live service</td>
                         </tr>
                         <tr>
                             <th scope="row">Connection key</th>
-                            <td>The secret your application uses to prove to Gait that it is that application.</td>
-                            <td>Shown once, when you issue it</td>
+                            <td>The secret an application uses to prove to Gait that it is that application.</td>
+                            <td>Shown once, when it's issued</td>
                         </tr>
                     </tbody>
                 </DocTable>
@@ -96,25 +96,25 @@ export default function GettingStarted() {
             <DocSection
                 id="step-2-create-your-workspace"
                 aliases={["step-2-create-your-company"]}
-                title="Step 2: Create your workspace"
+                title="Step 2: Create the app's workspace"
             >
-                <p>The first time you open the console, Gait asks you to create your workspace.</p>
+                <p>The first time you open the console, Gait asks you to create a workspace. I create one per app.</p>
                 <ul>
-                    <li><strong>Workspace name</strong>: what your team will see, e.g. <code>Acme</code>.</li>
+                    <li><strong>Workspace name</strong>: what its members will see, e.g. <code>Lumen</code>.</li>
                     <li>
                         <strong>Workspace URL slug</strong>: a short, lowercase identifier used in links, e.g.{" "}
-                        <code>acme</code>. <strong>Choose carefully: it can't be changed later.</strong>
+                        <code>lumen</code>. <strong>Choose carefully: it can't be changed later.</strong>
                     </li>
                 </ul>
                 <p>You become the workspace's <strong>Owner</strong>.</p>
             </DocSection>
 
             <DocSection id="step-3-add-an-application" title="Step 3: Add an application">
-                <p>Add one application per piece of software <strong>per environment</strong>.</p>
+                <p>Add one application per piece of the app <strong>per environment</strong>.</p>
                 <ul>
-                    <li><strong>Name</strong>: e.g. <code>Acme API</code>.</li>
+                    <li><strong>Name</strong>: e.g. <code>Lumen API</code>.</li>
                     <li>
-                        <strong>Slug</strong>: e.g. <code>acme-api</code>. You can reuse the same slug in another
+                        <strong>Slug</strong>: e.g. <code>lumen-api</code>. You can reuse the same slug in another
                         environment; that's a separate application.
                     </li>
                     <li>
@@ -133,7 +133,7 @@ export default function GettingStarted() {
                 <ol>
                     <li>Copy it immediately.</li>
                     <li>
-                        Put it where your application reads secrets, such as its <code>.env</code> file or your hosting
+                        Put it where the application reads secrets, such as its <code>.env</code> file or the hosting
                         provider's secret settings. Never put it in source code, tickets or chat.
                     </li>
                     <li>
@@ -146,15 +146,15 @@ export default function GettingStarted() {
             <DocSection id="next-steps" title="Next steps">
                 <ul>
                     <li>
-                        <DocLink to="connecting-your-software">Connect your software</DocLink>: install the SDK and send
-                        your first security check.
+                        <DocLink to="connecting-your-software">Connect the app</DocLink>: install gait-sdk and send its
+                        first security check.
                     </li>
                     <li>
                         <DocLink to="security-checks-and-findings">Security checks &amp; findings</DocLink>: what happens
-                        after you report.
+                        after an app reports.
                     </li>
                     <li>
-                        <DocLink to="teams-roles-and-invites">Teams, roles &amp; invites</DocLink>: bring your team in.
+                        <DocLink to="teams-roles-and-invites">Teams, roles &amp; invites</DocLink>: invite other people in.
                     </li>
                 </ul>
             </DocSection>

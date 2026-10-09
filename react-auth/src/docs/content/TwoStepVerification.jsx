@@ -76,7 +76,7 @@ export default function TwoStepVerification() {
                 </ol>
                 <p>
                     Gait emails you whenever one of your recovery codes is used. Lost your phone <em>and</em> your
-                    recovery codes? You'll need help to sign in: <Link to="/send-email">contact us</Link>.
+                    recovery codes? You'll need help to sign in: <Link to="/send-email">contact me</Link>.
                 </p>
             </DocSection>
 

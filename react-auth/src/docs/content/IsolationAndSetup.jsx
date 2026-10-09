@@ -65,12 +65,12 @@ export default function IsolationAndSetup() {
     return (
         <>
             <p className="doc-lede">
-                How Gait keeps one customer's people, applications and findings away from another's, and the four
-                journeys that make up a working setup.
+                How Gait keeps one workspace's people, applications and findings away from another's, and the four
+                journeys that make up a working setup. I run one workspace per app I protect.
             </p>
             <p>
-                The examples use two made-up customers, <strong>App One</strong> and <strong>App Two</strong>, each with
-                its own product and its own end users. Background first:{" "}
+                The examples use two made-up apps, <strong>App One</strong> and <strong>App Two</strong>, each with its
+                own workspace and its own end users, so the wall between them is easy to see. Background first:{" "}
                 <DocLink to="people-and-applications">People and applications</DocLink>. Invite details:{" "}
                 <DocLink to="teams-roles-and-invites">Teams, roles &amp; invites</DocLink>.
             </p>
@@ -80,18 +80,18 @@ export default function IsolationAndSetup() {
                 <ConsoleIsolationDiagram />
                 <p>
                     Every member, application, key and finding belongs to exactly one workspace. Console URLs are{" "}
-                    <code>/api/organizations/&lt;workspace&gt;/…</code>; Gait loads that workspace, then requires your
-                    membership row in it. No row means <strong>404</strong>, the same answer as a workspace that doesn't
+                    <code>/api/organizations/&lt;workspace&gt;/…</code>; Gait loads that workspace, then requires the signed-in
+                    person's membership row in it. No row means <strong>404</strong>, the same answer as a workspace that doesn't
                     exist, so names can't be probed.
                 </p>
 
-                <H3 id="your-products-users">② Your product's users: one shared login pool, walled off by each product</H3>
+                <H3 id="your-products-users">② An app's own users: one shared login pool, walled off by each app</H3>
                 <AccountPoolDiagram />
                 <p>
                     Gait accounts are shared on purpose, like Google logins: one person, one login, usable at any
-                    product. An account alone grants nothing. App One's customer orgs and roles live in App One's
+                    app. An account alone grants nothing. App One's orgs and roles live in App One's
                     database, App Two's in App Two's; Gait never stores or enforces them. What someone can do always
-                    comes from a membership row, in Gait (①) or in the product (②).
+                    comes from a membership row, in Gait (①) or in the app (②).
                 </p>
             </DocSection>
 
@@ -114,8 +114,8 @@ export default function IsolationAndSetup() {
                         <tr>
                             <th scope="row">Console pages and API</th>
                             <td>
-                                The workspace comes from the URL, and your membership row in it is required before
-                                anything runs. Not a member: 404.
+                                The workspace comes from the URL, and the person's membership row in it is required
+                                before anything runs. Not a member: 404.
                             </td>
                         </tr>
                         <tr>
@@ -166,9 +166,9 @@ export default function IsolationAndSetup() {
                     already supports it.
                 </p>
 
-                <H3 id="journey-1">1. You set up security observability for your product</H3>
+                <H3 id="journey-1">1. I set up security observability for an app</H3>
                 <p>
-                    Done once by the product's owner. Diagrams for the{" "}
+                    Done once per app, by me as its owner. Diagrams for the{" "}
                     <DocLink to="people-and-applications#how-a-person-joins">account</DocLink> and{" "}
                     <DocLink to="people-and-applications#how-an-application-gets-its-key">key</DocLink> steps.
                 </p>
@@ -199,14 +199,14 @@ export default function IsolationAndSetup() {
                         ],
                     ]}
                 />
-                <p>Your product's end users are <strong>not</strong> invited here.</p>
+                <p>The app's end users are <strong>not</strong> invited here.</p>
 
-                <H3 id="journey-2">2. Your product reports to Gait</H3>
+                <H3 id="journey-2">2. The app reports to Gait</H3>
                 <p>No person involved; the application key is the only credential.</p>
                 <JourneySteps
                     label="Journey 2 steps"
                     steps={[
-                        ["Your backend runs its self-check", "core"],
+                        ["The app's backend runs its self-check", "core"],
                         ["gait-sdk sends a signal, with the key in a header", "core"],
                     ]}
                 />
@@ -230,7 +230,7 @@ export default function IsolationAndSetup() {
                     </div>
                 </div>
                 <p>
-                    Customer findings are kept apart from Gait's own platform findings. An accepted risk stays accepted
+                    An app's findings are kept apart from Gait's own platform findings. An accepted risk stays accepted
                     if the check fails again.{" "}
                     {statusOf("findingsScreen") === "live" ? (
                         <>All of this is <StatusBadge feature="core" />.</>
@@ -242,7 +242,7 @@ export default function IsolationAndSetup() {
                     )}
                 </p>
 
-                <H3 id="journey-3">3. A teammate joins your Gait workspace</H3>
+                <H3 id="journey-3">3. Someone joins an app's Gait workspace</H3>
                 <p>
                     An Owner or Admin invites by email and role, Gait emails a single-use link (valid 7 days), and the
                     invitee signs in with the invited, confirmed email and chooses <strong>Join</strong>, from the link or
@@ -260,15 +260,15 @@ export default function IsolationAndSetup() {
                     ]}
                 />
 
-                <H3 id="journey-4">4. Your product's own users get in</H3>
+                <H3 id="journey-4">4. The app's own users get in</H3>
                 <p>
-                    Everything here happens in your product. Gait only provides the login, which is in early access.
+                    Everything here happens in the app. Gait only provides the login, which is in early access.
                 </p>
                 <JourneySteps
                     label="Journey 4 steps"
                     steps={[
                         ["The Org A admin registers on App One's sign-up page; App One creates a Gait account (login only)", "productSignIn"],
-                        ["The Org A admin creates customer org A in App One", "productSignIn"],
+                        ["The Org A admin creates org A in App One", "productSignIn"],
                         [
                             "The Org A admin invites user@org-a as Staff; App One gives them a one-time invite link, which they send to user@org-a",
                             "productSignIn",
@@ -282,7 +282,7 @@ export default function IsolationAndSetup() {
                         ],
                     ]}
                 />
-                <p>Your product owns the invite, the roles and the data scoping.</p>
+                <p>The app owns the invite, the roles and the data scoping.</p>
             </DocSection>
 
             <DocSection id="planned" title="Planned">

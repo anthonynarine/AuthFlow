@@ -2,9 +2,9 @@
  * Live/Pending status shown on docs pages. Update here when something ships;
  * pages only reference these keys.
  *
- *   live         a customer can do it in the console (or their own product) today
+ *   live         it works in the console (or in an app such as Lumen) today
  *   pending      not yet, including an API that exists but has no console screen
- *   earlyAccess  available to early-access customers only
+ *   earlyAccess  in early use and may still change
  */
 export const STATUS_AS_OF = "2026-09-28";
 
@@ -20,7 +20,7 @@ export const FEATURE_STATUS = {
     // Two-step verification (authenticator codes) and recovery codes, from the
     // Account page. Shipped with the AUTH-B release on 2026-09-28.
     twoStepVerification: "live",
-    // Sign-in for your own product's users with Gait accounts (gait-sdk).
+    // Sign-in for an app's own users (Lumen's) with Gait accounts (gait-sdk).
     productSignIn: "earlyAccess",
     // CHK2a/2b: the built-in check packs (Django, FastAPI, deps via
     // `gait_check`) and the console's per-application checks grid. Flip to "live" once
@@ -31,14 +31,14 @@ export const FEATURE_STATUS = {
 };
 
 /**
- * What each status key covers, for the "What's live" page: a customer-facing
+ * What each status key covers, for the "What's live" page: a public-facing
  * name, one line, and the docs page that explains it. Statuses themselves stay
  * in FEATURE_STATUS above. Every key there needs an entry here (a test checks).
  */
 export const FEATURE_INFO = {
     core: {
         name: "Workspaces, applications, connection keys and security checks",
-        summary: "Your private workspace, one application per environment, keys shown once, and the checks your software reports.",
+        summary: "A private workspace per app, one application per environment, keys shown once, and the checks each app reports.",
         doc: "getting-started",
     },
     emailVerification: {
@@ -48,7 +48,7 @@ export const FEATURE_INFO = {
     },
     membersAndInviteAccept: {
         name: "Members and invites in the console",
-        summary: "Invite teammates as Owner, Admin or Member, and accept an invite.",
+        summary: "Invite people into a workspace as Owner, Admin or Member, and accept an invite.",
         doc: "teams-roles-and-invites",
     },
     findingsScreen: {
@@ -62,8 +62,8 @@ export const FEATURE_INFO = {
         doc: "two-step-verification",
     },
     productSignIn: {
-        name: "Sign-in for your own product",
-        summary: "Your product's users sign in with Gait accounts, verified with the gait-sdk.",
+        name: "Sign-in for Lumen",
+        summary: "Lumen's users sign in with Gait accounts, verified with gait-sdk.",
         doc: "add-gait-sign-in",
     },
     checkPacks: {

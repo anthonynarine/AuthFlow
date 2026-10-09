@@ -13,7 +13,7 @@ export const GLOSSARY = [
     ["Admin", "A workspace role that can manage applications, keys and people, except Owners.", "teams-roles-and-invites"],
     [
         "Application",
-        "One piece of your software in one environment, e.g. Acme API · production.",
+        "One piece of an app in one environment, e.g. Lumen API · production.",
         "applications-and-connection-keys",
     ],
     [
@@ -21,15 +21,15 @@ export const GLOSSARY = [
         "The secret an application uses to prove to Gait which application it is. Shown once; Gait stores only a fingerprint of it. It can report security checks and nothing else.",
         "applications-and-connection-keys",
     ],
-    ["Console", "The Gait web app where your team works.", "getting-started"],
+    ["Console", "The Gait web app where I (and anyone I invite) work.", "getting-started"],
     [
         "Control",
-        "One security property Gait tracks for your applications, such as \"the application's own security checks pass\".",
+        "One security property Gait tracks for an app's applications, such as \"the application's own security checks pass\".",
         "security-checks-and-findings",
     ],
     [
         "Environment",
-        "Where a copy of your software runs: local, test, ci, staging or production. Each has its own security picture.",
+        "Where a copy of an app runs: local, test, ci, staging or production. Each has its own security picture.",
         "getting-started",
     ],
     [
@@ -78,16 +78,16 @@ export const GLOSSARY = [
         "One of 10 one-time codes you save when you turn on two-step verification. Each lets you sign in once without your phone.",
         "two-step-verification#lost-your-phone",
     ],
-    ["Security check", "A test your application runs on itself and reports as PASS or FAIL.", "connecting-your-software"],
-    ["Self-reported", "Evidence your application reported about itself.", "how-it-works"],
+    ["Security check", "A test an application runs on itself and reports as PASS or FAIL.", "connecting-your-software"],
+    ["Self-reported", "Evidence an application reported about itself.", "how-it-works"],
     [
         "Site / facility",
-        "A way your own product may split one customer organization into locations. It's your product's concept; Gait doesn't enforce it.",
+        "A way an app may split one of its organizations into locations. It's the app's concept; Gait doesn't enforce it.",
         "teams-roles-and-invites#sites-inside-an-org",
     ],
     [
         "Subject",
-        "Gait's stable id for a person, which gait-sdk gives your API. Store it to link the person to your own records; don't parse it.",
+        "Gait's stable id for a person, which gait-sdk gives the app's API. Store it to link the person to the app's own records; don't parse it.",
         "add-gait-sign-in#link-to-your-users",
     ],
     [
@@ -97,7 +97,7 @@ export const GLOSSARY = [
     ],
     [
         "Workspace",
-        "Your team's private space in Gait. Everything else belongs to exactly one workspace.",
+        "An app's private space in Gait. Everything else belongs to exactly one workspace.",
         "people-and-applications",
     ],
 ];

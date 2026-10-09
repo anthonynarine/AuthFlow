@@ -1,5 +1,4 @@
 import React from "react";
-import { Link } from "react-router-dom";
 import { Callout, CodeBlock, DocLink, DocSection, StatusBadge } from "../components/DocPrimitives";
 import { Diagram } from "../components/Diagram";
 import {
@@ -20,24 +19,25 @@ import {
 // an "ask Gait" item. Every "what Gait sets up" item maps to a row in
 // PRODUCT_SIGN_IN.md section 4. Deliberately not claimed: tokens tied to one
 // product, a hosted sign-in page, branded emails or links, email confirmation
-// reaching your API, JWKS verification.
+// reaching the app's API, JWKS verification. Voice: first person, Lumen as
+// the example app (GAIT-13).
 
 const HOW_IT_FITS = `sequenceDiagram
     autonumber
     actor P as Person
-    participant S as Your server
+    participant S as App server
     participant G as Gait
-    participant A as Your API with gait-sdk
+    participant A as App API with gait-sdk
 
     P->>S: Email and password
     S->>G: Sign in
     G-->>S: Access token and refresh token
-    Note over S: Kept in your server's session
-    P->>S: Use your product
+    Note over S: Kept in the server's session
+    P->>S: Use the app
     S->>A: Request with the access token
     A->>G: Who is this? (remembered up to 45 s)
     G-->>A: Subject and email
-    Note over A: Your rules decide
+    Note over A: The app's rules decide
     A-->>S: Answer
     S-->>P: Page`;
 
@@ -45,29 +45,28 @@ export default function AddGaitSignIn() {
     return (
         <>
             <p className="doc-lede">
-                Let your product's users sign in with a Gait account. Gait checks who they are; your product still
-                decides what they may do.
+                How an app of mine lets its users sign in with a Gait account, as Lumen does. Gait checks who they
+                are; the app still decides what they may do.
             </p>
             <p>
-                <StatusBadge feature="productSignIn" /> <Link to="/early-access">Request early access</Link>.
-                Background: <DocLink to="people-and-applications#your-products-own-users">Your product's own
-                users</DocLink>.
+                <StatusBadge feature="productSignIn" /> Background:{" "}
+                <DocLink to="people-and-applications#your-products-own-users">An app's own users</DocLink>.
             </p>
 
-            <DocSection id="what-gait-sets-up" title="What Gait sets up for you">
-                <p>Early access: Gait sets up your access. Ask us for:</p>
+            <DocSection id="what-gait-sets-up" title="What gets set up on Gait's side">
+                <p>Early access: these are set up on Gait's side for each app:</p>
                 <ul>
                     <li>
-                        <strong>Your application</strong>, so your product is known to your workspace (
+                        <strong>The app's application</strong>, so the app is known to its workspace (
                         <DocLink to="applications-and-connection-keys">Applications &amp; connection keys</DocLink>).
                     </li>
                     <li>
-                        <strong>Sign-in limits for your server.</strong> Gait limits repeated failed sign-ins. Your
-                        server signs in for all your users, so we set this up for it.
+                        <strong>Sign-in limits for the app's server.</strong> Gait limits repeated failed sign-ins. The
+                        app's server signs in for all its users, so this is set up for it.
                     </li>
                     <li>
-                        <strong>Signing in from the browser</strong>, if you'd rather your web page called Gait
-                        directly than go through your server. We allow your site's address.
+                        <strong>Signing in from the browser</strong>, if the app's web page should call Gait directly
+                        rather than go through its server. Gait then allows the site's address.
                     </li>
                     <li>
                         <strong>Emails.</strong> Password-reset and email-confirmation emails come from Gait, and their
@@ -79,15 +78,15 @@ export default function AddGaitSignIn() {
             <DocSection id="how-it-fits-together" title="How it fits together">
                 <Diagram
                     source={HOW_IT_FITS}
-                    description="A person gives your server their email and password. Your server signs them in with Gait and keeps the access and refresh tokens in its own session. When the person uses your product, your server calls your API with the access token. gait-sdk in your API asks Gait who it is, remembering the answer for up to 45 seconds, and gets back the subject and email. Your rules decide, and your API answers."
+                    description="A person gives the app's server their email and password. The server signs them in with Gait and keeps the access and refresh tokens in its own session. When the person uses the app, the server calls the app's API with the access token. gait-sdk in the API asks Gait who it is, remembering the answer for up to 45 seconds, and gets back the subject and email. The app's rules decide, and the API answers."
                 />
                 <p>
-                    Your server and your API can be the same application. Either way, the browser never holds Gait's
+                    The server and the API can be the same application. Either way, the browser never holds Gait's
                     tokens.
                 </p>
             </DocSection>
 
-            <DocSection id="sign-people-in" title="Your server signs people in">
+            <DocSection id="sign-people-in" title="The app's server signs people in">
                 <p>
                     Gait's address is <code>{GAIT_API_URL}/</code>.
                 </p>
@@ -114,7 +113,7 @@ export default function AddGaitSignIn() {
                     <code>temp_token</code> cookie.
                 </p>
                 <ol>
-                    <li>Keep the <code>temp_token</code> on your server with the pending sign-in. It lasts 10 minutes and works once.</li>
+                    <li>Keep the <code>temp_token</code> on the server with the pending sign-in. It lasts 10 minutes and works once.</li>
                     <li>Ask the person for the 6-digit code from their app, or one of their recovery codes.</li>
                     <li>
                         Send it to <code>POST two-factor-login/</code> as <code>otp</code> or{" "}
@@ -127,7 +126,7 @@ export default function AddGaitSignIn() {
             <DocSection id="stay-signed-in" title="Stay signed in, and sign out">
                 <ul>
                     <li>
-                        When your API answers 401, call <code>POST token-refresh/</code> once, then retry. If several
+                        When the API answers 401, call <code>POST token-refresh/</code> once, then retry. If several
                         requests fail together, refresh once for all of them.
                     </li>
                     <li>
@@ -135,13 +134,13 @@ export default function AddGaitSignIn() {
                         using an old one again signs the person out everywhere.
                     </li>
                     <li>
-                        To sign out, call <code>POST logout/</code> with the refresh token, then clear your session.
+                        To sign out, call <code>POST logout/</code> with the refresh token, then clear the server's session.
                     </li>
                 </ul>
                 <CodeBlock label="Python" code={SERVER_REFRESH_SIGN_OUT} />
             </DocSection>
 
-            <DocSection id="check-every-request" title="Your API checks every request">
+            <DocSection id="check-every-request" title="The app's API checks every request">
                 <p>
                     gait-sdk checks each request's access token with Gait, for Django REST Framework and FastAPI.
                 </p>
@@ -154,58 +153,58 @@ export default function AddGaitSignIn() {
                         Store it; don't parse it.
                     </li>
                     <li>
-                        A missing, bad or expired token gets <strong>401</strong>. If Gait can't be reached, your API
+                        A missing, bad or expired token gets <strong>401</strong>. If Gait can't be reached, the API
                         answers <strong>503</strong>; it never lets the request through.
                     </li>
                     <li>
                         gait-sdk remembers each answer for up to 45 seconds, so a sign-out can take that long to reach
-                        your API. For sensitive actions (anything irreversible, or changing who can do what), call{" "}
+                        the API. For sensitive actions (anything irreversible, or changing who can do what), call{" "}
                         <code>require_live_session</code>, which always asks Gait.
                     </li>
                 </ul>
                 <CodeBlock label="Python" code={LIVE_SESSION_VIEW} />
                 <Callout kind="note" title="The connection key isn't part of sign-in">
-                    Your application's connection key identifies your software and reports its security checks. Signing
+                    An application's connection key identifies the app and reports its security checks. Signing
                     people in and checking their tokens never use it.
                 </Callout>
             </DocSection>
 
-            <DocSection id="link-to-your-users" title="Link Gait people to your users">
+            <DocSection id="link-to-your-users" title="Link Gait people to the app's users">
                 <p>
-                    Key your own records on the subject, never the email: people can change their email. Pick one of
+                    Key the app's own records on the subject, never the email: people can change their email. Pick one of
                     two patterns.
                 </p>
                 <p>
-                    <strong>Create on first sign-in</strong>, when anyone with a Gait account may use your product:
+                    <strong>Create on first sign-in</strong>, when anyone with a Gait account may use the app:
                 </p>
                 <CodeBlock label="Python" code={LINK_ON_FIRST_REQUEST} />
                 <p>
                     <strong>Invite only</strong>, when people must be invited. Create the record when someone accepts
-                    your invite, and refuse anyone without one:
+                    the app's invite, and refuse anyone without one:
                 </p>
                 <CodeBlock label="Python" code={LINK_BY_INVITE} />
-                <Callout kind="warning" title="Use your own roles">
+                <Callout kind="warning" title="Use the app's own roles">
                     Don't grant access from Gait's <code>role</code> field. It's a legacy field; decide what people may
-                    do from your own records.
+                    do from the app's own records.
                 </Callout>
                 <p>
-                    Organizations, roles and invites inside your product:{" "}
-                    <DocLink to="product-organizations-and-invites">Your product's organizations &amp; invites</DocLink>.
+                    Organizations, roles and invites inside the app:{" "}
+                    <DocLink to="product-organizations-and-invites">An app's own organizations &amp; invites</DocLink>.
                 </p>
             </DocSection>
 
             <DocSection id="troubleshooting" title="Troubleshooting">
                 <ul>
                     <li>
-                        <strong>A CORS error in the browser:</strong> your web page is calling Gait directly. Go
-                        through your server, or ask us to allow your site.
+                        <strong>A CORS error in the browser:</strong> the web page is calling Gait directly. Go
+                        through the server, or allow the site on Gait's side.
                     </li>
                     <li>
                         <strong>Everything is 401 after 15 minutes:</strong> refresh isn't running, or the new refresh
                         token isn't being saved.
                     </li>
                     <li>
-                        <strong>Your API answers 503:</strong> check <code>GAIT_AUTH_URL</code>, and that your API can
+                        <strong>The API answers 503:</strong> check <code>GAIT_AUTH_URL</code>, and that the API can
                         reach it.
                     </li>
                     <li>

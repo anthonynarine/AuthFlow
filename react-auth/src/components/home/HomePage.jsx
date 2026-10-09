@@ -331,7 +331,7 @@ function HomePage() {
           </div>
         </section>
 
-        {/* 6. How we protect Gait itself */}
+        {/* 6. How Gait protects itself */}
         <section className="section" id="gait-itself" aria-labelledby="gait-itself-title">
           <p className="eyebrow">How Gait protects itself</p>
           <h2 id="gait-itself-title">Six AI agents and a person look after Gait's own platform.</h2>

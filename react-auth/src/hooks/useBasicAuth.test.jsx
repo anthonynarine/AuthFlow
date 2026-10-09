@@ -141,3 +141,68 @@ test("signing out after a two-step sign-in doesn't leave sign-in on the code ste
     });
     expect(result.current.is2FARequired).toBe(false);
 });
+
+// GAIT-SEC-035/036: a failed sign-in must not put credentials in the console.
+describe("useBasicAuth failure logging", () => {
+    let errorSpy;
+
+    function credentialLadenError(status) {
+        return {
+            code: "ERR_BAD_REQUEST",
+            message: "Request failed for pw-SECRET-123",
+            config: {
+                method: "post",
+                baseURL: "https://api.example.test/api",
+                url: "/login/?next=%2Fconsole&token=query-SECRET",
+                headers: { Authorization: "Bearer access-SECRET", "X-CSRFToken": "csrf-SECRET" },
+                data: JSON.stringify({ email: "person@example.test", password: "pw-SECRET-123" }),
+            },
+            response: { status, data: { error: "Invalid credentials", access_token: "resp-SECRET" } },
+        };
+    }
+
+    function assertNothingSecretLogged() {
+        const logged = JSON.stringify(errorSpy.mock.calls);
+        for (const secret of ["pw-SECRET-123", "Bearer", "access-SECRET", "csrf-SECRET", "query-SECRET",
+            "token=", "?", "person@example.test", "resp-SECRET", "Authorization", "password\""]) {
+            expect(logged).not.toContain(secret);
+        }
+    }
+
+    beforeEach(() => {
+        jest.clearAllMocks();
+        errorSpy = jest.spyOn(console, "error").mockImplementation(() => {});
+    });
+
+    afterEach(() => {
+        errorSpy.mockRestore();
+    });
+
+    test("a failed login logs a sanitized summary only", async () => {
+        publicAxios.post.mockRejectedValue(credentialLadenError(400));
+        const { result } = renderHook(() => useBasicAuth());
+
+        await act(async () => {
+            await result.current.login({ email: "person@example.test", password: "pw-SECRET-123" });
+        });
+
+        expect(errorSpy).toHaveBeenCalledTimes(1);
+        expect(errorSpy.mock.calls[0][0]).toBe("Login failed: POST /api/login/, status 400, code ERR_BAD_REQUEST");
+        assertNothingSecretLogged();
+    });
+
+    test("guest login, logout and forgot-password failures log no secrets either", async () => {
+        publicAxios.post.mockRejectedValue(credentialLadenError(500));
+        logoutSession.mockRejectedValue(credentialLadenError(500));
+        const { result } = renderHook(() => useBasicAuth());
+
+        await act(async () => {
+            await result.current.guestLogin();
+            await result.current.logout();
+            await result.current.forgotPassword("person@example.test");
+        });
+
+        expect(errorSpy).toHaveBeenCalledTimes(3);
+        assertNothingSecretLogged();
+    });
+});

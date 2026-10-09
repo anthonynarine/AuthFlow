@@ -1,7 +1,11 @@
 # Automatic checks for AuthFlow (the app lives in react-auth/).
-# The same three checks the frontend lane runs by hand before every report.
-# Each is its own job, so a red PR shows which one broke. No secrets, no
-# network access to Gait: lint, tests and the build are all self-contained.
+# The same three checks the frontend lane runs by hand before every report
+# (lint, test, build), plus supply-chain checks (GAIT-SEC-041): dependency
+# audit, secret scan, SBOM and CodeQL. Each is its own job, so a red PR shows
+# which one broke. No secrets, no network access to Gait.
+#
+# Every action is pinned to a full commit SHA (the tag is in the comment);
+# Dependabot (.github/dependabot.yml) proposes updates to those pins.
 name: CI
 
 on:
@@ -29,15 +33,15 @@ jobs:
     runs-on: ubuntu-latest
     timeout-minutes: 15
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262 # v4.4.0
         with:
           persist-credentials: false
-      - uses: actions/setup-node@v4
+      - uses: actions/setup-node@49933ea5288caeca8642d1e84afbd3f7d6820020 # v4.4.0
         with:
           node-version: 22
           cache: npm
           cache-dependency-path: react-auth/package-lock.json
-      - run: npm ci --no-audit --no-fund
+      - run: npm ci --no-fund
       # ESLint over .js and .jsx, test files included; any problem fails.
       - run: npm run lint
 
@@ -46,15 +50,15 @@ jobs:
     runs-on: ubuntu-latest
     timeout-minutes: 20
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262 # v4.4.0
         with:
           persist-credentials: false
-      - uses: actions/setup-node@v4
+      - uses: actions/setup-node@49933ea5288caeca8642d1e84afbd3f7d6820020 # v4.4.0
         with:
           node-version: 22
           cache: npm
           cache-dependency-path: react-auth/package-lock.json
-      - run: npm ci --no-audit --no-fund
+      - run: npm ci --no-fund
       - run: npm test -- --watchAll=false
         env:
           CI: true
@@ -64,16 +68,105 @@ jobs:
     runs-on: ubuntu-latest
     timeout-minutes: 15
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262 # v4.4.0
         with:
           persist-credentials: false
-      - uses: actions/setup-node@v4
+      - uses: actions/setup-node@49933ea5288caeca8642d1e84afbd3f7d6820020 # v4.4.0
         with:
           node-version: 22
           cache: npm
           cache-dependency-path: react-auth/package-lock.json
-      - run: npm ci --no-audit --no-fund
-      # CI=true turns build warnings into errors, as on Netlify.
+      - run: npm ci --no-fund
+      # CI=true turns build warnings into errors, as on Netlify. The build
+      # script sets INLINE_RUNTIME_CHUNK=false (no inline script for the CSP).
       - run: npm run build
         env:
           CI: true
+
+  # Known advisories at high or critical severity in production dependencies.
+  audit:
+    name: dependency audit
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262 # v4.4.0
+        with:
+          persist-credentials: false
+      - uses: actions/setup-node@49933ea5288caeca8642d1e84afbd3f7d6820020 # v4.4.0
+        with:
+          node-version: 22
+      # Reads package-lock.json only; nothing is installed.
+      - run: npm audit --omit=dev --audit-level=high
+
+  # Secrets committed anywhere in the history. --redact keeps any match out of
+  # this (public) log; nothing is uploaded.
+  secret-scan:
+    name: secret scan
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    defaults:
+      run:
+        working-directory: .
+    env:
+      GITLEAKS_VERSION: 8.30.1
+      GITLEAKS_SHA256: 551f6fc83ea457d62a0d98237cbad105af8d557003051f41f3e7ca7b3f2470eb
+    steps:
+      - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262 # v4.4.0
+        with:
+          persist-credentials: false
+          fetch-depth: 0
+      - name: Install gitleaks (pinned version, checksum verified)
+        run: |
+          cd "$RUNNER_TEMP"
+          curl -sSfL -o gitleaks.tar.gz \
+            "https://github.com/gitleaks/gitleaks/releases/download/v${GITLEAKS_VERSION}/gitleaks_${GITLEAKS_VERSION}_linux_x64.tar.gz"
+          echo "${GITLEAKS_SHA256}  gitleaks.tar.gz" | sha256sum --check --strict
+          tar -xzf gitleaks.tar.gz gitleaks
+          echo "$RUNNER_TEMP" >> "$GITHUB_PATH"
+      - name: Scan the git history
+        run: gitleaks git --redact --no-banner --exit-code 1 .
+
+  # CycloneDX SBOM of the production dependency tree, kept as a build artifact.
+  sbom:
+    name: sbom
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262 # v4.4.0
+        with:
+          persist-credentials: false
+      - uses: actions/setup-node@49933ea5288caeca8642d1e84afbd3f7d6820020 # v4.4.0
+        with:
+          node-version: 22
+          cache: npm
+          cache-dependency-path: react-auth/package-lock.json
+      - run: npm ci --no-fund --ignore-scripts
+      # npm's built-in generator: no extra package fetched at run time.
+      - run: npm sbom --sbom-format cyclonedx --omit dev > sbom.cdx.json
+      - uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02 # v4.6.2
+        with:
+          name: sbom-cyclonedx
+          path: react-auth/sbom.cdx.json
+          if-no-files-found: error
+          retention-days: 90
+
+  # Static analysis (SAST) of the JavaScript source.
+  codeql:
+    name: codeql
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    permissions:
+      contents: read
+      security-events: write
+      actions: read
+    steps:
+      - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262 # v4.4.0
+        with:
+          persist-credentials: false
+      - uses: github/codeql-action/init@2892aa5e19bbd11bc0cff5427e3b750a04d9e3c2 # v4.38.2
+        with:
+          languages: javascript-typescript
+          build-mode: none
+      - uses: github/codeql-action/analyze@2892aa5e19bbd11bc0cff5427e3b750a04d9e3c2 # v4.38.2
+        with:
+          category: /language:javascript-typescript

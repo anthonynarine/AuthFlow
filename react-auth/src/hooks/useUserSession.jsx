@@ -1,6 +1,7 @@
 import { useCallback, useState } from "react";
 import { useBasicAuthServices } from "../context/auth/BasicAuthContext";
 import { authAxios } from "../interceptors/axios";
+import { safeLogError } from "../utils/safeLog";
 
 export const useUserSession = () => {
     const [error, setError] = useState(null)
@@ -25,7 +26,7 @@ export const useUserSession = () => {
             }
             
         } catch (error) {
-            console.error("Session validation error", error);
+            safeLogError("Session validation failed", error);
             setIsLoggedIn(false);
             setUser(null);
             if (error.response) {

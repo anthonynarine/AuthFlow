@@ -4,15 +4,20 @@ import { StatusCell } from "../components/StatusCell";
 import { statusAsOfLabel } from "../featureStatus";
 
 // [feature, what it does, status keys (a Pending item can wait on more than one screen)]
-const WHAT_YOU_GET = [
+const WHAT_IT_DOES = [
     [
-        "A private workspace",
-        "Your team's own area in the Gait console. Your people, applications, keys and findings live there, and nobody outside your workspace can see any of it.",
+        "Hardened sign-in",
+        "Cookie sessions, refresh tokens that rotate on every use with replay detection, and two-step sign-in with one-time recovery codes.",
+        ["twoStepVerification"],
+    ],
+    [
+        "A private workspace per app",
+        "Each app's people, applications, keys and findings live in its own workspace, and nobody outside that workspace can see any of it.",
         ["core"],
     ],
     [
-        "Security checks from your software",
-        "Your application reports its own security checks to Gait using the gait-sdk and a connection key. Gait keeps the history and tracks what's healthy and what isn't.",
+        "Security checks from my apps",
+        "Lumen reports its own security checks to Gait using gait-sdk and a connection key. Gait keeps the history and tracks what's healthy and what isn't.",
         ["core"],
     ],
     [
@@ -25,10 +30,10 @@ const WHAT_YOU_GET = [
         "Acknowledge a finding, or accept the risk with a written reason.",
         ["findingsScreen"],
     ],
-    ["Your team", "Invite teammates as Owner, Admin or Member.", ["membersAndInviteAccept", "emailVerification"]],
+    ["Members and invites", "Invite people into a workspace as Owner, Admin or Member.", ["membersAndInviteAccept", "emailVerification"]],
     [
-        "Sign-in for your own product",
-        "Your product can let its users sign in with Gait accounts and verify them with the gait-sdk, while your product keeps its own organizations and roles.",
+        "Sign-in for Lumen",
+        "Lumen's users sign in with Gait accounts, verified with gait-sdk, while Lumen keeps its own organizations and roles.",
         ["productSignIn"],
     ],
 ];
@@ -37,12 +42,12 @@ export default function WhatGaitIs() {
     return (
         <>
             <p className="doc-lede">
-                Gait watches the security of your software and gives your team one private place to see it and act on
-                it.
+                Gait is the internal security system I built to protect my own applications. It watches their security
+                and gives me one private place to see it and act on it.
             </p>
 
-            <DocSection id="what-you-get" title="What you get">
-                <DocTable caption="What you get">
+            <DocSection id="what-you-get" title="What it does">
+                <DocTable caption="What it does">
                     <thead>
                         <tr>
                             <th scope="col"><span className="doc-visually-hidden">Feature</span></th>
@@ -51,7 +56,7 @@ export default function WhatGaitIs() {
                         </tr>
                     </thead>
                     <tbody>
-                        {WHAT_YOU_GET.map(([feature, description, features]) => (
+                        {WHAT_IT_DOES.map(([feature, description, features]) => (
                             <tr key={feature}>
                                 <th scope="row">{feature}</th>
                                 <td>{description}</td>
@@ -63,29 +68,37 @@ export default function WhatGaitIs() {
                 <p className="doc-muted">Status as of {statusAsOfLabel()}.</p>
             </DocSection>
 
-            <DocSection id="who-its-for" title="Who it's for">
+            <DocSection id="who-its-for" title="What it protects">
                 <ul>
                     <li>
-                        <strong>Teams that build and run software</strong> and want an honest, always-current picture of
-                        its security, per application and per environment.
+                        <strong>Lumen</strong>, a clinical app. Gait was first built to secure it. Lumen reports its
+                        security checks with gait-sdk, and its users sign in with Gait.
                     </li>
                     <li>
-                        <strong>The people who secure that software.</strong> The console is for your engineering and
-                        security team, not for your product's end users.
+                        <strong>Gait itself.</strong> AI agents investigate problems in Gait's own platform and prepare
+                        fixes inside fixed boundaries; an independent validator checks each fix, and I approve every
+                        production change. See <DocLink to="automated-security-response">Automated security
+                        response</DocLink>.
                     </li>
                 </ul>
+                <p>
+                    gait-sdk, the Python package my apps use to talk to Gait, is public and open source (MIT, on PyPI).
+                </p>
             </DocSection>
 
             <DocSection id="what-gait-is-not" title="What Gait is not">
                 <ul>
                     <li>
-                        <strong>Not a place for your product's users.</strong> Your customers never see the Gait
-                        console. If your product uses Gait sign-in, Gait only answers "who is this?"; your product
-                        decides what they can do.
+                        <strong>Not a product for other companies.</strong> Gait is the system I use to protect my own
+                        software.
                     </li>
                     <li>
-                        <strong>Not a remote control for your software.</strong> A connection key can only report
-                        security checks. Gait never changes your code, your servers or your data.
+                        <strong>Not a place for an app's users.</strong> Lumen's users never see the Gait console. When
+                        they sign in with Gait, Gait only answers "who is this?"; Lumen decides what they can do.
+                    </li>
+                    <li>
+                        <strong>Not a remote control for my apps.</strong> A connection key can only report security
+                        checks. Gait never changes Lumen's code, servers or data.
                     </li>
                 </ul>
             </DocSection>
@@ -94,8 +107,8 @@ export default function WhatGaitIs() {
                 <ul>
                     <li><DocLink to="how-it-works">How it works</DocLink>: the big picture in one diagram.</li>
                     <li>
-                        <DocLink to="quickstart">Quickstart</DocLink>: workspace, application, key and first security check
-                        in about 15 minutes.
+                        <DocLink to="quickstart">Quickstart</DocLink>: how I add an app, from workspace and key to its
+                        first security check, in about 15 minutes.
                     </li>
                     <li>
                         <DocLink to="people-and-applications">People and applications</DocLink>: the one idea

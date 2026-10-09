@@ -7,8 +7,9 @@ import fs from "fs";
 import path from "path";
 
 // Matched case-insensitively against every docs source file (tests excluded).
+// Lumen is allowed since GAIT-13: it is my own app, the one Gait protects, and
+// the docs use it as their example.
 export const FORBIDDEN_TERMS = [
-    "lumen",
     "hospital",
     "physician",
     "technologist",
@@ -22,8 +23,8 @@ export const FORBIDDEN_TERMS = [
     "auth_integration",
 ];
 
-// Neutral example names that contain a forbidden word; removed before checking.
-const ALLOWED_PHRASES = ["example clinic"];
+// Example names and descriptions that contain a forbidden word; removed before checking.
+const ALLOWED_PHRASES = ["example clinic", "a clinical app"];
 
 // Mixed case with digits, 24+ characters: what a real secret tends to look like.
 const KEY_SHAPED = /\b(?=[A-Za-z0-9_-]*\d)(?=[A-Za-z0-9_-]*[a-z])(?=[A-Za-z0-9_-]*[A-Z])[A-Za-z0-9_-]{24,}\b/;

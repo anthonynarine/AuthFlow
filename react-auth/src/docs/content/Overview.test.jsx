@@ -81,7 +81,8 @@ describe("navigation groups", () => {
 describe("What Gait is", () => {
     test("statuses map to the shared keys, with what a Pending item waits on", () => {
         renderDoc("what-gait-is");
-        expect(statusCells(screen.getByRole("table", { name: "What you get" }), 2)).toEqual([
+        expect(statusCells(screen.getByRole("table", { name: "What it does" }), 2)).toEqual([
+            "Live",
             "Live",
             "Live",
             "Live",
@@ -97,7 +98,7 @@ describe("What Gait is", () => {
         FEATURE_STATUS.findingsScreen = "pending";
         try {
             renderDoc("what-gait-is");
-            expect(statusCells(screen.getByRole("table", { name: "What you get" }), 2)[3]).toBe("Pending Findings screen");
+            expect(statusCells(screen.getByRole("table", { name: "What it does" }), 2)[4]).toBe("Pending Findings screen");
         } finally {
             FEATURE_STATUS.findingsScreen = original;
         }

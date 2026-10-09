@@ -1,4 +1,4 @@
-# Gait — A Custom-Built Web Auth Service
+# Gait — the internal security system behind my apps
 
 ![React](https://img.shields.io/badge/React-18-61DAFB?logo=react&logoColor=white&labelColor=20232a)
 ![Django REST Framework](https://img.shields.io/badge/Django%20REST%20Framework-DRF-092E20?logo=django&logoColor=white)
@@ -7,7 +7,11 @@
 
 **[Live demo → gait.netlify.app](https://gait.netlify.app/)**
 
-A working authentication system — not a mockup. Registration, login, TOTP-based two-factor auth, automatic token refresh, and a password-reset flow, all wired to a real Django REST API. Built to understand web security from the inside out: where auth actually breaks, and how modern systems close those gaps.
+Gait is the internal security system I built to protect my own applications. Today it protects Lumen, a clinical app (Gait was first built to secure it), and Gait itself. It is not a product for other companies.
+
+What it does: hardened identity (cookie sessions, refresh-token rotation with replay detection, two-step sign-in), strict workspace isolation, apps that report their own security checks with [gait-sdk](https://pypi.org/project/gait-sdk/) (public, MIT), findings that open on FAIL and close on PASS, and AI agents that investigate Gait's own problems and prepare fixes inside fixed boundaries, checked by an independent validator, with every production change approved by me.
+
+This repo started as a working authentication system — not a mockup. Registration, login, TOTP-based two-factor auth, automatic token refresh, and a password-reset flow, all wired to a real Django REST API. Built to understand web security from the inside out: where auth actually breaks, and how modern systems close those gaps.
 
 **Try it without registering:** the live demo has a "Continue as guest" button that logs you in instantly against a seeded demo account, so you can explore the whole flow with zero setup.
 

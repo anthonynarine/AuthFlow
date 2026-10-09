@@ -4,7 +4,7 @@ React frontend for Gait, the internal security system I built to protect my own 
 
 ## What it does
 
-- Handles login, guest login, 2FA, refresh coordination, logout, and session validation.
+- Handles login, 2FA, refresh coordination, logout, and session validation.
 - Surfaces the staff-only Security Observatory.
 - Supports generalized step-up authentication for sensitive account actions.
 - Provides account security flows for password change and MFA lifecycle management.

@@ -5,15 +5,13 @@
 ![JWT](https://img.shields.io/badge/Auth-JWT%20%2B%202FA-1abc9c)
 ![License](https://img.shields.io/badge/license-All%20rights%20reserved-lightgrey)
 
-**[Live demo → gait.netlify.app](https://gait.netlify.app/)**
+**[Live site → gaitobservatory.com](https://gaitobservatory.com/)**
 
 Gait is the internal security system I built to protect my own applications. Today it protects Lumen, a clinical app (Gait was first built to secure it), and Gait itself. It is not a product for other companies.
 
 What it does: hardened identity (cookie sessions, refresh-token rotation with replay detection, two-step sign-in), strict workspace isolation, apps that report their own security checks with [gait-sdk](https://pypi.org/project/gait-sdk/) (public, MIT), findings that open on FAIL and close on PASS, and AI agents that investigate Gait's own problems and prepare fixes inside fixed boundaries, checked by an independent validator, with every production change approved by me.
 
 This repo started as a working authentication system — not a mockup. Registration, login, TOTP-based two-factor auth, automatic token refresh, and a password-reset flow, all wired to a real Django REST API. Built to understand web security from the inside out: where auth actually breaks, and how modern systems close those gaps.
-
-**Try it without registering:** the live demo has a "Continue as guest" button that logs you in instantly against a seeded demo account, so you can explore the whole flow with zero setup.
 
 ---
 
@@ -38,7 +36,6 @@ This repo is the **React frontend**. It talks to a separate Django REST Framewor
 - **JWT session handling** — short-lived (15 min) access tokens, longer-lived refresh tokens, both issued by the API
 - **Automatic token refresh** — an Axios response interceptor catches an expired token, refreshes it, and retries the original request with no visible interruption
 - **Password reset** — email-based, single-use, time-limited reset links
-- **Guest login** — a one-click demo account for portfolio visitors, no registration required
 - **CSRF + cookie security** — CSRF tokens synced from every API response; `Secure`/`SameSite` cookie flags switch automatically between local development and production
 
 ---

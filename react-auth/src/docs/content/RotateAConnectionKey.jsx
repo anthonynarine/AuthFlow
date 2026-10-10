@@ -5,8 +5,8 @@ export default function RotateAConnectionKey() {
     return (
         <>
             <p className="doc-lede">
-                Replace an application's connection key without a gap in reporting: add the new key, move your
-                software onto it, then retire the old one.
+                Replace an application's connection key without a gap in reporting: add the new key, move the app
+                onto it, then retire the old one.
             </p>
             <p>
                 Rotate on a schedule you choose (keys issued in the console don't expire, and Gait doesn't send
@@ -56,7 +56,7 @@ export default function RotateAConnectionKey() {
                 </p>
                 <ul>
                     <li>
-                        It only changes when your software actually reports, so if your checks run once a day, give it a
+                        It only changes when the app actually reports, so if its checks run once a day, give it a
                         day.
                     </li>
                     <li>It's updated at most every 5 minutes per key, so it can lag a little.</li>

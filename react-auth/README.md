@@ -1,10 +1,10 @@
 # Gait Security Observatory Frontend
 
-React frontend for the Gait authentication surface and Security Observatory.
+React frontend for Gait, the internal security system I built to protect my own applications (in production today it protects itself; Lumen, my clinical app, is in development): the public site and docs, the console, and the Security Observatory.
 
 ## What it does
 
-- Handles login, guest login, 2FA, refresh coordination, logout, and session validation.
+- Handles login, 2FA, refresh coordination, logout, and session validation.
 - Surfaces the staff-only Security Observatory.
 - Supports generalized step-up authentication for sensitive account actions.
 - Provides account security flows for password change and MFA lifecycle management.

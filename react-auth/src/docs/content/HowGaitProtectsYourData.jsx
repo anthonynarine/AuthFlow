@@ -12,24 +12,25 @@ export default function HowGaitProtectsYourData() {
     return (
         <>
             <p className="doc-lede">
-                What Gait does to keep your workspace private and your keys and sessions safe.
+                What Gait does to keep each workspace private, and keys and sessions safe, for Lumen and for anyone
+                signing in to the console.
             </p>
 
-            <DocSection id="your-workspace-is-walled-off" title="Your workspace is walled off">
+            <DocSection id="your-workspace-is-walled-off" title="Each workspace is walled off">
                 <ul>
                     <li>
-                        To anyone who isn't a member, your workspace doesn't exist: they get the same answer as for a
+                        To anyone who isn't a member, a workspace doesn't exist: they get the same answer as for a
                         workspace that doesn't exist, so its name can't even be confirmed.
                     </li>
                     <li>
-                        Membership is checked on every request, not remembered from when someone signed in. When you
-                        remove someone, they lose access straight away.
+                        Membership is checked on every request, not remembered from when someone signed in. When someone is
+                        removed, they lose access straight away.
                     </li>
                     <li>
-                        Every lookup happens inside your workspace. Asking for another workspace's application or
+                        Every lookup happens inside the workspace being asked about. Asking for another workspace's application or
                         finding by its ID gets the same answer as an ID that doesn't exist.
                     </li>
-                    <li>What Gait sends back is limited to the fields meant for your team.</li>
+                    <li>What Gait sends back is limited to the fields meant for the workspace's members.</li>
                 </ul>
                 <p>
                     More: <DocLink to="isolation">Isolation and setup</DocLink>.
@@ -106,7 +107,7 @@ export default function HowGaitProtectsYourData() {
                 </p>
                 <p>
                     Gait has to keep the secret that links your authenticator app to your account, so it can check
-                    your codes. Two-step verification secrets are encrypted in our database.
+                    your codes. Two-step verification secrets are encrypted in Gait's database.
                 </p>
                 <p>
                     New passwords need at least 12 characters, not only numbers, and can't be a common password or too
@@ -133,9 +134,9 @@ export default function HowGaitProtectsYourData() {
                 </p>
             </DocSection>
 
-            <DocSection id="your-software" title="Your software">
+            <DocSection id="your-software" title="My apps">
                 <p>
-                    Gait never changes your code, servers or data, and its automated agents work only on Gait's own
+                    Gait never changes Lumen's code, servers or data, and its AI agents work only on Gait's own
                     platform. See <DocLink to="what-gait-is#what-gait-is-not">What Gait is not</DocLink> and{" "}
                     <DocLink to="automated-security-response">Automated security response</DocLink>. Found a problem?{" "}
                     <DocLink to="report-a-vulnerability">Report a vulnerability</DocLink>.

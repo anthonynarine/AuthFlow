@@ -36,7 +36,7 @@ const BLOCKS = [
                 label: "A · Start a new workspace",
                 tone: "person",
                 messages: [
-                    { n: 6, from: "person", to: "console", text: "Create workspace \"acme\"" },
+                    { n: 6, from: "person", to: "console", text: "Create workspace \"lumen\"" },
                     { n: 7, from: "gait", to: "person", text: "You are its Owner" },
                 ],
             },
@@ -82,7 +82,7 @@ const BEATS = [
     },
     {
         title: "Fork A · Start a new workspace",
-        body: "The person creates a workspace, acme, and becomes its Owner straight away. No invite is needed to start your own workspace.",
+        body: "The person creates a workspace, lumen, and becomes its Owner straight away. No invite is needed to start a new workspace.",
         live: [6, 7],
         shown: range(1, 7),
     },

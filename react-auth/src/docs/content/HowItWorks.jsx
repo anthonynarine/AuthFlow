@@ -13,17 +13,18 @@ export default function HowItWorks() {
             <DocSection id="step-by-step" title="Step by step">
                 <ol>
                     <li>
-                        <strong>Your team signs in</strong> to the Gait console and works inside your workspace. Each
-                        person has a role: Owner, Admin or Member.
+                        <strong>I sign in</strong> to the Gait console and work inside the app's workspace. Each
+                        person in a workspace has a role: Owner, Admin or Member.
                     </li>
                     <li>
-                        <strong>You register each piece of software, per environment.</strong> Acme API in{" "}
-                        <code>local</code> and Acme API in <code>production</code> are two applications, each with its
+                        <strong>I register each app, per environment.</strong> Lumen API in{" "}
+                        <code>local</code> and Lumen API in <code>production</code> would be two applications, each with its
                         own connection key.
                     </li>
                     <li>
-                        <strong>Your software reports security checks.</strong> It runs its own checks (for example
-                        "debug mode is off") and sends PASS or FAIL to Gait with the gait-sdk. The connection key tells
+                        <strong>My apps report security checks.</strong> An app runs its own checks (for example
+                        "debug mode is off") and sends PASS or FAIL to Gait with gait-sdk; Lumen's reporting is built
+                        but not yet running. The connection key tells
                         Gait which application, and so which workspace, the report belongs to. Nothing in the report can
                         point it anywhere else.
                     </li>
@@ -33,8 +34,8 @@ export default function HowItWorks() {
                         <code>local</code> never muddies <code>production</code>.
                     </li>
                     <li>
-                        <strong>Your team acts.</strong> Acknowledge a finding while you fix it, or accept the risk with
-                        a written reason. <StatusCell features={["findingsScreen"]} />
+                        <strong>I act on findings.</strong> Acknowledge a finding while I fix it, or accept the risk
+                        with a written reason. <StatusCell features={["findingsScreen"]} />
                     </li>
                 </ol>
             </DocSection>
@@ -42,8 +43,8 @@ export default function HowItWorks() {
             <DocSection id="two-things-always-hold" title="Two things always hold">
                 <ul>
                     <li>
-                        <strong>Your workspace is private.</strong> Other workspaces can't see your people, applications or
-                        findings; to them your workspace doesn't exist. See{" "}
+                        <strong>Each workspace is private.</strong> Other workspaces can't see its people, applications
+                        or findings; to them it doesn't exist. See{" "}
                         <DocLink to="isolation">Isolation and setup</DocLink>.
                     </li>
                     <li>
@@ -55,9 +56,9 @@ export default function HowItWorks() {
 
             <DocSection id="self-reported-vs-gait-verified" title="Self-reported vs Gait-verified">
                 <p>
-                    Checks your software reports about itself are labelled <strong>self-reported</strong>. Checks Gait
-                    ran or confirmed itself are labelled <strong>Gait-verified</strong>. Both count, and the console
-                    always shows which is which, so you know how much weight a result carries.
+                    Checks an app reports about itself are labelled <strong>self-reported</strong>. Checks Gait ran or
+                    confirmed itself are labelled <strong>Gait-verified</strong>. Both count, and the console always
+                    shows which is which, so it's clear how much weight a result carries.
                 </p>
             </DocSection>
         </>

@@ -49,7 +49,7 @@ describe("Two-step verification guide", () => {
         renderDoc("two-step-verification");
         expect(section("Lost your phone?")).toHaveTextContent("Lost your phone? Use a recovery code");
         expect(section("Signing in with a code")).toHaveTextContent("That sign-in timed out");
-        expect(within(section("Lost your phone?")).getByRole("link", { name: "contact us" })).toHaveAttribute(
+        expect(within(section("Lost your phone?")).getByRole("link", { name: "contact me" })).toHaveAttribute(
             "href",
             "/send-email"
         );

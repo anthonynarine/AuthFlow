@@ -6,15 +6,15 @@ export default function LocalToProduction() {
     return (
         <>
             <p className="doc-lede">
-                Your software runs in more than one place. In Gait each place is its own application, with its own
+                Each of my apps runs in more than one place. In Gait each place is its own application, with its own
                 connection key and its own results. This guide adds production next to a local setup that already
                 reports.
             </p>
             <p>
                 You'll need an application in <code>local</code> that's already sending security checks (see{" "}
                 <DocLink to="getting-started">Getting started</DocLink> and{" "}
-                <DocLink to="connecting-your-software">Connecting your software</DocLink>), and the Owner or Admin role
-                in your workspace.
+                <DocLink to="connecting-your-software">Connecting an app</DocLink>), and the Owner or Admin role
+                in the app's workspace.
             </p>
 
             <DocSection id="why-one-application-per-environment" title="Why one application per environment">
@@ -45,17 +45,17 @@ export default function LocalToProduction() {
                         starts as the one you're looking at.
                     </li>
                     <li>
-                        Use the same name and slug as your local application (for example <code>acme-api</code>), with
+                        Use the same name and slug as the local application (for example <code>lumen-api</code>), with
                         environment <strong>Production</strong>. The same slug in another environment is a separate
                         application. The slug and environment can't be changed later.
                     </li>
                     <li>
                         Open the new application and issue a connection key, with a label that says where it will live
-                        (for example <code>prod server</code>). The key is shown once: copy it straight into your
+                        (for example <code>prod server</code>). The key is shown once: copy it straight into the
                         secret store.
                     </li>
                     <li>
-                        Give your production service that key as <code>GAIT_APPLICATION_CREDENTIAL</code>, deploy, and
+                        Give the production service that key as <code>GAIT_APPLICATION_CREDENTIAL</code>, deploy, and
                         let it send a security check.
                     </li>
                 </ol>
@@ -85,13 +85,13 @@ export default function LocalToProduction() {
                             <th scope="row">
                                 <code>GAIT_APPLICATION_CREDENTIAL</code>
                             </th>
-                            <td>the key of acme-api · local</td>
-                            <td>the key of acme-api · production</td>
+                            <td>the key of lumen-api · local</td>
+                            <td>the key of lumen-api · production</td>
                         </tr>
                     </tbody>
                 </DocTable>
                 <Callout kind="warning" title="Never copy a key between environments">
-                    Each environment gets a key issued for its own application. A production service given your
+                    Each environment gets a key issued for its own application. A production service given a
                     laptop's key would report as <code>local</code>, not <code>production</code>.
                 </Callout>
             </DocSection>
@@ -109,7 +109,7 @@ export default function LocalToProduction() {
                         <DocLink to="troubleshooting">Troubleshooting</DocLink>.
                     </li>
                     <li>
-                        For extra safety, have your software confirm which environment it's running in before
+                        For extra safety, have the app confirm which environment it's running in before
                         reporting, as described in{" "}
                         <DocLink to="connecting-your-software#writing-a-self-check">Writing a self-check</DocLink>.
                     </li>

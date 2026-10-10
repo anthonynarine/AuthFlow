@@ -10,13 +10,13 @@ const INVITE_FLOW = `sequenceDiagram
     participant G as Gait
     actor T as Teammate
 
-    A->>G: Invite teammate@acme.example as Admin
+    A->>G: Invite teammate@lumen.example as Admin
     G-->>T: Email with a one-time link (expires in 7 days)
     T->>G: Open the link
-    G-->>T: "Acme invited you as Admin"
+    G-->>T: "Lumen invited you as Admin"
     T->>G: Sign in with the invited email
     T->>G: Choose Join
-    G-->>T: You're an Admin of Acme`;
+    G-->>T: You're an Admin of Lumen`;
 
 // The four ways in are nodes, not edge labels: as labels, two parallel edges
 // into the same box drew their labels on top of each other.
@@ -28,10 +28,10 @@ const TWO_UMBRELLAS = `flowchart LR
     classDef no fill:${DIAGRAM.fillRed},stroke:${DIAGRAM.red},color:${DIAGRAM.textOnRed},stroke-width:2px,stroke-dasharray:6 4
 
     A["Gait account<br/>(anyone can register)<br/>= member of nothing"]:::acct
-    A --> W1["creates a workspace<br/>→ its Owner"]:::way --> G["① Gait workspace<br/>e.g. app-one<br/>the security team"]:::gait
+    A --> W1["creates a workspace<br/>→ its Owner"]:::way --> G["① Gait workspace<br/>e.g. lumen<br/>the people who secure it"]:::gait
     A --> W2["Gait invite from an Owner/Admin<br/>+ verified email"]:::way --> G
-    A --> W3["creates an org in the product<br/>→ its Owner"]:::way --> P["② Inside the product<br/>e.g. App One's customer org<br/>its end users"]:::prod
-    A --> W4["the product's own invite<br/>from that org's Owner/Admin"]:::way --> P
+    A --> W3["creates an org in the app<br/>→ its Owner"]:::way --> P["② Inside the app<br/>e.g. an organization in Lumen<br/>its end users"]:::prod
+    A --> W4["the app's own invite<br/>from that org's Owner/Admin"]:::way --> P
     K["Connection key"]:::no -. "can't invite,<br/>never makes a member" .-> G`;
 
 const SITES = `flowchart TB
@@ -66,11 +66,12 @@ export default function TeamsRolesAndInvites() {
     return (
         <>
             <p className="doc-lede">
-                Who can do what in your workspace, and how someone joins it. Every person has one role per workspace:
-                Owner, Admin or Member.
+                Who can do what in a workspace, and how someone joins it. I create each app's workspace and own it;
+                anyone else gets in only by invite. Every person has one role per workspace: Owner, Admin or
+                Member.
             </p>
 
-            <DocSection id="two-umbrellas" title="Who can be under your umbrella">
+            <DocSection id="two-umbrellas" title="Who can be under an umbrella">
                 <p>
                     There are two separate umbrellas, each with its own invites. In both, the only ways in are{" "}
                     <strong>creating the organization yourself</strong> or <strong>being invited by someone already
@@ -79,21 +80,21 @@ export default function TeamsRolesAndInvites() {
                 </p>
                 <Diagram
                     source={TWO_UMBRELLAS}
-                    description="A Gait account, which anyone can register, is a member of nothing. It gets under umbrella one, a Gait workspace such as app-one (the security team), by creating the workspace and becoming its Owner, or through a Gait invite from an Owner or Admin plus a verified email. It gets under umbrella two, an organization inside the product such as App One's customer org (its end users), by creating that org in the product and becoming its Owner, or through the product's own invite from that org's Owner or Admin. A connection key can't invite and never makes anyone a member."
+                    description="A Gait account, which anyone can register, is a member of nothing. It gets under umbrella one, a Gait workspace such as lumen (the people who secure it), by creating the workspace and becoming its Owner, or through a Gait invite from an Owner or Admin plus a verified email. It gets under umbrella two, an organization inside the app such as an organization in Lumen (its end users), by creating that org in the app and becoming its Owner, or through the app's own invite from that org's Owner or Admin. A connection key can't invite and never makes anyone a member."
                 />
                 <p>
-                    <strong>① The Gait workspace (the security team).</strong> The person who creates it becomes Owner,
+                    <strong>① The Gait workspace (the people who secure the app).</strong> The person who creates it becomes Owner,
                     no invite needed. Everyone else needs an invite from an Owner or Admin, and accepting takes being
                     signed in with a confirmed email that matches the invite (see{" "}
                     <a href="#joining-needs-proof">Joining needs proof</a>). Registering a Gait account puts you in no
                     workspace; an account sees nothing until an invite is accepted.
                 </p>
                 <p>
-                    <strong>② Inside the product (its end users).</strong> Gait isn't involved; the product sets its
-                    own rules. A product can work the same way as Gait: a customer's admin creates their organization
-                    in the product and becomes its Owner, and everyone else only gets in through that organization's
-                    invite link. Signing up on the product's page gives someone a Gait login but no organization; the
-                    product shows them nothing until they're invited or create their own.
+                    <strong>② Inside the app (its end users).</strong> Gait isn't involved; the app sets its own
+                    rules. An app can work the same way as Gait: an organization's admin creates their organization in
+                    the app and becomes its Owner, and everyone else only gets in through that organization's invite
+                    link. Signing up on the app's page gives someone a Gait login but no organization; the app shows
+                    them nothing until they're invited or create their own.
                 </p>
                 <p><strong>Two things that don't happen:</strong></p>
                 <ul>
@@ -102,9 +103,9 @@ export default function TeamsRolesAndInvites() {
                         member; it only lets software report security checks.
                     </li>
                     <li>
-                        <strong>Joining one umbrella doesn't put you in the other.</strong> A product invite doesn't add
-                        someone to the Gait workspace, and a Gait workspace teammate gets no access to the product's
-                        customer data.
+                        <strong>Joining one umbrella doesn't put you in the other.</strong> An app's invite doesn't add
+                        someone to the Gait workspace, and a Gait workspace member gets no access to the app's own
+                        data.
                     </li>
                 </ul>
                 <p>
@@ -115,16 +116,16 @@ export default function TeamsRolesAndInvites() {
 
             <DocSection id="sites-inside-an-org" title="Sites inside an org">
                 <p>
-                    A product can split an organization further, for example into <strong>sites</strong> (some
-                    products call them facilities): a customer's main campus and its satellite location are two sites
-                    inside <strong>one</strong> organization. A site is not a second tenant; the organization is still
-                    the only wall between customers. Gait knows nothing about sites; the product enforces all of it.
+                    An app can split an organization further, for example into <strong>sites</strong> (some apps call
+                    them facilities): an organization's main campus and its satellite location are two sites inside{" "}
+                    <strong>one</strong> organization. A site is not a second tenant; the organization is still the
+                    only wall between organizations. Gait knows nothing about sites; the app enforces all of it.
                 </p>
                 <Diagram
                     source={SITES}
                     description="Example Clinic is one organization. Its Owner is organization-wide, sees every site, and is the only one who creates sites. It has two sites, Main campus and Northside satellite; each has its own Admin and other roles, and work in progress stays at its site. Finished work from both sites is visible across the whole organization."
                 />
-                <p>One way a product can run sites:</p>
+                <p>One way an app can run sites:</p>
                 <ul>
                     <li>
                         <strong>Owner is the only organization-wide role.</strong> Every other role is assigned to{" "}
@@ -209,7 +210,7 @@ export default function TeamsRolesAndInvites() {
                 </p>
             </DocSection>
 
-            <DocSection id="inviting-your-team" title="Inviting your team">
+            <DocSection id="inviting-your-team" title="Inviting people">
                 <Diagram
                     source={INVITE_FLOW}
                     description="An Owner or Admin invites a teammate by email and picks a role. Gait emails the teammate a one-time link that expires in 7 days. The teammate opens it, sees which workspace invited them and as what role, signs in with the invited email address, and chooses Join."
@@ -275,7 +276,7 @@ export default function TeamsRolesAndInvites() {
                             </td>
                         </tr>
                         <tr>
-                            <th scope="row">"Acme invited you as Admin", with Sign in / Create account</th>
+                            <th scope="row">"Lumen invited you as Admin", with Sign in / Create account</th>
                             <td>You're not signed in. You come back to the same invite afterwards.</td>
                         </tr>
                         <tr>
@@ -287,22 +288,22 @@ export default function TeamsRolesAndInvites() {
                             <td>Your account's email isn't confirmed yet. Use the link Gait sent, or resend it.</td>
                         </tr>
                         <tr>
-                            <th scope="row">"Go to Acme"</th>
+                            <th scope="row">"Go to Lumen"</th>
                             <td>You're already a member.</td>
                         </tr>
                         <tr>
-                            <th scope="row">"Join Acme" with the role and who invited you</th>
+                            <th scope="row">"Join Lumen" with the role and who invited you</th>
                             <td>Everything checks out. Choose Join to become a member.</td>
                         </tr>
                     </tbody>
                 </DocTable>
             </DocSection>
 
-            <DocSection id="your-data-stays-yours" title="Your data stays yours">
+            <DocSection id="your-data-stays-yours" title="A workspace's data stays in it">
                 <ul>
                     <li>
-                        Everything in your workspace (applications, keys, findings, evidence, members) is visible only to
-                        your workspace's members.
+                        Everything in a workspace (applications, keys, findings, evidence, members) is visible only to
+                        that workspace's members.
                     </li>
                     <li>
                         Links to another workspace's pages don't work for you, even if you guess the address. You'll see

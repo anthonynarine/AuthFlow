@@ -29,21 +29,22 @@ afterEach(() => {
     delete Element.prototype.scrollIntoView;
 });
 
-describe("Add Gait sign-in to your product", () => {
+describe("Add Gait sign-in to an app", () => {
     test("is Early access, from featureStatus.js, and is where productSignIn points", () => {
         expect(FEATURE_STATUS.productSignIn).toBe("earlyAccess");
         expect(FEATURE_INFO.productSignIn.doc).toBe("add-gait-sign-in");
         renderDoc("add-gait-sign-in");
         expect(screen.getAllByText("Early access", { selector: ".doc-status" }).length).toBeGreaterThan(0);
         expect(screen.queryByText("Live", { selector: ".doc-status" })).not.toBeInTheDocument();
-        expect(screen.getByRole("link", { name: "Request early access" })).toHaveAttribute("href", "/early-access");
+        // GAIT-13: no buyer call to action.
+        expect(screen.queryByRole("link", { name: /early access/i })).not.toBeInTheDocument();
     });
 
     test("frames the gaps as what Gait sets up, including server sign-in limits", () => {
         renderDoc("add-gait-sign-in");
-        const setUp = section("What Gait sets up for you");
-        expect(setUp).toHaveTextContent("Early access: Gait sets up your access.");
-        expect(setUp).toHaveTextContent(/Sign-in limits for your server/);
+        const setUp = section("What gets set up on Gait's side");
+        expect(setUp).toHaveTextContent("Early access: these are set up on Gait's side for each app:");
+        expect(setUp).toHaveTextContent(/Sign-in limits for the app's server/);
         expect(setUp).toHaveTextContent(/Signing in from the browser/);
         expect(setUp).toHaveTextContent(/links open Gait's pages/);
     });
@@ -62,7 +63,7 @@ describe("Add Gait sign-in to your product", () => {
     test("the API half: default verifier, 401 vs 503, the 45 s cache and require_live_session", () => {
         expect(VERIFY_USER_SETTINGS).not.toMatch(/GAIT_TOKEN_VERIFIER|jwks/i);
         renderDoc("add-gait-sign-in");
-        const api = section("Your API checks every request");
+        const api = section("The app's API checks every request");
         expect(api).toHaveTextContent(/401/);
         expect(api).toHaveTextContent(/503/);
         expect(api).toHaveTextContent(/up to 45 seconds/);
@@ -70,13 +71,13 @@ describe("Add Gait sign-in to your product", () => {
         expect(within(api).getByRole("complementary", { name: "The connection key isn't part of sign-in" })).toBeInTheDocument();
     });
 
-    test("shows both ways to link people, and says to use your own roles", () => {
+    test("shows both ways to link people, and says to use the app's own roles", () => {
         renderDoc("add-gait-sign-in");
-        const link = section("Link Gait people to your users");
+        const link = section("Link Gait people to the app's users");
         expect(link).toHaveTextContent(/Create on first sign-in/);
         expect(link).toHaveTextContent(/get_or_create/);
         expect(link).toHaveTextContent(/Invite only/);
-        expect(within(link).getByRole("complementary", { name: "Use your own roles" })).toHaveTextContent(
+        expect(within(link).getByRole("complementary", { name: "Use the app's own roles" })).toHaveTextContent(
             /Don't grant access from Gait's role field/
         );
     });
@@ -98,7 +99,7 @@ describe("pages that point to it", () => {
     test("gait-sdk's Verify a user links here instead of repeating the setup", () => {
         renderDoc("gait-sdk");
         const verify = section("Verify a user");
-        expect(within(verify).getByRole("link", { name: "Add Gait sign-in to your product" })).toHaveAttribute(
+        expect(within(verify).getByRole("link", { name: "Add Gait sign-in to an app" })).toHaveAttribute(
             "href",
             "/docs/add-gait-sign-in"
         );
@@ -108,14 +109,14 @@ describe("pages that point to it", () => {
     test("Product organizations links here", () => {
         renderDoc("product-organizations-and-invites");
         expect(
-            within(section("What Gait gives your product")).getByRole("link", { name: "Add Gait sign-in to your product" })
+            within(section("What Gait gives the app")).getByRole("link", { name: "Add Gait sign-in to an app" })
         ).toHaveAttribute("href", "/docs/add-gait-sign-in");
     });
 
     test("the FAQ links here", () => {
         renderDoc("faq");
         expect(
-            within(section("Your product's users")).getByRole("link", { name: "Add Gait sign-in to your product" })
+            within(section("Lumen's users")).getByRole("link", { name: "Add Gait sign-in to an app" })
         ).toHaveAttribute("href", "/docs/add-gait-sign-in");
     });
 

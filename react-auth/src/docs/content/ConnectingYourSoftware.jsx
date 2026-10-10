@@ -6,8 +6,9 @@ export default function ConnectingYourSoftware() {
     return (
         <>
             <p className="doc-lede">
-                Once your application has a connection key, it can report its own security checks to Gait. This page
-                covers installing the SDK, configuring it, and sending your first report.
+                Once an application has a connection key, it can report its own security checks to Gait. This is how I
+                connect an app: install gait-sdk, configure it, and send the first report. Lumen's reporting is built
+                this way but not yet running.
             </p>
             <p>
                 You'll need an application and its connection key first. See{" "}
@@ -32,16 +33,16 @@ export default function ConnectingYourSoftware() {
                     </li>
                 </ul>
                 <Callout kind="warning" title="One key per environment">
-                    Each environment is its own application with its own key. Give your production service the key of
-                    your <code>production</code> application, your laptop the key of your <code>local</code>{" "}
+                    Each environment is its own application with its own key. Give the production service the key of
+                    the <code>production</code> application, the laptop the key of the <code>local</code>{" "}
                     application, and so on.
                 </Callout>
             </DocSection>
 
             <DocSection id="report-a-security-check" title="Report a security check">
                 <p>
-                    Your application reports what it knows about its own security as <strong>signals</strong>. Today
-                    Gait accepts one signal type, <code>APPLICATION_SELF_CHECK</code>: your application runs its own
+                    An application reports what it knows about its own security as <strong>signals</strong>. Today
+                    Gait accepts one signal type, <code>APPLICATION_SELF_CHECK</code>: the application runs its own
                     checks and reports <strong>PASS</strong> or <strong>FAIL</strong>.
                 </p>
                 <CodeBlock label="Python" code={REPORT} />
@@ -55,7 +56,7 @@ export default function ConnectingYourSoftware() {
                         secrets, hostnames or personal data.
                     </li>
                     <li>
-                        A report can never choose your workspace, application or environment. Gait takes all of those
+                        A report can never choose its workspace, application or environment. Gait takes all of those
                         from the connection key alone.
                     </li>
                 </ul>
@@ -65,7 +66,7 @@ export default function ConnectingYourSoftware() {
                 <p>A pattern that works well:</p>
                 <ul>
                     <li>
-                        Put your checks in one command your deploy pipeline or a scheduler can run, e.g. "debug mode is
+                        Put the checks in one command the deploy pipeline or a scheduler can run, e.g. "debug mode is
                         off", "HTTPS is enforced", "secure cookies are on".
                     </li>
                     <li>Report <strong>FAIL</strong> if any check fails, and list every check's result in the payload.</li>

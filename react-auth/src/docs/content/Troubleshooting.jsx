@@ -42,7 +42,7 @@ export default function Troubleshooting() {
                         [
                             "The console asks you to create a workspace",
                             "Your account isn't in any workspace yet.",
-                            "Create one, or ask your team's Owner for an invite.",
+                            "Create one, or ask the workspace's Owner for an invite.",
                         ],
                         [
                             "You can't create a workspace until you confirm your email",
@@ -95,7 +95,7 @@ export default function Troubleshooting() {
                         [
                             "\"This doesn't exist, or you don't have access to it\"",
                             "You're not a member of that workspace, or the link is wrong. Gait doesn't say which.",
-                            "Check the address with your workspace's Owner.",
+                            "Check the address with the workspace's Owner.",
                         ],
                         [
                             "\"Your role can't do that\"",
@@ -133,8 +133,8 @@ export default function Troubleshooting() {
                     caption="Reporting problems"
                     rows={[
                         [
-                            "Your application gets \"Invalid application credential\"",
-                            "Wrong key, a revoked key, the application is suspended or retired, or your workspace is suspended.",
+                            "An application gets \"Invalid application credential\"",
+                            "Wrong key, a revoked key, the application is suspended or retired, or its workspace is suspended.",
                             <>
                                 Check the application's status; issue a new key if needed. See{" "}
                                 <DocLink to="applications-and-connection-keys">Applications &amp; connection keys</DocLink>.
@@ -165,7 +165,7 @@ export default function Troubleshooting() {
 
             <DocSection id="still-stuck" title="Still stuck?">
                 <p>
-                    <Link to="/send-email">Contact us</Link>. Describe what you did and what you saw, but never include a
+                    <Link to="/send-email">Contact me</Link>. Describe what you did and what you saw, but never include a
                     connection key, password or invite link.
                 </p>
             </DocSection>

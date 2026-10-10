@@ -81,13 +81,16 @@ describe("navigation groups", () => {
 describe("What Gait is", () => {
     test("statuses map to the shared keys, with what a Pending item waits on", () => {
         renderDoc("what-gait-is");
-        expect(statusCells(screen.getByRole("table", { name: "What you get" }), 2)).toEqual([
+        expect(statusCells(screen.getByRole("table", { name: "What it does" }), 2)).toEqual([
+            "Live",
             "Live",
             "Live",
             "Live",
             "Live",
             "Live",
             "Early access",
+            "In development",
+            "In progress",
         ]);
         expect(screen.getByText(/Status as of 28 September 2026/)).toBeInTheDocument();
     });
@@ -97,7 +100,7 @@ describe("What Gait is", () => {
         FEATURE_STATUS.findingsScreen = "pending";
         try {
             renderDoc("what-gait-is");
-            expect(statusCells(screen.getByRole("table", { name: "What you get" }), 2)[3]).toBe("Pending Findings screen");
+            expect(statusCells(screen.getByRole("table", { name: "What it does" }), 2)[4]).toBe("Pending Findings screen");
         } finally {
             FEATURE_STATUS.findingsScreen = original;
         }
@@ -112,9 +115,9 @@ describe("What Gait is", () => {
 describe("How it works", () => {
     test("renders the big picture and marks acting on findings as Live (F3)", async () => {
         renderDoc("how-it-works");
-        expect(screen.getByText(/Your team \(Owner, Admin, Member\) signs in to the console/)).toBeInTheDocument();
+        expect(screen.getByText(/I sign in to the console and work in Lumen's workspace inside Gait/)).toBeInTheDocument();
         // The innermost list item holding the text (items come in document order).
-        const teamActs = screen.getAllByRole("listitem").filter((item) => within(item).queryByText(/Your team acts\./));
+        const teamActs = screen.getAllByRole("listitem").filter((item) => within(item).queryByText(/I act on findings\./));
         expect(statusText(teamActs[teamActs.length - 1])).toBe("Live");
         await settleDiagrams();
     });
@@ -122,13 +125,13 @@ describe("How it works", () => {
     test("every box and every path in the lesson map is labeled", () => {
         renderDoc("how-it-works");
         const lesson = screen.getByRole("figure");
-        for (const title of ["Your team", "Your software", "Your product's users", "Workspace: Acme"]) {
+        for (const title of ["Me", "Lumen", "Lumen's users", "Workspace: Lumen"]) {
             expect(within(lesson).getAllByText(title).length).toBeGreaterThan(0);
         }
         for (const label of [
             "signs in to the console",
             "reports security checks",
-            "signs in with Gait · your product decides access",
+            "signs in with Gait · Lumen decides access",
         ]) {
             expect(within(lesson).getByText(label)).toBeInTheDocument();
         }
@@ -150,10 +153,10 @@ describe("How it works", () => {
 
         fireEvent.click(next);
         fireEvent.click(next);
-        expect(within(lesson).getByText("Path 1 · Your team configures")).toBeInTheDocument();
+        expect(within(lesson).getByText("Path 1 · I configure")).toBeInTheDocument();
 
         fireEvent.click(within(lesson).getByRole("button", { name: "Step 6: Recap" }));
-        expect(within(lesson).getByText(/Team configures\. Software reports\./)).toBeInTheDocument();
+        expect(within(lesson).getByText(/I configure\. Lumen will report\./)).toBeInTheDocument();
         expect(next).toBeDisabled();
     });
 
@@ -166,21 +169,21 @@ describe("How it works", () => {
 
         fireEvent.click(within(lesson).getByRole("button", { name: "By role" }));
         fireEvent.click(within(lesson).getByRole("button", { name: "End user" }));
-        expect(within(lesson).getByText(/Your product, not Gait, decides/)).toBeInTheDocument();
+        expect(within(lesson).getByText(/Lumen, not Gait, decides/)).toBeInTheDocument();
     });
 
     test("the lesson's early-access wording follows featureStatus.js", () => {
         const original = FEATURE_STATUS.productSignIn;
         try {
             const { unmount } = renderDoc("how-it-works");
-            expect(within(screen.getByRole("figure")).getByText("Optional · early access")).toBeInTheDocument();
+            expect(within(screen.getByRole("figure")).getByText("Sign-in with Gait · early access")).toBeInTheDocument();
             unmount();
 
             FEATURE_STATUS.productSignIn = "live";
             renderDoc("how-it-works");
             const lesson = screen.getByRole("figure");
-            expect(within(lesson).getByText("Optional")).toBeInTheDocument();
-            fireEvent.click(within(lesson).getByRole("button", { name: "Step 5: Path 3 · Your users may sign in (optional)" }));
+            expect(within(lesson).getByText("Sign-in with Gait")).toBeInTheDocument();
+            fireEvent.click(within(lesson).getByRole("button", { name: "Step 5: Path 3 · Lumen's users sign in" }));
             expect(lesson.textContent).not.toMatch(/early access/i);
         } finally {
             FEATURE_STATUS.productSignIn = original;
@@ -208,7 +211,7 @@ describe("Quickstart", () => {
         );
     });
 
-    test("shows exactly the same snippets as Connecting your software", () => {
+    test("shows exactly the same snippets as Connecting an app", () => {
         const { unmount } = renderDoc("quickstart");
         // eslint-disable-next-line testing-library/no-node-access -- code blocks have no role; their exact text is what this test checks
         const quickstartCode = Array.from(document.querySelectorAll(".doc-code-pre")).map((pre) => pre.textContent);
@@ -281,7 +284,7 @@ describe("Automated security response", () => {
         expect(document.querySelector(".doc-status")).toBeNull();
         const text = screen.getByRole("article").textContent.toLowerCase();
         expect(INTERNAL_TERMS.filter((term) => text.includes(term))).toEqual([]);
-        expect(screen.getByText(/They don't investigate, change or deploy your software\./)).toBeInTheDocument();
+        expect(screen.getByText(/They don't investigate, change or deploy Lumen\./)).toBeInTheDocument();
         await settleDiagrams();
     });
 });

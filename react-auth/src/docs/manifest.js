@@ -1,18 +1,23 @@
 /**
- * Gait customer documentation — the list of pages.
+ * Gait documentation — the list of pages.
  *
- * SOURCE OF TRUTH: the pages under src/docs/ ARE Gait's customer-facing
- * documentation (served at https://gaitobservatory.com/docs). The copies that
+ * Gait is my internal security system, not offered to other companies
+ * (GAIT-13). In production today it protects itself; Lumen is in development
+ * (it signs in through Gait; its check reporting is built, not yet running). Write in the first person ("I",
+ * "my apps") and use Lumen as the example app.
+ *
+ * SOURCE OF TRUTH: the pages under src/docs/ ARE Gait's public documentation
+ * (served at https://gaitobservatory.com/docs). The copies that
  * used to live in the Gait repo (docs/console/GETTING_STARTED.md and the
- * customer parts of IDENTITY_MODEL.md / INVITES_AND_JOINING.md) point here.
- * Change customer docs here, not there.
+ * public parts of IDENTITY_MODEL.md / INVITES_AND_JOINING.md) point here.
+ * Change the public docs here, not there.
  *
  * Rules for everything under src/docs/:
- *   - Customer-facing only. Never copy operator/internal material (API
+ *   - Public-facing only. Never copy operator/internal material (API
  *     internals, deployment, runbooks) into these pages.
- *   - Neutral examples only: workspace "acme", application "acme-api", a
- *     product's own users at "Example Clinic". No real customer names.
- *     docsContent.test.jsx enforces FORBIDDEN_TERMS.
+ *   - Examples use Lumen: workspace "lumen", application "lumen-api", and
+ *     Lumen's own users at "Example Clinic". No real people or
+ *     organization names. docsContent.test.js enforces FORBIDDEN_TERMS.
  *   - Example keys must never look like real keys.
  *   - Public pages: no session restore, no API calls.
  *
@@ -30,7 +35,7 @@ export const DOC_GROUPS = [
             {
                 slug: "what-gait-is",
                 title: "What Gait is",
-                summary: "What Gait does for your team, who it's for, and what it isn't.",
+                summary: "The internal security system I built for my own apps: what it does, what it protects, and what it isn't.",
             },
             {
                 slug: "how-it-works",
@@ -40,7 +45,7 @@ export const DOC_GROUPS = [
             {
                 slug: "quickstart",
                 title: "Quickstart",
-                summary: "From nothing to your first security check in about 15 minutes.",
+                summary: "How I take a new app from nothing to its first security check in about 15 minutes.",
             },
         ],
     },
@@ -55,7 +60,7 @@ export const DOC_GROUPS = [
             {
                 slug: "isolation",
                 title: "Isolation and setup",
-                summary: "How Gait keeps one customer apart from another, and the four journeys that make up a working setup.",
+                summary: "How Gait keeps one workspace apart from another, and the four journeys that make up a working setup.",
             },
         ],
     },
@@ -65,7 +70,7 @@ export const DOC_GROUPS = [
             {
                 slug: "getting-started",
                 title: "Getting started",
-                summary: "Sign in, create your workspace, add an application and get its connection key.",
+                summary: "How I add an app: sign in, create its workspace, add an application and get its connection key.",
             },
             {
                 slug: "two-step-verification",
@@ -80,7 +85,7 @@ export const DOC_GROUPS = [
             {
                 slug: "security-checks-and-findings",
                 title: "Security checks & findings",
-                summary: "What Gait does with what your application reports, and how to act on a finding.",
+                summary: "What Gait does with what an app reports, and how to act on a finding.",
             },
             {
                 slug: "handle-a-finding",
@@ -90,7 +95,7 @@ export const DOC_GROUPS = [
             {
                 slug: "teams-roles-and-invites",
                 title: "Teams, roles & invites",
-                summary: "Who can do what in your workspace, and how people join it.",
+                summary: "Who can do what in a workspace, and how people join it.",
             },
             {
                 slug: "applications-and-connection-keys",
@@ -104,8 +109,8 @@ export const DOC_GROUPS = [
             },
             {
                 slug: "product-organizations-and-invites",
-                title: "Your product's organizations & invites",
-                summary: "A pattern for your product's own customers, roles, invites and sites, when its users sign in with Gait.",
+                title: "An app's own organizations & invites",
+                summary: "A pattern for an app's own organizations, roles, invites and sites, when its users sign in with Gait (as Lumen's do, in development).",
             },
         ],
     },
@@ -114,18 +119,18 @@ export const DOC_GROUPS = [
         pages: [
             {
                 slug: "add-gait-sign-in",
-                title: "Add Gait sign-in to your product",
-                summary: "Your product's users sign in with Gait: your server signs them in, gait-sdk checks each request.",
+                title: "Add Gait sign-in to an app",
+                summary: "How an app's users sign in with Gait (Lumen's do, in development): the app's server signs them in, gait-sdk checks each request.",
             },
             {
                 slug: "gait-sdk",
                 title: "gait-sdk",
-                summary: "Gait's Python package: install it, report a security check, and where to verify a user.",
+                summary: "Gait's public, open-source Python package (MIT): install it, report a security check, and where to verify a user.",
             },
             {
                 slug: "connecting-your-software",
-                title: "Connecting your software",
-                summary: "Install the Gait SDK, configure it, and report your first security check.",
+                title: "Connecting an app",
+                summary: "Install gait-sdk in an app, configure it, and report its first security check.",
             },
         ],
     },
@@ -134,18 +139,18 @@ export const DOC_GROUPS = [
         pages: [
             {
                 slug: "how-gait-protects-your-data",
-                title: "How Gait protects your data",
-                summary: "Workspace isolation, secrets Gait doesn't keep, your console session, and limits on repeated attempts.",
+                title: "How Gait protects data",
+                summary: "Workspace isolation, secrets Gait doesn't keep, the console session, and limits on repeated attempts.",
             },
             {
                 slug: "report-a-vulnerability",
                 title: "Report a vulnerability",
-                summary: "How to tell us privately about a security problem in Gait or gait-sdk.",
+                summary: "How to tell me privately about a security problem in Gait or gait-sdk.",
             },
             {
                 slug: "automated-security-response",
                 title: "Automated security response",
-                summary: "How Gait looks after its own platform, with people in charge of every change that matters.",
+                summary: "How Gait looks after its own platform, with a person approving every change that matters.",
             },
         ],
     },
@@ -175,7 +180,7 @@ export const DOC_GROUPS = [
             {
                 slug: "whats-live",
                 title: "What's live & changelog",
-                summary: "What you can use today, and what has changed recently.",
+                summary: "What works today, and what has changed recently.",
             },
         ],
     },

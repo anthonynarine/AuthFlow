@@ -23,8 +23,9 @@ export default function AutomatedSecurityResponse() {
     return (
         <>
             <p className="doc-lede">
-                Gait uses automated agents to look after <strong>its own platform</strong>: to investigate problems,
-                test them, and prepare fixes. People stay in charge of every change that matters.
+                Gait uses AI agents to look after <strong>its own platform</strong>: to investigate problems, test them,
+                and prepare fixes, inside fixed boundaries. Every fix is checked independently, and I approve every
+                production change.
             </p>
 
             <DocSection
@@ -67,11 +68,11 @@ export default function AutomatedSecurityResponse() {
                 </ul>
             </DocSection>
 
-            <DocSection id="what-this-means-for-your-applications" title="What this means for your applications">
+            <DocSection id="what-this-means-for-your-applications" title="What this means for Lumen">
                 <p>
-                    These agents work on Gait's own platform. <strong>They don't investigate, change or deploy your
-                    software.</strong> Findings from your applications are yours: Gait tracks them and shows them to your
-                    team, and your team decides what to do.
+                    These agents work on Gait's own platform. <strong>They don't investigate, change or deploy
+                    Lumen.</strong> Lumen is in development and its check reporting isn't running yet; once it is, its findings stay in its
+                    workspace, where Gait tracks them and I decide what to do. AI investigation and fixes for Lumen are planned, not live.
                 </p>
             </DocSection>
         </>

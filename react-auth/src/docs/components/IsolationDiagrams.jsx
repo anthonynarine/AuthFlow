@@ -47,11 +47,11 @@ ${CLASS_DEFS}
 
     POOL["Gait accounts: one shared pool<br/>owner@app-one · sec@app-one<br/>admin@org-a · user@org-a<br/>owner@app-two<br/>admin@org-b · user@org-b<br/>no 'belongs to App One' label"]:::pool
     subgraph DB2["App Two's database"]
-        U2["Customer org B<br/>admin@org-b · Admin<br/>user@org-b · Staff"]:::two
+        U2["Org B<br/>admin@org-b · Admin<br/>user@org-b · Staff"]:::two
     end
     W2{{"separate<br/>databases"}}:::wall
     subgraph DB1["App One's database"]
-        U1["Customer org A<br/>admin@org-a · Admin<br/>user@org-a · Staff"]:::one
+        U1["Org A<br/>admin@org-a · Admin<br/>user@org-a · Staff"]:::one
     end
     POOL -- "who is this?" --> U1
     POOL ~~~ W2
@@ -67,12 +67,12 @@ export function ConsoleIsolationDiagram() {
     );
 }
 
-/** ② One shared pool of Gait accounts; each product keeps its own users in its own database. */
+/** ② One shared pool of Gait accounts; each app keeps its own users in its own database. */
 export function AccountPoolDiagram() {
     return (
         <Diagram
             source={ACCOUNT_POOL}
-            description="At the top, one shared pool of Gait accounts, with no label saying which product an account belongs to. Arrows labelled 'who is this?' go down to App One's database on the left, which holds customer org A (admin@org-a as Admin, user@org-a as Staff), and to App Two's database on the right, which holds customer org B (admin@org-b as Admin, user@org-b as Staff). A wall between the two reads: separate databases."
+            description="At the top, one shared pool of Gait accounts, with no label saying which app an account belongs to. Arrows labelled 'who is this?' go down to App One's database on the left, which holds org A (admin@org-a as Admin, user@org-a as Staff), and to App Two's database on the right, which holds org B (admin@org-b as Admin, user@org-b as Staff). A wall between the two reads: separate databases."
         />
     );
 }

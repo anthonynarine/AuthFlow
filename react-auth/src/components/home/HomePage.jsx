@@ -25,7 +25,12 @@ import { AccountMenu } from "../../account/AccountMenu";
 import { isGaitOperator } from "../../auth/operator";
 
 /*
- * Every customer-facing claim on this page comes from the public docs in the
+ * Gait is my internal security system, not a product for other companies; keep
+ * the first-person voice (GAIT-13). In production today it protects itself.
+ * Lumen is in development: it signs in through Gait with gait-sdk, and its
+ * check reporting is built but not yet running. Lumen claims point at the
+ * `lumenSignIn` / `lumenChecks` statuses, never a live one.
+ * Every claim on this page comes from the public docs in the
  * Gait repo (docs/public/WHAT_GAIT_IS.md, HOW_IT_WORKS.md,
  * AUTOMATED_SECURITY_RESPONSE.md) or from src/docs/featureStatus.js. Change
  * those first; don't add claims here that they don't make.
@@ -39,34 +44,34 @@ const BIG_PICTURE = `flowchart TB
     classDef soft fill:#1d1b26,stroke:#b8aee0,color:#e5e5e5,stroke-width:2px
     classDef users fill:#231e17,stroke:#d6b98c,color:#e5e5e5,stroke-width:2px
 
-    TEAM["Your team<br/>Owner · Admin · Member"]:::people
+    ME["Me<br/>Owner of the workspace"]:::people
     subgraph GAIT["Gait"]
-        CO["Workspace: Acme<br/>applications · keys · findings"]:::gait
+        CO["Workspace: Lumen<br/>applications · keys · findings"]:::gait
     end
-    APP["Your software<br/>Acme API · production<br/>gait-sdk + connection key"]:::soft
-    USERS["Your product's users<br/>(optional, early access)"]:::users
+    APP["Lumen (in development)<br/>Lumen API<br/>check reporting: built, not yet running"]:::soft
+    USERS["Lumen's users<br/>(sign in with Gait, in development)"]:::users
 
-    TEAM -- "sign in to the console" --> CO
+    ME -- "sign in to the console" --> CO
     APP -- "reports security checks" --> CO
-    USERS -. "sign in with Gait;<br/>your product decides access" .-> APP`;
+    USERS -. "sign in with Gait;<br/>Lumen decides access" .-> APP`;
 
 const BIG_PICTURE_DESCRIPTION =
-  "Your team (Owner, Admin, Member) signs in to the console and works in the workspace Acme inside Gait, which holds applications, keys and findings. Your software, such as Acme API in production, uses the gait-sdk and a connection key to report security checks to that workspace. Optionally, in early access, your product's own users sign in with Gait, and your product decides what they can access.";
+  "Lumen is in development. I sign in to the console and work in Lumen's workspace inside Gait, which holds its applications, keys and findings. Lumen's own users sign in with Gait through gait-sdk, and Lumen decides what they can access. Lumen API's security-check reporting with gait-sdk and a connection key is built but not yet running.";
 
 // HOW_IT_WORKS.md, "Step by step", steps 1-4. Step 5 (acting on findings in
 // the console) waits on the Findings screen and is listed under status below.
 const HOW_IT_WORKS_STEPS = [
   {
-    title: "Your team signs in",
-    body: "to the Gait console and works inside your workspace. Each person has a role: Owner, Admin or Member.",
+    title: "I sign in",
+    body: "to the Gait console with two-step sign-in and work inside the app's workspace. Each person in a workspace has a role: Owner, Admin or Member.",
   },
   {
-    title: "You register each piece of software, per environment.",
-    body: "Acme API in local and Acme API in production are two applications, each with its own connection key.",
+    title: "I register each app, per environment.",
+    body: "Lumen API in local and Lumen API in production will be two applications, each with its own connection key.",
   },
   {
-    title: "Your software reports security checks.",
-    body: "It runs its own checks (for example \"debug mode is off\") and sends PASS or FAIL to Gait with the gait-sdk. The connection key tells Gait which application, and so which workspace, the report belongs to.",
+    title: "My apps report security checks.",
+    body: "An app runs its own checks (for example \"debug mode is off\") and sends PASS or FAIL to Gait with gait-sdk. The connection key tells Gait which application, and so which workspace, the report belongs to. Lumen's reporting is built but not yet running.",
   },
   {
     title: "Gait keeps score.",
@@ -74,19 +79,25 @@ const HOW_IT_WORKS_STEPS = [
   },
 ];
 
-// WHAT_GAIT_IS.md, "What you get". The status column is never written here:
+// WHAT_GAIT_IS.md, "What it does". The status column is never written here:
 // it comes from FEATURE_STATUS through StatusCell.
 const WHAT_YOU_GET = [
   {
-    feature: "A private workspace",
+    feature: "Hardened sign-in",
     description:
-      "Your team's own area in the Gait console. Your people, applications, keys and findings live there, and nobody outside your workspace can see any of it.",
+      "Cookie sessions, refresh tokens that rotate on every use with replay detection, and two-step sign-in with one-time recovery codes.",
+    features: ["twoStepVerification"],
+  },
+  {
+    feature: "A private workspace per app",
+    description:
+      "Each app's people, applications, keys and findings live in its own workspace, and nobody outside that workspace can see any of it.",
     features: ["core"],
   },
   {
-    feature: "Security checks from your software",
+    feature: "Security checks from my apps",
     description:
-      "Your application reports its own security checks to Gait using the gait-sdk and a connection key. Gait keeps the history and tracks what's healthy and what isn't.",
+      "An app reports its own security checks to Gait using gait-sdk and a connection key. Gait keeps the history and tracks what's healthy and what isn't.",
     features: ["core"],
   },
   {
@@ -100,15 +111,25 @@ const WHAT_YOU_GET = [
     features: ["findingsScreen"],
   },
   {
-    feature: "Your team",
-    description: "Invite teammates as Owner, Admin or Member.",
+    feature: "Members and invites",
+    description: "Invite people into a workspace as Owner, Admin or Member.",
     features: ["membersAndInviteAccept", "emailVerification"],
   },
   {
-    feature: "Sign-in for your own product",
+    feature: "Sign-in for an app's own users",
     description:
-      "Your product can let its users sign in with Gait accounts and verify them with the gait-sdk, while your product keeps its own organizations and roles.",
+      "An app's users sign in with Gait accounts, verified with gait-sdk, while the app keeps its own organizations and roles.",
     features: ["productSignIn"],
+  },
+  {
+    feature: "Lumen signs in through Gait",
+    description: "Lumen, my clinical app, is in development. It signs in through Gait with gait-sdk.",
+    features: ["lumenSignIn"],
+  },
+  {
+    feature: "Lumen reports its security checks",
+    description: "Lumen's security-check reporting with gait-sdk is built but not yet running.",
+    features: ["lumenChecks"],
   },
 ];
 
@@ -183,9 +204,6 @@ function HomePage() {
         >
           <a href="#how-it-works">How it works</a>
           <Link to="/docs">Docs</Link>
-          {!isLoggedIn && (
-            <Link to="/early-access" className="nav-cta secondary">Early access</Link>
-          )}
           {isLoggedIn && (
             <Link to="/console" className="nav-cta secondary">Console</Link>
           )}
@@ -205,18 +223,18 @@ function HomePage() {
         <section className="hero product-hero" id="product">
           <div className="hero-content product-hero-content">
             <div className="hero-copy">
-              <h1 className="display-serif">See the security of every app you ship, in one private place.</h1>
+              <h1 className="display-serif">The security system behind my apps.</h1>
               <p className="hero-subtitle">
-                Your software reports its own security checks with gait-sdk. Gait keeps the history, opens a finding
-                when a check fails and closes it when a later check passes, per app and per environment, isolated to
-                your workspace.
+                Gait is the internal security system I built to protect my own applications. In production today it
+                protects itself: hardened sign-in, isolated data, security checks, and AI agents that prepare fixes
+                that never ship without my approval. Lumen, my clinical app, is in development: it signs in through
+                Gait with gait-sdk, and its security-check reporting is built but not yet running.
               </p>
               {message && <p className="session-message">{message}</p>}
               <div className="hero-actions">
-                <Link to={docPath("quickstart")} className="btn-pill btn-pill-primary">
-                  Read the Quickstart <RiArrowRightLine />
+                <Link to={docPath("how-it-works")} className="btn-pill btn-pill-primary">
+                  How it works <RiArrowRightLine />
                 </Link>
-                <Link to="/early-access" className="btn-pill btn-pill-secondary">Request early access</Link>
                 {isLoggedIn && (
                   <Link to="/console" className="btn-pill btn-pill-outline">Open console</Link>
                 )}
@@ -228,7 +246,7 @@ function HomePage() {
         {/* 2. How it works */}
         <section className="section" id="how-it-works" aria-labelledby="how-it-works-title">
           <p className="eyebrow">How it works</p>
-          <h2 id="how-it-works-title">Your software reports. Gait keeps score.</h2>
+          <h2 id="how-it-works-title">My apps report. Gait keeps score.</h2>
           <div className="home-split">
             <ol className="home-steps">
               {HOW_IT_WORKS_STEPS.map((step, index) => (
@@ -243,9 +261,9 @@ function HomePage() {
             <Diagram source={BIG_PICTURE} description={BIG_PICTURE_DESCRIPTION} />
           </div>
           <p className="section-note home-note">
-            <strong>Self-reported vs Gait-verified.</strong> Checks your software reports about itself are labelled
+            <strong>Self-reported vs Gait-verified.</strong> Checks an app reports about itself are labelled
             self-reported. Checks Gait ran or confirmed itself are labelled Gait-verified. Both count, and the console
-            always shows which is which, so you know how much weight a result carries.
+            always shows which is which, so it's clear how much weight a result carries.
           </p>
           <Link to={docPath("how-it-works")} className="home-text-link">
             How it works, in the docs <RiArrowRightLine aria-hidden="true" />
@@ -254,7 +272,7 @@ function HomePage() {
 
         {/* 3. What's live, what's coming */}
         <section className="section" id="status" aria-labelledby="status-title">
-          <p className="eyebrow">What you get</p>
+          <p className="eyebrow">What it does</p>
           <h2 id="status-title">What's live, what's coming.</h2>
           <ul className="home-status-list" aria-label="What's live, what's coming">
             {WHAT_YOU_GET.map((row) => (
@@ -267,7 +285,7 @@ function HomePage() {
               </li>
             ))}
           </ul>
-          <p className="home-planned">AI investigation and fixes for your apps: planned.</p>
+          <p className="home-planned">AI investigation and fixes for Lumen: planned.</p>
           <p className="section-note home-muted">Status as of {statusAsOfLabel()}.</p>
         </section>
 
@@ -277,9 +295,9 @@ function HomePage() {
           <h2 id="isolation-title">Private by default. Read-only by design.</h2>
           <div className="home-card-grid">
             <div className="home-card">
-              <h3>Other workspaces can't see you.</h3>
+              <h3>Workspaces can't see each other.</h3>
               <p>
-                Your people, applications and findings belong to your workspace alone. To anyone outside it, your
+                An app's people, applications and findings belong to its workspace alone. To anyone outside it, the
                 workspace doesn't exist: Gait answers 404, the same answer as for a workspace that doesn't exist.
               </p>
             </div>
@@ -290,8 +308,8 @@ function HomePage() {
               </p>
             </div>
             <div className="home-card">
-              <h3>Gait never changes your code, servers or data.</h3>
-              <p>Gait is not a remote control for your software. It only records the checks your software reports.</p>
+              <h3>Gait never reaches into Lumen.</h3>
+              <p>Gait is not a remote control for my apps. It never changes an app's code, servers or data; it only records the checks the app reports.</p>
             </div>
           </div>
           <Link to={docPath("isolation")} className="home-text-link">
@@ -309,16 +327,17 @@ function HomePage() {
           </div>
           <div className="home-card home-card--inline">
             <h3>
-              Sign-in for your own product <StatusBadge feature="productSignIn" />
+              Sign-in for an app's own users <StatusBadge feature="productSignIn" />
             </h3>
             <p>
-              gait-sdk can also verify Gait sign-in tokens inside your own API, so your product's users can sign in
-              with Gait accounts while your product keeps its own organizations and roles.
+              gait-sdk also verifies Gait sign-in tokens inside an app's API, so its users sign in with Gait accounts
+              while the app keeps its own organizations and roles. Lumen, in development, signs in this way. gait-sdk
+              is public and open source (MIT, on PyPI).
             </p>
           </div>
           <div className="hero-actions">
             <Link to={docPath("connecting-your-software")} className="btn-pill btn-pill-secondary">
-              <RiBookOpenLine /> Connecting your software
+              <RiBookOpenLine /> Connecting an app
             </Link>
             <Link to={docPath("gait-sdk")} className="btn-pill btn-pill-ghost">
               <RiTerminalBoxLine /> gait-sdk docs
@@ -326,18 +345,19 @@ function HomePage() {
           </div>
         </section>
 
-        {/* 6. How we protect Gait itself */}
+        {/* 6. How Gait protects itself */}
         <section className="section" id="gait-itself" aria-labelledby="gait-itself-title">
-          <p className="eyebrow">How we protect Gait itself</p>
+          <p className="eyebrow">How Gait protects itself</p>
           <h2 id="gait-itself-title">Six AI agents and a person look after Gait's own platform.</h2>
           <p className="section-lede">
-            Gait uses automated agents to investigate problems in its own platform, test them and prepare fixes.
-            They run on Gait's own platform, never on your software: they don't investigate, change or deploy it.
-            Automated deployment is off by default.
+            Gait uses AI agents to investigate problems in its own platform, test them and prepare fixes, inside fixed
+            boundaries. An independent validator checks every fix, and I approve every production change. The agents
+            run on Gait's own platform, never on Lumen: they don't investigate, change or deploy it. Automated
+            deployment is off by default.
           </p>
           <AgentFleetDiagram />
           <p className="section-note">
-            <strong>Security Copilot</strong> explains what the team found in plain language. It sits outside the
+            <strong>Security Copilot</strong> explains what the agents found in plain language. It sits outside the
             chain and can't act on anything.
           </p>
           <ul className="home-guarantees" aria-label="Guarantees">
@@ -354,24 +374,27 @@ function HomePage() {
 
         {/* 7. Origin */}
         <section className="section home-origin" aria-label="Origin">
-          <p>Built first to secure Lumen, our healthcare reporting app.</p>
+          <p>
+            Built first to secure Lumen, my clinical app, which is in development. It signs in through Gait with
+            gait-sdk; its security-check reporting is built but not yet running. In production today, Gait protects
+            itself.
+          </p>
         </section>
 
-        {/* 8. Closing call to action */}
+        {/* 8. Closing: where to read more */}
         <section className="section final-cta" aria-labelledby="final-cta-title">
           <RiShieldCheckLine />
-          <h2 id="final-cta-title">Connect your first app in about 15 minutes.</h2>
+          <h2 id="final-cta-title">See how it fits together.</h2>
           <p className="section-lede">
-            Create your workspace, register an application, get its connection key and send your first security check.
+            The docs show how I add an app, how findings open and close, and how Gait looks after itself.
           </p>
           <div className="hero-actions">
-            <Link to={docPath("quickstart")} className="btn-pill btn-pill-primary">
-              Read the Quickstart <RiArrowRightLine />
+            <Link to={docPath("how-it-works")} className="btn-pill btn-pill-primary">
+              How it works <RiArrowRightLine />
             </Link>
-            <Link to="/early-access" className="btn-pill btn-pill-secondary">Request early access</Link>
           </div>
           <p className="section-note">
-            Partnership or licensing questions? <Link to="/send-email">Contact us directly</Link>.
+            Questions about Gait? <Link to="/send-email">Contact me</Link>.
           </p>
         </section>
       </main>

@@ -2,14 +2,14 @@ import React from "react";
 import { CodeBlock, DocLink, DocSection, DocTable } from "../components/DocPrimitives";
 
 // Placeholder only. Never replace it with anything that looks like a real key.
-const ENV_EXAMPLE = `# .env for acme-api (production), kept out of source control
+const ENV_EXAMPLE = `# .env for lumen-api (production), kept out of source control
 GAIT_APPLICATION_CREDENTIAL=<your connection key>`;
 
 export default function ApplicationsAndConnectionKeys() {
     return (
         <>
             <p className="doc-lede">
-                An application is one piece of your software in one environment. Its connection keys are how it proves
+                An application is one piece of an app, such as Lumen's API, in one environment. Its connection keys are how it proves
                 to Gait who it is.
             </p>
 
@@ -28,9 +28,9 @@ export default function ApplicationsAndConnectionKeys() {
                         </tr>
                     </thead>
                     <tbody>
-                        <tr><td>Acme API</td><td><code>acme-api</code></td><td><code>local</code></td></tr>
-                        <tr><td>Acme API</td><td><code>acme-api</code></td><td><code>staging</code></td></tr>
-                        <tr><td>Acme API</td><td><code>acme-api</code></td><td><code>production</code></td></tr>
+                        <tr><td>Lumen API</td><td><code>lumen-api</code></td><td><code>local</code></td></tr>
+                        <tr><td>Lumen API</td><td><code>lumen-api</code></td><td><code>staging</code></td></tr>
+                        <tr><td>Lumen API</td><td><code>lumen-api</code></td><td><code>production</code></td></tr>
                     </tbody>
                 </DocTable>
                 <p>Owners and Admins can add and rename applications. Members can see them.</p>
@@ -52,18 +52,18 @@ export default function ApplicationsAndConnectionKeys() {
                         <strong>last used</strong>.
                     </li>
                 </ul>
-                <p>Store it with your application's other secrets:</p>
+                <p>Store it with the application's other secrets:</p>
                 <CodeBlock label="Environment" code={ENV_EXAMPLE} />
                 <p>
                     Never put a key in source code, tickets, chat or screenshots. To use it, see{" "}
-                    <DocLink to="connecting-your-software">Connecting your software</DocLink>.
+                    <DocLink to="connecting-your-software">Connecting an app</DocLink>.
                 </p>
             </DocSection>
 
             <DocSection id="rotating-keys" title="Rotating keys">
                 <ol>
                     <li>Issue a new key with a clear label.</li>
-                    <li>Deploy it to your application.</li>
+                    <li>Deploy it to the application.</li>
                     <li>
                         In the key list, wait until the new key shows a recent <strong>Last used</strong> time and the
                         old one stops updating.
@@ -79,7 +79,7 @@ export default function ApplicationsAndConnectionKeys() {
             <DocSection id="if-a-key-leaks" title="If a key leaks">
                 <ol>
                     <li>
-                        <strong>Revoke the leaked key.</strong> It stops working at once. Your software stops
+                        <strong>Revoke the leaked key.</strong> It stops working at once. The app stops
                         reporting until it has a new key.
                     </li>
                     <li>Issue a new key and deploy it.</li>

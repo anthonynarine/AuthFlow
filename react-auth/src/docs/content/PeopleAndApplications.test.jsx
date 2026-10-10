@@ -103,17 +103,17 @@ describe("How an application gets its key", () => {
             "Owner or Admin",
             "Gait console",
             "Gait",
-            "Your app's backend",
+            "The app's backend",
         ]);
 
         const setUp = within(lesson).getByRole("list", { name: "Set up once: steps 1 to 4" });
         expect(within(setUp).getAllByRole("listitem")).toHaveLength(4);
         expect(within(setUp).getByText("Key shown once (Gait keeps only a fingerprint)")).toBeInTheDocument();
-        expect(within(setUp).getByText("Owner or Admin → Your app's backend")).toBeInTheDocument();
+        expect(within(setUp).getByText("Owner or Admin → The app's backend")).toBeInTheDocument();
 
-        const loop = within(lesson).getByRole("list", { name: "Loop · whenever your backend runs its checks" });
-        expect(within(loop).getByText("Your app's backend → Gait")).toBeInTheDocument();
-        expect(within(loop).getByText("Recorded for acme / acme-api / production")).toBeInTheDocument();
+        const loop = within(lesson).getByRole("list", { name: "Loop · whenever the app's backend runs its checks" });
+        expect(within(loop).getByText("The app's backend → Gait")).toBeInTheDocument();
+        expect(within(loop).getByText("Recorded for lumen / lumen-api / production")).toBeInTheDocument();
         await settleDiagrams();
     });
 
@@ -130,7 +130,7 @@ describe("How an application gets its key", () => {
         expect(liveNumbers(lesson)).toEqual(["3"]);
         expect(within(lesson).getByText(/nobody, including Gait, can show it again/)).toBeInTheDocument();
 
-        fireEvent.click(within(lesson).getByRole("button", { name: "Step 6: Whenever your backend runs its checks" }));
+        fireEvent.click(within(lesson).getByRole("button", { name: "Step 6: Whenever the app's backend runs its checks" }));
         expect(liveNumbers(lesson)).toEqual(["5", "6"]);
 
         fireEvent.click(next);

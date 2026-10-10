@@ -101,7 +101,7 @@ describe("docs pages", () => {
     });
 
     test.each([
-        ["getting-started", "step-2-create-your-workspace", "step-2-create-your-company", "Step 2: Create your workspace"],
+        ["getting-started", "step-2-create-your-workspace", "step-2-create-your-company", "Step 2: Create the app's workspace"],
         ["troubleshooting", "signing-in-and-your-workspace", "signing-in-and-your-company", "Signing in and your workspace"],
     ])("renamed section on %s: the new #%s and the old #%s both land on it", async (slug, newId, oldId, title) => {
         const heading = () => screen.getByRole("heading", { level: 2, name: title });
@@ -215,7 +215,7 @@ describe("diagrams", () => {
     test("render once mermaid loads, with the description always visible", async () => {
         renderDocs("/docs/people-and-applications");
         expect(
-            screen.getByText(/Two people sign in to Gait and belong to the workspace acme/, { selector: "figcaption" })
+            screen.getByText(/Two people sign in to Gait and belong to the workspace lumen/, { selector: "figcaption" })
         ).toBeInTheDocument();
         await settleDiagrams();
         expect(screen.getAllByTestId("mermaid-svg").length).toBeGreaterThan(0);
@@ -226,7 +226,7 @@ describe("diagrams", () => {
         const spy = jest.spyOn(mermaid, "render").mockRejectedValue(new Error("boom"));
         renderDocs("/docs/security-checks-and-findings");
         expect(await screen.findByText(/The diagram couldn't load/)).toBeInTheDocument();
-        expect(screen.getByText(/When your application reports FAIL, Gait opens a finding/)).toBeInTheDocument();
+        expect(screen.getByText(/When an application reports FAIL, Gait opens a finding/)).toBeInTheDocument();
         spy.mockRestore();
     });
 });

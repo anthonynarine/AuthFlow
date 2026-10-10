@@ -67,13 +67,13 @@ describe("HomePage product positioning", () => {
     jest.clearAllMocks();
   });
 
-  test("leads with what customers get today, with none of the old overclaims", () => {
+  test("leads with Gait as my internal security system, with none of the old overclaims", () => {
     const { container } = renderHome({ isLoggedIn: false, user: null });
 
+    expect(screen.getByRole("heading", { level: 1, name: "The security system behind my apps." })).toBeInTheDocument();
     expect(
-      screen.getByRole("heading", { level: 1, name: "See the security of every app you ship, in one private place." })
+      screen.getByText(/Gait is the internal security system I built to protect my own applications\./)
     ).toBeInTheDocument();
-    expect(screen.getByText(/reports its own security checks with gait-sdk/)).toBeInTheDocument();
 
     const text = container.textContent;
     expect(text).not.toMatch(/473/);
@@ -94,9 +94,12 @@ describe("HomePage product positioning", () => {
       within(statusRow("Acting on findings in the console")).getByText(STATUS_LABELS[FEATURE_STATUS.findingsScreen])
     ).toBeInTheDocument();
     expect(
-      within(statusRow("Sign-in for your own product")).getByText(STATUS_LABELS[FEATURE_STATUS.productSignIn])
+      within(statusRow("Sign-in for an app's own users")).getByText(STATUS_LABELS[FEATURE_STATUS.productSignIn])
     ).toBeInTheDocument();
-    expect(screen.getByText("AI investigation and fixes for your apps: planned.")).toBeInTheDocument();
+    // Lumen is in development: never shown as Live.
+    expect(within(statusRow("Lumen signs in through Gait")).getByText("In development")).toBeInTheDocument();
+    expect(within(statusRow("Lumen reports its security checks")).getByText("In progress")).toBeInTheDocument();
+    expect(screen.getByText("AI investigation and fixes for Lumen: planned.")).toBeInTheDocument();
   });
 
   test("flipping a FEATURE_STATUS key changes the page (nothing is hard-coded)", () => {
@@ -112,32 +115,37 @@ describe("HomePage product positioning", () => {
     }
   });
 
-  test("links to the Quickstart, isolation and automated-security-response docs", () => {
+  test("links to the how-it-works, isolation and automated-security-response docs", () => {
     renderHome({ isLoggedIn: false, user: null });
 
-    const quickstart = screen.getAllByRole("link", { name: /Read the Quickstart/ });
-    expect(quickstart.length).toBeGreaterThan(0);
-    quickstart.forEach((link) => expect(link).toHaveAttribute("href", "/docs/quickstart"));
+    const howItWorks = screen.getAllByRole("link", { name: /^How it works$/ });
+    expect(howItWorks.filter((link) => link.getAttribute("href") === "/docs/how-it-works").length).toBe(2);
     expect(screen.getByRole("link", { name: /Isolation and setup/ })).toHaveAttribute("href", "/docs/isolation");
     expect(screen.getByRole("link", { name: /Automated security response/ })).toHaveAttribute(
       "href",
       "/docs/automated-security-response"
     );
-    expect(screen.getByRole("link", { name: /Connecting your software/ })).toHaveAttribute(
+    expect(screen.getByRole("link", { name: /Connecting an app/ })).toHaveAttribute(
       "href",
       "/docs/connecting-your-software"
     );
     expect(screen.getByRole("link", { name: /gait-sdk docs/ })).toHaveAttribute("href", "/docs/gait-sdk");
-    screen.getAllByRole("link", { name: /Request early access/i }).forEach((link) =>
-      expect(link).toHaveAttribute("href", "/early-access")
-    );
   });
 
-  test("the agents section is scoped to Gait itself: never on your software", () => {
+  test("no buyer calls to action: no Quickstart hero button and no link to early access", () => {
+    renderHome({ isLoggedIn: false, user: null });
+
+    expect(screen.queryByRole("link", { name: /Read the Quickstart/i })).not.toBeInTheDocument();
+    expect(screen.queryByRole("link", { name: /early access/i })).not.toBeInTheDocument();
+    screen.queryAllByRole("link").forEach((link) => expect(link).not.toHaveAttribute("href", "/early-access"));
+  });
+
+  test("the agents section is scoped to Gait itself: never on Lumen", () => {
     renderHome({ isLoggedIn: false, user: null });
 
     const section = screen.getByRole("region", { name: /Six AI agents and a person look after Gait's own platform/ });
-    expect(section).toHaveTextContent("never on your software");
+    expect(section).toHaveTextContent("never on Lumen");
+    expect(section).toHaveTextContent("I approve every production change.");
     expect(section).toHaveTextContent("Automated deployment is off by default.");
     ["Incident Commander", "Blue Team", "Red Team", "Green Team", "Security Validator", "Release Engineer", "Human Approver"].forEach(
       (name) => expect(within(section).getAllByText(name).length).toBeGreaterThan(0)
@@ -160,11 +168,12 @@ describe("HomePage product positioning", () => {
     expect(station).toHaveAttribute("aria-pressed", "true");
   });
 
-  test("the origin is one line, with no usage claims", () => {
+  test("the origin names only Lumen and Gait itself, with no usage claims", () => {
     renderHome({ isLoggedIn: false, user: null });
 
-    expect(screen.getByText("Built first to secure Lumen, our healthcare reporting app.")).toBeInTheDocument();
-    expect(screen.getAllByText(/Lumen/)).toHaveLength(1);
+    expect(
+      screen.getByText(/Built first to secure Lumen, my clinical app, which is in development\./)
+    ).toHaveTextContent("In production today, Gait protects itself.");
   });
 
   test("the header brand uses the single-ink gate mark", () => {

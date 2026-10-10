@@ -85,15 +85,15 @@ describe("Go from local to production", () => {
         renderDoc("local-to-production");
         const table = within(screen.getByRole("table", { name: "Settings per environment" }));
         expect(table.getByText(/the same everywhere/)).toBeInTheDocument();
-        expect(table.getByText("the key of acme-api · production")).toBeInTheDocument();
+        expect(table.getByText("the key of lumen-api · production")).toBeInTheDocument();
     });
 });
 
-describe("Your product's organizations & invites", () => {
+describe("An app's own organizations & invites", () => {
     test("is early access, and never implies the product can see email confirmation", () => {
         renderDoc("product-organizations-and-invites");
         expect(screen.getByText("Early access", { selector: ".doc-status" })).toBeInTheDocument();
-        expect(within(section("What Gait gives your product")).getByText(/whether the email is confirmed/)).toBeInTheDocument();
+        expect(within(section("What Gait gives the app")).getByText(/whether the email is confirmed/)).toBeInTheDocument();
         expect(within(section("Joining: the link, and the email")).getByText(/only safe/)).toBeInTheDocument();
     });
 });
@@ -113,7 +113,7 @@ describe("corrections to existing pages", () => {
         expect(row).not.toHaveTextContent(/Gait-verified/);
     });
 
-    test("the findings page describes only what customers see", async () => {
+    test("the findings page describes only what the console shows", async () => {
         renderDoc("security-checks-and-findings");
         expect(screen.queryByText(/cases/)).not.toBeInTheDocument();
         expect(screen.getByText(/the same finding\s+opens again/, { selector: "li" })).toBeInTheDocument();

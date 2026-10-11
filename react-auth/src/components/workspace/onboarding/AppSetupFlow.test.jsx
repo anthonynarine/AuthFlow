@@ -201,3 +201,20 @@ describe("AppSetupFlow — Connection Key issuance", () => {
     expect(screen.queryByText(RAW_SECRET)).not.toBeInTheDocument();
   });
 });
+
+test("issued onboarding key keeps framework setup visible and uses manual copy when clipboard rejects", async () => {
+  Object.defineProperty(navigator, "clipboard", { configurable: true, value: { writeText: jest.fn().mockRejectedValue(new Error("denied")) } });
+  authAxios.post.mockResolvedValueOnce({ data: { raw_secret: RAW_SECRET, credential_id: "cred-fallback" } });
+  render(<AppSetupFlow organizationSlug="acme" application={APPLICATION} onDone={jest.fn()} />);
+  chooseDjango();
+  fireEvent.click(screen.getByRole("button", { name: "Generate Connection Key" }));
+  await screen.findByText(RAW_SECRET);
+  fireEvent.click(screen.getByRole("button", { name: "Copy key" }));
+  await screen.findByText("Clipboard unavailable. The key is selected: copy it manually.");
+  expect(window.getSelection().toString()).toBe(RAW_SECRET);
+  fireEvent.click(screen.getByRole("button", { name: "FastAPI" }));
+  expect(screen.getByText(installCommand("fastapi"))).toBeInTheDocument();
+  expect(screen.getByText(/EXPECTED_ENVIRONMENT = "production"/)).toHaveTextContent('EXPECTED_WORKSPACE = "acme"');
+  expect(screen.getByRole("region", { name: "Backend setup" })).not.toHaveTextContent(RAW_SECRET);
+  expect(authAxios.post).toHaveBeenCalledTimes(1);
+});

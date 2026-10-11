@@ -346,6 +346,7 @@ describe("F2 connection keys", () => {
         expect(issueCredential).toHaveBeenCalledWith("app-one", "a1", "laptop");
         expect(within(dialog).getByLabelText("Connection key")).toHaveValue(ONE_TIME_SECRET);
         expect(dialog).toHaveTextContent("This key can't be shown again.");
+        expect(within(dialog).getByText(/EXPECTED_WORKSPACE = "app-one"/)).toHaveTextContent('EXPECTED_ENVIRONMENT = "production"');
 
         fireEvent.click(within(dialog).getByRole("button", { name: "Copy key" }));
         await waitFor(() => expect(writeText).toHaveBeenCalledWith(ONE_TIME_SECRET));

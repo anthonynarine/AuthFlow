@@ -46,6 +46,15 @@ afterEach(() => {
 });
 
 describe("search index", () => {
+    test.each([
+        ["Django configuration", "django"],
+        ["FastAPI configuration", "fastapi"],
+        ["Verify connection", "verify-the-connection"],
+    ])("finds the backend setup section for %s", (query, sectionId) => {
+        expect(searchDocs(index, query)).toEqual(expect.arrayContaining([
+            expect.objectContaining({ slug: "connecting-your-software", sectionId }),
+        ]));
+    });
     test("covers every page, split into its sections, with no diagram chrome", () => {
         expect(new Set(index.map((entry) => entry.slug))).toEqual(new Set(DOC_PAGES.map((page) => page.slug)));
         const rotating = index.find((entry) => entry.sectionId === "rotating-keys");

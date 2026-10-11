@@ -8,7 +8,6 @@ import { DocsPage } from "../DocsPage";
 import { DOC_GROUPS, DOC_PAGES, findDocPage } from "../manifest";
 import { FEATURE_STATUS, STATUS_LABELS } from "../featureStatus";
 import { GLOSSARY } from "./Glossary";
-import { ENV_VARS, INSTALL, REPORT } from "./snippets";
 
 function renderDoc(slug) {
     return render(
@@ -211,17 +210,20 @@ describe("Quickstart", () => {
         );
     });
 
-    test("shows exactly the same snippets as Connecting an app", () => {
+    test("links to the complete setup and reporting guide without duplicating snippets", () => {
         const { unmount } = renderDoc("quickstart");
-        // eslint-disable-next-line testing-library/no-node-access -- code blocks have no role; their exact text is what this test checks
-        const quickstartCode = Array.from(document.querySelectorAll(".doc-code-pre")).map((pre) => pre.textContent);
+        expect(within(screen.getByRole("region", { name: "Step 6: Install and configure" })).getByRole("link")).toHaveAttribute(
+            "href", "/docs/connecting-your-software"
+        );
+        expect(within(screen.getByRole("region", { name: "Step 7: Send your first check" })).getByRole("link")).toHaveAttribute(
+            "href", "/docs/connecting-your-software#report-a-security-check"
+        );
+        expect(screen.queryByRole("button", { name: /Copy/ })).not.toBeInTheDocument();
         unmount();
         renderDoc("connecting-your-software");
-        // eslint-disable-next-line testing-library/no-node-access -- code blocks have no role; their exact text is what this test checks
-        const connectingCode = Array.from(document.querySelectorAll(".doc-code-pre")).map((pre) => pre.textContent);
-
-        expect(quickstartCode).toEqual([INSTALL, ENV_VARS, REPORT]);
-        expect(connectingCode).toEqual([INSTALL, ENV_VARS, REPORT]);
+        expect(screen.getByRole("heading", { name: "Django configuration" })).toBeInTheDocument();
+        expect(screen.getByRole("heading", { name: "FastAPI configuration" })).toBeInTheDocument();
+        expect(screen.getByRole("button", { name: "Copy connection check" })).toBeInTheDocument();
     });
 
     test("the snippets are defined once, in snippets.js", () => {

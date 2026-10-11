@@ -1,7 +1,8 @@
-import React, { useState } from "react";
+import React, { useRef, useState } from "react";
 import { useApplicationCredential } from "../../../hooks/useApplicationCredential";
 import { AuthHeading } from "../../../ds/AuthLayout";
 import { Alert, Button } from "../../../ds/components";
+import { BackendSetupInstructions } from "./BackendSetupInstructions";
 import { FRAMEWORKS, buildSetupSteps } from "./sdkInstructions";
 
 function describeError(error) {
@@ -39,8 +40,8 @@ function FrameworkPicker({ frameworkKey, onChoose, stepLabel }) {
   );
 }
 
-function SetupInstructions({ frameworkKey, onChangeFramework, connectionKey, onGenerateKey, isIssuing, keyError, stepLabel }) {
-  const steps = buildSetupSteps({ frameworkKey, connectionKey });
+function SetupInstructions({ organizationSlug, application, frameworkKey, onChangeFramework, connectionKey, onGenerateKey, isIssuing, keyError, stepLabel }) {
+  const steps = buildSetupSteps({ frameworkKey, organizationSlug, application });
 
   return (
     <>
@@ -92,19 +93,25 @@ function SetupInstructions({ frameworkKey, onChangeFramework, connectionKey, onG
   );
 }
 
-function ConnectionKeyScreen({ credential, onAcknowledge }) {
+function ConnectionKeyScreen({ credential, onAcknowledge, frameworkKey, onChoose, organizationSlug, application }) {
+  const secretRef = useRef(null);
   const [copyState, setCopyState] = useState("idle");
   const [acknowledged, setAcknowledged] = useState(false);
 
   const handleCopy = async () => {
-    if (typeof navigator === "undefined" || !navigator.clipboard) {
-      return;
-    }
     try {
+      if (!navigator.clipboard?.writeText) throw new Error("Clipboard unavailable");
       await navigator.clipboard.writeText(credential.rawSecret);
+      if (!secretRef.current) return;
       setCopyState("copied");
     } catch {
-      setCopyState("idle");
+      if (!secretRef.current) return;
+      const range = document.createRange();
+      range.selectNodeContents(secretRef.current);
+      const selection = window.getSelection();
+      selection.removeAllRanges();
+      selection.addRange(range);
+      setCopyState("failed");
     }
   };
 
@@ -113,7 +120,7 @@ function ConnectionKeyScreen({ credential, onAcknowledge }) {
       <AuthHeading eyebrow="Connection Key" title="Save this key now." lede="Gait will not show it again." focusOnMount />
 
       <div className="ds-secret" role="group" aria-label="Connection Key">
-        <code>{credential.rawSecret}</code>
+        <code ref={secretRef}>{credential.rawSecret}</code>
       </div>
 
       <div className="ds-row-actions">
@@ -121,13 +128,15 @@ function ConnectionKeyScreen({ credential, onAcknowledge }) {
           {copyState === "copied" ? "Copied" : "Copy key"}
         </Button>
       </div>
-      <p className="ds-visually-hidden" role="status" aria-live="polite">{copyState === "copied" ? "Copied the key." : ""}</p>
+      <p className="ds-visually-hidden" role="status" aria-live="polite">{copyState === "copied" ? "Copied the key." : copyState === "failed" ? "Clipboard unavailable. The key is selected: copy it manually." : ""}</p>
 
       <Alert kind="warning">
         This is a backend secret. Never put it in frontend code, a browser, a build-time <code>.env</code> file, or
-        source control — set it as a server-side environment variable only.
+        source control. Use an ignored backend .env file for development or your host’s secret settings for production.
       </Alert>
 
+      <BackendSetupInstructions frameworkKey={frameworkKey} onChoose={onChoose}
+        organizationSlug={organizationSlug} application={application} />
       <label className="ds-check">
         <input type="checkbox" checked={acknowledged} onChange={(event) => setAcknowledged(event.target.checked)} />
         <span>I saved my Connection Key</span>
@@ -163,6 +172,10 @@ export function AppSetupFlow({ organizationSlug, application, onDone, stepLabel 
     return (
       <ConnectionKeyScreen
         credential={credential}
+        frameworkKey={frameworkKey}
+        onChoose={setFrameworkKey}
+        organizationSlug={organizationSlug}
+        application={application}
         onAcknowledge={() => {
           // Deliberate, explicit discard — the raw secret leaves memory the
           // moment the founder confirms they've saved it. There is no path
@@ -176,6 +189,8 @@ export function AppSetupFlow({ organizationSlug, application, onDone, stepLabel 
 
   return (
     <SetupInstructions
+      organizationSlug={organizationSlug}
+      application={application}
       frameworkKey={frameworkKey}
       onChangeFramework={() => setFrameworkKey(null)}
       connectionKey={null}

@@ -236,6 +236,7 @@ export function ApplicationDetailPage() {
             {dialog?.type === "retire" ? <RetireDialog application={app} mutation={status} onClose={closeDialog} /> : null}
             {dialog?.type === "issue" ? (
                 <IssueKeyDialog
+                    organizationSlug={orgSlug}
                     application={app}
                     issue={(label) => issueCredential(orgSlug, applicationId, label)}
                     onIssued={() => queryClient.invalidateQueries({ queryKey: consoleKeys.credentials(orgSlug, applicationId) })}

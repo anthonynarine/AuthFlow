@@ -1,8 +1,10 @@
-import React, { useRef, useState } from "react";
+import React, { useEffect, useRef, useState } from "react";
 import { Dialog } from "../../components/ui/Dialog";
 import { Field } from "../../components/ui/Field";
 import { apiErrorMessage, apiFieldErrors } from "../../utils/apiErrors";
 import { formatDateTime } from "../../utils/formatDate";
+
+import { BackendSetupInstructions } from "../../../components/workspace/onboarding/BackendSetupInstructions";
 
 const NAME_MAX = 160;
 const LABEL_MAX = 80;
@@ -181,16 +183,23 @@ export function RetireDialog({ application, mutation, onClose }) {
  * component's state: never in the query cache, storage, the URL or logs, and
  * it's dropped when the dialog closes.
  */
-export function IssueKeyDialog({ application, issue, onIssued, onClose }) {
+export function IssueKeyDialog({ organizationSlug, application, issue, onIssued, onClose }) {
     const [label, setLabel] = useState("");
+    const [frameworkKey, setFrameworkKey] = useState("django");
     const [phase, setPhase] = useState("form");
     const [error, setError] = useState(null);
     const [issued, setIssued] = useState(null);
     const [copied, setCopied] = useState("idle");
     const [saved, setSaved] = useState(false);
     const secretRef = useRef(null);
+    const active = useRef(true);
+    useEffect(() => {
+        active.current = true;
+        return () => { active.current = false; };
+    }, []);
 
     const close = () => {
+        active.current = false;
         setIssued(null);
         onClose();
     };
@@ -202,10 +211,12 @@ export function IssueKeyDialog({ application, issue, onIssued, onClose }) {
         setError(null);
         try {
             const result = await issue(label.trim());
+            if (!active.current) return;
             setIssued({ secret: result.raw_secret, label: result.label, createdAt: result.created_at });
             setPhase("secret");
             onIssued();
         } catch (issueError) {
+            if (!active.current) return;
             setError(issueError);
             setPhase("form");
         }
@@ -215,8 +226,10 @@ export function IssueKeyDialog({ application, issue, onIssued, onClose }) {
         try {
             if (!navigator.clipboard?.writeText) throw new Error("Clipboard unavailable");
             await navigator.clipboard.writeText(issued.secret);
+            if (!active.current) return;
             setCopied("copied");
         } catch {
+            if (!active.current) return;
             setCopied("failed");
             secretRef.current?.select();
         }
@@ -237,7 +250,7 @@ export function IssueKeyDialog({ application, issue, onIssued, onClose }) {
             >
                 <p className="gc-warning" role="note">
                     <strong>This key can't be shown again.</strong> Gait keeps only a fingerprint of it. Put it in your
-                    application's backend secret settings as <code className="gc-code">GAIT_APPLICATION_CREDENTIAL</code>,
+                    backend’s ignored .env file for development or host secret settings for production as <code className="gc-code">GAIT_APPLICATION_CREDENTIAL</code>,
                     never in code or chat.
                 </p>
                 <Field label="Connection key">
@@ -259,6 +272,8 @@ export function IssueKeyDialog({ application, issue, onIssued, onClose }) {
                         {copied === "copied" ? "Copied to clipboard." : copied === "failed" ? "Couldn't copy. The key is selected: copy it manually." : ""}
                     </span>
                 </div>
+                <BackendSetupInstructions frameworkKey={frameworkKey} onChoose={setFrameworkKey}
+                    organizationSlug={organizationSlug} application={application} />
                 <label className="gc-checkbox">
                     <input type="checkbox" checked={saved} onChange={(event) => setSaved(event.target.checked)} />
                     <span>I've saved this key somewhere safe</span>

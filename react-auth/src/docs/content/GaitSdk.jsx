@@ -1,9 +1,7 @@
 import React from "react";
 import { CodeBlock, DocLink, DocSection, StatusBadge } from "../components/DocPrimitives";
 import {
-    ENV_VARS,
     INSTALL,
-    REPORT,
     SDK_VERSION,
     installCommand,
 } from "./snippets";
@@ -31,6 +29,11 @@ export default function GaitSdk() {
                     <a href={REPO}>GitHub</a>.
                 </li>
                 <li>Python 3.10 or later. MIT licence.</li>
+                <li>
+                    Built-in user-authentication adapters: Django REST Framework and FastAPI. Application verification
+                    and security reporting also work in standalone Python. There is no JavaScript SDK here; connection
+                    keys belong in the backend, including when the frontend uses React or Next.js.
+                </li>
             </ul>
 
             <DocSection id="install" title="Install">
@@ -41,10 +44,8 @@ export default function GaitSdk() {
             <DocSection id="report-a-security-check" title="Report a security check">
                 <p>
                     <StatusBadge feature="core" /> The application runs its own checks and sends PASS or FAIL to
-                    Gait, using its connection key:
+                    Gait, using its backend connection key.
                 </p>
-                <CodeBlock label="Environment" code={ENV_VARS} />
-                <CodeBlock label="Python" code={REPORT} />
                 <p>
                     Step by step, including where the key comes from and what Gait does with each result:{" "}
                     <DocLink to="connecting-your-software">Connecting an app</DocLink>.

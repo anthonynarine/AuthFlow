@@ -3,6 +3,7 @@ import "@testing-library/jest-dom";
 import { fireEvent, render, screen, waitFor } from "@testing-library/react";
 import { AppSetupFlow } from "./AppSetupFlow";
 import { authAxios } from "../../../interceptors/axios";
+import { installCommand } from "../../../docs/content/snippets";
 
 jest.mock("../../../interceptors/axios", () => ({
   authAxios: { post: jest.fn() },
@@ -32,13 +33,13 @@ describe("AppSetupFlow — framework selection", () => {
   test("choosing Django shows Django-specific install instructions", () => {
     render(<AppSetupFlow organizationSlug="acme" application={APPLICATION} onDone={jest.fn()} />);
     chooseDjango();
-    expect(screen.getByText('pip install "gait-sdk[django]==0.5.1"')).toBeInTheDocument();
+    expect(screen.getByText(installCommand("django"))).toBeInTheDocument();
   });
 
   test("choosing FastAPI shows FastAPI-specific install instructions", () => {
     render(<AppSetupFlow organizationSlug="acme" application={APPLICATION} onDone={jest.fn()} />);
     fireEvent.click(screen.getByRole("button", { name: "FastAPI" }));
-    expect(screen.getByText('pip install "gait-sdk[fastapi]==0.5.1"')).toBeInTheDocument();
+    expect(screen.getByText(installCommand("fastapi"))).toBeInTheDocument();
   });
 
   test("SDK instructions reference the real, documented GAIT_APPLICATION_CREDENTIAL contract", () => {

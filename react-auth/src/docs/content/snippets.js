@@ -4,10 +4,10 @@
  * these; never copy them, so nothing can drift apart.
  */
 
-export const SDK_VERSION = "0.5.1";
+export const SDK_VERSION = "0.5.4";
 export const GAIT_API_URL = "https://api.gaitobservatory.com/api";
 
-/** `pip install "gait-sdk[django]==0.5.1"`, or without an extra for anything else. */
+/** Install a framework extra, or the core package for other Python services. */
 export function installCommand(extra) {
     return `pip install "gait-sdk${extra ? `[${extra}]` : ""}==${SDK_VERSION}"`;
 }
@@ -21,6 +21,40 @@ export const CONNECTION_KEY_PLACEHOLDER = "<your connection key>";
 export const ENV_VARS = `GAIT_AUTH_URL=${GAIT_API_URL}
 GAIT_APPLICATION_CREDENTIAL=${CONNECTION_KEY_PLACEHOLDER}`;
 
+export const DJANGO_APPLICATION_SETTINGS = `from decouple import config
+
+GAIT_AUTH_URL = config("GAIT_AUTH_URL")
+GAIT_APPLICATION_CREDENTIAL = config("GAIT_APPLICATION_CREDENTIAL")`;
+
+export const VERIFY_APPLICATION = `import asyncio
+from gait_sdk.application import verify_application
+from gait_sdk.exceptions import (
+    AuthServiceUnavailable,
+    InvalidApplicationCredentialError,
+)
+
+# Copy these slugs from the Gait console; change the environment as needed.
+EXPECTED_WORKSPACE = "<your workspace slug>"
+EXPECTED_APPLICATION = "<your application slug>"
+EXPECTED_ENVIRONMENT = "local"
+
+async def main():
+    try:
+        app = await verify_application()
+    except InvalidApplicationCredentialError:
+        raise SystemExit("Connection failed: key missing or rejected.")
+    except AuthServiceUnavailable:
+        raise SystemExit("Connection failed: check API URL and connectivity.")
+
+    if (app.organization_slug, app.application_slug, app.environment) != (
+        EXPECTED_WORKSPACE, EXPECTED_APPLICATION, EXPECTED_ENVIRONMENT
+    ):
+        raise SystemExit("Connection failed: wrong workspace, app or environment.")
+
+    print(f"Connected: {app.application_slug} · {app.environment}")
+
+asyncio.run(main())`;
+
 export const REPORT = `import asyncio
 from gait_sdk.security import APPLICATION_SELF_CHECK, send_security_signal
 
@@ -32,8 +66,8 @@ asyncio.run(send_security_signal(
 ))`;
 
 // Verify an app's own users (Early access): Django REST Framework, in the
-// SDK's default "introspection" mode, which needs only GAIT_AUTH_URL. The SDK's
-// "jwks" mode waits until Gait publishes signing keys (its JWKS is empty today).
+// SDK's default "introspection" mode, which needs only GAIT_AUTH_URL.
+// JWKS mode has additional configuration documented in the SDK reference.
 export const VERIFY_USER_SETTINGS = `# settings.py
 # "gait_sdk" checks the configuration at startup.
 INSTALLED_APPS = [..., "gait_sdk"]

@@ -146,8 +146,8 @@ export default function GettingStarted() {
             <DocSection id="next-steps" title="Next steps">
                 <ul>
                     <li>
-                        <DocLink to="connecting-your-software">Connect the app</DocLink>: install gait-sdk and send its
-                        first security check.
+                        <DocLink to="connecting-your-software">Connect the app</DocLink>: save the backend key,
+                        configure Django or FastAPI, verify the connection, and send a first security check.
                     </li>
                     <li>
                         <DocLink to="security-checks-and-findings">Security checks &amp; findings</DocLink>: what happens

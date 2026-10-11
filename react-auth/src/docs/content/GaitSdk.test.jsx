@@ -63,7 +63,7 @@ describe("gait-sdk page", () => {
     });
 
     test("the verify snippet uses the SDK's default mode, which needs only GAIT_AUTH_URL", () => {
-        // Production Gait publishes no signing keys yet, so jwks mode can't verify its tokens.
+        // This introductory snippet uses the SDK's default introspection mode.
         expect(VERIFY_USER_SETTINGS).toContain('GAIT_AUTH_URL = "https://api.gaitobservatory.com/api"');
         expect(VERIFY_USER_SETTINGS).not.toMatch(/GAIT_TOKEN_VERIFIER|jwks|GAIT_AUDIENCE|GAIT_ISSUER/i);
     });

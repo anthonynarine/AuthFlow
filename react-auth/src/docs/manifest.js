@@ -130,7 +130,7 @@ export const DOC_GROUPS = [
             {
                 slug: "connecting-your-software",
                 title: "Connecting an app",
-                summary: "Install gait-sdk in an app, configure it, and report its first security check.",
+                summary: "Save a backend key, configure Django or FastAPI, verify the connection, and report a security check.",
             },
         ],
     },

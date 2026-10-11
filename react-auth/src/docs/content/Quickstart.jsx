@@ -1,8 +1,7 @@
 import React from "react";
-import { CodeBlock, DocLink, DocSection, DocTable } from "../components/DocPrimitives";
+import { DocLink, DocSection, DocTable } from "../components/DocPrimitives";
 import { StatusCell } from "../components/StatusCell";
 import { statusAsOfLabel } from "../featureStatus";
-import { ENV_VARS, INSTALL, REPORT } from "./snippets";
 
 // [step, status features, details link target, details link text]
 const STEPS = [
@@ -91,22 +90,24 @@ export default function Quickstart() {
             </DocSection>
 
             <DocSection id="step-6-install-and-configure" title="Step 6: Install and configure">
-                <CodeBlock label="Shell" code={INSTALL} />
-                <CodeBlock label="Environment" code={ENV_VARS} />
+                <p>
+                    Follow <DocLink to="connecting-your-software">Connecting an app</DocLink> for installation,
+                    backend secret storage, Django or FastAPI configuration, and a connection check.
+                </p>
             </DocSection>
 
             <DocSection id="step-7-send-your-first-check" title="Step 7: Send your first check">
-                <CodeBlock label="Python" code={REPORT} />
                 <p>
-                    Details: <DocLink to="connecting-your-software#report-a-security-check">Connecting an app</DocLink>.
+                    After verifying the connection, <DocLink to="connecting-your-software#report-a-security-check">send
+                    the first security check</DocLink> from the backend. The guide contains the copyable example.
                 </p>
             </DocSection>
 
             <DocSection id="next" title="Next">
                 <ul>
                     <li>
-                        Add an application for each other environment the app runs in (<code>staging</code>,{" "}
-                        <code>production</code>), each with its own key.
+                        Follow <DocLink to="local-to-production">Local to production</DocLink> to add each deployment
+                        environment with its own application and key.
                     </li>
                     <li>Run the checks on every deploy, or on a schedule.</li>
                     <li>

@@ -3,7 +3,7 @@
  *
  * Every version, URL and snippet comes from docs/content/snippets.js, the
  * same source the public docs use, so onboarding and /docs can never drift
- * apart. Checked against gait-sdk v0.5.1 (PyPI):
+ * apart. Connection helpers checked against gait-sdk v0.5.4:
  *
  *   - extras: `gait-sdk[django]`, `gait-sdk[fastapi]`
  *   - gait_sdk.application.verify_application(): an explicit async call that

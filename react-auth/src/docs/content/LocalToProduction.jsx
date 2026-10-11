@@ -55,8 +55,14 @@ export default function LocalToProduction() {
                         secret store.
                     </li>
                     <li>
-                        Give the production service that key as <code>GAIT_APPLICATION_CREDENTIAL</code>, deploy, and
-                        let it send a security check.
+                        Save the key in the production backend's hosting secret settings as{" "}
+                        <code>GAIT_APPLICATION_CREDENTIAL</code>. Keep <code>GAIT_AUTH_URL</code> the same. Restart or
+                        deploy the backend so it loads the new values.
+                    </li>
+                    <li>
+                        Run the <DocLink to="connecting-your-software#verify-the-connection">connection check</DocLink>{" "}
+                        with <code>EXPECTED_ENVIRONMENT = "production"</code> and the application's workspace and slug.
+                        It must confirm the production application before sending a security check.
                     </li>
                 </ol>
                 <p>Only the key differs between environments:</p>
@@ -94,6 +100,13 @@ export default function LocalToProduction() {
                     Each environment gets a key issued for its own application. A production service given a
                     laptop's key would report as <code>local</code>, not <code>production</code>.
                 </Callout>
+                <p>
+                    The organization stays the same. Local and Production are separate registrations of the app;
+                    production replicas can share that production application. The registration identifies the
+                    application and environment, not a server hostname. For backend configuration, use the{" "}
+                    <DocLink to="connecting-your-software#django">Django</DocLink> or{" "}
+                    <DocLink to="connecting-your-software#fastapi">FastAPI</DocLink> instructions.
+                </p>
             </DocSection>
 
             <DocSection id="check-it-arrived" title="Check it arrived">

@@ -6,7 +6,7 @@ import { issueCredential } from "../../api/consoleApi";
 import { consoleKeys } from "../../api/queryKeys";
 import { ENVIRONMENT_LABELS } from "../../hooks/useConsoleScope";
 import { formatDateTime } from "../../utils/formatDate";
-import { IssueKeyDialog, RenameDialog, RetireDialog, RevokeKeyDialog, StatusDialog } from "./ApplicationDialogs";
+import { DeleteUnusedDialog, IssueKeyDialog, RenameDialog, RetireDialog, RevokeKeyDialog, StatusDialog } from "./ApplicationDialogs";
 import { APPLICATION_STATUS_LABELS, CREDENTIAL_STATUS_LABELS } from "./applicationStatus";
 import { ChecksCard, checksSummary } from "./ChecksCard";
 import {
@@ -15,10 +15,13 @@ import {
     useApplicationChecks,
     useChangeApplicationStatus,
     useCredentials,
+    useDeleteUnusedApplication,
     useRenameApplication,
     useRevokeCredential,
 } from "./useApplications";
 import "./Applications.css";
+import { LoginRegistration } from "./LoginRegistration";
+import { GuidedSetup } from "./GuidedSetup";
 
 function ActivityCard({ activity }) {
     let body;
@@ -126,6 +129,7 @@ export function ApplicationDetailPage() {
     const activity = useApplicationActivity(orgSlug, applicationId);
     const checks = useApplicationChecks(orgSlug, applicationId);
     const credentials = useCredentials(orgSlug, applicationId, { enabled: canManage });
+    const deleteUnused = useDeleteUnusedApplication(orgSlug, applicationId);
     const rename = useRenameApplication(orgSlug, applicationId);
     const status = useChangeApplicationStatus(orgSlug, applicationId);
     const revoke = useRevokeCredential(orgSlug, applicationId);
@@ -164,6 +168,7 @@ export function ApplicationDetailPage() {
         rename.reset();
         status.reset();
         revoke.reset();
+        deleteUnused.reset();
     };
 
     const actions = canManage && !retired ? (
@@ -175,6 +180,7 @@ export function ApplicationDetailPage() {
             {app.status === "SUSPENDED" ? (
                 <button type="button" className="gc-button gc-button--ghost" onClick={() => setDialog({ type: "reactivate" })}>Reactivate</button>
             ) : null}
+            {isOwner && app.can_delete === true ? <button type="button" className="gc-button gc-button--danger" onClick={() => setDialog({ type: "delete" })}>Delete unused application</button> : null}
             {isOwner ? (
                 <button type="button" className="gc-button gc-button--danger" onClick={() => setDialog({ type: "retire" })}>Retire</button>
             ) : null}
@@ -207,6 +213,8 @@ export function ApplicationDetailPage() {
                 <p className="gc-warning gc-page-note">Retired: this application no longer works and all of its keys are revoked. This is permanent.</p>
             ) : null}
 
+            <GuidedSetup key={`${orgSlug}/${applicationId}/${app.environment}`} organizationSlug={orgSlug} application={app} canManage={canManage} activity={activity} credentials={credentials} />
+            <LoginRegistration key={`${orgSlug}/${applicationId}/${app.environment}/${canManage}`} organizationSlug={orgSlug} application={app} canManage={canManage} />
             <div className="gc-app-grid">
                 <ActivityCard activity={activity} />
                 <Card title="Details">
@@ -229,6 +237,7 @@ export function ApplicationDetailPage() {
                 </div>
             </div>
 
+            {dialog?.type === "delete" && isOwner && app.can_delete === true ? <DeleteUnusedDialog application={app} mutation={deleteUnused} onClose={closeDialog} onDeleted={() => navigate(`/console/${orgSlug}/applications?env=${app.environment}`, { replace: true })} /> : null}
             {dialog?.type === "rename" ? <RenameDialog application={app} mutation={rename} onClose={closeDialog} /> : null}
             {dialog?.type === "suspend" || dialog?.type === "reactivate" ? (
                 <StatusDialog action={dialog.type} application={app} mutation={status} onClose={closeDialog} />

@@ -225,3 +225,36 @@ export async function acceptInviteById(inviteId) {
     const { data } = await authAxios.post(`/organizations/invites/${encodeURIComponent(inviteId)}/accept/`);
     return data;
 }
+
+/** Structured setup help only: never send keys, logs or free-form input. */
+export async function fetchSetupHelp(organizationSlug, applicationId, { framework, step, issue }) {
+    const { data } = await authAxios.post(`${app(organizationSlug, applicationId)}/setup-help/`, { framework, step, issue });
+    return data;
+}
+
+/** Owner-only deletion: server refuses any application with retained history. */
+export async function deleteUnusedApplication(organizationSlug, applicationId, confirmationSlug) {
+    await authAxios.delete(`${app(organizationSlug, applicationId)}/`, { data: { confirmation_slug: confirmationSlug } });
+}
+
+// GAIT-19: human-login registration is separate from software credentials.
+export async function fetchLoginRegistration(organizationSlug, applicationId) {
+    const { data } = await authAxios.get(`${app(organizationSlug, applicationId)}/login-registration/`);
+    return data;
+}
+export async function saveLoginRegistration(organizationSlug, applicationId, { backend_url, login_origin }) {
+    const { data } = await authAxios.put(`${app(organizationSlug, applicationId)}/login-registration/`, { backend_url, login_origin });
+    return data;
+}
+export async function challengeLoginRegistration(organizationSlug, applicationId) {
+    const { data } = await authAxios.post(`${app(organizationSlug, applicationId)}/login-registration/challenge/`, {});
+    return data;
+}
+export async function verifyLoginRegistration(organizationSlug, applicationId) {
+    const { data } = await authAxios.post(`${app(organizationSlug, applicationId)}/login-registration/verify/`, {});
+    return data;
+}
+export async function revokeLoginRegistration(organizationSlug, applicationId) {
+    const { data } = await authAxios.post(`${app(organizationSlug, applicationId)}/login-registration/revoke/`, {});
+    return data;
+}

@@ -31,19 +31,20 @@ function SetupCode({ code, title }) {
 }
 
 /** Instructions contain placeholders only; the one-time key stays in its own field. */
-export function BackendSetupInstructions({ frameworkKey, onChoose, organizationSlug, application }) {
-    const steps = buildSetupSteps({ frameworkKey, organizationSlug, application }).slice(0, 4);
+export function BackendSetupInstructions({ frameworkKey, onChoose, organizationSlug, application, hideFrameworkChoice = false, stepIndex }) {
+    const allSteps = buildSetupSteps({ frameworkKey, organizationSlug, application }).slice(0, 4);
+    const steps = stepIndex === undefined ? allSteps : allSteps.filter((_, index) => index === stepIndex);
     return (
         <section className="gc-backend-setup" aria-label="Backend setup">
-            <div className="gc-secret-actions" role="group" aria-label="Backend framework">
+            {!hideFrameworkChoice ? <div className="gc-secret-actions" role="group" aria-label="Backend framework">
                 {FRAMEWORKS.map((framework) => (
                     <button key={framework.key} type="button" className="gc-button gc-button--ghost"
                         aria-pressed={framework.key === frameworkKey} onClick={() => onChoose(framework.key)}>
                         {framework.label}
                     </button>
                 ))}
-            </div>
-            <ol className="gc-setup-steps">
+            </div> : null}
+            <ol className="gc-setup-steps" start={stepIndex === undefined ? 1 : stepIndex + 1}>
                 {steps.map((step) => (
                     <li key={step.title}>
                         <h3>{step.title}</h3>

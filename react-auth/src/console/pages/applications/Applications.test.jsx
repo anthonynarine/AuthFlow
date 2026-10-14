@@ -406,3 +406,22 @@ describe("F2 connection keys", () => {
         expect(screen.queryByRole("button", { name: /Revoke unlabelled/ })).toBeNull();
     });
 });
+
+test("delete appears only when the server says an Owner's app is unused", async () => {
+    fetchApplication.mockResolvedValue({ ...PROD_API, can_delete: true });
+    renderAt("/console/app-one/applications/a1?env=production");
+    expect(await screen.findByRole("button", { name: "Delete unused application" })).toBeInTheDocument();
+});
+test("server eligibility cannot grant delete controls to Admins", async () => {
+    asRole("ADMIN");
+    fetchApplication.mockResolvedValue({ ...PROD_API, can_delete: true });
+    renderAt("/console/app-one/applications/a1?env=production");
+    await screen.findByRole("heading", { name: "App One API" });
+    expect(screen.queryByRole("button", { name: "Delete unused application" })).not.toBeInTheDocument();
+});
+test("older backend or application history retains retirement and hides delete", async () => {
+    renderAt("/console/app-one/applications/a1?env=production");
+    await screen.findByRole("heading", { name: "App One API" });
+    expect(screen.queryByRole("button", { name: "Delete unused application" })).not.toBeInTheDocument();
+    expect(screen.getByRole("button", { name: "Retire" })).toBeInTheDocument();
+});

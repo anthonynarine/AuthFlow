@@ -1,6 +1,7 @@
 import { useMutation, useQueries, useQuery, useQueryClient } from "@tanstack/react-query";
 import {
     changeApplicationStatus,
+    deleteUnusedApplication,
     createApplication,
     fetchApplication,
     fetchApplicationActivity,
@@ -104,5 +105,20 @@ export function useRevokeCredential(organizationSlug, applicationId) {
         mutationFn: (credentialId) => revokeCredential(organizationSlug, applicationId, credentialId),
         onSuccess: () =>
             queryClient.invalidateQueries({ queryKey: consoleKeys.credentials(organizationSlug, applicationId) }),
+    });
+}
+
+export function useDeleteUnusedApplication(organizationSlug, applicationId) {
+    const queryClient = useQueryClient();
+    const invalidate = useInvalidateApplication(organizationSlug);
+    return useMutation({
+        mutationFn: (confirmationSlug) => deleteUnusedApplication(organizationSlug, applicationId, confirmationSlug),
+        onSuccess: () => {
+            queryClient.removeQueries({ queryKey: consoleKeys.application(organizationSlug, applicationId) });
+            queryClient.removeQueries({ queryKey: consoleKeys.credentials(organizationSlug, applicationId) });
+            queryClient.removeQueries({ queryKey: consoleKeys.applicationActivity(organizationSlug, applicationId) });
+            queryClient.removeQueries({ queryKey: consoleKeys.applicationChecks(organizationSlug, applicationId) });
+            invalidate();
+        },
     });
 }

@@ -345,3 +345,19 @@ export function RevokeKeyDialog({ credential, mutation, onClose }) {
         </Dialog>
     );
 }
+
+export function DeleteUnusedDialog({ application, mutation, onClose, onDeleted }) {
+    const [confirmation, setConfirmation] = useState("");
+    const submit = async (event) => {
+        event.preventDefault();
+        if (application.can_delete !== true || confirmation !== application.slug || mutation.isPending) return;
+        try { await mutation.mutateAsync(confirmation); onDeleted(); } catch { /* Error shown below. */ }
+    };
+    return <Dialog title="Delete unused application" description="Permanently remove this unused application. Applications with issued keys or security history must be retired instead." onClose={onClose}
+        footer={<Buttons form="gc-delete-unused" onCancel={onClose} confirmLabel="Delete application" pendingLabel="Deleting…" pending={mutation.isPending} danger disabled={application.can_delete !== true || confirmation !== application.slug} />}>
+        <form id="gc-delete-unused" className="gc-dialog-body" onSubmit={submit}>
+            <Field label={`Type ${application.slug} to confirm`}><input className="gc-input" autoComplete="off" value={confirmation} onChange={(event) => setConfirmation(event.target.value)} disabled={mutation.isPending} /></Field>
+            <FormError error={mutation.error} />
+        </form>
+    </Dialog>;
+}

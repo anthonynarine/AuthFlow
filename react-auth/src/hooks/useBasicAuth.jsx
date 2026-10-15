@@ -6,6 +6,25 @@ import { afterSignIn } from "../auth/returnTo";
 import { handleSignedOut, keepThroughNextSignOut } from "../console/invites/pendingInvite";
 import { safeLogError } from "../utils/safeLog";
 
+const COOKIE_LOGIN_ERRORS = {
+    COOKIE_ORIGIN_REQUIRED: "Sign-in could not identify this page’s origin. Open the app in a regular browser tab and try again.",
+    COOKIE_ORIGIN_NOT_ALLOWED: "This page is not enabled for cookie sign-in. For Gait Console, open https://gaitobservatory.com. For another app, ask its owner to check the verified frontend login origin in Gait Console.",
+    COOKIE_HEADER_REQUIRED: "The sign-in request is missing a required security header. Reload the page. If this continues, ask the app owner to check its Gait integration.",
+};
+
+export function loginErrorMessage(error) {
+    const status = error.response?.status;
+    if (status === 403) {
+        const code = error.response?.data?.code;
+        return Object.prototype.hasOwnProperty.call(COOKIE_LOGIN_ERRORS, code)
+            ? COOKIE_LOGIN_ERRORS[code]
+            : "Sign-in is not permitted from this page. Open the app’s supported sign-in page or contact its owner.";
+    }
+    if (status === 429) return "Too many sign-in attempts. Wait a moment and try again.";
+    if (!error.response) return "Could not reach Gait. Check your connection and try again.";
+    return error.response?.data?.error || "Sign-in failed. Please try again.";
+}
+
 export const useBasicAuth = () => {
     const [isLoading, setIsLoading] = useState(false);
     const [user, setUser] = useState(null);
@@ -30,7 +49,7 @@ export const useBasicAuth = () => {
             if (error.response?.status === 401 && error.response.data?.["2fa_required"]) {
                 setIs2FARequired(true);
             } else {
-                setError(error.response?.data?.error || "An error occurred during login.");
+                setError(loginErrorMessage(error));
                 safeLogError("Login failed", error);
             }
         } finally {

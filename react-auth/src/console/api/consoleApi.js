@@ -258,3 +258,9 @@ export async function revokeLoginRegistration(organizationSlug, applicationId) {
     const { data } = await authAxios.post(`${app(organizationSlug, applicationId)}/login-registration/revoke/`, {});
     return data;
 }
+
+/** Transport changes are separate from URL edits and require server verification. */
+export async function changeLoginRegistrationTransport(organizationSlug, applicationId, session_transport) {
+    const { data } = await authAxios.post(`${app(organizationSlug, applicationId)}/login-registration/transport/`, { session_transport });
+    return data;
+}

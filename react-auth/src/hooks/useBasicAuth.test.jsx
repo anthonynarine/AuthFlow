@@ -1,5 +1,5 @@
 import { renderHook, act } from "@testing-library/react";
-import { useBasicAuth } from "./useBasicAuth";
+import { useBasicAuth, loginErrorMessage } from "./useBasicAuth";
 import { logoutSession, publicAxios } from "../interceptors/axios";
 import { queryClient } from "../app/queryClient";
 import { clearPendingInvite, getPendingInvite, setPendingToken } from "../console/invites/pendingInvite";
@@ -204,5 +204,30 @@ describe("useBasicAuth failure logging", () => {
 
         expect(errorSpy).toHaveBeenCalledTimes(3);
         assertNothingSecretLogged();
+    });
+});
+
+
+describe("safe login failure guidance", () => {
+    test.each([
+        ["COOKIE_ORIGIN_REQUIRED", "regular browser tab"],
+        ["COOKIE_ORIGIN_NOT_ALLOWED", "verified frontend login origin"],
+        ["COOKIE_HEADER_REQUIRED", "required security header"],
+        ["unknown", "Sign-in is not permitted"],
+    ])("403 %s has actionable public guidance and never displays raw server details", async (code, message) => {
+        jest.clearAllMocks();
+        publicAxios.post.mockRejectedValue({ response: { status: 403, data: { code, detail: "private-server-detail", error: "private-error" } } });
+        const { result } = renderHook(() => useBasicAuth());
+        await act(async () => result.current.login({ email: "a@b.c", password: "pw" }));
+        expect(result.current.error).toContain(message);
+        expect(result.current.error).not.toContain("private");
+        expect(result.current.isLoggedIn).toBe(false);
+        expect(mockNavigate).not.toHaveBeenCalled();
+    });
+    test("unexpected failure, network loss and rate limits have a safe fallback", () => {
+        expect(loginErrorMessage({ response: { status: 500 } })).toBe("Sign-in failed. Please try again.");
+        expect(loginErrorMessage({})).toContain("Check your connection");
+        expect(loginErrorMessage({ response: { status: 429 } })).toContain("Too many sign-in attempts");
+        expect(loginErrorMessage({ response: { status: 401, data: { code: "COOKIE_ORIGIN_NOT_ALLOWED" } } })).toBe("Sign-in failed. Please try again.");
     });
 });

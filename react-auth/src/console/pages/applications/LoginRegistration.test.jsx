@@ -1,6 +1,7 @@
 import React from "react";
 import "@testing-library/jest-dom";
 import { fireEvent, render, screen, waitFor } from "@testing-library/react";
+import { MemoryRouter, useLocation } from "react-router-dom";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { LoginRegistration } from "./LoginRegistration";
 import { fetchLoginRegistration, saveLoginRegistration, challengeLoginRegistration, verifyLoginRegistration, revokeLoginRegistration, changeLoginRegistrationTransport } from "../../api/consoleApi";
@@ -9,7 +10,8 @@ const application = { id: "app1", name: "Moneta", environment: "production", sta
 const props = { organizationSlug: "moneta", application, canManage: true };
 const pending = { status: "pending", version: 1, backend_url: "https://api.example.test", api_base_url: "https://auth.example.test/api", login_origin: "https://app.example.test", audience: "urn:gait:app1:production", issuer: "https://issuer.example.test", jwks_uri: "https://issuer.example.test/.well-known/jwks.json", ownership_challenge: { method: "https-well-known", url: "https://app.example.test/.well-known/gait-domain-verification", content: "dummy-public-challenge", expires_at: "2099-10-15T12:00:00Z" } };
 let client;
-function view(values = props) { return <QueryClientProvider client={client}><LoginRegistration {...values} /></QueryClientProvider>; }
+function CurrentLocation() { const location = useLocation(); return <output aria-label="Current route">{JSON.stringify({ pathname: location.pathname, state: location.state })}</output>; }
+function view(values = props) { return <MemoryRouter initialEntries={["/console/moneta/applications/app1?env=production"]}><QueryClientProvider client={client}><LoginRegistration {...values} /><CurrentLocation /></QueryClientProvider></MemoryRouter>; }
 async function setup() { const utils = render(view()); await screen.findByLabelText("Backend URL"); return utils; }
 beforeEach(() => { jest.clearAllMocks(); client = new QueryClient({ defaultOptions: { queries: { retry: false }, mutations: { retry: false } } }); fetchLoginRegistration.mockResolvedValue(pending); });
 test("scope reads server registration and keeps software identity and MFA distinct", async () => {
@@ -160,4 +162,53 @@ test("path and query in frontend URL are corrected only by explicit confirmation
  expect(origin).toHaveValue("https://app.example.test");
  fireEvent.click(screen.getByRole("button", { name: "Save pending registration" }));
  await waitFor(() => expect(saveLoginRegistration).toHaveBeenCalledWith("moneta", "app1", { backend_url: pending.backend_url, login_origin: "https://app.example.test" }));
+});
+
+test("challenge denial appears beside the action, focuses the alert and offers sign-in without replay", async () => {
+ challengeLoginRegistration.mockRejectedValue({ response: { status: 403, data: { code: "reauthentication_required", detail: "private-server-details" } } });
+ await setup();
+ fireEvent.click(screen.getByRole("button", { name: "Generate new ownership challenge" }));
+ const alert = await screen.findByRole("alert");
+ expect(screen.getByRole("region", { name: "Ownership verification" })).toContainElement(alert);
+ expect(alert).toHaveFocus();
+ expect(alert).toHaveTextContent("Gait has not retried it automatically");
+ expect(alert).not.toHaveTextContent("private-server-details");
+ fireEvent.click(screen.getByRole("button", { name: "Sign in again and return here" }));
+ expect(screen.getByLabelText("Current route")).toHaveTextContent('"pathname":"/login"');
+ expect(screen.getByLabelText("Current route")).toHaveTextContent('"returnTo":"/console/moneta/applications/app1?env=production"');
+ expect(challengeLoginRegistration).toHaveBeenCalledTimes(1);
+});
+
+test("challenge shows pending feedback, explicit success and a manual retry after generic refusal", async () => {
+ let resolve;
+ challengeLoginRegistration.mockImplementationOnce(() => new Promise((done) => { resolve = done; }));
+ await setup();
+ const challenge = screen.getByRole("button", { name: "Generate new ownership challenge" });
+ fireEvent.click(challenge);
+ expect(await screen.findByText("Generating a new ownership challenge…")).toBeInTheDocument();
+ expect(challenge).toBeDisabled();
+ resolve({ status: "pending" });
+ await screen.findByText("New ownership challenge generated. Publish the current proof before it expires.");
+ challengeLoginRegistration.mockRejectedValueOnce({ response: { status: 403, data: { detail: "sensitive-detail" } } });
+ fireEvent.click(challenge);
+ expect(await screen.findByRole("alert")).toHaveTextContent("Gait refused this action");
+ expect(screen.getByRole("alert")).not.toHaveTextContent("sensitive-detail");
+ challengeLoginRegistration.mockResolvedValueOnce({ status: "pending" });
+ fireEvent.click(challenge);
+ await screen.findByText("New ownership challenge generated. Publish the current proof before it expires.");
+ expect(challengeLoginRegistration).toHaveBeenCalledTimes(3);
+});
+
+test("save and verify each report their own pending and failed action without claiming readiness", async () => {
+ saveLoginRegistration.mockRejectedValueOnce({ response: { status: 403, data: { code: "reauthentication_required" } } });
+ verifyLoginRegistration.mockRejectedValueOnce({ response: { status: 403, data: { detail: "private-detail" } } });
+ await setup();
+ fireEvent.click(screen.getByRole("button", { name: "Save pending registration" }));
+ const saveAlert = await screen.findByRole("alert");
+ expect(saveAlert).toHaveTextContent("Sign in again with password and TOTP");
+ fireEvent.click(screen.getByRole("button", { name: "Verify ownership with Gait" }));
+ await screen.findByText(/Gait refused this action/);
+ expect(screen.getByRole("region", { name: "Ownership verification" })).toContainElement(screen.getByRole("alert"));
+ expect(screen.getByText("Registration: pending")).toBeInTheDocument();
+ expect(verifyLoginRegistration).toHaveBeenCalledTimes(1);
 });

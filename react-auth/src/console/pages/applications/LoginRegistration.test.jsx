@@ -3,11 +3,11 @@ import "@testing-library/jest-dom";
 import { fireEvent, render, screen, waitFor } from "@testing-library/react";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { LoginRegistration } from "./LoginRegistration";
-import { fetchLoginRegistration, saveLoginRegistration, challengeLoginRegistration, verifyLoginRegistration, revokeLoginRegistration } from "../../api/consoleApi";
+import { fetchLoginRegistration, saveLoginRegistration, challengeLoginRegistration, verifyLoginRegistration, revokeLoginRegistration, changeLoginRegistrationTransport } from "../../api/consoleApi";
 jest.mock("../../api/consoleApi");
 const application = { id: "app1", name: "Moneta", environment: "production", status: "ACTIVE" };
 const props = { organizationSlug: "moneta", application, canManage: true };
-const pending = { status: "pending", version: 1, backend_url: "https://api.example.test", api_base_url: "https://auth.example.test/api", login_origin: "https://app.example.test", audience: "urn:gait:app1:production", issuer: "https://issuer.example.test", jwks_uri: "https://issuer.example.test/.well-known/jwks.json", ownership_challenge: { method: "https-well-known", url: "https://app.example.test/.well-known/gait-ownership", content: "dummy-public-challenge", expires_at: "2026-10-15" } };
+const pending = { status: "pending", version: 1, backend_url: "https://api.example.test", api_base_url: "https://auth.example.test/api", login_origin: "https://app.example.test", audience: "urn:gait:app1:production", issuer: "https://issuer.example.test", jwks_uri: "https://issuer.example.test/.well-known/jwks.json", ownership_challenge: { method: "https-well-known", url: "https://app.example.test/.well-known/gait-domain-verification", content: "dummy-public-challenge", expires_at: "2099-10-15T12:00:00Z" } };
 let client;
 function view(values = props) { return <QueryClientProvider client={client}><LoginRegistration {...values} /></QueryClientProvider>; }
 async function setup() { const utils = render(view()); await screen.findByLabelText("Backend URL"); return utils; }
@@ -98,4 +98,66 @@ test("clipboard failure preserves public configuration for manual copying", asyn
 test("active registration without confirmed API base cannot copy SDK configuration", async () => {
  fetchLoginRegistration.mockResolvedValue({ ...pending, status: "active", api_base_url: null });
  await setup(); expect(screen.queryByRole("button", { name: "Copy backend configuration" })).not.toBeInTheDocument();
+});
+
+test("transport defaults to bearer and unavailable cookie never submits a change", async () => {
+ await setup();
+ expect(screen.getByRole("radio", { name: "Bearer (default)" })).toBeChecked();
+ expect(screen.getByRole("radio", { name: "Cookie", exact: true })).toBeDisabled();
+ expect(screen.getByRole("button", { name: "Save session transport" })).toBeDisabled();
+ expect(screen.getByText(/Verify the exact frontend login origin/)).toBeInTheDocument();
+});
+test("verified cookie selection needs confirmation and sends only the transport mutation", async () => {
+ fetchLoginRegistration.mockResolvedValue({ ...pending, status: "active", session_transport: "bearer", cookie_transport_available: true, supported_session_transports: ["bearer", "cookie"] });
+ await setup(); fireEvent.click(screen.getByRole("radio", { name: "Cookie", exact: true }));
+ const save = screen.getByRole("button", { name: "Save session transport" });
+ expect(save).toBeDisabled();
+ fireEvent.click(screen.getByRole("checkbox", { name: /changing transport ends/ }));
+ fireEvent.click(save);
+ await waitFor(() => expect(changeLoginRegistrationTransport).toHaveBeenCalledWith("moneta", "app1", "cookie"));
+ expect(saveLoginRegistration).not.toHaveBeenCalled();
+ expect(screen.getByText(/Browsers can block third-party cookies/)).toBeInTheDocument();
+ expect(screen.getByText(/Gait does not silently switch transports/)).toBeInTheDocument();
+});
+test("cookie availability must be explicit and consistent; URL edits block transport changes", async () => {
+ fetchLoginRegistration.mockResolvedValue({ ...pending, status: "active", cookie_transport_available: true, supported_session_transports: ["bearer"] });
+ const { unmount } = await setup();
+ expect(screen.getByRole("radio", { name: "Cookie", exact: true })).toBeDisabled();
+ unmount(); client.clear();
+ fetchLoginRegistration.mockResolvedValue({ ...pending, status: "active", cookie_transport_available: true, supported_session_transports: ["bearer", "cookie"] });
+ await setup();
+ fireEvent.change(screen.getByLabelText("Frontend login origin"), { target: { value: "https://edited.example.test" } });
+ expect(screen.getByRole("radio", { name: "Cookie", exact: true })).toBeDisabled();
+ expect(changeLoginRegistrationTransport).not.toHaveBeenCalled();
+});
+test("disabled rollout permits an explicit bearer rollback without claiming cookie readiness", async () => {
+ fetchLoginRegistration.mockResolvedValue({ ...pending, status: "active", session_transport: "cookie", cookie_transport_available: false, supported_session_transports: ["bearer"] });
+ await setup(); fireEvent.click(screen.getByRole("radio", { name: "Bearer (default)" }));
+ fireEvent.click(screen.getByRole("checkbox", { name: /changing transport ends/ }));
+ fireEvent.click(screen.getByRole("button", { name: "Save session transport" }));
+ await waitFor(() => expect(changeLoginRegistrationTransport).toHaveBeenCalledWith("moneta", "app1", "bearer"));
+ expect(screen.getByText(/Cookie transport is unavailable/)).toBeInTheDocument();
+});
+test("transport denial preserves saved authority and explains fresh MFA", async () => {
+ fetchLoginRegistration.mockResolvedValue({ ...pending, status: "active", session_transport: "bearer", cookie_transport_available: true, supported_session_transports: ["bearer", "cookie"] });
+ changeLoginRegistrationTransport.mockRejectedValue({ response: { status: 403, data: { code: "reauthentication_required" } } });
+ await setup(); fireEvent.click(screen.getByRole("radio", { name: "Cookie", exact: true }));
+ fireEvent.click(screen.getByRole("checkbox", { name: /changing transport ends/ }));
+ fireEvent.click(screen.getByRole("button", { name: "Save session transport" }));
+ await screen.findByText(/Sign in again with password and TOTP/);
+ expect(screen.getByText(/Saved transport:/)).toHaveTextContent("Bearer (default)");
+});
+
+
+test("path and query in frontend URL are corrected only by explicit confirmation", async () => {
+ await setup();
+ const origin = screen.getByLabelText("Frontend login origin");
+ fireEvent.change(origin, { target: { value: "https://app.example.test/login?next=home" } });
+ expect(origin).toHaveValue("https://app.example.test/login?next=home");
+ expect(screen.getByRole("button", { name: "Save pending registration" })).toBeDisabled();
+ expect(saveLoginRegistration).not.toHaveBeenCalled();
+ fireEvent.click(screen.getByRole("button", { name: "Use this origin" }));
+ expect(origin).toHaveValue("https://app.example.test");
+ fireEvent.click(screen.getByRole("button", { name: "Save pending registration" }));
+ await waitFor(() => expect(saveLoginRegistration).toHaveBeenCalledWith("moneta", "app1", { backend_url: pending.backend_url, login_origin: "https://app.example.test" }));
 });

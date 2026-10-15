@@ -124,3 +124,19 @@ describe("pages that point to it", () => {
         expect(GLOSSARY.map(([term]) => term)).toContain("Subject");
     });
 });
+
+
+test("cookie guidance separates verified registration, browser readiness and explicit bearer fallback", () => {
+    renderDoc("add-gait-sign-in");
+    const transport = screen.getByRole("region", { name: "Choose Bearer or supported Cookie sessions" });
+    expect(transport).toHaveTextContent("Bearer is the default");
+    expect(transport).toHaveTextContent("Cookie becomes selectable only when Gait reports it available");
+    expect(transport).toHaveTextContent("ends existing sessions and pending MFA flows");
+    expect(transport).toHaveTextContent('credentials: "include"');
+    expect(transport).toHaveTextContent('X-Gait-Auth: "1"');
+    expect(transport).toHaveTextContent("/api/auth/refresh/");
+    expect(transport).toHaveTextContent("/api/auth/logout/");
+    expect(transport).toHaveTextContent("third-party-cookie blocking");
+    expect(transport).toHaveTextContent("there is no silent transport fallback");
+    expect(transport).toHaveTextContent("do not grant Console cookie trust");
+});

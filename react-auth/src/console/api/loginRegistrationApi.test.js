@@ -1,4 +1,4 @@
-import { fetchLoginRegistration, saveLoginRegistration, challengeLoginRegistration, verifyLoginRegistration, revokeLoginRegistration } from "./consoleApi";
+import { fetchLoginRegistration, saveLoginRegistration, challengeLoginRegistration, verifyLoginRegistration, revokeLoginRegistration, changeLoginRegistrationTransport } from "./consoleApi";
 import { authAxios } from "../../interceptors/axios";
 jest.mock("../../interceptors/axios", () => ({ authAxios: { get: jest.fn(), put: jest.fn(), post: jest.fn() }, publicAxios: {} }));
 beforeEach(() => { jest.clearAllMocks(); authAxios.get.mockResolvedValue({ data: {} }); authAxios.put.mockResolvedValue({ data: {} }); authAxios.post.mockResolvedValue({ data: {} }); });
@@ -10,3 +10,8 @@ test("all registration calls use authenticated encoded tenant/application scope"
  expect(authAxios.put).toHaveBeenCalledWith(path, { backend_url: "https://backend.test", login_origin: "https://front.test" });
  expect(authAxios.post.mock.calls).toEqual([[path + "challenge/", {}], [path + "verify/", {}], [path + "revoke/", {}]]);
 });
+
+ test("transport uses the authenticated scoped endpoint with one allowed field", async () => {
+ await changeLoginRegistrationTransport("org/a", "id/b", "cookie");
+ expect(authAxios.post).toHaveBeenCalledWith("/organizations/org%2Fa/applications/id%2Fb/login-registration/transport/", { session_transport: "cookie" });
+ });

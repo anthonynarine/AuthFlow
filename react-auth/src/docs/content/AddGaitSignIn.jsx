@@ -13,14 +13,7 @@ import {
     VERIFY_USER_VIEW,
 } from "./snippets";
 
-// Source brief: django_auth docs/public/ADD_GAIT_SIGN_IN.md; internals and the
-// onboarding runbook: docs/console/PRODUCT_SIGN_IN.md. The documented path is
-// server-side sign-in (the product's server talks to Gait); browser-direct is
-// an "ask Gait" item. Every "what Gait sets up" item maps to a row in
-// PRODUCT_SIGN_IN.md section 4. Deliberately not claimed: tokens tied to one
-// product, a hosted sign-in page, branded emails or links, email confirmation
-// reaching the app's API, JWKS verification. Voice: first person, Lumen as
-// the example app (GAIT-13).
+// Server-side bearer examples and explicitly enabled application cookie sessions are separate flows.
 
 const HOW_IT_FITS = `sequenceDiagram
     autonumber
@@ -53,6 +46,19 @@ export default function AddGaitSignIn() {
                 <DocLink to="people-and-applications#your-products-own-users">An app's own users</DocLink>.
             </p>
 
+            <DocSection id="application-cookie-sessions" title="Choose Bearer or supported Cookie sessions">
+                <p>In Console → Applications → your application → Human login settings, register the exact HTTPS frontend origin and publish the server-issued ownership challenge. Choose whether frontend and backend share a host, and select AWS, Vercel, Netlify, Heroku, backend-served frontend or another host for publishing guidance. These choices change instructions only; the frontend login origin is the browser’s actual sign-in origin, while the backend URL is informational. Gait must verify ownership before the registration is active. Keep local and production registrations separate.
+                </p>
+                <p>For Netlify and Vercel, put the exact server-issued proof body in <code>public/.well-known/gait-domain-verification</code> and deploy the frontend. For AWS static hosting, publish the proof object through S3/CloudFront or Amplify; for EC2/ECS/Elastic Beanstalk or a backend-served frontend, add the shown Django or FastAPI route on that frontend host. Heroku environment values are useful only if your application already implements a proof route that reads them; they do not create an endpoint. The optional existing-route pattern shows GAIT_DOMAIN_VERIFICATION_CONTENT and GAIT_DOMAIN_VERIFICATION_EXPIRES_AT with the server expiry converted to Unix epoch seconds. Use your route’s actual variable names, then remove temporary settings after verification or expiry. Manual instructions, a downloadable proof file and a copyable Developer or AI handoff all use the saved server challenge’s exact destination and expiry. A generated file does not deploy itself. Expired challenges need a new challenge from Gait; only Verify ownership with Gait can activate the registration.</p>
+                <p>Bearer is the default. Cookie becomes selectable only when Gait reports it available for your active, verified registration. Changing transport requires an Owner or Admin with a recent password and authenticator-code sign-in, increments the registration version, and ends existing sessions and pending MFA flows. Users must sign in again. Application keys and registration ownership are not proof of current-session MFA.</p>
+                <p>Cookie mode keeps refresh tokens in server-controlled HttpOnly cookies; access tokens stay in memory. The browser must send <code>credentials: "include"</code> and <code>X-Gait-Auth: "1"</code>. It supplies the exact verified Origin automatically. Send <code>session_transport: "cookie"</code> with the login and two-factor-login JSON bodies. Cookie refresh and logout use <code>/api/auth/refresh/</code> and <code>/api/auth/logout/</code> with an empty body; do not send refresh tokens, application IDs or cookie names. Gait chooses cookie names and attributes.</p>
+                <Callout title="Test your actual browser">
+                    Secure cookies with SameSite=None do not bypass third-party-cookie blocking. If your app and Gait are on different sites, browser policy may block them. Test login, required MFA, refresh and logout in your deployed browser. An active registration does not confirm this round trip. Use a supported deployment topology and browser, or explicitly change to a Bearer integration whose MFA transport is supported. Bearer MFA can still require a temporary cookie, so it is not a guaranteed workaround for blocked cookies; there is no silent transport fallback.
+                </Callout>
+                <p>Editing the origin, changing transport, revoking registration or suspending the application invalidates its prior sessions under Gait’s server policy. Restoring a setting does not restore old sessions. These application settings do not grant Console cookie trust or change other applications.</p>
+                <p>The server-side examples below describe Bearer integration. Do not combine their refresh-token handling with Cookie mode.</p>
+            </DocSection>
+
             <DocSection id="what-gait-sets-up" title="What gets set up on Gait's side">
                 <p>Early access: these are set up on Gait's side for each app:</p>
                 <ul>
@@ -66,7 +72,7 @@ export default function AddGaitSignIn() {
                     </li>
                     <li>
                         <strong>Signing in from the browser</strong>, if the app's web page should call Gait directly
-                        rather than go through its server. Gait then allows the site's address.
+                        rather than go through its server. Verify its exact frontend origin in Human login settings and use only the transports Gait reports as available.
                     </li>
                     <li>
                         <strong>Emails.</strong> Password-reset and email-confirmation emails come from Gait, and their
@@ -81,8 +87,7 @@ export default function AddGaitSignIn() {
                     description="A person gives the app's server their email and password. The server signs them in with Gait and keeps the access and refresh tokens in its own session. When the person uses the app, the server calls the app's API with the access token. gait-sdk in the API asks Gait who it is, remembering the answer for up to 45 seconds, and gets back the subject and email. The app's rules decide, and the API answers."
                 />
                 <p>
-                    The server and the API can be the same application. Either way, the browser never holds Gait's
-                    tokens.
+                    The server and the API can be the same application. In this server-side flow, the browser never holds Gait's tokens.
                 </p>
             </DocSection>
 
@@ -197,11 +202,11 @@ export default function AddGaitSignIn() {
                 <ul>
                     <li>
                         <strong>A CORS error in the browser:</strong> the web page is calling Gait directly. Go
-                        through the server, or allow the site on Gait's side.
+                        through the server, or check the exact verified frontend origin and transport availability in Human login settings. Console trust is configured separately.
                     </li>
                     <li>
                         <strong>Everything is 401 after 15 minutes:</strong> refresh isn't running, or the new refresh
-                        token isn't being saved.
+                        token isn't being saved in the server-side Bearer flow. In Cookie mode, check whether the browser stored and returned the cookie; third-party-cookie policy can block it.
                     </li>
                     <li>
                         <strong>The API answers 503:</strong> check <code>GAIT_AUTH_URL</code>, and that the API can

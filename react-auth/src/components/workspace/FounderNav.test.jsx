@@ -9,9 +9,9 @@ jest.mock("../../context/auth/BasicAuthContext", () => ({
   useBasicAuthServices: () => mockUseBasicAuthServices(),
 }));
 
-function renderNav() {
+function renderNav(path = "/workspace") {
   return render(
-    <MemoryRouter>
+    <MemoryRouter initialEntries={[path]}>
       <FounderNav />
     </MemoryRouter>
   );
@@ -99,5 +99,36 @@ describe("FounderNav — Account from the workspace nav", () => {
     });
     renderWithRoutes();
     expect(screen.getByRole("button", { name: "Your account" })).toHaveTextContent("founder@acme.test");
+  });
+});
+
+
+describe("FounderNav — Console access", () => {
+  test.each([true, false])("signed-in user with operator=%s can navigate directly to Console", (isOperator) => {
+    mockUseBasicAuthServices.mockReturnValue({ user: { is_gait_operator: isOperator, org_role: "OWNER" } });
+    render(<MemoryRouter initialEntries={["/workspace"]}><Routes>
+      <Route path="/workspace" element={<FounderNav />} />
+      <Route path="/console" element={<p>Workspace Console</p>} />
+    </Routes></MemoryRouter>);
+    const consoleLink = screen.getByRole("link", { name: "Console", exact: true });
+    expect(consoleLink).toHaveAttribute("href", "/console");
+    expect(consoleLink).not.toHaveAttribute("aria-current");
+    fireEvent.click(consoleLink);
+    expect(screen.getByText("Workspace Console")).toBeInTheDocument();
+  });
+
+  test.each(["/console", "/console/moneta/applications"])("Console is active only on Console routes: %s", (path) => {
+    mockUseBasicAuthServices.mockReturnValue({ user: { is_gait_operator: false, org_role: "OWNER" } });
+    renderNav(path);
+    expect(screen.getByRole("link", { name: "Console", exact: true })).toHaveAttribute("aria-current", "page");
+    expect(screen.queryByRole("link", { name: "Issues" })).not.toBeInTheDocument();
+    expect(screen.queryByRole("link", { name: "Security Team" })).not.toBeInTheDocument();
+    expect(screen.queryByRole("link", { name: /Advanced/ })).not.toBeInTheDocument();
+  });
+
+  test("Console-like path does not falsely mark the Console link active", () => {
+    mockUseBasicAuthServices.mockReturnValue({ user: { is_gait_operator: true } });
+    renderNav("/console-other");
+    expect(screen.getByRole("link", { name: "Console", exact: true })).not.toHaveAttribute("aria-current");
   });
 });

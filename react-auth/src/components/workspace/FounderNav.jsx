@@ -5,13 +5,16 @@ import { useBasicAuthServices } from "../../context/auth/BasicAuthContext";
 import { AccountMenu } from "../../account/AccountMenu";
 import { isGaitOperator } from "../../auth/operator";
 
+const CONSOLE_LINK = { key: "console", label: "Console", path: "/console" };
+
 const OPERATOR_LINKS = [
   { key: "home", label: "Home", path: "/workspace" },
+  CONSOLE_LINK,
   { key: "issues", label: "Issues", path: "/workspace/issues" },
   { key: "team", label: "Security Team", path: "/workspace/team" },
 ];
 
-const TENANT_LINKS = [{ key: "home", label: "Home", path: "/workspace/apps" }];
+const TENANT_LINKS = [{ key: "home", label: "Home", path: "/workspace/apps" }, CONSOLE_LINK];
 
 /**
  * UI2/OPS1: the PLATFORM/operator boundary applies here too. Issues,
@@ -38,7 +41,7 @@ export function FounderNav() {
           const isActive =
             link.path === "/workspace" || link.path === "/workspace/apps"
               ? location.pathname === link.path
-              : location.pathname.startsWith(link.path);
+              : location.pathname === link.path || location.pathname.startsWith(`${link.path}/`);
           return (
             <Link
               key={link.key}

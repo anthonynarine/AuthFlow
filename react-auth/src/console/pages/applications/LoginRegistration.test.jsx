@@ -12,12 +12,13 @@ const pending = { status: "pending", version: 1, backend_url: "https://api.examp
 let client;
 function CurrentLocation() { const location = useLocation(); return <output aria-label="Current route">{JSON.stringify({ pathname: location.pathname, state: location.state })}</output>; }
 function view(values = props) { return <MemoryRouter initialEntries={["/console/moneta/applications/app1?env=production"]}><QueryClientProvider client={client}><LoginRegistration {...values} /><CurrentLocation /></QueryClientProvider></MemoryRouter>; }
-async function setup() { const utils = render(view()); await screen.findByLabelText("Backend URL"); return utils; }
+async function setup(expand = true) { const utils = render(view()); await screen.findByLabelText("Backend URL"); if (expand) { for (const name of ["Completed setup · URLs and ownership proof", "Advanced · session transport and browser support"]) { const button = screen.queryByRole("button", { name }); if (button) fireEvent.click(button); } } return utils; }
 beforeEach(() => { jest.clearAllMocks(); client = new QueryClient({ defaultOptions: { queries: { retry: false }, mutations: { retry: false } } }); fetchLoginRegistration.mockResolvedValue(pending); });
 test("scope reads server registration and keeps software identity and MFA distinct", async () => {
  await setup(); expect(fetchLoginRegistration).toHaveBeenCalledWith("moneta", "app1");
  expect(screen.getByLabelText("Frontend login origin")).toHaveValue("https://app.example.test");
- expect(screen.getByText(/does not prove your backend login integration/)).toBeInTheDocument();
+ expect(screen.getByText(/Human sign-in is separate from the connection key/)).toBeInTheDocument();
+ expect(screen.getByText(/Registration alone is not MFA proof/)).toBeInTheDocument();
  expect(screen.queryByRole("button", { name: "Copy backend configuration" })).not.toBeInTheDocument();
  fireEvent.click(screen.getByRole("button", { name: "Verify ownership with Gait" }));
  await waitFor(() => expect(verifyLoginRegistration).toHaveBeenCalledWith("moneta", "app1"));
@@ -211,4 +212,52 @@ test("save and verify each report their own pending and failed action without cl
  expect(screen.getByRole("region", { name: "Ownership verification" })).toContainElement(screen.getByRole("alert"));
  expect(screen.getByText("Registration: pending")).toBeInTheDocument();
  expect(verifyLoginRegistration).toHaveBeenCalledTimes(1);
+});
+
+
+test("active registration prioritizes verified origin and backend configuration, with completed steps collapsed", async () => {
+ fetchLoginRegistration.mockResolvedValue({ ...pending, status: "active", ownership_challenge: null });
+ await setup(false);
+ expect(screen.getByRole("region", { name: "Login registration status" })).toHaveTextContent("Ownership verified");
+ expect(screen.getByRole("region", { name: "Login registration status" })).toHaveTextContent(pending.login_origin);
+ expect(screen.getByRole("region", { name: "Login registration status" })).toHaveTextContent("Production");
+ expect(screen.getByRole("region", { name: "Backend login configuration" })).toBeVisible();
+ expect(screen.getAllByRole("heading", { level: 3 }).slice(0, 2).map((heading) => heading.textContent)).toEqual(["Connect your backend", "Next: test sign-in"]);
+ expect(screen.getByRole("region", { name: "Next: test sign-in" })).toHaveTextContent("MFA");
+ expect(screen.getByRole("button", { name: "Completed setup · URLs and ownership proof" })).toHaveAttribute("aria-expanded", "false");
+ expect(screen.getByLabelText("Backend URL")).not.toBeVisible();
+ expect(screen.queryByRole("button", { name: "Save pending registration" })).not.toBeInTheDocument();
+ expect(screen.getByRole("button", { name: "Advanced · session transport and browser support" })).toHaveAttribute("aria-expanded", "false");
+ expect(screen.queryByRole("radio", { name: "Cookie", exact: true })).not.toBeInTheDocument();
+ expect(screen.getByRole("region", { name: "Revoke login registration" })).toHaveTextContent("separate action");
+ expect(screen.getByRole("button", { name: "Revoke login registration" })).toBeDisabled();
+});
+
+test("pending registration keeps progressive setup open without claiming ownership or readiness", async () => {
+ await setup(false);
+ expect(screen.getByRole("list", { name: "Login setup steps" })).toBeVisible();
+ expect(screen.getByRole("region", { name: "Confirm registration URLs" })).toBeVisible();
+ expect(screen.getByRole("region", { name: "Ownership verification" })).toBeVisible();
+ expect(screen.getByRole("button", { name: "Generate new ownership challenge" })).toBeVisible();
+ expect(screen.queryByRole("region", { name: "Backend login configuration" })).not.toBeInTheDocument();
+ expect(screen.queryByText("✓ Ownership verified")).not.toBeInTheDocument();
+ expect(saveLoginRegistration).not.toHaveBeenCalled();
+ expect(verifyLoginRegistration).not.toHaveBeenCalled();
+});
+
+test("active edit denial stays visible after the completed-setup disclosure is collapsed", async () => {
+ fetchLoginRegistration.mockResolvedValue({ ...pending, status: "active", ownership_challenge: null });
+ saveLoginRegistration.mockRejectedValue({ response: { status: 403, data: { code: "reauthentication_required" } } });
+ await setup(false);
+ const completed = screen.getByRole("button", { name: "Completed setup · URLs and ownership proof" });
+ fireEvent.click(completed);
+ fireEvent.click(screen.getByRole("checkbox", { name: /I understand saving changes/ }));
+ fireEvent.click(screen.getByRole("button", { name: "Save pending registration" }));
+ const alert = await screen.findByRole("alert");
+ expect(alert).toHaveFocus();
+ fireEvent.click(completed);
+ expect(completed).toHaveAttribute("aria-expanded", "false");
+ expect(alert).toBeVisible();
+ expect(screen.getByRole("button", { name: "Sign in again and return here" })).toBeVisible();
+ expect(saveLoginRegistration).toHaveBeenCalledTimes(1);
 });

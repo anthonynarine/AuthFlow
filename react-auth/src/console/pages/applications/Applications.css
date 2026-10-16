@@ -97,3 +97,35 @@
 .gc-proof-output { font-family: var(--font-mono, monospace); font-size: 12px; line-height: 1.5; resize: vertical; }
 .gc-registration-action-error { margin: 12px 0; padding: 12px; border: 1px solid var(--color-danger); border-radius: 6px; }
 .gc-registration-action-error:focus { outline: 2px solid var(--color-danger); outline-offset: 2px; }
+
+/* Human-login setup puts the current next action before completed configuration. */
+.gc-login-registration { display: grid; gap: 20px; }
+.gc-login-status { display: flex; align-items: flex-start; justify-content: space-between; flex-wrap: wrap; gap: 16px 32px; padding: 18px; border: 1px solid var(--color-border-strong); border-radius: var(--radius-md); background: var(--color-surface); }
+.gc-login-status-label { font-size: 1rem; font-weight: 700; }
+.gc-login-status p { margin: 6px 0 0; color: var(--color-text-muted); font-size: 0.8125rem; }
+.gc-login-status dl { margin: 0; display: grid; gap: 10px; min-width: 0; }
+.gc-login-status dt { font-size: 0.75rem; color: var(--color-text-muted); }
+.gc-login-status dd { margin: 3px 0 0; overflow-wrap: anywhere; font-weight: 600; }
+.gc-login-panel { padding: 18px; border: 1px solid var(--color-border); border-radius: var(--radius-md); min-width: 0; }
+.gc-login-panel h3, .gc-login-danger h3 { margin: 0 0 12px; font-size: 1rem; }
+.gc-login-panel p, .gc-login-panel li, .gc-login-disclosure p { line-height: 1.6; }
+.gc-login-panel ol { padding-left: 20px; }
+.gc-login-form { display: grid; gap: 10px; margin-top: 18px; }
+.gc-login-form > p { margin: 0 0 8px; }
+.gc-login-form > label:not(.gc-checkbox) { font-weight: 600; font-size: 0.875rem; }
+.gc-login-actions { display: flex; flex-wrap: wrap; gap: 10px; margin: 14px 0 0; }
+.gc-login-registration .gc-checkbox { display: flex; gap: 10px; align-items: flex-start; line-height: 1.5; margin: 14px 0; }
+.gc-login-registration .gc-checkbox input { flex-shrink: 0; margin-top: 4px; }
+.gc-login-disclosure { border: 1px solid var(--color-border); border-radius: var(--radius-md); overflow: hidden; }
+.gc-login-disclosure-toggle { display: flex; align-items: center; justify-content: space-between; gap: 16px; width: 100%; padding: 16px 18px; border: 0; background: var(--color-surface); color: var(--color-text); font: inherit; font-weight: 600; text-align: left; cursor: pointer; }
+.gc-login-disclosure-toggle:focus-visible { outline: 2px solid var(--color-accent); outline-offset: -3px; }
+.gc-login-disclosure-body { padding: 18px; border-top: 1px solid var(--color-border); }
+.gc-login-disclosure-body[hidden] { display: none; }
+.gc-login-disclosure > .gc-registration-action-error, .gc-login-disclosure > [role="status"] { margin: 12px 18px; }
+.gc-login-danger { margin-top: 4px; padding: 18px; border: 1px solid var(--color-danger-border, var(--color-border-strong)); border-radius: var(--radius-md); }
+.gc-login-danger > p { margin: 0; color: var(--color-text-muted); line-height: 1.6; }
+.gc-login-pins dd { overflow-wrap: anywhere; }
+@media (max-width: 480px) {
+  .gc-login-status, .gc-login-panel, .gc-login-danger, .gc-login-disclosure-body { padding: 14px; }
+  .gc-login-actions .gc-button { width: 100%; justify-content: center; }
+}

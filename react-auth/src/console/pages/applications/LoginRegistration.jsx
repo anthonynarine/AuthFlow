@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useId, useState } from "react";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { Card, LoadingState } from "../../components/ui/primitives";
 import { useLocation, useNavigate } from "react-router-dom";
@@ -9,6 +9,18 @@ import { fetchLoginRegistration, saveLoginRegistration, challengeLoginRegistrati
 import { HostingChoices, OwnershipProofSetup, frontendOriginFeedback } from "./OwnershipProofSetup";
 import { ENVIRONMENT_LABELS } from "../../hooks/useConsoleScope";
 import { LoginTransportSettings } from "./LoginTransportSettings";
+
+function SettingsDisclosure({ title, children, className = "", feedback }) {
+    const [expanded, setExpanded] = useState(false);
+    const id = useId();
+    return <section className={`gc-login-disclosure ${className}`}>
+        <button type="button" className="gc-login-disclosure-toggle" aria-expanded={expanded} aria-controls={id} onClick={() => setExpanded(!expanded)}>
+            <span>{title}</span><span aria-hidden="true">{expanded ? "−" : "+"}</span>
+        </button>
+        {feedback}
+        <div id={id} hidden={!expanded} className="gc-login-disclosure-body">{children}</div>
+    </section>;
+}
 
 function RegistrationSettings({ application, data, pending, onSave, onChallenge, onVerify, onRevoke, onTransport, feedback, onSignIn }) {
     const [backendUrl, setBackendUrl] = useState(data.backend_url || "");
@@ -29,36 +41,62 @@ function RegistrationSettings({ application, data, pending, onSave, onChallenge,
         try { await navigator.clipboard.writeText(config); setCopyStatus("Copied verified registration pins. Configure the Gait SDK in your backend with these exact values."); }
         catch { setCopyStatus("Clipboard unavailable. Select the configuration and copy manually."); }
     };
-    return <>
-        <p><strong>Registration: {data.status || "unconfigured"}</strong></p>
-        <ol aria-label="Login setup steps" className="gc-login-progress"><li>1. Confirm URLs</li><li>2. Publish proof</li><li>3. Verify with Gait</li><li>4. Connect</li></ol>
+    const actionFeedback = (action) => <RegistrationActionFeedback action={action} feedback={feedback[action]} onSignIn={onSignIn} />;
+    const registrationForm = <>
         <HostingChoices layout={layout} setLayout={setLayout} hosting={hosting} setHosting={setHosting} awsType={awsType} setAwsType={setAwsType} />
-        <p>Application keys identify your software. Human sign-in uses a separate audience and frontend origin. An active registration does not prove your backend login integration or current-session MFA works.</p>
-        <form onSubmit={(event) => { event.preventDefault(); if (originFeedback || (editingActive && !confirmEdit)) return; onSave({ backend_url: backendUrl, login_origin: origin }); }}>
+        <form className="gc-login-form" onSubmit={(event) => { event.preventDefault(); if (originFeedback || (editingActive && !confirmEdit)) return; onSave({ backend_url: backendUrl, login_origin: origin }); }}>
             <label htmlFor="gc-login-backend">Backend URL</label>
             <input id="gc-login-backend" className="gc-input" type="url" value={backendUrl} onChange={(event) => setBackendUrl(event.target.value)} disabled={pending || !active} required />
-            <p className="gc-muted">Your backend service URL is informational and is not ownership-verified. Gait verifies control of the separate frontend login origin.</p>
+            <p className="gc-muted">Informational service URL. Ownership proof belongs on the frontend login origin below.</p>
             <label htmlFor="gc-login-origin">Frontend login origin</label>
             <input id="gc-login-origin" className="gc-input" type="url" value={origin} onChange={(event) => setOrigin(event.target.value)} disabled={pending || !active} required />
             {originFeedback ? <p role="alert">{originFeedback.message}{originFeedback.suggestion ? <> Suggested origin: <code>{originFeedback.suggestion}</code>. <button type="button" className="gc-button" onClick={() => setOrigin(originFeedback.suggestion)}>Use this origin</button></> : null}</p> : null}
-            <p className="gc-muted">Exact HTTPS origin, with no path, trailing slash or wildcard. Use a separate registration for each environment. After verification, changing to another host requires platform support in this release.</p>
-            {editingActive ? <label><input type="checkbox" checked={confirmEdit} onChange={(event) => setConfirmEdit(event.target.checked)} disabled={pending} /> I understand saving changes resets ownership verification and revokes prior login sessions for this registration.</label> : null}
-            <button type="submit" className="gc-button gc-button--primary" disabled={pending || !active || !backendUrl || !origin || Boolean(originFeedback) || (editingActive && !confirmEdit)}>Save pending registration</button>
-            <RegistrationActionFeedback action="save" feedback={feedback.save} onSignIn={onSignIn} />
+            <p className="gc-muted">Exact HTTPS origin, without a path, trailing slash or wildcard. Keep environments separate. After verification, changing to another host requires platform support.</p>
+            {editingActive ? <label className="gc-checkbox"><input type="checkbox" checked={confirmEdit} onChange={(event) => setConfirmEdit(event.target.checked)} disabled={pending} /> <span>I understand saving changes resets ownership verification and revokes prior login sessions for this registration.</span></label> : null}
+            <div className="gc-login-actions"><button type="submit" className="gc-button gc-button--primary" disabled={pending || !active || !backendUrl || !origin || Boolean(originFeedback) || (editingActive && !confirmEdit)}>Save pending registration</button></div>
+            {!editingActive ? actionFeedback("save") : null}
         </form>
-        <dl className="gc-meta"><div><dt>Gait API URL</dt><dd>{data.api_base_url || "Trusted server configuration unavailable"}</dd></div><div><dt>Audience</dt><dd>{data.audience || "Assigned by Gait after registration"}</dd></div><div><dt>Issuer</dt><dd>{data.issuer || "Trusted server configuration unavailable"}</dd></div><div><dt>Public JWKS</dt><dd>{data.jwks_uri || "Trusted server configuration unavailable"}</dd></div></dl>
-        <OwnershipProofSetup data={data} hosting={hosting} layout={layout} awsType={awsType} pending={pending} dirty={dirty} active={active} onVerify={onVerify} onChallenge={onChallenge} feedback={feedback} onSignIn={onSignIn} />
-        <h3>4. Connect your application</h3>
-        {config ? <section aria-label="Backend login configuration"><h3>Backend Gait SDK configuration</h3><pre className="gc-snippet" tabIndex={0}>{config}</pre><button type="button" className="gc-button" onClick={copy}>Copy backend configuration</button><p role="status">{copyStatus}</p></section> : <p>Copyable backend configuration becomes available after Gait confirms ownership and supplies trusted issuer, audience and JWKS values.</p>}
-        <LoginTransportSettings data={data} application={application} pending={pending} dirty={dirty} onSave={onTransport} />
-        <RegistrationActionFeedback action="transport" feedback={feedback.transport} onSignIn={onSignIn} />
-        <p className="gc-muted">Keep the application credential separately in backend secret settings. Your backend must validate access tokens and enforce its own authorization.</p>
-        <p><a href="/docs/add-gait-sign-in#application-cookie-sessions">Application sign-in and transport guide</a></p>
-        <p className="gc-muted">Current-session MFA availability must be confirmed from the deployed session-assurance API. Registration alone is not MFA proof.</p>
-        {data.status === "active" || data.status === "pending" ? <section aria-label="Revoke login registration"><label><input type="checkbox" checked={confirmRevoke} onChange={(event) => setConfirmRevoke(event.target.checked)} disabled={pending} /> I understand revocation stops this registration's sign-in and token acceptance under Gait's server policy.</label><button type="button" className="gc-button gc-button--danger" disabled={pending || !confirmRevoke} onClick={onRevoke}>Revoke login registration</button><RegistrationActionFeedback action="revoke" feedback={feedback.revoke} onSignIn={onSignIn} /></section> : null}
-        <p className="gc-muted">Registration edits, ownership checks and revocation are recorded by Gait. Application retirement and login registration are separate actions.</p>
-
     </>;
+    const proof = <OwnershipProofSetup data={data} hosting={hosting} layout={layout} awsType={awsType} pending={pending} dirty={dirty} active={active} onVerify={onVerify} onChallenge={onChallenge} feedback={feedback} onSignIn={onSignIn} showFeedback={!editingActive} />;
+    const configuration = config ? <section aria-label="Backend login configuration" className="gc-login-panel">
+        <h3>Connect your backend</h3><p>Use these verified registration values in your backend settings. Keep your application credential in backend secrets.</p>
+        <pre className="gc-snippet" tabIndex={0}>{config}</pre><div className="gc-login-actions"><button type="button" className="gc-button" onClick={copy}>Copy backend configuration</button></div><p role="status">{copyStatus}</p>
+    </section> : <p className="gc-login-empty">Copyable backend configuration becomes available after Gait confirms ownership and supplies trusted issuer, audience and JWKS values.</p>;
+    const metadata = <dl className="gc-meta gc-login-pins"><div><dt>Gait API URL</dt><dd>{data.api_base_url || "Trusted server configuration unavailable"}</dd></div><div><dt>Audience</dt><dd>{data.audience || "Assigned by Gait after registration"}</dd></div><div><dt>Issuer</dt><dd>{data.issuer || "Trusted server configuration unavailable"}</dd></div><div><dt>Public JWKS</dt><dd>{data.jwks_uri || "Trusted server configuration unavailable"}</dd></div></dl>;
+    return <div className="gc-login-registration">
+        <section className={`gc-login-status${editingActive ? " is-verified" : ""}`} aria-label="Login registration status">
+            <div><span className="gc-login-status-label">{editingActive ? "✓ Ownership verified" : "Set up human sign-in"}</span><p><strong>Registration: {data.status || "unconfigured"}</strong></p></div>
+            <dl><div><dt>Frontend origin</dt><dd>{data.login_origin || "Not configured"}</dd></div><div><dt>Application environment</dt><dd>{ENVIRONMENT_LABELS[application.environment] || application.environment}</dd></div></dl>
+        </section>
+        {editingActive ? <>
+            {configuration}
+            <section className="gc-login-panel" aria-label="Next: test sign-in"><h3>Next: test sign-in</h3>
+                <p>Ownership is verified. Your backend integration and current-session MFA still need testing.</p>
+                <ol><li>Configure the backend with the verified values above, then restart it.</li><li>Sign in from the saved frontend origin and complete MFA when required.</li><li>Test refresh and logout in the browser you will support.</li></ol>
+                <a href="/docs/add-gait-sign-in#application-cookie-sessions">Application sign-in guide</a>
+            </section>
+            <SettingsDisclosure title="Completed setup · URLs and ownership proof" feedback={<>{actionFeedback("save")}{actionFeedback("challenge")}{actionFeedback("verify")}</>}>
+                {registrationForm}{proof}{metadata}
+            </SettingsDisclosure>
+        </> : <>
+            <ol aria-label="Login setup steps" className="gc-login-progress"><li>1. Confirm URLs</li><li>2. Publish proof</li><li>3. Verify with Gait</li><li>4. Connect</li></ol>
+            <p className="gc-muted">Human sign-in is separate from the connection key that identifies your software.</p>
+            <section className="gc-login-panel" aria-label="Confirm registration URLs">{registrationForm}</section>
+            <div className="gc-login-panel">{proof}</div>
+            {configuration}
+        </>}
+        <SettingsDisclosure title="Advanced · session transport and browser support" feedback={actionFeedback("transport")}>
+            <LoginTransportSettings data={data} application={application} pending={pending} dirty={dirty} onSave={onTransport} />
+            {!editingActive ? metadata : null}
+            <p className="gc-muted">Your backend validates access tokens and enforces its own authorization. Registration alone is not MFA proof.</p>
+        </SettingsDisclosure>
+        {data.status === "active" || data.status === "pending" ? <section aria-label="Revoke login registration" className="gc-login-danger">
+            <h3>Revoke login registration</h3><p>Stop human sign-in for this registration. Application retirement is a separate action.</p>
+            <label className="gc-checkbox"><input type="checkbox" checked={confirmRevoke} onChange={(event) => setConfirmRevoke(event.target.checked)} disabled={pending} /><span>I understand revocation stops this registration's sign-in and token acceptance under Gait's server policy.</span></label>
+            <div className="gc-login-actions"><button type="button" className="gc-button gc-button--danger" disabled={pending || !confirmRevoke} onClick={onRevoke}>Revoke login registration</button></div>{actionFeedback("revoke")}
+        </section> : null}
+    </div>;
+
 }
 
 /** Authenticated server data only. Scope remounts form and copy state; no persisted inputs. */

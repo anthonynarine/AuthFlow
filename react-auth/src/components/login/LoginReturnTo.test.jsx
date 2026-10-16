@@ -9,12 +9,13 @@ import { clearPendingInvite, setPendingPreview, setPendingToken } from "../../co
 const mockLogin = jest.fn();
 const mockVerify2FA = jest.fn();
 let mockIs2FARequired = false;
+let mockSessionExpired = false;
 
 jest.mock("../../context/auth/BasicAuthContext", () => ({
     useBasicAuthServices: () => ({ login: mockLogin, is2FARequired: mockIs2FARequired, error: null, isLoading: false }),
 }));
 jest.mock("../../hooks/useTwoFactorAuth", () => ({
-    useTwoFactorAuth: () => ({ verify2FA: mockVerify2FA, twoFactorError: null }),
+    useTwoFactorAuth: () => ({ verify2FA: mockVerify2FA, twoFactorError: null, sessionExpired: mockSessionExpired }),
 }));
 jest.mock("../../interceptors/axios", () => ({ publicAxios: { post: jest.fn() } }));
 
@@ -41,6 +42,7 @@ function visitLogin(state) {
 
 beforeEach(() => {
     mockIs2FARequired = false;
+    mockSessionExpired = false;
     mockLogin.mockImplementation(() => Promise.resolve());
     mockVerify2FA.mockImplementation(() => Promise.resolve());
     clearPendingInvite();
@@ -106,4 +108,14 @@ describe("Create account from the login page", () => {
         expect(screen.getByTestId("state")).toHaveTextContent(JSON.stringify({ returnTo: INVITE }));
         expect(screen.getByLabelText("Email")).toHaveValue("");
     });
+});
+
+
+test("missing temporary sign-in state explains restarting the password step without blaming the code", () => {
+    mockSessionExpired = true;
+    visitLogin({ returnTo: INVITE });
+    expect(screen.getByText(/Your temporary sign-in state is missing or expired/)).toHaveTextContent("Enter your password again");
+    expect(screen.getByText(/check that your browser allows cookies/)).toBeInTheDocument();
+    expect(screen.getByLabelText("Password")).toBeInTheDocument();
+    expect(screen.queryByLabelText("6-digit code")).not.toBeInTheDocument();
 });

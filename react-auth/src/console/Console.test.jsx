@@ -171,3 +171,25 @@ describe("query keys", () => {
         expect(consoleKeys.postureOverview("acme")[1]).toBe("acme");
     });
 });
+
+test("Local selection is explicit, remains selected and changes only on user choice", async () => {
+ mockUser = { email: "me@acme.test" };
+ fetchMyOrganizations.mockResolvedValue([ACME]);
+ renderConsole("/console/acme/overview?env=local");
+ expect(await screen.findByText(/Viewing environment:/)).toHaveTextContent("Local");
+ expect(screen.getByRole("button", { name: "Local", exact: true })).toHaveAttribute("aria-pressed", "true");
+ expect(screen.getByRole("button", { name: "Local", exact: true })).toHaveTextContent("✓");
+ expect(screen.getByRole("button", { name: "Production", exact: true })).toHaveAttribute("aria-pressed", "false");
+ expect(screen.getByTestId("location")).toHaveTextContent("env=local");
+ fireEvent.click(screen.getByRole("button", { name: "Production", exact: true }));
+ await waitFor(() => expect(screen.getByText(/Viewing environment:/)).toHaveTextContent("Production"));
+ expect(screen.getByRole("button", { name: "Production", exact: true })).toHaveAttribute("aria-pressed", "true");
+});
+
+test("invalid environment keeps existing data-based fallback visible", async () => {
+ mockUser = { email: "me@acme.test" };
+ fetchMyOrganizations.mockResolvedValue([ACME]);
+ renderConsole("/console/acme/overview?env=unknown");
+ await waitFor(() => expect(screen.getByText(/Viewing environment:/)).toHaveTextContent("Staging"));
+ expect(screen.getByRole("button", { name: "Staging", exact: true })).toHaveAttribute("aria-pressed", "true");
+});

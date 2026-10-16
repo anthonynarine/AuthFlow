@@ -195,7 +195,7 @@ export function ApplicationDetailPage() {
                 description={
                     <span className="gc-badge-row">
                         <Badge value={app.status} label={APPLICATION_STATUS_LABELS[app.status]} />
-                        <span>{ENVIRONMENT_LABELS[app.environment]}</span>
+                        <span className="gc-application-environment">Application environment: <strong>{ENVIRONMENT_LABELS[app.environment]}</strong></span>
                         <code className="gc-code">{app.slug}</code>
                     </span>
                 }

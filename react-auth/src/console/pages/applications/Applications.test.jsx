@@ -425,3 +425,12 @@ test("older backend or application history retains retirement and hides delete",
     expect(screen.queryByRole("button", { name: "Delete unused application" })).not.toBeInTheDocument();
     expect(screen.getByRole("button", { name: "Retire" })).toBeInTheDocument();
 });
+
+test("application setup shows its actual environment even when the view filter differs", async () => {
+ renderAt("/console/app-one/applications/a1?env=local");
+ await screen.findByRole("heading", { level: 1, name: "App One API" });
+ expect(screen.getByText(/Viewing environment:/)).toHaveTextContent("Local");
+ expect(screen.getByText(/Application environment:/, { selector: ".gc-application-environment" })).toHaveTextContent("Production");
+ expect(screen.getByTestId("location")).toHaveTextContent("env=local");
+ expect(fetchApplication).toHaveBeenCalledWith("app-one", "a1");
+});

@@ -102,6 +102,7 @@ export function ConsoleLayout() {
                 </label>
 
                 <div className="gc-env" role="group" aria-label="Environment">
+                    <span className="gc-env-label" aria-hidden="true">Environment</span>
                     {ENVIRONMENTS.map((env) => {
                         const hasData = scope.environmentsWithData.includes(env);
                         return (
@@ -113,7 +114,7 @@ export function ConsoleLayout() {
                                 onClick={() => scope.setEnvironment(env)}
                                 title={hasData ? `${ENVIRONMENT_LABELS[env]} has data` : `No data in ${ENVIRONMENT_LABELS[env]} yet`}
                             >
-                                {ENVIRONMENT_LABELS[env]}
+                                {env === scope.environment ? <span aria-hidden="true">✓ </span> : null}{ENVIRONMENT_LABELS[env]}
                             </button>
                         );
                     })}
@@ -140,6 +141,7 @@ export function ConsoleLayout() {
                 </nav>
                 <main className="gc-main">
                     <EmailVerificationBanner />
+                    <p className="gc-environment-context" role="status" aria-live="polite">Viewing environment: <strong>{ENVIRONMENT_LABELS[scope.environment]}</strong><span>Choose an environment above to change this view.</span></p>
                     <WelcomeNote />
                     <Outlet context={scope} />
                 </main>

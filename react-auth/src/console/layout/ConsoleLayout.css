@@ -54,7 +54,7 @@
 }
 .gc-env-pill {
   position: relative;
-  border: none;
+  border: 1px solid transparent;
   background: transparent;
   color: var(--color-text-muted);
   font: inherit;
@@ -76,7 +76,11 @@
   background: var(--color-accent);
 }
 .gc-env-pill:hover { color: var(--color-text); }
-.gc-env-pill.is-active { background: var(--color-accent-soft); color: var(--color-accent); }
+.gc-env-pill.is-active { background: var(--color-text); color: var(--color-bg); border-color: var(--color-text); font-weight: 750; }
+.gc-env-label { align-self: center; padding: 0 8px; font-size: 0.75rem; font-weight: 700; color: var(--color-text-muted); }
+.gc-environment-context { display: flex; flex-wrap: wrap; align-items: baseline; gap: 6px 12px; padding: 12px 16px; margin: 0 0 20px; border: 1px solid var(--color-border-strong); border-radius: var(--radius-sm); background: var(--color-surface); }
+.gc-environment-context strong { font-size: 1.05rem; }
+.gc-environment-context span { font-size: 0.8125rem; color: var(--color-text-muted); }
 
 .gc-user { margin-left: auto; display: flex; align-items: center; gap: 10px; min-width: 0; }
 .gc-docs-link {

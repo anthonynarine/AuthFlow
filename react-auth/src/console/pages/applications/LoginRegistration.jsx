@@ -7,6 +7,7 @@ import { RegistrationActionFeedback } from "./RegistrationActionFeedback";
 import { fetchLoginRegistration, saveLoginRegistration, challengeLoginRegistration, verifyLoginRegistration, revokeLoginRegistration, changeLoginRegistrationTransport } from "../../api/consoleApi";
 
 import { HostingChoices, OwnershipProofSetup, frontendOriginFeedback } from "./OwnershipProofSetup";
+import { ENVIRONMENT_LABELS } from "../../hooks/useConsoleScope";
 import { LoginTransportSettings } from "./LoginTransportSettings";
 
 function RegistrationSettings({ application, data, pending, onSave, onChallenge, onVerify, onRevoke, onTransport, feedback, onSignIn }) {
@@ -78,5 +79,5 @@ export function LoginRegistration({ organizationSlug, application, canManage }) 
     else if (query.isError || !query.data) body = <><p role="alert">Login registration is unavailable, or your role does not have access. No login readiness is confirmed.</p><button type="button" className="gc-button" onClick={() => query.refetch()}>Retry login registration</button></>;
     else body = <RegistrationSettings key={`${organizationSlug}/${application.id}/${application.environment}/${query.data.version || query.data.updated_at || "initial"}/${query.data.status}`} application={application} data={query.data} pending={mutation.isPending}
         onTransport={(values) => mutation.mutate({ action: "transport", values })} onChallenge={() => mutation.mutate({ action: "challenge" })} onSave={(values) => mutation.mutate({ action: "save", values })} onVerify={() => mutation.mutate({ action: "verify" })} onRevoke={() => mutation.mutate({ action: "revoke" })} feedback={feedback} onSignIn={onSignIn} />;
-    return <Card title="Human login settings" subtitle={`${application.name} · ${application.environment}`}>{body}</Card>;
+    return <Card title="Human login settings" subtitle={`${application.name} · Application environment: ${ENVIRONMENT_LABELS[application.environment] || application.environment}`}>{body}</Card>;
 }

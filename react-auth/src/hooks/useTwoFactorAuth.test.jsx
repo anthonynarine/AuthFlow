@@ -51,6 +51,7 @@ describe("useTwoFactorAuth session transport", () => {
         );
         expect(authAxios.post).not.toHaveBeenCalled();
         expect(persistAuthTokens).toHaveBeenCalledWith(expect.objectContaining({ accessToken: "access-2fa" }));
+        expect(mockCancelTwoFactor).toHaveBeenCalledTimes(1);
         expect(mockSetIsLoggedIn).toHaveBeenCalledWith(true);
         expect(mockNavigate).toHaveBeenCalledWith("/workspace");
     });
@@ -72,6 +73,7 @@ describe("useTwoFactorAuth session transport", () => {
             { withCredentials: true }
         );
         expect(persistAuthTokens).toHaveBeenCalledWith({ accessToken: "access-recovery" });
+        expect(mockCancelTwoFactor).toHaveBeenCalledTimes(1);
         expect(mockNavigate).toHaveBeenCalledWith("/account", {
             state: { notice: expect.stringContaining("You have 2 recovery codes left.") },
         });
@@ -126,4 +128,43 @@ describe("useTwoFactorAuth returnTo", () => {
             expect(mockNavigate).toHaveBeenCalledWith("/workspace");
         }
     );
+});
+
+
+describe("temporary sign-in context and rate-limit denials", () => {
+    beforeEach(() => jest.clearAllMocks());
+    test.each([false, true])("exact legacy missing-context response exits the code step without replay (recovery=%s)", async (recovery) => {
+        publicAxios.post.mockRejectedValue({ response: { status: 400, data: { error: "OTP and temporary token are required." } } });
+        const { result } = renderHook(() => useTwoFactorAuth());
+        await act(async () => result.current.verify2FA("123456", { recovery }));
+        expect(result.current.sessionExpired).toBe(true);
+        expect(result.current.twoFactorError).toBeNull();
+        expect(mockCancelTwoFactor).toHaveBeenCalledTimes(1);
+        expect(publicAxios.post).toHaveBeenCalledTimes(1);
+        expect(persistAuthTokens).not.toHaveBeenCalled();
+        expect(mockSetIsLoggedIn).not.toHaveBeenCalled();
+        expect(mockNavigate).not.toHaveBeenCalled();
+    });
+    test.each([400, 403])("invalid OTP %s remains on the code step", async (status) => {
+        publicAxios.post.mockRejectedValue({ response: { status, data: { error: "Invalid OTP." } } });
+        const { result } = renderHook(() => useTwoFactorAuth());
+        await act(async () => result.current.verify2FA("123456"));
+        expect(result.current.sessionExpired).toBe(false);
+        expect(result.current.twoFactorError).toContain("That code didn't work");
+        expect(mockCancelTwoFactor).not.toHaveBeenCalled();
+    });
+    test.each([
+        [{ "retry-after": "120" }, "Wait 120 seconds"],
+        [{}, "Wait until sign-in attempts are allowed again"],
+        [{ "retry-after": "unreadable" }, "Wait until sign-in attempts are allowed again"],
+    ])("429 stays a rate-limit refusal with honest wait guidance: %j", async (headers, message) => {
+        publicAxios.post.mockRejectedValue({ response: { status: 429, headers, data: { error: "OTP and temporary token are required." } } });
+        const { result } = renderHook(() => useTwoFactorAuth());
+        await act(async () => result.current.verify2FA("123456"));
+        expect(result.current.twoFactorError).toContain(message);
+        expect(result.current.twoFactorError).not.toContain("Wait a minute");
+        expect(result.current.sessionExpired).toBe(false);
+        expect(mockCancelTwoFactor).not.toHaveBeenCalled();
+        expect(publicAxios.post).toHaveBeenCalledTimes(1);
+    });
 });

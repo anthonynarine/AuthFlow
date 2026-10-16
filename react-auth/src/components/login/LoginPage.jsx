@@ -93,7 +93,7 @@ export const LoginPage = () => {
                 </Alert>
             ) : null}
             {error ? <Alert kind="danger">{error}</Alert> : null}
-            {!error && sessionExpired ? <Alert kind="warning">That sign-in timed out. Enter your password again.</Alert> : null}
+            {!error && sessionExpired ? <Alert kind="warning">Your temporary sign-in state is missing or expired. Enter your password again. If this happens again, check that your browser allows cookies for this sign-in page.</Alert> : null}
             <form className="ds-form" onSubmit={onSignIn} noValidate>
                 <TextField
                     label="Email"

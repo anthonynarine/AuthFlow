@@ -334,3 +334,30 @@ test("historical verified_at does not make a currently pending registration veri
  expect(screen.getByText("Not yet", { selector: "dd" })).toBeVisible();
  expect(screen.getByText("Not tested", { selector: "dd" })).toBeVisible();
 });
+
+
+test("backend configuration starts collapsed while Copy stays available", async () => {
+ fetchLoginRegistration.mockResolvedValue({ ...pending, status: "active", ownership_challenge: null });
+ await setup(false);
+ const viewConfig = screen.getByRole("button", { name: "View backend configuration" });
+ expect(viewConfig).toHaveAttribute("aria-expanded", "false");
+ expect(screen.getByRole("button", { name: "Copy backend configuration" })).toBeVisible();
+ expect(screen.getByText(/GAIT_TOKEN_VERIFIER=jwks/, { selector: "pre" })).not.toBeVisible();
+ fireEvent.click(viewConfig);
+ expect(viewConfig).toHaveAttribute("aria-expanded", "true");
+ expect(screen.getByText(/GAIT_TOKEN_VERIFIER=jwks/, { selector: "pre" })).toBeVisible();
+});
+
+test("completed step cues come only from current server registration state", async () => {
+ const { rerender } = await setup(false);
+ expect(screen.getByRole("button", { name: "1. Register URLs" })).toHaveAccessibleDescription(/Completed according to the saved registration/);
+ expect(screen.getByRole("button", { name: "2. Verify ownership" })).not.toHaveAttribute("aria-describedby");
+ fireEvent.click(screen.getByRole("button", { name: "4. Test login" }));
+ expect(screen.getByRole("button", { name: "4. Test login" })).not.toHaveAttribute("aria-describedby");
+ expect(screen.getByText("Not tested", { selector: "dd" })).toBeVisible();
+ fetchLoginRegistration.mockResolvedValue({ ...pending, status: "active", version: 2, ownership_challenge: null });
+ await client.invalidateQueries();
+ rerender(view());
+ await waitFor(() => expect(screen.getByRole("button", { name: "2. Verify ownership" })).toHaveAccessibleDescription(/Completed according to/));
+ expect(screen.getByRole("button", { name: "3. Connect backend" })).not.toHaveAttribute("aria-describedby");
+});

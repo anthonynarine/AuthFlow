@@ -127,8 +127,8 @@ export function OwnershipProofSetup({ data, hosting, layout, awsType = "static",
         </> : null}
         <h3>3. Ask Gait to verify</h3>
         <p>After publishing, choose Verify ownership with Gait. Viewing the file or copying instructions does not activate the registration.</p>
-        <button type="button" className="gc-button" disabled={disabled} onClick={onVerify}>Verify ownership with Gait</button>
+        <button type="button" className={`gc-button${usable ? " gc-button--primary" : ""}`} disabled={disabled} onClick={onVerify}>Verify ownership with Gait</button>
         {showFeedback ? <RegistrationActionFeedback action="verify" feedback={feedback.verify} onSignIn={onSignIn} /> : null}
-        {data.status === "pending" ? <><button type="button" className="gc-button" disabled={pending || !active || dirty} onClick={onChallenge}>Generate new ownership challenge</button>{showFeedback ? <RegistrationActionFeedback action="challenge" feedback={feedback.challenge} onSignIn={onSignIn} /> : null}</> : null}
+        {data.status === "pending" ? <><button type="button" className={`gc-button${!usable ? " gc-button--primary" : ""}`} disabled={pending || !active || dirty} onClick={onChallenge}>Generate new ownership challenge</button>{showFeedback ? <RegistrationActionFeedback action="challenge" feedback={feedback.challenge} onSignIn={onSignIn} /> : null}</> : null}
     </section>;
 }

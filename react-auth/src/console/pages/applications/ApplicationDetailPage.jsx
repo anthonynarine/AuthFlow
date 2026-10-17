@@ -21,6 +21,7 @@ import {
 } from "./useApplications";
 import "./Applications.css";
 import { LoginRegistration } from "./LoginRegistration";
+import { ApplicationMonitoringCard } from "./ApplicationMonitoringCard";
 import { GuidedSetup } from "./GuidedSetup";
 
 function ActivityCard({ activity }) {
@@ -201,6 +202,7 @@ export function ApplicationDetailPage() {
                 }
                 actions={actions}
             />
+            <ApplicationMonitoringCard organizationSlug={orgSlug} application={app} />
             {checksSummary(checks.data) ? (
                 <p className="gc-page-note gc-pack-checks-jump">
                     <a href="#checks">Checks: {checksSummary(checks.data)}</a>

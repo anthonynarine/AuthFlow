@@ -10,6 +10,7 @@ import {
     changeApplicationStatus,
     createApplication,
     fetchApplication,
+    fetchApplicationMonitoring,
     fetchApplicationActivity,
     fetchApplicationChecks,
     fetchApplications,
@@ -34,6 +35,7 @@ jest.mock("../../api/consoleApi", () => ({
     fetchApplications: jest.fn(),
     createApplication: jest.fn(),
     fetchApplication: jest.fn(),
+    fetchApplicationMonitoring: jest.fn(),
     renameApplication: jest.fn(),
     changeApplicationStatus: jest.fn(),
     fetchApplicationActivity: jest.fn(),
@@ -433,4 +435,13 @@ test("application setup shows its actual environment even when the view filter d
  expect(screen.getByText(/Application environment:/, { selector: ".gc-application-environment" })).toHaveTextContent("Production");
  expect(screen.getByTestId("location")).toHaveTextContent("env=local");
  expect(fetchApplication).toHaveBeenCalledWith("app-one", "a1");
+});
+
+
+test("application monitoring requests stored app environment rather than the current list filter", async () => {
+ renderAt("/console/app-one/applications/a1?env=local");
+ await screen.findByRole("heading", { level: 1, name: "App One API" });
+ expect(screen.getByRole("heading", { name: "Application monitoring" })).toBeInTheDocument();
+ await waitFor(() => expect(fetchApplicationMonitoring).toHaveBeenCalledWith("app-one", "a1", "production"));
+ expect(screen.getByTestId("location")).toHaveTextContent("env=local");
 });

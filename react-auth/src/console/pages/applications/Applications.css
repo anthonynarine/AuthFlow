@@ -203,3 +203,15 @@
 .gc-login-registration fieldset { margin: 14px 0; padding: 14px; border: 1px solid var(--color-border-strong); border-radius: 8px; }
 .gc-login-registration fieldset > label { display: inline-flex; align-items: center; gap: 8px; margin: 8px 20px 4px 0; }
 @media (forced-colors: active) { .gc-login-stepnav .gc-login-step:focus-visible { outline-color: Highlight; } }
+
+.gc-monitoring-summary { display: grid; gap: 12px; }
+.gc-monitoring-summary > p { margin: 0; line-height: 1.6; }
+.gc-monitoring-findings { margin: 0; padding-left: 20px; }
+.gc-monitoring-findings li { padding: 8px 0; overflow-wrap: anywhere; }
+.gc-monitoring-findings p { margin: 6px 0 0; color: var(--color-text-muted); }
+.gc-monitoring-automation { padding: 14px 16px; border: 1px solid var(--color-border-strong); border-radius: var(--radius-sm); }
+.gc-monitoring-automation p { margin: 8px 0 0; line-height: 1.6; }
+
+.gc-monitoring-details { border-top: 1px solid var(--color-border); padding-top: 12px; }
+.gc-monitoring-details summary { cursor: pointer; font-weight: 600; }
+.gc-monitoring-details summary:focus-visible { outline: 2px solid var(--color-accent); outline-offset: 4px; }

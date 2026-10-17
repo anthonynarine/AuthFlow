@@ -32,6 +32,7 @@ export const consoleKeys = {
         ...consoleKeys.application(organizationSlug, applicationId),
         "credentials",
     ],
+    applicationMonitoring: (organizationSlug, applicationId, environment) => ["console", organizationSlug, environment, "applications", applicationId, "monitoring"],
     // F3. The list is per environment and filter set; one finding or one
     // piece of evidence is addressed by id.
     findings: (organizationSlug, environment, filters) => ["console", organizationSlug, environment, "findings", filters],

@@ -22,6 +22,7 @@ test("no accepted reports means waiting, not connected or healthy; automation is
  expect(await screen.findByText("Waiting for the first report")).toBeInTheDocument();
  expect(fetchApplicationMonitoring).toHaveBeenCalledWith("moneta", "app1", "production");
  expect(screen.getByText(/A connection key or identity check does not count/)).toBeInTheDocument();
+ expect(screen.getByRole("link", { name: "Connect security reporting" })).toHaveAttribute("href", "/docs/connecting-your-software");
  expect(screen.getByText(/Live connection health is unknown/)).toBeInTheDocument();
  expect(screen.getByRole("complementary", { name: "Automatic investigation" })).toHaveTextContent("not enabled");
  expect(screen.queryByText(/healthy|agent is running/i)).not.toBeInTheDocument();
@@ -58,6 +59,7 @@ test.each([403, 404, 503])("HTTP %s is unavailable with retry, never zero or hea
 
 test.each([
  { ...base, schema_version: 2 },
+ { ...base, application_status: "RETIRED" },
  { ...base, findings: { ...base.findings, items: [null] } },
  { ...base, scope: { application_id: "other", environment: "production" } },
  { ...base, scope: { application_id: "app1", environment: "local" } },
@@ -96,5 +98,26 @@ test("unknown case and finding enum values render safe labels rather than raw da
  render(view()); await screen.findByRole("link", { name: "HTTPS" });
  expect(screen.getByText("Case: Status unavailable")).toBeInTheDocument();
  expect(screen.queryByText(/private-status|private-severity|operator-case|constructor/)).not.toBeInTheDocument();
- expect(screen.getAllByRole("link")).toHaveLength(1);
+ expect(screen.getAllByRole("link")).toHaveLength(2);
+});
+
+
+test("canonical REVOKED lifecycle renders retired monitoring history without claiming health", async () => {
+ fetchApplicationMonitoring.mockResolvedValue({ ...base, application_status: "REVOKED", reporting: { ...base.reporting, state: "report_received", last_seen_at: "2026-10-16T12:00:00Z" } });
+ render(view());
+ await screen.findByText("Report received");
+ expect(screen.getByText("Retired")).toBeInTheDocument();
+ expect(screen.getByText(/Live connection health is unknown/)).toBeInTheDocument();
+ expect(screen.queryByText(/Application monitoring is unavailable/)).not.toBeInTheDocument();
+});
+
+
+test("detailed metrics start collapsed while reporting and open findings remain visible", async () => {
+ render(view()); await screen.findByText("Waiting for the first report");
+ expect(screen.getByText("Open findings: 0")).toBeVisible();
+ const stale = screen.getByText(/Stale checks: 0/);
+ expect(stale).not.toBeVisible();
+ fireEvent.click(screen.getByText("View monitoring details"));
+ expect(stale).toBeVisible();
+ expect(screen.getByRole("link", { name: "Connect security reporting" })).toBeVisible();
 });

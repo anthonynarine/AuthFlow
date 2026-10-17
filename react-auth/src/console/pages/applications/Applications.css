@@ -211,3 +211,7 @@
 .gc-monitoring-findings p { margin: 6px 0 0; color: var(--color-text-muted); }
 .gc-monitoring-automation { padding: 14px 16px; border: 1px solid var(--color-border-strong); border-radius: var(--radius-sm); }
 .gc-monitoring-automation p { margin: 8px 0 0; line-height: 1.6; }
+
+.gc-monitoring-details { border-top: 1px solid var(--color-border); padding-top: 12px; }
+.gc-monitoring-details summary { cursor: pointer; font-weight: 600; }
+.gc-monitoring-details summary:focus-visible { outline: 2px solid var(--color-accent); outline-offset: 4px; }

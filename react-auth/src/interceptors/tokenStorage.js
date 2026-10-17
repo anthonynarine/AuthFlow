@@ -13,6 +13,9 @@
 import Cookies from "js-cookie";
 
 let accessToken = null;
+const tokenListeners = new Set();
+export function subscribeAccessToken(listener) { tokenListeners.add(listener); return () => tokenListeners.delete(listener); }
+function notifyTokenListeners() { tokenListeners.forEach((listener) => listener()); }
 
 /** Current in-memory access token, or null when signed out / not yet restored. */
 export function getAccessToken() {
@@ -27,12 +30,14 @@ export function getAccessToken() {
 export function persistAuthTokens({ accessToken: token } = {}) {
     if (token) {
         accessToken = token;
+        notifyTokenListeners();
     }
 }
 
 /** Forget the in-memory access token (logout / failed refresh). */
 export function clearAuthTokens() {
     accessToken = null;
+    notifyTokenListeners();
 }
 
 /**

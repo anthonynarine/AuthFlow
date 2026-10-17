@@ -10,6 +10,7 @@ import { WelcomeNote } from "./WelcomeNote";
 import { InvitationsButton } from "./InvitationsButton";
 import { UserMenu } from "../../account/UserMenu";
 import "./ConsoleLayout.css";
+import { ConsoleSessionPolicy } from "../session/ConsoleSessionPolicy";
 
 const NAV = [
     { to: "overview", label: "Overview" },
@@ -78,7 +79,7 @@ export function ConsoleLayout() {
     const envQuery = `?env=${scope.environment}`;
 
     return (
-        <div className="gc-shell">
+        <ConsoleSessionPolicy user={user}><div className="gc-shell">
             <header className="gc-topbar">
                 {/* The site home, not /console: /console redirects straight back to
                     this company's overview, which left no way out of the console.
@@ -146,7 +147,7 @@ export function ConsoleLayout() {
                     <Outlet context={scope} />
                 </main>
             </div>
-        </div>
+        </div></ConsoleSessionPolicy>
     );
 }
 

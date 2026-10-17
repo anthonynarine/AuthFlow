@@ -297,3 +297,16 @@ describe("docs are public", () => {
         expect(xhrOpen).not.toHaveBeenCalled();
     });
 });
+
+
+test("public standards route renders current status and official references without HTTP calls", async () => {
+    mockAxiosCalls.length = 0;
+    renderDocs("/docs/security-standards");
+    expect(screen.getByRole("heading", { name: "Session policy: implementation in progress" })).toBeInTheDocument();
+    expect(screen.getByText(/they are not yet deployed/)).toBeInTheDocument();
+    expect(screen.getByRole("link", { name: "NIST SP 800-63B-4" })).toHaveAttribute("href", "https://pages.nist.gov/800-63-4/sp800-63b.html");
+    expect(screen.getByText(/does not establish certification/)).toBeInTheDocument();
+    expect(screen.getAllByText(/assessment is planned/, { exact: false })).toHaveLength(2);
+    await settleDiagrams();
+    expect(mockAxiosCalls).toEqual([]);
+});

@@ -34,6 +34,7 @@ import { isGaitOperator } from "../../auth/operator";
  * Gait repo (docs/public/WHAT_GAIT_IS.md, HOW_IT_WORKS.md,
  * AUTOMATED_SECURITY_RESPONSE.md) or from src/docs/featureStatus.js. Change
  * those first; don't add claims here that they don't make.
+ * Standards copy is sourced from src/docs/content/SecurityStandards.jsx.
  */
 
 // The same drawing as the "How it works" docs page (HOW_IT_WORKS.md, "The big
@@ -287,6 +288,20 @@ function HomePage() {
           </ul>
           <p className="home-planned">AI investigation and fixes for Lumen: planned.</p>
           <p className="section-note home-muted">Status as of {statusAsOfLabel()}.</p>
+        </section>
+
+        <section className="section" id="standards" aria-labelledby="standards-title">
+          <p className="eyebrow">Security foundations</p>
+          <h2 id="standards-title">Clear standards. Visible progress.</h2>
+          <p className="section-lede">I use NIST authentication guidance, OWASP ASVS application requirements and CIS operational safeguards to guide Gait’s development.</p>
+          <div className="home-card home-card--inline">
+            <h3>Session policy · In implementation</h3>
+            <p>The selected baseline is one hour inactive and 24 hours overall. These changes are being implemented and tested; they are not yet deployed.</p>
+          </div>
+          <p className="section-note">References guide the work. They do not establish certification or full AAL2 conformity.</p>
+          <Link to={docPath("security-standards")} className="home-text-link">
+            Security standards and verification <RiArrowRightLine aria-hidden="true" />
+          </Link>
         </section>
 
         {/* 4. Isolation and trust */}

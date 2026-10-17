@@ -1,3 +1,4 @@
+import SecurityStandards from "./SecurityStandards";
 import WhatGaitIs from "./WhatGaitIs";
 import HowItWorks from "./HowItWorks";
 import Quickstart from "./Quickstart";
@@ -45,6 +46,7 @@ export const DOC_CONTENT = {
     "how-gait-protects-your-data": HowGaitProtectsYourData,
     "report-a-vulnerability": ReportAVulnerability,
     "whats-live": WhatsLive,
+    "security-standards": SecurityStandards,
     "handle-a-finding": HandleAFinding,
     "local-to-production": LocalToProduction,
     "product-organizations-and-invites": ProductOrganizationsAndInvites,

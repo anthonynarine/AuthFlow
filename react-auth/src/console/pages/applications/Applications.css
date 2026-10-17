@@ -137,3 +137,69 @@
 .gc-login-stepnav [aria-current="step"] { outline: 2px solid var(--color-text); outline-offset: 2px; font-weight: 700; }
 .gc-login-registration > [hidden], .gc-login-panel[hidden] { display: none; }
 .gc-login-feedback:empty { display: none; }
+
+/* A self-contained warm-light guide within the surrounding Console theme. */
+.gc-login-registration {
+  color-scheme: light;
+  --color-bg: #faf9f6;
+  --color-surface: #ffffff;
+  --color-surface-alt: #f3f1eb;
+  --color-surface-glass: #f5f3ef;
+  --color-surface-glass-strong: #ece9f2;
+  --color-text: #282831;
+  --color-text-muted: #5e5c69;
+  --color-border: #e4e0d9;
+  --color-border-strong: #c9c4ce;
+  --color-accent: #4e3ca5;
+  --color-accent-hover: #3f2f8e;
+  --color-danger: #a42936;
+  --color-danger-border: #d5a7ad;
+  --color-danger-bg: #fff0f1;
+  --gc-on-accent: #ffffff;
+  color: var(--color-text);
+  background: var(--color-bg);
+  padding: clamp(16px, 3vw, 30px);
+  border-radius: 14px;
+  gap: 24px;
+}
+.gc-login-registration p { line-height: 1.65; }
+.gc-login-registration a { color: #493699; text-underline-offset: 3px; }
+.gc-login-registration .gc-button:not(.gc-button--primary):not(.gc-button--danger) { background: #fff; color: var(--color-text); border-color: var(--color-border-strong); }
+.gc-login-registration .gc-button:focus-visible, .gc-login-step:focus-visible { outline: 3px solid var(--color-accent); outline-offset: 3px; }
+.gc-login-registration .gc-snippet { background: #f3f1f7; color: #302b45; border: 1px solid #ded9ea; border-radius: 8px; padding: 16px; white-space: pre-wrap; overflow-wrap: anywhere; font-size: 12px; line-height: 1.7; }
+.gc-login-registration .gc-login-status { background: #fff; padding: 20px; }
+.gc-login-registration .gc-login-status.is-verified { border-color: #accabb; }
+.gc-login-status.is-verified .gc-login-status-label { color: #176142; }
+.gc-login-readiness { gap: 16px 28px; padding: 0 2px; }
+.gc-login-readiness > div { padding-right: 24px; border-right: 1px solid var(--color-border); }
+.gc-login-readiness > div:last-child { border-right: 0; }
+.gc-login-stepnav { gap: 6px 18px; padding: 14px 0; border-block: 1px solid var(--color-border); }
+.gc-login-step { display: inline-flex; align-items: center; gap: 8px; border: 0; padding: 8px 0; background: transparent; color: #696572; font: inherit; font-size: .8125rem; cursor: pointer; text-align: left; }
+.gc-login-step-number { display: inline-grid; place-items: center; width: 24px; height: 24px; border: 1px solid #b5aebf; border-radius: 50%; flex: 0 0 24px; font-size: .75rem; }
+.gc-login-step.is-complete .gc-login-step-number { color: #176142; border-color: #a6c8b8; background: #eef7f1; }
+.gc-login-stepnav [aria-current="step"] { outline: none; color: #423183; font-weight: 750; }
+.gc-login-step[aria-current="step"] .gc-login-step-number { color: #fff; background: #4e3ca5; border-color: #4e3ca5; }
+.gc-login-step[aria-current="step"] > span:last-child { text-decoration: underline; text-underline-offset: 6px; }
+.gc-login-registration .gc-login-panel { background: #fff; padding: clamp(16px, 2.5vw, 24px); }
+.gc-login-registration .gc-login-disclosure-toggle { padding: 14px 16px; font-size: .875rem; }
+.gc-login-registration .gc-login-handoff { margin-top: 18px; padding: 20px; background: #f4f0fc; border: 1px solid #d8cfee; border-radius: 10px; }
+.gc-login-handoff h3 { margin-top: 0; font-size: .9375rem; }
+.gc-login-registration .gc-login-danger { background: #fff; border-color: #e3cdd0; }
+.gc-login-registration .gc-checkbox { gap: 12px; padding: 8px 0; }
+.gc-login-registration input[type="checkbox"], .gc-login-registration input[type="radio"] { accent-color: #4e3ca5; }
+@media (max-width: 600px) {
+  .gc-login-stepnav { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 4px 12px; }
+  .gc-login-step { width: 100%; }
+  .gc-login-readiness { gap: 14px 20px; }
+  .gc-login-readiness > div { border: 0; padding-right: 0; }
+  .gc-login-registration .gc-login-handoff { padding: 14px; }
+}
+@media (forced-colors: active) {
+  .gc-login-step[aria-current="step"] { outline: 2px solid Highlight; }
+  .gc-login-step-number { border-color: ButtonText; }
+}
+
+.gc-login-stepnav .gc-login-step:focus-visible { outline: 3px solid var(--color-accent); outline-offset: 3px; border-radius: 4px; }
+.gc-login-registration fieldset { margin: 14px 0; padding: 14px; border: 1px solid var(--color-border-strong); border-radius: 8px; }
+.gc-login-registration fieldset > label { display: inline-flex; align-items: center; gap: 8px; margin: 8px 20px 4px 0; }
+@media (forced-colors: active) { .gc-login-stepnav .gc-login-step:focus-visible { outline-color: Highlight; } }

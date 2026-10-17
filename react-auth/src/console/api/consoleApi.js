@@ -264,3 +264,11 @@ export async function changeLoginRegistrationTransport(organizationSlug, applica
     const { data } = await authAxios.post(`${app(organizationSlug, applicationId)}/login-registration/transport/`, { session_transport });
     return data;
 }
+
+/** Fresh application-scoped monitoring; never falls back to operator endpoints. */
+export async function fetchApplicationMonitoring(organizationSlug, applicationId, environment) {
+    const { data } = await authAxios.get(`${app(organizationSlug, applicationId)}/monitoring/`, {
+        params: { environment },
+    });
+    return data;
+}

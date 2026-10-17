@@ -294,3 +294,14 @@ describe("HomePage security navigation (OPS1: is_gait_operator only)", () => {
     expect(screen.queryByRole("link", { name: /Security Command/i })).not.toBeInTheDocument();
   });
 });
+
+
+test("standards link is public and session limits are explicitly not deployed", () => {
+  renderHome({ isLoggedIn: false, user: null });
+  const section = screen.getByRole("region", { name: "Clear standards. Visible progress." });
+  expect(section).toHaveTextContent("In implementation");
+  expect(section).toHaveTextContent("they are not yet deployed");
+  expect(section).toHaveTextContent("do not establish certification");
+  expect(within(section).getByRole("link", { name: /Security standards and verification/ }))
+    .toHaveAttribute("href", "/docs/security-standards");
+});

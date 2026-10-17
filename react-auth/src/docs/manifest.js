@@ -138,6 +138,11 @@ export const DOC_GROUPS = [
         title: "Security & trust",
         pages: [
             {
+                slug: "security-standards",
+                title: "Security standards and verification",
+                summary: "The guidance I use, the session policy in progress, and what has and has not been verified.",
+            },
+            {
                 slug: "how-gait-protects-your-data",
                 title: "How Gait protects data",
                 summary: "Workspace isolation, secrets Gait doesn't keep, the console session, and limits on repeated attempts.",

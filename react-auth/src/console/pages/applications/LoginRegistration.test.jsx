@@ -12,29 +12,30 @@ const pending = { status: "pending", version: 1, backend_url: "https://api.examp
 let client;
 function CurrentLocation() { const location = useLocation(); return <output aria-label="Current route">{JSON.stringify({ pathname: location.pathname, state: location.state })}</output>; }
 function view(values = props) { return <MemoryRouter initialEntries={["/console/moneta/applications/app1?env=production"]}><QueryClientProvider client={client}><LoginRegistration {...values} /><CurrentLocation /></QueryClientProvider></MemoryRouter>; }
-async function setup(expand = true) { const utils = render(view()); await screen.findByLabelText("Backend URL"); if (expand) { for (const name of ["Completed setup · URLs and ownership proof", "Advanced · session transport and browser support"]) { const button = screen.queryByRole("button", { name }); if (button) fireEvent.click(button); } } return utils; }
+async function setup(expand = true) { const utils = render(view()); await screen.findByLabelText("Backend URL"); if (expand) { for (const name of ["Advanced · session transport and browser support"]) { const button = screen.queryByRole("button", { name }); if (button) fireEvent.click(button); } } if (expand) fireEvent.click(screen.getByRole("button", { name: "1. Register URLs" })); return utils; }
+function stepAction(name) { const step = name === "Save pending registration" ? "1. Register URLs" : name === "Copy backend configuration" ? "3. Connect backend" : "2. Verify ownership"; fireEvent.click(screen.getByRole("button", { name: step })); return screen.getByRole("button", { name }); }
 beforeEach(() => { jest.clearAllMocks(); client = new QueryClient({ defaultOptions: { queries: { retry: false }, mutations: { retry: false } } }); fetchLoginRegistration.mockResolvedValue(pending); });
 test("scope reads server registration and keeps software identity and MFA distinct", async () => {
  await setup(); expect(fetchLoginRegistration).toHaveBeenCalledWith("moneta", "app1");
  expect(screen.getByLabelText("Frontend login origin")).toHaveValue("https://app.example.test");
- expect(screen.getByText(/Human sign-in is separate from the connection key/)).toBeInTheDocument();
+ expect(screen.getByText(/This guide sets up human sign-in separately/)).toBeInTheDocument();
  expect(screen.getByText(/Registration alone is not MFA proof/)).toBeInTheDocument();
  expect(screen.queryByRole("button", { name: "Copy backend configuration" })).not.toBeInTheDocument();
- fireEvent.click(screen.getByRole("button", { name: "Verify ownership with Gait" }));
+ fireEvent.click(stepAction("Verify ownership with Gait"));
  await waitFor(() => expect(verifyLoginRegistration).toHaveBeenCalledWith("moneta", "app1"));
 });
 test("save submits only backend and frontend URL and generates challenge explicitly", async () => {
  await setup(); expect(saveLoginRegistration).not.toHaveBeenCalled();
- fireEvent.click(screen.getByRole("button", { name: "Generate new ownership challenge" }));
+ fireEvent.click(stepAction("Generate new ownership challenge"));
  await waitFor(() => expect(challengeLoginRegistration).toHaveBeenCalledWith("moneta", "app1"));
  fireEvent.change(screen.getByLabelText("Backend URL"), { target: { value: "https://moneta.herokuapp.com" } });
- fireEvent.click(screen.getByRole("button", { name: "Save pending registration" }));
+ fireEvent.click(stepAction("Save pending registration"));
  await waitFor(() => expect(saveLoginRegistration).toHaveBeenCalledWith("moneta", "app1", { backend_url: "https://moneta.herokuapp.com", login_origin: "https://app.example.test" }));
 });
 test("active registration copies exact trusted pins and requires revocation confirmation", async () => {
  fetchLoginRegistration.mockResolvedValue({ ...pending, status: "active", ownership_challenge: null });
  Object.defineProperty(navigator, "clipboard", { configurable: true, value: { writeText: jest.fn().mockResolvedValue() } });
- await setup(); fireEvent.click(screen.getByRole("button", { name: "Copy backend configuration" }));
+ await setup(); fireEvent.click(stepAction("Copy backend configuration"));
  await screen.findByText(/Copied verified registration pins/);
  expect(navigator.clipboard.writeText).toHaveBeenCalledWith(`GAIT_TOKEN_VERIFIER=jwks\nGAIT_AUTH_URL=${pending.api_base_url}\nGAIT_JWKS_URL=${pending.jwks_uri}\nGAIT_ISSUER=${pending.issuer}\nGAIT_AUDIENCE=${pending.audience}`);
  const revoke = screen.getByRole("button", { name: "Revoke login registration" }); expect(revoke).toBeDisabled();
@@ -59,10 +60,10 @@ test("role denial does not fetch registration; scope changes discard edited URL"
 });
 test("server conflict and fresh-TOTP refusal preserve inputs without claiming readiness", async () => {
  saveLoginRegistration.mockRejectedValue({ response: { status: 409, data: { detail: "Registration conflicts with reserved configuration." } } });
- await setup(); fireEvent.click(screen.getByRole("button", { name: "Save pending registration" }));
+ await setup(); fireEvent.change(screen.getByLabelText("Backend URL"), { target: { value: "https://edited.example.test" } }); fireEvent.click(stepAction("Save pending registration"));
  await screen.findByText("Registration conflicts with reserved configuration.");
  saveLoginRegistration.mockRejectedValue({ response: { status: 403, data: { code: "reauthentication_required" } } });
- fireEvent.click(screen.getByRole("button", { name: "Save pending registration" }));
+ fireEvent.click(stepAction("Save pending registration"));
  await screen.findByText(/Sign in again with password and TOTP/);
  expect(screen.getByLabelText("Frontend login origin")).toHaveValue(pending.login_origin);
 });
@@ -70,14 +71,16 @@ test("server conflict and fresh-TOTP refusal preserve inputs without claiming re
 test("active edits need acknowledgement and unsaved changes cannot verify the saved target", async () => {
  fetchLoginRegistration.mockResolvedValue({ ...pending, status: "active" });
  await setup();
- expect(screen.getByRole("button", { name: "Save pending registration" })).toBeDisabled();
+ expect(stepAction("Save pending registration")).toBeDisabled();
  fireEvent.click(screen.getByRole("checkbox", { name: /I understand saving changes/ }));
- expect(screen.getByRole("button", { name: "Save pending registration" })).not.toBeDisabled();
+ expect(stepAction("Save pending registration")).toBeDisabled();
+ fireEvent.change(screen.getByLabelText("Backend URL"), { target: { value: "https://edited.example.test" } });
+ expect(stepAction("Save pending registration")).not.toBeDisabled();
 });
 test("unsaved URLs block verification and rotating the saved target's challenge", async () => {
  await setup(); fireEvent.change(screen.getByLabelText("Frontend login origin"), { target: { value: "https://new.test" } });
- expect(screen.getByRole("button", { name: "Verify ownership with Gait" })).toBeDisabled();
- expect(screen.getByRole("button", { name: "Generate new ownership challenge" })).toBeDisabled();
+ expect(stepAction("Verify ownership with Gait")).toBeDisabled();
+ expect(stepAction("Generate new ownership challenge")).toBeDisabled();
  expect(verifyLoginRegistration).not.toHaveBeenCalled();
 });
 test("read-only role does not call the privileged API", () => {
@@ -93,7 +96,7 @@ test("active status without trusted pins cannot provide configuration", async ()
 test("clipboard failure preserves public configuration for manual copying", async () => {
  fetchLoginRegistration.mockResolvedValue({ ...pending, status: "active" });
  Object.defineProperty(navigator, "clipboard", { configurable: true, value: { writeText: jest.fn().mockRejectedValue(new Error("denied")) } });
- await setup(); fireEvent.click(screen.getByRole("button", { name: "Copy backend configuration" }));
+ await setup(); fireEvent.click(stepAction("Copy backend configuration"));
  await screen.findByText(/Clipboard unavailable/);
  expect(screen.getByText(/GAIT_ISSUER=/)).toHaveTextContent(pending.issuer);
 });
@@ -157,20 +160,20 @@ test("path and query in frontend URL are corrected only by explicit confirmation
  const origin = screen.getByLabelText("Frontend login origin");
  fireEvent.change(origin, { target: { value: "https://app.example.test/login?next=home" } });
  expect(origin).toHaveValue("https://app.example.test/login?next=home");
- expect(screen.getByRole("button", { name: "Save pending registration" })).toBeDisabled();
+ expect(stepAction("Save pending registration")).toBeDisabled();
  expect(saveLoginRegistration).not.toHaveBeenCalled();
  fireEvent.click(screen.getByRole("button", { name: "Use this origin" }));
  expect(origin).toHaveValue("https://app.example.test");
- fireEvent.click(screen.getByRole("button", { name: "Save pending registration" }));
- await waitFor(() => expect(saveLoginRegistration).toHaveBeenCalledWith("moneta", "app1", { backend_url: pending.backend_url, login_origin: "https://app.example.test" }));
+ expect(stepAction("Save pending registration")).toBeDisabled();
+ expect(saveLoginRegistration).not.toHaveBeenCalled();
 });
 
 test("challenge denial appears beside the action, focuses the alert and offers sign-in without replay", async () => {
  challengeLoginRegistration.mockRejectedValue({ response: { status: 403, data: { code: "reauthentication_required", detail: "private-server-details" } } });
  await setup();
- fireEvent.click(screen.getByRole("button", { name: "Generate new ownership challenge" }));
+ fireEvent.click(stepAction("Generate new ownership challenge"));
  const alert = await screen.findByRole("alert");
- expect(screen.getByRole("region", { name: "Ownership verification" })).toContainElement(alert);
+ expect(screen.getByRole("region", { name: "Registration action feedback" })).toContainElement(alert);
  expect(alert).toHaveFocus();
  expect(alert).toHaveTextContent("Gait has not retried it automatically");
  expect(alert).not.toHaveTextContent("private-server-details");
@@ -184,7 +187,7 @@ test("challenge shows pending feedback, explicit success and a manual retry afte
  let resolve;
  challengeLoginRegistration.mockImplementationOnce(() => new Promise((done) => { resolve = done; }));
  await setup();
- const challenge = screen.getByRole("button", { name: "Generate new ownership challenge" });
+ const challenge = stepAction("Generate new ownership challenge");
  fireEvent.click(challenge);
  expect(await screen.findByText("Generating a new ownership challenge…")).toBeInTheDocument();
  expect(challenge).toBeDisabled();
@@ -204,60 +207,130 @@ test("save and verify each report their own pending and failed action without cl
  saveLoginRegistration.mockRejectedValueOnce({ response: { status: 403, data: { code: "reauthentication_required" } } });
  verifyLoginRegistration.mockRejectedValueOnce({ response: { status: 403, data: { detail: "private-detail" } } });
  await setup();
- fireEvent.click(screen.getByRole("button", { name: "Save pending registration" }));
+ fireEvent.change(screen.getByLabelText("Backend URL"), { target: { value: "https://edited.example.test" } });
+ fireEvent.click(stepAction("Save pending registration"));
  const saveAlert = await screen.findByRole("alert");
  expect(saveAlert).toHaveTextContent("Sign in again with password and TOTP");
- fireEvent.click(screen.getByRole("button", { name: "Verify ownership with Gait" }));
+ fireEvent.change(screen.getByLabelText("Backend URL"), { target: { value: pending.backend_url } });
+ fireEvent.click(stepAction("Verify ownership with Gait"));
  await screen.findByText(/Gait refused this action/);
- expect(screen.getByRole("region", { name: "Ownership verification" })).toContainElement(screen.getByRole("alert"));
+ expect(screen.getByRole("region", { name: "Registration action feedback" })).toContainElement(screen.getByRole("alert"));
  expect(screen.getByText("Registration: pending")).toBeInTheDocument();
  expect(verifyLoginRegistration).toHaveBeenCalledTimes(1);
 });
 
 
-test("active registration prioritizes verified origin and backend configuration, with completed steps collapsed", async () => {
- fetchLoginRegistration.mockResolvedValue({ ...pending, status: "active", ownership_challenge: null });
+
+
+test.each([["unconfigured", "1. Register URLs"], ["pending", "2. Verify ownership"], ["active", "3. Connect backend"]])("server %s chooses initial step %s without mutations", async (status, label) => {
+ fetchLoginRegistration.mockResolvedValue({ ...pending, status, ownership_challenge: status === "active" ? null : pending.ownership_challenge });
  await setup(false);
- expect(screen.getByRole("region", { name: "Login registration status" })).toHaveTextContent("Ownership verified");
- expect(screen.getByRole("region", { name: "Login registration status" })).toHaveTextContent(pending.login_origin);
- expect(screen.getByRole("region", { name: "Login registration status" })).toHaveTextContent("Production");
- expect(screen.getByRole("region", { name: "Backend login configuration" })).toBeVisible();
- expect(screen.getAllByRole("heading", { level: 3 }).slice(0, 2).map((heading) => heading.textContent)).toEqual(["Connect your backend", "Next: test sign-in"]);
- expect(screen.getByRole("region", { name: "Next: test sign-in" })).toHaveTextContent("MFA");
- expect(screen.getByRole("button", { name: "Completed setup · URLs and ownership proof" })).toHaveAttribute("aria-expanded", "false");
- expect(screen.getByLabelText("Backend URL")).not.toBeVisible();
- expect(screen.queryByRole("button", { name: "Save pending registration" })).not.toBeInTheDocument();
- expect(screen.getByRole("button", { name: "Advanced · session transport and browser support" })).toHaveAttribute("aria-expanded", "false");
- expect(screen.queryByRole("radio", { name: "Cookie", exact: true })).not.toBeInTheDocument();
- expect(screen.getByRole("region", { name: "Revoke login registration" })).toHaveTextContent("separate action");
- expect(screen.getByRole("button", { name: "Revoke login registration" })).toBeDisabled();
+ expect(screen.getByRole("button", { name: label })).toHaveAttribute("aria-current", "step");
+ expect(screen.getByText("Not tested", { selector: "dd" })).toBeVisible();
+ expect(saveLoginRegistration).not.toHaveBeenCalled(); expect(verifyLoginRegistration).not.toHaveBeenCalled();
 });
 
-test("pending registration keeps progressive setup open without claiming ownership or readiness", async () => {
+test("local navigation cannot unlock trusted configuration or mark login tested", async () => {
  await setup(false);
- expect(screen.getByRole("list", { name: "Login setup steps" })).toBeVisible();
- expect(screen.getByRole("region", { name: "Confirm registration URLs" })).toBeVisible();
- expect(screen.getByRole("region", { name: "Ownership verification" })).toBeVisible();
- expect(screen.getByRole("button", { name: "Generate new ownership challenge" })).toBeVisible();
- expect(screen.queryByRole("region", { name: "Backend login configuration" })).not.toBeInTheDocument();
- expect(screen.queryByText("✓ Ownership verified")).not.toBeInTheDocument();
- expect(saveLoginRegistration).not.toHaveBeenCalled();
+ fireEvent.click(screen.getByRole("button", { name: "3. Connect backend" }));
+ expect(screen.queryByRole("button", { name: "Copy backend configuration" })).not.toBeInTheDocument();
+ fireEvent.click(screen.getByRole("button", { name: "4. Test login" }));
+ expect(screen.getByRole("region", { name: "Test login" })).toHaveTextContent("guidance only");
+ expect(screen.getByText("Not tested", { selector: "dd" })).toBeVisible();
  expect(verifyLoginRegistration).not.toHaveBeenCalled();
 });
 
-test("active edit denial stays visible after the completed-setup disclosure is collapsed", async () => {
- fetchLoginRegistration.mockResolvedValue({ ...pending, status: "active", ownership_challenge: null });
- saveLoginRegistration.mockRejectedValue({ response: { status: 403, data: { code: "reauthentication_required" } } });
+test("server verification, not a successful local click, advances pending to Connect", async () => {
  await setup(false);
- const completed = screen.getByRole("button", { name: "Completed setup · URLs and ownership proof" });
- fireEvent.click(completed);
- fireEvent.click(screen.getByRole("checkbox", { name: /I understand saving changes/ }));
- fireEvent.click(screen.getByRole("button", { name: "Save pending registration" }));
+ verifyLoginRegistration.mockResolvedValue({});
+ fireEvent.click(screen.getByRole("button", { name: "Verify ownership with Gait" }));
+ await screen.findByText(/Ownership check completed/);
+ expect(screen.getByRole("button", { name: "2. Verify ownership" })).toHaveAttribute("aria-current", "step");
+ fetchLoginRegistration.mockResolvedValue({ ...pending, status: "active", version: 2, ownership_challenge: null });
+ fireEvent.click(screen.getByRole("button", { name: "Verify ownership with Gait" }));
+ await waitFor(() => expect(screen.getByRole("button", { name: "3. Connect backend" })).toHaveAttribute("aria-current", "step"));
+ expect(screen.getByRole("button", { name: "Copy backend configuration" })).toBeVisible();
+ expect(screen.getByText("Not tested", { selector: "dd" })).toBeVisible();
+});
+
+test("reauthentication feedback remains visible after navigation, with no replay", async () => {
+ verifyLoginRegistration.mockRejectedValue({ response: { status: 403, data: { code: "reauthentication_required" } } });
+ await setup(false);
+ fireEvent.click(screen.getByRole("button", { name: "Verify ownership with Gait" }));
  const alert = await screen.findByRole("alert");
- expect(alert).toHaveFocus();
- fireEvent.click(completed);
- expect(completed).toHaveAttribute("aria-expanded", "false");
+ fireEvent.click(screen.getByRole("button", { name: "4. Test login" }));
  expect(alert).toBeVisible();
  expect(screen.getByRole("button", { name: "Sign in again and return here" })).toBeVisible();
- expect(saveLoginRegistration).toHaveBeenCalledTimes(1);
+ expect(verifyLoginRegistration).toHaveBeenCalledTimes(1);
+});
+
+
+test("unsaved URL edits disable continue and verification across step navigation", async () => {
+ await setup();
+ fireEvent.change(screen.getByLabelText("Frontend login origin"), { target: { value: "https://edited.example.test" } });
+ expect(screen.getByRole("button", { name: "Continue to ownership verification" })).toBeDisabled();
+ fireEvent.click(screen.getByRole("button", { name: "2. Verify ownership" }));
+ expect(screen.getByRole("button", { name: "Verify ownership with Gait" })).toBeDisabled();
+ fireEvent.click(screen.getByRole("button", { name: "1. Register URLs" }));
+ expect(screen.getByLabelText("Frontend login origin")).toHaveValue("https://edited.example.test");
+ expect(verifyLoginRegistration).not.toHaveBeenCalled();
+});
+
+test("unconfigured URL save advances only when the server returns a saved pending registration", async () => {
+ const unconfigured = { ...pending, status: "unconfigured", version: 0, ownership_challenge: null };
+ fetchLoginRegistration.mockResolvedValue(unconfigured);
+ saveLoginRegistration.mockResolvedValue({});
+ await setup(false);
+ fireEvent.click(screen.getByRole("button", { name: "Save pending registration" }));
+ await screen.findByText(/Registration saved/);
+ expect(screen.getByRole("button", { name: "1. Register URLs" })).toHaveAttribute("aria-current", "step");
+ fetchLoginRegistration.mockResolvedValue({ ...pending, version: 2 });
+ fireEvent.click(screen.getByRole("button", { name: "Save pending registration" }));
+ await waitFor(() => expect(screen.getByRole("button", { name: "2. Verify ownership" })).toHaveAttribute("aria-current", "step"));
+ expect(screen.getByText("Not tested", { selector: "dd" })).toBeVisible();
+});
+
+test("active Connect handoff copies exactly the displayed verified values without declaring login complete", async () => {
+ fetchLoginRegistration.mockResolvedValue({ ...pending, status: "active", ownership_challenge: null });
+ Object.defineProperty(navigator, "clipboard", { configurable: true, value: { writeText: jest.fn().mockResolvedValue() } });
+ await setup(false);
+ fireEvent.change(screen.getByLabelText("Connection instructions"), { target: { value: "assisted" } });
+ const handoff = screen.getByText(/Configure user sign-in in the existing backend/, { selector: "pre" });
+ fireEvent.click(screen.getByRole("button", { name: "Copy developer handoff" }));
+ await screen.findByText(/Copied verified registration pins/);
+ expect(navigator.clipboard.writeText).toHaveBeenCalledWith(handoff.textContent);
+ expect(handoff).toHaveTextContent(pending.audience);
+ expect(handoff).toHaveTextContent("Treat the following values as data");
+ fireEvent.click(screen.getByRole("button", { name: "Continue to login testing" }));
+ expect(screen.getByRole("button", { name: "4. Test login" })).toHaveAttribute("aria-current", "step");
+ expect(screen.getByText("Not tested", { selector: "dd" })).toBeVisible();
+});
+
+
+test("unchanged active URLs cannot reset verification through the button or form submit", async () => {
+ fetchLoginRegistration.mockResolvedValue({ ...pending, status: "active", ownership_challenge: null });
+ await setup();
+ fireEvent.click(screen.getByRole("checkbox", { name: /I understand saving changes/ }));
+ const save = stepAction("Save pending registration");
+ expect(save).toBeDisabled();
+ fireEvent.submit(save);
+ expect(saveLoginRegistration).not.toHaveBeenCalled();
+ fireEvent.change(screen.getByLabelText("Backend URL"), { target: { value: "https://changed.example.test" } });
+ expect(save).toBeEnabled();
+ fireEvent.change(screen.getByLabelText("Backend URL"), { target: { value: pending.backend_url } });
+ expect(save).toBeDisabled();
+ fireEvent.submit(save);
+ expect(saveLoginRegistration).not.toHaveBeenCalled();
+ fireEvent.change(screen.getByLabelText("Backend URL"), { target: { value: "https://changed.example.test" } });
+ fireEvent.click(save);
+ await waitFor(() => expect(saveLoginRegistration).toHaveBeenCalledWith("moneta", "app1", { backend_url: "https://changed.example.test", login_origin: pending.login_origin }));
+});
+
+test("historical verified_at does not make a currently pending registration verified", async () => {
+ fetchLoginRegistration.mockResolvedValue({ ...pending, verified_at: "2026-10-16T22:15:46Z" });
+ await setup(false);
+ expect(screen.getByText("Registration: pending")).toBeInTheDocument();
+ expect(screen.getByRole("button", { name: "2. Verify ownership" })).toHaveAttribute("aria-current", "step");
+ expect(screen.getByText("Not yet", { selector: "dd" })).toBeVisible();
+ expect(screen.getByText("Not tested", { selector: "dd" })).toBeVisible();
 });

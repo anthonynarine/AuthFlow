@@ -81,7 +81,7 @@ function SetupProgress({ organizationSlug, application, framework, canManage, ac
 export function GuidedSetup(props) {
     const [open, setOpen] = useState(false);
     const [framework, setFramework] = useState("django");
-    return <Card title="Connection setup"><button type="button" className="gc-button" aria-expanded={open} onClick={() => setOpen(!open)}>{open ? "Close setup guide" : "Guide me through setup"}</button>
+    return <Card title="Security reporting setup"><p>Connect your software’s security reporting with a backend connection key. Set up human sign-in separately below.</p><button type="button" className="gc-button" aria-expanded={open} onClick={() => setOpen(!open)}>{open ? "Close setup guide" : "Guide security reporting"}</button>
         {open ? <section aria-label="Guided connection setup">
             <div role="group" aria-label="Guide framework">{["django", "fastapi"].map((value) => <button type="button" className="gc-button" key={value} aria-pressed={framework === value} onClick={() => setFramework(value)}>{value === "django" ? "Django" : "FastAPI"}</button>)}</div>
             <SetupProgress key={`${props.organizationSlug}/${props.application.id}/${props.application.environment}/${props.canManage}/${framework}`} {...props} framework={framework} />

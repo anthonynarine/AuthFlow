@@ -129,3 +129,11 @@
   .gc-login-status, .gc-login-panel, .gc-login-danger, .gc-login-disclosure-body { padding: 14px; }
   .gc-login-actions .gc-button { width: 100%; justify-content: center; }
 }
+
+.gc-login-readiness { display: flex; flex-wrap: wrap; gap: 16px 32px; margin: 0; }
+.gc-login-readiness dt { color: var(--color-text-muted); font-size: .8rem; }
+.gc-login-readiness dd { margin: 4px 0 0; font-weight: 700; }
+.gc-login-stepnav { display: flex; flex-wrap: wrap; gap: 8px; padding: 0; margin: 0; list-style: none; }
+.gc-login-stepnav [aria-current="step"] { outline: 2px solid var(--color-text); outline-offset: 2px; font-weight: 700; }
+.gc-login-registration > [hidden], .gc-login-panel[hidden] { display: none; }
+.gc-login-feedback:empty { display: none; }

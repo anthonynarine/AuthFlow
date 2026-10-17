@@ -11,7 +11,7 @@ const application = { id: "local-id", name: "Moneta", slug: "moneta", environmen
 const mutate = jest.fn();
 const props = { organizationSlug: "moneta-org", application, canManage: true, activity: { data: { has_activity: false } }, credentials: { data: [] } };
 const view = (values = props) => <MemoryRouter><GuidedSetup {...values} /></MemoryRouter>;
-function open() { fireEvent.click(screen.getByRole("button", { name: "Guide me through setup" })); }
+function open() { fireEvent.click(screen.getByRole("button", { name: "Guide security reporting" })); }
 beforeEach(() => { jest.clearAllMocks(); useApplications.mockReturnValue({ data: [] }); useCreateApplication.mockReturnValue({ mutate }); });
 test("existing key setup keeps progress in memory and never claims verification", () => {
  const storage = jest.spyOn(Storage.prototype, "setItem"); render(view()); open();

@@ -272,3 +272,17 @@ export async function fetchApplicationMonitoring(organizationSlug, applicationId
     });
     return data;
 }
+
+/** Hosted development capability comes from this deployment, never an app label. */
+export async function fetchHostedEnrollment(organizationSlug, applicationId) {
+    const { data } = await authAxios.get(`${app(organizationSlug, applicationId)}/hosted-enrollment/`);
+    return data;
+}
+export async function configureHostedEnrollment(organizationSlug, applicationId, origins) {
+    const { data } = await authAxios.put(`${app(organizationSlug, applicationId)}/hosted-enrollment/`, { origins });
+    return data;
+}
+export async function revokeHostedEnrollment(organizationSlug, applicationId) {
+    const { data } = await authAxios.post(`${app(organizationSlug, applicationId)}/hosted-enrollment/`, { action: "revoke" });
+    return data;
+}

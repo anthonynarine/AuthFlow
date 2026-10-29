@@ -121,7 +121,7 @@ describe("create account", () => {
         expect(screen.getByText("This password is too common.")).toBeInTheDocument();
     });
 
-    test.each([new Error("offline"), { response: { status: 500 } }])("an ambiguous signup failure does not claim no account exists", async (error) => {
+    test.each([new Error("offline"), { response: { status: 500, data: { error: "internal diagnostic" } } }])("an ambiguous signup failure does not claim no account exists", async (error) => {
         publicAxios.post.mockRejectedValue(error);
         visit("/register", <RegisterPage />);
         fill();
@@ -129,6 +129,7 @@ describe("create account", () => {
         expect(await screen.findByRole("alert")).toHaveTextContent("couldn't confirm whether your account was created");
         expect(screen.getByRole("alert")).toHaveTextContent("before submitting again");
         expect(screen.queryByText(/Your account wasn't created/)).not.toBeInTheDocument();
+        expect(screen.queryByText("internal diagnostic")).not.toBeInTheDocument();
         expect(publicAxios.post).toHaveBeenCalledTimes(1);
     });
 

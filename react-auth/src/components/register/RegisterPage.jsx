@@ -7,6 +7,7 @@ import { AuthHeading, AuthLayout } from "../../ds/AuthLayout";
 import { Alert, Button, PasswordField, TextField } from "../../ds/components";
 
 const PASSWORD_HINT = "At least 12 characters, not only numbers, and not a common password.";
+const UNKNOWN_SIGNUP = "We couldn't confirm whether your account was created. Try signing in or resetting your password before submitting again.";
 const FIELD_MAP = {
     first_name: "firstName",
     last_name: "lastName",
@@ -55,7 +56,9 @@ export const RegisterPage = () => {
             setDone({ email: form.email.trim(), verificationSent: result?.verification_sent });
             setForm((current) => ({ ...current, password: "", confirmPassword: "" }));
         } catch (error) {
-            setErrors(fieldErrors(error, FIELD_MAP, "We couldn't confirm whether your account was created. Try signing in or resetting your password before submitting again."));
+            setErrors(!error?.response || error.response.status >= 500
+                ? { general: UNKNOWN_SIGNUP }
+                : fieldErrors(error, FIELD_MAP, UNKNOWN_SIGNUP));
         } finally {
             setBusy(false);
         }

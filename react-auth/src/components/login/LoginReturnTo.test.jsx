@@ -5,6 +5,7 @@ import { MemoryRouter, Route, Routes, useLocation } from "react-router-dom";
 import { LoginPage } from "./LoginPage";
 import { RegisterPage } from "../register/RegisterPage";
 import { clearPendingInvite, setPendingPreview, setPendingToken } from "../../console/invites/pendingInvite";
+import { publicAxios } from "../../interceptors/axios";
 
 const mockLogin = jest.fn();
 const mockVerify2FA = jest.fn();
@@ -110,6 +111,39 @@ describe("Create account from the login page", () => {
     });
 });
 
+
+describe("Continue after creating an account", () => {
+    test.each([
+        [true, INVITE, { returnTo: INVITE }],
+        [false, INVITE, { returnTo: INVITE }],
+        [undefined, "/console/lumen/applications?env=local", { returnTo: "/console/lumen/applications?env=local" }],
+        [true, "https://outside.example", null],
+        [false, "//outside.example", null],
+        [undefined, "/\\outside.example", null],
+    ])("delivery %s retains only a safe return path (%s)", async (verificationSent, returnTo, expectedState) => {
+        publicAxios.post.mockResolvedValue({ data: { verification_sent: verificationSent } });
+        render(
+            <MemoryRouter initialEntries={[{ pathname: "/register", state: { returnTo } }]}>
+                <Routes>
+                    <Route path="/register" element={<RegisterPage />} />
+                    <Route path="/login" element={<LoginPage />} />
+                </Routes>
+                <LocationProbe />
+            </MemoryRouter>
+        );
+        for (const [label, value] of [
+            ["First name", "Maya"], ["Last name", "Okafor"], ["Email", "maya@example.test"],
+            ["Password", "test-only-password"], ["Confirm password", "test-only-password"],
+        ]) {
+            fireEvent.change(screen.getByLabelText(label), { target: { value } });
+        }
+        fireEvent.click(screen.getByRole("button", { name: "Create account" }));
+        await screen.findByRole("heading", { name: verificationSent === true ? "Check your email" : "Confirm your email address" });
+        fireEvent.click(screen.getByRole("link", { name: SIGN_IN }));
+        expect(screen.getByTestId("state")).toHaveTextContent(JSON.stringify(expectedState));
+        expect(screen.getByRole("button", { name: SIGN_IN })).toBeInTheDocument();
+    });
+});
 
 test("missing temporary sign-in state explains restarting the password step without blaming the code", () => {
     mockSessionExpired = true;

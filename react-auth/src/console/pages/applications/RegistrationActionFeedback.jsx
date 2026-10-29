@@ -22,8 +22,8 @@ export function RegistrationActionFeedback({ action, feedback, onSignIn }) {
     if (feedback.status === "pending") return <p role="status" aria-live="polite">{COPY[action][0]}</p>;
     if (!failed) return <p role="status" aria-live="polite">{COPY[action][1]}</p>;
     const reauth = error?.response?.status === 403 && (error.response?.data?.code === "reauthentication_required" || error.response?.data?.detail === "reauthentication_required");
-    const message = reauth ? "Sign in again with password and TOTP from your authenticator before changing login registration. Return to this application and choose the action again. Gait has not retried it automatically."
-        : error?.response?.status === 403 ? "Gait refused this action. Check that you are an Owner or Admin with a recent password and authenticator-code sign-in, then try again. No change is confirmed."
+    const message = reauth ? "Sign in again with your password to confirm your identity. If two-step verification is enabled on your account, complete it too. Return to this application and choose the action again. Gait has not retried it automatically."
+        : error?.response?.status === 403 ? "Gait refused this action. Check that you are an Owner or Admin and that your sign-in meets the required account security checks, then try again. No change is confirmed."
         : apiErrorMessage(error);
     return <div ref={ref} role="alert" tabIndex={-1} className="gc-form-error gc-registration-action-error">
         <p>{message}</p>

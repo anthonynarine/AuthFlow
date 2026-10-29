@@ -38,8 +38,8 @@ export default function AddGaitSignIn() {
     return (
         <>
             <p className="doc-lede">
-                How an app of mine lets its users sign in with a Gait account, as Lumen (in development) does. Gait checks who they
-                are; the app still decides what they may do.
+                Connect an application's sign-in to Gait. Gait checks who people are; the app still decides what
+                they may do. Complete a real sign-in test before treating an integration as ready.
             </p>
             <p>
                 <StatusBadge feature="productSignIn" /> Background:{" "}
@@ -50,7 +50,7 @@ export default function AddGaitSignIn() {
                 <p>In Console → Applications → your application → Human login settings, register the exact HTTPS frontend origin and publish the server-issued ownership challenge. Choose whether frontend and backend share a host, and select AWS, Vercel, Netlify, Heroku, backend-served frontend or another host for publishing guidance. These choices change instructions only; the frontend login origin is the browser’s actual sign-in origin, while the backend URL is informational. Gait must verify ownership before the registration is active. Keep local and production registrations separate.
                 </p>
                 <p>For Netlify and Vercel, put the exact server-issued proof body in <code>public/.well-known/gait-domain-verification</code> and deploy the frontend. For AWS static hosting, publish the proof object through S3/CloudFront or Amplify; for EC2/ECS/Elastic Beanstalk or a backend-served frontend, add the shown Django or FastAPI route on that frontend host. Heroku environment values are useful only if your application already implements a proof route that reads them; they do not create an endpoint. The optional existing-route pattern shows GAIT_DOMAIN_VERIFICATION_CONTENT and GAIT_DOMAIN_VERIFICATION_EXPIRES_AT with the server expiry converted to Unix epoch seconds. Use your route’s actual variable names, then remove temporary settings after verification or expiry. Manual instructions, a downloadable proof file and a copyable Developer or AI handoff all use the saved server challenge’s exact destination and expiry. A generated file does not deploy itself. Expired challenges need a new challenge from Gait; only Verify ownership with Gait can activate the registration.</p>
-                <p>Bearer is the default. Cookie becomes selectable only when Gait reports it available for your active, verified registration. Changing transport requires an Owner or Admin with a recent password and authenticator-code sign-in, increments the registration version, and ends existing sessions and pending MFA flows. Users must sign in again. Application keys and registration ownership are not proof of current-session MFA.</p>
+                <p>Bearer is the default. Cookie becomes selectable only when Gait reports it available for your active, verified registration. Changing transport requires a verified Owner or Admin with a recent password sign-in, plus the second factor when enabled. Privileged operator controls retain their stronger verification requirements. The change increments the registration version and ends existing sessions and pending MFA flows. Users must sign in again. Application keys and registration ownership are not proof of current-session MFA.</p>
                 <p>Cookie mode keeps refresh tokens in server-controlled HttpOnly cookies; access tokens stay in memory. The browser must send <code>credentials: "include"</code> and <code>X-Gait-Auth: "1"</code>. It supplies the exact verified Origin automatically. Send <code>session_transport: "cookie"</code> with the login and two-factor-login JSON bodies. Cookie refresh and logout use <code>/api/auth/refresh/</code> and <code>/api/auth/logout/</code> with an empty body; do not send refresh tokens, application IDs or cookie names. Gait chooses cookie names and attributes.</p>
                 <Callout title="Test your actual browser">
                     Secure cookies with SameSite=None do not bypass third-party-cookie blocking. If your app and Gait are on different sites, browser policy may block them. Test login, required MFA, refresh and logout in your deployed browser. An active registration does not confirm this round trip. Use a supported deployment topology and browser, or explicitly change to a Bearer integration whose MFA transport is supported. Bearer MFA can still require a temporary cookie, so it is not a guaranteed workaround for blocked cookies; there is no silent transport fallback.
@@ -112,6 +112,20 @@ export default function AddGaitSignIn() {
             </DocSection>
 
             <DocSection id="two-step-verification" title="Two-step verification">
+                <p>
+                    New application registrations default to <strong>Optional</strong> MFA in both development and
+                    production. In Human login settings, Optional allows password-only sign-in for people who have
+                    not enabled MFA. People who have enabled it must still complete their second factor.
+                    Choose <strong>Required</strong> if everyone using this application must have MFA enabled.
+                    Check the saved setting on existing applications; their policy is preserved during upgrades.
+                </p>
+                <p>
+                    Changing the policy requires an explicit save with recent sign-in proof and ends the application's
+                    old sessions and pending sign-ins. Password-only sessions never count as MFA for sensitive actions.
+                    This policy applies to every supported sign-in transport. See{" "}
+                    <DocLink to="local-to-production#hosted-development-sign-in">Hosted development sign-in</DocLink>
+                    {" "}for localhost applications.
+                </p>
                 <p>
                     If the person has turned on <DocLink to="two-step-verification">two-step verification</DocLink>,{" "}
                     <code>login/</code> answers 401 with <code>"2fa_required": true</code> and a{" "}

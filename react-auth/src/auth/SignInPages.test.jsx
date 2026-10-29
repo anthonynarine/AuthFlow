@@ -67,7 +67,7 @@ describe("create account", () => {
     }
 
     test("success says where the confirmation email went, instead of a silent redirect", async () => {
-        publicAxios.post.mockResolvedValue({ data: {} });
+        publicAxios.post.mockResolvedValue({ data: { verification_sent: true, email_verified: false } });
         visit("/register", <RegisterPage />);
         fill();
         fireEvent.click(screen.getByRole("button", { name: "Create account" }));
@@ -83,6 +83,31 @@ describe("create account", () => {
         });
     });
 
+    test("a created account with failed mail delivery offers sign-in and resend without claiming email was sent", async () => {
+        publicAxios.post.mockResolvedValue({ data: { verification_sent: false, email_verified: false } });
+        visit("/register", <RegisterPage />);
+        fill();
+        fireEvent.click(screen.getByRole("button", { name: "Create account" }));
+        expect(await screen.findByRole("heading", { name: "Confirm your email address" })).toHaveFocus();
+        expect(screen.getByText(/Your account was created for/)).toHaveTextContent("we couldn't send the confirmation email");
+        expect(screen.queryByText(/We sent a confirmation link/)).not.toBeInTheDocument();
+        expect(screen.queryByRole("button", { name: "Create account" })).not.toBeInTheDocument();
+        expect(screen.getByRole("link", { name: "Sign in" })).toHaveAttribute("href", "/login");
+        expect(publicAxios.post).toHaveBeenCalledTimes(1);
+    });
+
+    test.each([{}, { verification_sent: "true" }])("missing or malformed delivery confirmation never implies delivery (%j)", async (data) => {
+        publicAxios.post.mockResolvedValue({ data });
+        visit("/register", <RegisterPage />);
+        fill();
+        fireEvent.click(screen.getByRole("button", { name: "Create account" }));
+        await screen.findByRole("heading", { name: "Confirm your email address" });
+        expect(screen.getByText(/Your account was created for/)).toHaveTextContent("check your verification status");
+        expect(screen.queryByText(/We sent a confirmation link/)).not.toBeInTheDocument();
+        expect(screen.queryByText(/couldn't send/)).not.toBeInTheDocument();
+        expect(publicAxios.post).toHaveBeenCalledTimes(1);
+    });
+
     test("Gait's errors land under their fields", async () => {
         publicAxios.post.mockRejectedValue({
             response: { status: 400, data: { error: { email: ["A user with that email already exists."], password: ["This password is too common."] } } },
@@ -94,6 +119,17 @@ describe("create account", () => {
         expect(screen.getByLabelText("Email")).toHaveAttribute("aria-invalid", "true");
         expect(screen.getByLabelText("Password")).toHaveAttribute("aria-invalid", "true");
         expect(screen.getByText("This password is too common.")).toBeInTheDocument();
+    });
+
+    test.each([new Error("offline"), { response: { status: 500 } }])("an ambiguous signup failure does not claim no account exists", async (error) => {
+        publicAxios.post.mockRejectedValue(error);
+        visit("/register", <RegisterPage />);
+        fill();
+        fireEvent.click(screen.getByRole("button", { name: "Create account" }));
+        expect(await screen.findByRole("alert")).toHaveTextContent("couldn't confirm whether your account was created");
+        expect(screen.getByRole("alert")).toHaveTextContent("before submitting again");
+        expect(screen.queryByText(/Your account wasn't created/)).not.toBeInTheDocument();
+        expect(publicAxios.post).toHaveBeenCalledTimes(1);
     });
 
     test("Gait's stringified password rules show as sentences on the field, never ['…']", async () => {

@@ -242,8 +242,10 @@ export async function fetchLoginRegistration(organizationSlug, applicationId) {
     const { data } = await authAxios.get(`${app(organizationSlug, applicationId)}/login-registration/`);
     return data;
 }
-export async function saveLoginRegistration(organizationSlug, applicationId, { backend_url, login_origin }) {
-    const { data } = await authAxios.put(`${app(organizationSlug, applicationId)}/login-registration/`, { backend_url, login_origin });
+export async function saveLoginRegistration(organizationSlug, applicationId, { backend_url, login_origin, mfa_policy }) {
+    const values = { backend_url, login_origin };
+    if (mfa_policy !== undefined) values.mfa_policy = mfa_policy;
+    const { data } = await authAxios.put(`${app(organizationSlug, applicationId)}/login-registration/`, values);
     return data;
 }
 export async function challengeLoginRegistration(organizationSlug, applicationId) {
@@ -278,8 +280,10 @@ export async function fetchHostedEnrollment(organizationSlug, applicationId) {
     const { data } = await authAxios.get(`${app(organizationSlug, applicationId)}/hosted-enrollment/`);
     return data;
 }
-export async function configureHostedEnrollment(organizationSlug, applicationId, origins) {
-    const { data } = await authAxios.put(`${app(organizationSlug, applicationId)}/hosted-enrollment/`, { origins });
+export async function configureHostedEnrollment(organizationSlug, applicationId, origins, mfaPolicy) {
+    const values = { origins };
+    if (mfaPolicy !== undefined) values.mfa_policy = mfaPolicy;
+    const { data } = await authAxios.put(`${app(organizationSlug, applicationId)}/hosted-enrollment/`, values);
     return data;
 }
 export async function revokeHostedEnrollment(organizationSlug, applicationId) {

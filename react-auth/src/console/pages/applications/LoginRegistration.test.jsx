@@ -32,6 +32,49 @@ test("save submits only backend and frontend URL and generates challenge explici
  fireEvent.click(stepAction("Save pending registration"));
  await waitFor(() => expect(saveLoginRegistration).toHaveBeenCalledWith("moneta", "app1", { backend_url: "https://moneta.herokuapp.com", login_origin: "https://app.example.test" }));
 });
+
+test("an active production MFA policy changes only after acknowledgement and explicit save", async () => {
+ fetchLoginRegistration.mockResolvedValue({ ...pending, status: "active", mfa_policy: "required" });
+ await setup();
+ expect(screen.getByLabelText("Multi-factor authentication (MFA)")).toHaveValue("required");
+ fireEvent.click(screen.getByRole("checkbox", { name: /I understand saving changes/ }));
+ fireEvent.change(screen.getByLabelText("Multi-factor authentication (MFA)"), { target: { value: "optional" } });
+ expect(screen.getByText(/Users can sign in with a password/)).toHaveTextContent("must still complete it");
+ expect(screen.getByRole("checkbox", { name: /Changing Required to Optional/ })).not.toBeChecked();
+ expect(stepAction("Save pending registration")).toBeDisabled();
+ expect(saveLoginRegistration).not.toHaveBeenCalled();
+ fireEvent.click(screen.getByRole("checkbox", { name: /I understand saving changes/ }));
+ fireEvent.click(stepAction("Save pending registration"));
+ await waitFor(() => expect(saveLoginRegistration).toHaveBeenCalledWith("moneta", "app1", {
+  backend_url: pending.backend_url, login_origin: pending.login_origin, mfa_policy: "optional",
+ }));
+});
+
+test.each([undefined, "unknown", false])("unknown production policy cannot be changed by a URL edit (%s)", async (mfa_policy) => {
+ fetchLoginRegistration.mockResolvedValue({ ...pending, mfa_policy });
+ await setup();
+ expect(screen.queryByLabelText("Multi-factor authentication (MFA)")).not.toBeInTheDocument();
+ fireEvent.change(screen.getByLabelText("Backend URL"), { target: { value: "https://edited.example.test" } });
+ fireEvent.click(stepAction("Save pending registration"));
+ await waitFor(() => expect(saveLoginRegistration).toHaveBeenCalledWith("moneta", "app1", { backend_url: "https://edited.example.test", login_origin: pending.login_origin }));
+});
+
+test("a refused MFA policy change preserves the draft and never replays the mutation", async () => {
+ fetchLoginRegistration.mockResolvedValue({ ...pending, mfa_policy: "required" });
+ saveLoginRegistration.mockRejectedValue({ response: { status: 403, data: { code: "reauthentication_required" } } });
+ await setup();
+ fireEvent.change(screen.getByLabelText("Multi-factor authentication (MFA)"), { target: { value: "optional" } });
+ expect(stepAction("Save pending registration")).toBeDisabled();
+ fireEvent.submit(screen.getByRole("form", { name: "Human login registration" }));
+ expect(saveLoginRegistration).not.toHaveBeenCalled();
+ fireEvent.click(screen.getByRole("checkbox", { name: /Changing Required to Optional/ }));
+ fireEvent.click(stepAction("Save pending registration"));
+ const alert = await screen.findByRole("alert");
+ expect(alert).toHaveTextContent("If two-step verification is enabled on your account, complete it too");
+ expect(screen.getByLabelText("Multi-factor authentication (MFA)")).toHaveValue("optional");
+ fireEvent.click(screen.getByRole("button", { name: "Sign in again and return here" }));
+ expect(saveLoginRegistration).toHaveBeenCalledTimes(1);
+});
 test("active registration copies exact trusted pins and requires revocation confirmation", async () => {
  fetchLoginRegistration.mockResolvedValue({ ...pending, status: "active", ownership_challenge: null });
  Object.defineProperty(navigator, "clipboard", { configurable: true, value: { writeText: jest.fn().mockResolvedValue() } });
@@ -58,13 +101,13 @@ test("role denial does not fetch registration; scope changes discard edited URL"
  expect(screen.queryByLabelText("Frontend login origin")).not.toBeInTheDocument();
  expect(screen.getByText(/Only Owners and Admins/)).toBeInTheDocument();
 });
-test("server conflict and fresh-TOTP refusal preserve inputs without claiming readiness", async () => {
+test("server conflict and fresh-sign-in refusal preserve inputs without claiming readiness", async () => {
  saveLoginRegistration.mockRejectedValue({ response: { status: 409, data: { detail: "Registration conflicts with reserved configuration." } } });
  await setup(); fireEvent.change(screen.getByLabelText("Backend URL"), { target: { value: "https://edited.example.test" } }); fireEvent.click(stepAction("Save pending registration"));
  await screen.findByText("Registration conflicts with reserved configuration.");
  saveLoginRegistration.mockRejectedValue({ response: { status: 403, data: { code: "reauthentication_required" } } });
  fireEvent.click(stepAction("Save pending registration"));
- await screen.findByText(/Sign in again with password and TOTP/);
+ await screen.findByText(/Sign in again with your password/);
  expect(screen.getByLabelText("Frontend login origin")).toHaveValue(pending.login_origin);
 });
 
@@ -150,7 +193,7 @@ test("transport denial preserves saved authority and explains fresh MFA", async 
  await setup(); fireEvent.click(screen.getByRole("radio", { name: "Cookie", exact: true }));
  fireEvent.click(screen.getByRole("checkbox", { name: /changing transport ends/ }));
  fireEvent.click(screen.getByRole("button", { name: "Save session transport" }));
- await screen.findByText(/Sign in again with password and TOTP/);
+ await screen.findByText(/Sign in again with your password/);
  expect(screen.getByText(/Saved transport:/)).toHaveTextContent("Bearer (default)");
 });
 
@@ -210,7 +253,7 @@ test("save and verify each report their own pending and failed action without cl
  fireEvent.change(screen.getByLabelText("Backend URL"), { target: { value: "https://edited.example.test" } });
  fireEvent.click(stepAction("Save pending registration"));
  const saveAlert = await screen.findByRole("alert");
- expect(saveAlert).toHaveTextContent("Sign in again with password and TOTP");
+ expect(saveAlert).toHaveTextContent("Sign in again with your password");
  fireEvent.change(screen.getByLabelText("Backend URL"), { target: { value: pending.backend_url } });
  fireEvent.click(stepAction("Verify ownership with Gait"));
  await screen.findByText(/Gait refused this action/);

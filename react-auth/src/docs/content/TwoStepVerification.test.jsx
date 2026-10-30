@@ -29,6 +29,13 @@ afterEach(() => {
 });
 
 describe("Two-step verification guide", () => {
+    test("optional enrollment never bypasses enabled MFA or an application's Required policy", () => {
+        renderDoc("two-step-verification");
+        expect(screen.getByText(/Enrollment is optional/)).toHaveTextContent(/both development and production/);
+        expect(screen.getByText(/Enrollment is optional/)).toHaveTextContent(/requires the second factor when you sign in/);
+        expect(section("Turn it off")).toHaveTextContent(/Required MFA refuses password-only sign-in/);
+    });
+
     test("is Live, from featureStatus.js", () => {
         expect(FEATURE_STATUS.twoStepVerification).toBe("live");
         renderDoc("two-step-verification");

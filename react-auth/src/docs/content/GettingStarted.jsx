@@ -70,8 +70,9 @@ export default function GettingStarted() {
                     or email address.
                 </p>
                 <p>
-                    Then turn on <DocLink to="two-step-verification">two-step verification</DocLink> from your{" "}
-                    <strong>Account</strong> page, so a stolen password isn't enough to get in.
+                    <DocLink to="two-step-verification">Two-step verification</DocLink> is optional for your account
+                    in both development and production. You can turn it on from your <strong>Account</strong> page,
+                    so a stolen password isn't enough to get in. Once enabled, it is required at sign-in.
                 </p>
                 <p>
                     Your browser never holds a long-lived login token that a script could read. Reloading the page
@@ -80,9 +81,9 @@ export default function GettingStarted() {
                 </p>
                 {statusOf("emailVerification") === "live" ? (
                     <p>
-                        When you create an account, Gait emails you a link. Confirm your email address with it before
-                        you create a workspace or accept an invite; the link lasts 48 hours, and you can ask for a new
-                        one from the console.
+                        After you create an account, the page tells you whether Gait sent a confirmation email. Confirm
+                        your address before creating a workspace or accepting an invite. The link lasts 48 hours.
+                        If delivery failed or you need another link, sign in and request one from the console.
                     </p>
                 ) : (
                     <Callout kind="availability">

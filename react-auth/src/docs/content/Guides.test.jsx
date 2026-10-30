@@ -81,11 +81,18 @@ describe("Rotate a connection key", () => {
 });
 
 describe("Go from local to production", () => {
-    test("only the key differs between environments", () => {
+    test("reporting within one deployment is distinguished from the separate hosted authentication services", () => {
         renderDoc("local-to-production");
         const table = within(screen.getByRole("table", { name: "Settings per environment" }));
-        expect(table.getByText(/the same everywhere/)).toBeInTheDocument();
+        expect(table.getByText(/the same reporting deployment/)).toBeInTheDocument();
         expect(table.getByText("the key of lumen-api · production")).toBeInTheDocument();
+        const hosted = section("Hosted development sign-in");
+        expect(hosted).toHaveTextContent(/controlled pilot/);
+        expect(hosted).toHaveTextContent(/Local environment filter does not switch/);
+        expect(hosted).toHaveTextContent(/verify each account separately/);
+        expect(hosted).toHaveTextContent("https://api.dev.gaitobservatory.com/api");
+        expect(hosted).toHaveTextContent(/proxying Gait cookies alone is not this integration/);
+        expect(hosted).toHaveTextContent(/polling and automatic refresh do not extend the idle deadline/);
     });
 });
 

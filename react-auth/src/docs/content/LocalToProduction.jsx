@@ -7,8 +7,8 @@ export default function LocalToProduction() {
         <>
             <p className="doc-lede">
                 Each of my apps runs in more than one place. In Gait each place is its own application, with its own
-                connection key and its own results. This guide adds production next to a local setup that already
-                reports.
+                connection key and its own results. Security reporting and hosted user sign-in have separate
+                setup steps below.
             </p>
             <p>
                 You'll need an application in <code>local</code> that's already sending security checks (see{" "}
@@ -56,8 +56,9 @@ export default function LocalToProduction() {
                     </li>
                     <li>
                         Save the key in the production backend's hosting secret settings as{" "}
-                        <code>GAIT_APPLICATION_CREDENTIAL</code>. Keep <code>GAIT_AUTH_URL</code> the same. Restart or
-                        deploy the backend so it loads the new values.
+                        <code>GAIT_APPLICATION_CREDENTIAL</code>. For security reporting within the same Gait deployment,
+                        keep <code>GAIT_AUTH_URL</code> the same. Hosted development sign-in uses the separate settings
+                        below. Restart or deploy the backend so it loads the new values.
                     </li>
                     <li>
                         Run the <DocLink to="connecting-your-software#verify-the-connection">connection check</DocLink>{" "}
@@ -65,7 +66,7 @@ export default function LocalToProduction() {
                         It must confirm the production application before sending a security check.
                     </li>
                 </ol>
-                <p>Only the key differs between environments:</p>
+                <p>For security reporting within one Gait deployment, the key identifies the environment:</p>
                 <DocTable caption="Settings per environment">
                     <thead>
                         <tr>
@@ -84,7 +85,7 @@ export default function LocalToProduction() {
                                 <code>GAIT_AUTH_URL</code>
                             </th>
                             <td colSpan={2}>
-                                <code>{GAIT_API_URL}</code> (the same everywhere)
+                                <code>{GAIT_API_URL}</code> (the same reporting deployment)
                             </td>
                         </tr>
                         <tr>
@@ -106,6 +107,54 @@ export default function LocalToProduction() {
                     application and environment, not a server hostname. For backend configuration, use the{" "}
                     <DocLink to="connecting-your-software#django">Django</DocLink> or{" "}
                     <DocLink to="connecting-your-software#fastapi">FastAPI</DocLink> instructions.
+                </p>
+            </DocSection>
+
+            <DocSection id="hosted-development-sign-in" title="Hosted development sign-in">
+                <Callout kind="availability">
+                    Hosted development is a controlled pilot. A loaded Console page does not mean its API is ready
+                    for sign-in. Complete account verification, application setup and browser testing before using it.
+                </Callout>
+                <p>
+                    Use the development Console for an app running on localhost. The production Console's Local
+                    environment filter does not switch to the development service. Development has separate accounts,
+                    applications, keys and sessions. You can register the same email address in both services, but
+                    must verify each account separately; its password and MFA enrollment are not copied.
+                </p>
+                <DocTable caption="Hosted authentication settings per environment">
+                    <thead>
+                        <tr><th scope="col">Setting</th><th scope="col">Development</th><th scope="col">Production</th></tr>
+                    </thead>
+                    <tbody>
+                        <tr><th scope="row">Console</th><td><code>https://dev.gaitobservatory.com</code></td><td><code>https://gaitobservatory.com</code></td></tr>
+                        <tr><th scope="row">API</th><td><code>https://api.dev.gaitobservatory.com/api</code></td><td><code>{GAIT_API_URL}</code></td></tr>
+                        <tr><th scope="row">Issuer</th><td><code>https://api.dev.gaitobservatory.com</code></td><td><code>https://api.gaitobservatory.com</code></td></tr>
+                        <tr><th scope="row">JWKS URL</th><td><code>https://api.dev.gaitobservatory.com/.well-known/jwks.json</code></td><td><code>https://api.gaitobservatory.com/.well-known/jwks.json</code></td></tr>
+                        <tr><th scope="row">Application, audience and credential</th><td>Use the development registration's values.</td><td>Use the production registration's values.</td></tr>
+                    </tbody>
+                </DocTable>
+                <p>
+                    Enroll the exact browser origin, including its port, such as <code>http://localhost:5173</code>.
+                    Development accepts supported HTTP loopback origins with explicit owner acknowledgment.
+                    Production continues to require a verified public HTTPS origin. A development token cannot be
+                    used as a production token.
+                </p>
+                <p>
+                    Your application's backend handles confidential sign-in and stores Gait tokens and credentials.
+                    The browser uses your own application's session cookie and CSRF protection. A Vite proxy can
+                    route browser calls to that backend; proxying Gait cookies alone is not this integration.
+                    The same application code can select either service through environment settings once this
+                    backend transport is implemented.
+                </p>
+                <p>
+                    Serialize refresh requests and save each replacement token pair. Send activity only for real
+                    foreground interaction; polling and automatic refresh do not extend the idle deadline. Test
+                    sign-in, any enabled MFA, activity, refresh and logout in your actual browser.
+                </p>
+                <p>
+                    New registrations default to Optional MFA in both services. Enabled MFA still requires a second
+                    factor, and an application can explicitly choose Required. See{" "}
+                    <DocLink to="add-gait-sign-in#two-step-verification">Application MFA policy</DocLink>.
                 </p>
             </DocSection>
 

@@ -90,8 +90,19 @@ describe("Add Gait sign-in to an app", () => {
     test("doesn't claim what isn't true yet", () => {
         renderDoc("add-gait-sign-in");
         const text = document.body.textContent;
-        expect(text).not.toMatch(/hosted sign-in|sign-in page hosted|audience|jwks|email_verified|your own brand/i);
+        expect(text).not.toMatch(/sign-in page hosted|email_verified|your own brand/i);
         expect(text).not.toMatch(/confirmed email|email is confirmed/i);
+        expect(text).toMatch(/Complete a real sign-in test before treating an integration as ready/);
+    });
+
+    test("Optional MFA keeps an enabled factor enforced and Required is an explicit application choice", () => {
+        renderDoc("add-gait-sign-in");
+        const policy = section("Two-step verification");
+        expect(policy).toHaveTextContent(/default to Optional MFA in both development and production/);
+        expect(policy).toHaveTextContent(/enabled it must still complete their second factor/);
+        expect(policy).toHaveTextContent(/Choose Required/);
+        expect(policy).toHaveTextContent(/Password-only sessions never count as MFA/);
+        expect(policy).toHaveTextContent(/every supported sign-in transport/);
     });
 });
 

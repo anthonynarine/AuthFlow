@@ -20,9 +20,11 @@ import {
     useRevokeCredential,
 } from "./useApplications";
 import "./Applications.css";
+import { HostedEnrollment } from "./HostedEnrollment";
 import { LoginRegistration } from "./LoginRegistration";
 import { ApplicationMonitoringCard } from "./ApplicationMonitoringCard";
 import { GuidedSetup } from "./GuidedSetup";
+import { confirmedDeploymentMode, useHostedEnrollmentCapability } from "./useHostedEnrollment";
 
 function ActivityCard({ activity }) {
     let body;
@@ -127,6 +129,8 @@ export function ApplicationDetailPage() {
     const [dialog, setDialog] = useState(null);
 
     const application = useApplication(orgSlug, applicationId);
+    const deployment = useHostedEnrollmentCapability(orgSlug, application.data, canManage);
+    const deploymentMode = canManage ? confirmedDeploymentMode(deployment, application.data) : null;
     const activity = useApplicationActivity(orgSlug, applicationId);
     const checks = useApplicationChecks(orgSlug, applicationId);
     const credentials = useCredentials(orgSlug, applicationId, { enabled: canManage });
@@ -215,8 +219,9 @@ export function ApplicationDetailPage() {
                 <p className="gc-warning gc-page-note">Retired: this application no longer works and all of its keys are revoked. This is permanent.</p>
             ) : null}
 
-            <GuidedSetup key={`${orgSlug}/${applicationId}/${app.environment}`} organizationSlug={orgSlug} application={app} canManage={canManage} activity={activity} credentials={credentials} />
-            <LoginRegistration key={`${orgSlug}/${applicationId}/${app.environment}/${canManage}`} organizationSlug={orgSlug} application={app} canManage={canManage} />
+            {deploymentMode === "production" && app.environment !== "local" ? <GuidedSetup key={`${orgSlug}/${applicationId}/${app.environment}`} organizationSlug={orgSlug} application={app} canManage={canManage} activity={activity} credentials={credentials} /> : null}
+            <HostedEnrollment key={`${orgSlug}/${applicationId}/${app.environment}/${canManage}`} organizationSlug={orgSlug} application={app} canManage={canManage} />
+            {deploymentMode === "production" && app.environment !== "local" ? <LoginRegistration key={`${orgSlug}/${applicationId}/${app.environment}/${canManage}`} organizationSlug={orgSlug} application={app} canManage={canManage} /> : null}
             <div className="gc-app-grid">
                 <ActivityCard activity={activity} />
                 <Card title="Details">
@@ -249,6 +254,7 @@ export function ApplicationDetailPage() {
                 <IssueKeyDialog
                     organizationSlug={orgSlug}
                     application={app}
+                    deploymentMode={deploymentMode}
                     issue={(label) => issueCredential(orgSlug, applicationId, label)}
                     onIssued={() => queryClient.invalidateQueries({ queryKey: consoleKeys.credentials(orgSlug, applicationId) })}
                     onClose={closeDialog}

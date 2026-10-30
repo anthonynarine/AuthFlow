@@ -183,7 +183,7 @@ export function RetireDialog({ application, mutation, onClose }) {
  * component's state: never in the query cache, storage, the URL or logs, and
  * it's dropped when the dialog closes.
  */
-export function IssueKeyDialog({ organizationSlug, application, issue, onIssued, onClose }) {
+export function IssueKeyDialog({ organizationSlug, application, deploymentMode, issue, onIssued, onClose }) {
     const [label, setLabel] = useState("");
     const [frameworkKey, setFrameworkKey] = useState("django");
     const [phase, setPhase] = useState("form");
@@ -272,8 +272,8 @@ export function IssueKeyDialog({ organizationSlug, application, issue, onIssued,
                         {copied === "copied" ? "Copied to clipboard." : copied === "failed" ? "Couldn't copy. The key is selected: copy it manually." : ""}
                     </span>
                 </div>
-                <BackendSetupInstructions frameworkKey={frameworkKey} onChoose={setFrameworkKey}
-                    organizationSlug={organizationSlug} application={application} />
+                {deploymentMode === "production" && application.environment !== "local" ? <BackendSetupInstructions frameworkKey={frameworkKey} onChoose={setFrameworkKey}
+                    organizationSlug={organizationSlug} application={application} /> : <p>Deployment-specific connection instructions are unavailable here. Use the server-authorized setup card for this application. Keep this key in backend secrets. Issuing a key does not configure or test sign-in.</p>}
                 <label className="gc-checkbox">
                     <input type="checkbox" checked={saved} onChange={(event) => setSaved(event.target.checked)} />
                     <span>I've saved this key somewhere safe</span>

@@ -19,6 +19,12 @@ export default function TwoStepVerification() {
                 <StatusBadge feature="twoStepVerification" /> It's your own sign-in, so it covers every workspace you
                 belong to. While it's off, your menu in the console shows <strong>2FA off</strong>.
             </p>
+            <p>
+                Enrollment is optional in both development and production. Once you enable it, Gait requires the
+                second factor when you sign in. An application can choose a <strong>Required</strong> MFA policy;
+                you must enable two-step verification to sign into that application. Applications set to
+                <strong> Optional</strong> still respect your enabled second factor.
+            </p>
 
             <DocSection id="turn-it-on" title="Turn it on">
                 <p>
@@ -98,7 +104,8 @@ export default function TwoStepVerification() {
                 <p>
                     On your <strong>Account</strong> page, choose <strong>Turn off</strong> and confirm with your
                     password and a code from your app (or a recovery code). Your account then only
-                    needs a password, your other devices are signed out, and your recovery codes stop working. Gait
+                    needs a password, your other devices are signed out, and your recovery codes stop working. An
+                    application with Required MFA refuses password-only sign-in until you enable it again. Gait
                     emails you that it was turned off.
                 </p>
             </DocSection>

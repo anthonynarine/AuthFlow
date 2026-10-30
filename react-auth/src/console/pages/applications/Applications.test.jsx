@@ -10,6 +10,7 @@ import {
     changeApplicationStatus,
     createApplication,
     fetchApplication,
+    fetchHostedEnrollment,
     fetchApplicationMonitoring,
     fetchApplicationActivity,
     fetchApplicationChecks,
@@ -35,6 +36,7 @@ jest.mock("../../api/consoleApi", () => ({
     fetchApplications: jest.fn(),
     createApplication: jest.fn(),
     fetchApplication: jest.fn(),
+    fetchHostedEnrollment: jest.fn(),
     fetchApplicationMonitoring: jest.fn(),
     renameApplication: jest.fn(),
     changeApplicationStatus: jest.fn(),
@@ -97,6 +99,9 @@ beforeEach(() => {
     fetchPostureOverview.mockResolvedValue({ organization_slug: "app-one", environments: [] });
     fetchApplications.mockResolvedValue([PROD_API, PROD_WORKER, LOCAL_API]);
     fetchApplication.mockImplementation((slug, id) => Promise.resolve([PROD_API, PROD_WORKER, LOCAL_API].find((a) => a.id === id)));
+    fetchHostedEnrollment.mockImplementation((slug, id) => Promise.resolve({ application_id: id,
+        environment: [PROD_API, PROD_WORKER, LOCAL_API].find((app) => app.id === id)?.environment,
+        deployment_mode: "production", local_enrollment_available: false }));
     fetchApplicationActivity.mockImplementation((slug, id) =>
         Promise.resolve(
             id === "a1"
@@ -106,6 +111,28 @@ beforeEach(() => {
     );
     fetchCredentials.mockResolvedValue(KEYS);
     fetchApplicationChecks.mockResolvedValue({ checks: [], last_run_at: null, reported_checks: 0, total_checks: 21 });
+});
+
+test("production setup remains available on a server-confirmed production deployment", async () => {
+    renderAt("/console/app-one/applications/a1?env=production");
+    expect(await screen.findByRole("button", { name: "Guide security reporting" })).toBeInTheDocument();
+});
+
+test("production-labelled app on hosted development cannot show legacy production setup", async () => {
+    fetchHostedEnrollment.mockResolvedValue({ application_id: "a1", environment: "production",
+        deployment_mode: "hosted-development", local_enrollment_available: false });
+    renderAt("/console/app-one/applications/a1?env=production");
+    await screen.findByText("Deployment: Hosted development");
+    expect(screen.queryByRole("button", { name: "Guide security reporting" })).not.toBeInTheDocument();
+    expect(screen.queryByRole("heading", { name: "Set up user sign-in" })).not.toBeInTheDocument();
+});
+
+test("wrong-application deployment metadata cannot enable legacy production instructions", async () => {
+    fetchHostedEnrollment.mockResolvedValue({ application_id: "another-app", environment: "production",
+        deployment_mode: "production", local_enrollment_available: false });
+    renderAt("/console/app-one/applications/a1?env=production");
+    await screen.findByRole("button", { name: "Retry server capabilities" });
+    expect(screen.queryByRole("button", { name: "Guide security reporting" })).not.toBeInTheDocument();
 });
 
 describe("F2 application list", () => {

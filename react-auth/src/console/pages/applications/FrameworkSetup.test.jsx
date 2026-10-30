@@ -10,7 +10,7 @@ const secret = "test-only-secret";
 function setup(issue = jest.fn().mockResolvedValue({ raw_secret: secret })) {
     const onClose = jest.fn();
     const onIssued = jest.fn();
-    const view = render(<IssueKeyDialog organizationSlug="moneta-org" application={application}
+    const view = render(<IssueKeyDialog organizationSlug="moneta-org" application={application} deploymentMode="production"
         issue={issue} onIssued={onIssued} onClose={onClose} />);
     return { ...view, issue, onClose, onIssued };
 }
@@ -103,4 +103,20 @@ test.each([
     expect(result.status).toBe(status);
     expect(result.stdout + result.stderr).toContain(text);
     expect(result.stdout).toBe(status ? "" : "Connected: moneta · production\n");
+});
+
+test("local key dialog does not export static production connection instructions", async () => {
+    render(<IssueKeyDialog organizationSlug="dev-org" application={{ ...application, environment: "local" }} issue={jest.fn().mockResolvedValue({ raw_secret: secret })} onIssued={jest.fn()} onClose={jest.fn()} />);
+    await issueKey();
+    expect(screen.queryByRole("region", { name: "Backend setup" })).not.toBeInTheDocument();
+    expect(screen.getByText(/server-authorized setup card/)).toBeInTheDocument();
+});
+
+test.each(["hosted-development", undefined])("production-labelled app cannot export production pins without confirmed production deployment (%s)", async (deploymentMode) => {
+    render(<IssueKeyDialog organizationSlug="dev-org" application={application} deploymentMode={deploymentMode}
+        issue={jest.fn().mockResolvedValue({ raw_secret: secret })} onIssued={jest.fn()} onClose={jest.fn()} />);
+    await issueKey();
+    expect(screen.queryByText(/pip install/)).not.toBeInTheDocument();
+    expect(screen.queryByText(/api.gaitobservatory.com/)).not.toBeInTheDocument();
+    expect(screen.getByText(/Deployment-specific connection instructions are unavailable/)).toBeInTheDocument();
 });

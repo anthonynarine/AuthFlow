@@ -9,6 +9,7 @@ import { fetchLoginRegistration, saveLoginRegistration, challengeLoginRegistrati
 import { HostingChoices, OwnershipProofSetup, frontendOriginFeedback } from "./OwnershipProofSetup";
 import { ENVIRONMENT_LABELS } from "../../hooks/useConsoleScope";
 import { LoginTransportSettings } from "./LoginTransportSettings";
+import { isMfaPolicy, MfaPolicyField, MFA_DOWNGRADE_ACKNOWLEDGMENT } from "./MfaPolicyField";
 
 function SettingsDisclosure({ title, children, className = "", feedback }) {
     const [expanded, setExpanded] = useState(false);
@@ -25,6 +26,7 @@ function SettingsDisclosure({ title, children, className = "", feedback }) {
 function RegistrationSettings({ application, data, pending, onSave, onChallenge, onVerify, onRevoke, onTransport, feedback, onSignIn }) {
     const [backendUrl, setBackendUrl] = useState(data.backend_url || "");
     const [origin, setOrigin] = useState(data.login_origin || "");
+    const [mfaPolicy, setMfaPolicy] = useState(data.mfa_policy);
     const [layout, setLayout] = useState(data.backend_url === data.login_origin ? "same" : "separate");
     const [awsType, setAwsType] = useState("static");
     const [hosting, setHosting] = useState(data.backend_url === data.login_origin ? "backend" : "other");
@@ -37,7 +39,10 @@ function RegistrationSettings({ application, data, pending, onSave, onChallenge,
     const pinsReady = data.status === "active" && typeof data.api_base_url === "string" && data.api_base_url && typeof data.issuer === "string" && data.issuer && typeof data.jwks_uri === "string" && data.jwks_uri && typeof data.audience === "string" && data.audience;
     const config = pinsReady ? `GAIT_TOKEN_VERIFIER=jwks\nGAIT_AUTH_URL=${data.api_base_url}\nGAIT_JWKS_URL=${data.jwks_uri}\nGAIT_ISSUER=${data.issuer}\nGAIT_AUDIENCE=${data.audience}` : null;
     const editingActive = data.status === "active";
-    const dirty = backendUrl !== (data.backend_url || "") || origin !== (data.login_origin || "");
+    const downgrading = data.mfa_policy === "required" && mfaPolicy === "optional";
+    const confirmNeeded = editingActive || downgrading;
+    const policyKnown = isMfaPolicy(data.mfa_policy) && isMfaPolicy(mfaPolicy);
+    const dirty = backendUrl !== (data.backend_url || "") || origin !== (data.login_origin || "") || (policyKnown && mfaPolicy !== data.mfa_policy);
     const active = application.status === "ACTIVE";
     const completedSteps = { urls: ["pending", "active"].includes(data.status), verify: editingActive };
     const completionDescription = useId();
@@ -50,7 +55,7 @@ function RegistrationSettings({ application, data, pending, onSave, onChallenge,
     const actionFeedback = (action) => <RegistrationActionFeedback action={action} feedback={feedback[action]} onSignIn={onSignIn} />;
     const registrationForm = <>
         <HostingChoices layout={layout} setLayout={setLayout} hosting={hosting} setHosting={setHosting} awsType={awsType} setAwsType={setAwsType} />
-        <form className="gc-login-form" onSubmit={(event) => { event.preventDefault(); if (unchangedRegistration || originFeedback || (editingActive && !confirmEdit)) return; onSave({ backend_url: backendUrl, login_origin: origin }); }}>
+        <form className="gc-login-form" aria-label="Human login registration" onSubmit={(event) => { event.preventDefault(); if (pending || !active || unchangedRegistration || originFeedback || (confirmNeeded && !confirmEdit)) return; onSave({ backend_url: backendUrl, login_origin: origin, ...(policyKnown ? { mfa_policy: mfaPolicy } : {}) }); }}>
             <label htmlFor="gc-login-backend">Backend URL</label>
             <input id="gc-login-backend" className="gc-input" type="url" value={backendUrl} onChange={(event) => setBackendUrl(event.target.value)} disabled={pending || !active} required />
             <p className="gc-muted">Informational service URL. Ownership proof belongs on the frontend login origin below.</p>
@@ -58,8 +63,9 @@ function RegistrationSettings({ application, data, pending, onSave, onChallenge,
             <input id="gc-login-origin" className="gc-input" type="url" value={origin} onChange={(event) => setOrigin(event.target.value)} disabled={pending || !active} required />
             {originFeedback ? <p role="alert">{originFeedback.message}{originFeedback.suggestion ? <> Suggested origin: <code>{originFeedback.suggestion}</code>. <button type="button" className="gc-button" onClick={() => setOrigin(originFeedback.suggestion)}>Use this origin</button></> : null}</p> : null}
             <p className="gc-muted">Exact HTTPS origin, without a path, trailing slash or wildcard. Keep environments separate. After verification, changing to another host requires platform support.</p>
-            {editingActive ? <label className="gc-checkbox"><input type="checkbox" checked={confirmEdit} onChange={(event) => setConfirmEdit(event.target.checked)} disabled={pending} /> <span>I understand saving changes resets ownership verification and revokes prior login sessions for this registration.</span></label> : null}
-            <div className="gc-login-actions"><button type="submit" className="gc-button gc-button--primary" disabled={pending || !active || unchangedRegistration || !backendUrl || !origin || Boolean(originFeedback) || (editingActive && !confirmEdit)}>Save pending registration</button></div>
+            <MfaPolicyField value={mfaPolicy} onChange={(value) => { setMfaPolicy(value); setConfirmEdit(false); }} disabled={pending || !active} />
+            {confirmNeeded ? <label className="gc-checkbox"><input type="checkbox" checked={confirmEdit} onChange={(event) => setConfirmEdit(event.target.checked)} disabled={pending} /> <span>{editingActive ? "I understand saving changes resets ownership verification and revokes prior login sessions for this registration." : "I confirm this MFA policy change."}{downgrading ? ` ${MFA_DOWNGRADE_ACKNOWLEDGMENT}` : ""}</span></label> : null}
+            <div className="gc-login-actions"><button type="submit" className="gc-button gc-button--primary" disabled={pending || !active || unchangedRegistration || !backendUrl || !origin || Boolean(originFeedback) || (confirmNeeded && !confirmEdit)}>Save pending registration</button></div>
 
         </form>
     </>;
